@@ -54,7 +54,7 @@ function Loginform() {
     <>
     <ToastContainer />
     <Container fluid className="login-section">
-        <Row className="align-content-center justify-content-center" style={{height: "100vh"}} >
+        <Row className="align-content-center justify-content-center">
         <Col md={4} className='bg-white px-5 py-3'>
             <p className='fs-4'>Welcome to <b>WordGAMLE!</b></p>
             <p>For now, we’re just playing Wordle and storing results.</p>  

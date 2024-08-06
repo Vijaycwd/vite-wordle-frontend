@@ -29,7 +29,7 @@ const Header = () => {
     <Container>
       <Row className="d-flex align-items-center">
         <Col xs={2}><img src={Logo} style={{width: 150 + 'px'}} alt = "logo"></img></Col>
-        <Col xs={8}><h1 className='text-center'>Wordgamle</h1></Col>
+        <Col xs={8}><h1 className='text-center'>WordGAMLE</h1></Col>
         <Col xs={2} className="d-flex">
         
         <Link to="/statistics">
