@@ -99,10 +99,10 @@ function Loginform() {
                     <Button type="submit"><i className="fa fa-fw fa-sign-in-alt mr-1"></i>Sign In</Button>
                 </Form>
                 <div className='btn-section my-3'>
-                    <Link className="btn btn-sm btn-light d-block d-lg-inline-block mb-1 float-left" to="/reset-password">
-                        <i className="fa fa-exclamation-triangle text-muted mr-1"></i> Forgot password
-                    </Link>
                     <Link className="btn btn-sm btn-light d-block d-lg-inline-block mb-1 float-right" to="/register">New Account</Link>
+                    <Link className="btn btn-sm btn-light d-block d-lg-inline-block mb-1 float-left" to="/reset-password">
+                        <i className="fa fa-exclamation-triangle text-muted mr-1 float-right"></i> Forgot password
+                    </Link>
                 </div>
                 
             </Col>
