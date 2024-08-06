@@ -59,7 +59,7 @@ function Loginform() {
             <p className='fs-4 text-center'>Welcome to <b>WordGAMLE!</b></p>
             <p className='text-center'>For now, we’re just playing Wordle and storing results.</p>  
             <p className='text-center'>Please create your profile and then click the Wordle button and go from there!</p>
-                <h4>Sign In</h4>
+                <h4 className='mt-5'>Sign In</h4>
                 <Form noValidate validated={validated} onSubmit ={handleSubmit}>
                     <Row className="mb-3">
                         <Col>
