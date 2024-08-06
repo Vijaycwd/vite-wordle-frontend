@@ -27,3 +27,9 @@ body{
 .bg-white{
   background-color: #ffffff;
 }
+.float-left{
+  float:left;
+}
+.float-right{
+  float:right;
+}
