@@ -7,9 +7,6 @@ function Userlogin() {
     <>
 
     <Header/>
-    <p className='fs-4'>Welcome to <b>WordGAMLE!</b></p>
-    <p>For now, we’re just playing Wordle and storing results.</p>  
-    <p>Please create your profile and then click the Wordle button and go from there!</p>
     <Loginform/>
         {/* {/* <div id="page-container">
             <main id="main-container">

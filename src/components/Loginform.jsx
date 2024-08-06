@@ -56,7 +56,9 @@ function Loginform() {
     <Container fluid className="login-section">
         <Row className="align-content-center justify-content-center" style={{height: "100vh"}} >
         <Col md={4} className='bg-white px-5 py-3'>
-                <img src={logo} alt="logo" style={{width:"150px"}} className='d-block m-auto'></img>
+            <p className='fs-4'>Welcome to <b>WordGAMLE!</b></p>
+            <p>For now, we’re just playing Wordle and storing results.</p>  
+            <p>Please create your profile and then click the Wordle button and go from there!</p>
                 <h4>Sign In</h4>
                 <Form noValidate validated={validated} onSubmit ={handleSubmit}>
                     <Row className="mb-3">
