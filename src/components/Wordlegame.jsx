@@ -136,7 +136,7 @@ const Wordlegame = (props) => {
                 </Form.Text>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicName">
-                <Form.Label>Your Score</Form.Label>
+                <Form.Label>Paste Result</Form.Label>
                 <FloatingLabel controlId="floatingTextarea2" label="">
                     <Form.Control
                     as="textarea" value={score} onChange={(event) => { setScore(event.target.value);}}
