@@ -28,9 +28,9 @@ const Header = () => {
   return (
     <Container>
       <Row className="d-flex align-items-center">
-        <Col xs={2}><img src={Logo} style={{width: 150 + 'px'}} alt = "logo"></img></Col>
-        <Col xs={8}><h1 className='text-center'>WordGAMLE</h1></Col>
-        <Col xs={2} className="d-flex">
+        <Col sm={2}><img className='img-fluid' src={Logo} style={{width: 150 + 'px'}} alt = "logo"></img></Col>
+        <Col sm={8}><h1 className='text-center'>WordGAMLE</h1></Col>
+        <Col sm={2} className="d-flex">
         
         <Link to="/statistics">
           <svg xmlns="http://www.w3.org/2000/svg" className="m-2 bi bi-bar-chart-fill" width="25" height="25" fill="currentColor"  viewBox="0 0 16 16">
