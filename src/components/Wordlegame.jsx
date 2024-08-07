@@ -91,7 +91,7 @@ const Wordlegame = (props) => {
               <Col>
                 <div className="mb-2">
                   <Button  className="wordle-btn" size="lg" onClick={() => handleShow('WORDLE')}>
-                    Enter Wordle
+                    Play Wordle
                   </Button>
                 </div>
               </Col>

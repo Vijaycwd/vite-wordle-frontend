@@ -21,8 +21,8 @@ function Gamebuttons() {
             <Row className="justify-content-center align-items-center">
                 <Col md={6} className='border p-3 shadow rounded'>
                     <Row className='justify-content-center align-items-center'>
-                        <Col md={3} className='shadow p-2 bg-body rounded'>
-                            <img className='img-fluid' src= {Wordlelogo}></img>
+                        <Col md={3}>
+                            <img className='img-fluid shadow p-2 bg-body rounded' src= {Wordlelogo}></img>
                         </Col>
                         <Col md={8}>
                             <Wordlegame loginUserData = {userData}/>
