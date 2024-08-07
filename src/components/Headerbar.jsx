@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/Button';
 import Overlay from 'react-bootstrap/Overlay';
 import Popover from 'react-bootstrap/Popover';
 
-const Header = () => {
+const Headerbar = () => {
 
   const userAuthData = JSON.parse(localStorage.getItem('auth'));
   const userData = userAuthData;
@@ -66,4 +66,4 @@ const Header = () => {
   );
 }
 
-export default Header;
+export default Headerbar;

@@ -9,7 +9,7 @@ import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 import Statistics from './pages/Statistics';
 import Wordlestats from './pages/Wordlestats';
-import Header from './components/Header';
+
 
 function App() {
   return (
