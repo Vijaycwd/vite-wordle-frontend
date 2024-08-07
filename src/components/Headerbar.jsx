@@ -31,13 +31,13 @@ const Headerbar = () => {
   return (
     <Container>
       <Row>
-        <Col>
+        <Col xs={2}>
           <img className='img-fluid' src={Logo} style={{width: 150 + 'px'}} alt = "logo"></img>
         </Col>
         <Col xs={6}>
-          <h1 className='text-center'>WordGAMLE</h1>
+          <h2 className='text-center'>WordGAMLE</h2>
         </Col>
-        <Col>
+        <Col xs={4} className="d-flex">
         <Link to="/statistics">
             <svg xmlns="http://www.w3.org/2000/svg" className="m-2 bi bi-bar-chart-fill" width="25" height="25" fill="currentColor"  viewBox="0 0 16 16">
                 <path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1z"/>
