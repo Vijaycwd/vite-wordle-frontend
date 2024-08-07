@@ -20,10 +20,10 @@ function Gamebuttons() {
                 </Col>
            </Row>
             <Row className="justify-content-center align-items-center">
-                <Col xs={6} className='border p-3 shadow rounded'>
+                <Col xs={6} sm={12} className='border p-3 shadow rounded'>
                     <Row className='justify-content-center align-items-center'>
-                    <Col xs={6}><img className='img-fluid shadow p-2 bg-body rounded' src= {Wordlelogo}></img></Col>
-                    <Col xs={6}><Wordlegame loginUserData = {userData}/></Col>
+                    <Col xs={6} sm={4}><img className='img-fluid shadow p-2 bg-body rounded' src= {Wordlelogo}></img></Col>
+                    <Col xs={6} sm={8}><Wordlegame loginUserData = {userData}/></Col>
                     </Row>
                 </Col>
             </Row>
