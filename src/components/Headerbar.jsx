@@ -10,6 +10,7 @@ const Headerbar = () => {
 
   const userAuthData = JSON.parse(localStorage.getItem('auth'));
   const userData = userAuthData;
+  console.log(userData);
   const [show, setShow] = useState(false);
   const [target, setTarget] = useState(null);
   const ref = useRef(null);
@@ -21,6 +22,10 @@ const Headerbar = () => {
   const logout = async (event) =>{
     event.preventDefault();
     localStorage.clear();
+    window.location.href = '/';
+  }
+  const login = async (event) =>{
+    event.preventDefault();
     window.location.href = '/';
   }
   return (
@@ -48,13 +53,20 @@ const Headerbar = () => {
             containerPadding={20}
           >
             <Popover id="popover-contained">
-              {/* <Popover.Header as="h3">Uaer </Popover.Header> */}
+              {/* <Popover.Header as="h3">User </Popover.Header> */}
               <Popover.Body>
                 <div className='text-center'>
-                <img src={`https://wordle-server-gf3r.onrender.com/public/uploads/${userData.avatar}`} alt="User Avatar" />
-                  <p className='fs-4 m-0'>{userData.username}</p>
-                  <p>{userData.email}</p>
-                  <Button onClick ={logout}>Logout</Button>
+                  {userData ? (
+                    <div>
+                      <img src={`https://wordle-server-gf3r.onrender.com/public/uploads/${userData.avatar}`} alt="User Avatar" />
+                      <p className='fs-4 m-0'>{userData.username}</p>
+                      <p>{userData.email}</p>
+                      <Button onClick ={logout}>Logout</Button>
+                    </div>
+                ) : (
+                  <Button onClick ={login}>Logout</Button>
+                )}
+                
                 </div> 
               </Popover.Body>
             </Popover>
