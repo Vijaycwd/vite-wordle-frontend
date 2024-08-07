@@ -32,7 +32,7 @@ const Headerbar = () => {
     <Container>
       <Row className="justify-content-center align-items-center">
         <Col xs={3}>
-          <img className='img-fluid' src={Logo} style={{width: 150 + 'px'}} alt = "logo"></img>
+          <Link to="/"><img className='img-fluid' src={Logo} style={{width: 150 + 'px'}} alt = "logo"></img></Link>
         </Col>
         <Col xs={6}>
           <h2 className='text-center'>WordGAMLE</h2>
