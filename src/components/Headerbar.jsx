@@ -63,7 +63,7 @@ const Headerbar = () => {
                         <Button onClick ={logout}>Logout</Button>
                       </div>
                   ) : (
-                    <Button onClick ={login}>Logout</Button>
+                    <Button onClick ={login}>Login</Button>
                   )}
                   
                   </div> 
