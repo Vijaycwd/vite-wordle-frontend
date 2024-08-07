@@ -15,15 +15,15 @@ function Gamebuttons() {
         <Container>
             
            <Row className="justify-content-center align-items-center">
-                <Col xs={6} className='text-center py-3'>
+                <Col md={6} className='text-center py-3'>
                     <h2>{"Welcome "+userData.username+"!"}</h2>
                 </Col>
            </Row>
             <Row className="justify-content-center align-items-center">
-                <Col xs={6} sm={12} className='border p-3 shadow rounded'>
+                <Col md={6} xs={12} className='border p-3 shadow rounded'>
                     <Row className='justify-content-center align-items-center'>
-                    <Col xs={6} sm={4}><img className='img-fluid shadow p-2 bg-body rounded' src= {Wordlelogo}></img></Col>
-                    <Col xs={6} sm={8}><Wordlegame loginUserData = {userData}/></Col>
+                    <Col md={6} xs={4}><img className='img-fluid shadow p-2 bg-body rounded' src= {Wordlelogo}></img></Col>
+                    <Col md={6} xs={8}><Wordlegame loginUserData = {userData}/></Col>
                     </Row>
                 </Col>
             </Row>
