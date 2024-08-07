@@ -13,20 +13,17 @@ function Gamebuttons() {
 
     return (
         <Container>
+            
            <Row className="justify-content-center align-items-center">
-                <Col md={6} className='text-center py-3'>
+                <Col xs={6} className='text-center py-3'>
                     <h2>{"Welcome "+userData.username+"!"}</h2>
                 </Col>
            </Row>
             <Row className="justify-content-center align-items-center">
-                <Col md={6} className='border p-3 shadow rounded'>
+                <Col xs={6} className='border p-3 shadow rounded'>
                     <Row className='justify-content-center align-items-center'>
-                        <Col md={3}>
-                            <img className='img-fluid shadow p-2 bg-body rounded' src= {Wordlelogo}></img>
-                        </Col>
-                        <Col md={8}>
-                            <Wordlegame loginUserData = {userData}/>
-                        </Col>
+                    <Col xs={6}><img className='img-fluid shadow p-2 bg-body rounded' src= {Wordlelogo}></img></Col>
+                    <Col xs={6}><Wordlegame loginUserData = {userData}/></Col>
                     </Row>
                 </Col>
             </Row>
