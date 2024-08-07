@@ -58,7 +58,7 @@ function Wordlestatechart() {
                                         return (
                                             <div key={index}>
                                                 <div className={`wordle-score-board-text my-3 fs-5`}>{cleanedScore}</div>
-                                                <div className={`fs-4 m-auto`}>{lettersAndNumbersRemoved}</div>
+                                                <div className={`wldscore m-auto`}>{lettersAndNumbersRemoved}</div>
                                             </div>
                                         );
                                     })
