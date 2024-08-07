@@ -41,11 +41,11 @@ function Wordlestatechart() {
     return (
         <Container>
             <Row className='align-items-center justify-content-center'>
-                <Col md={6} className='border p-3 shadow rounded'>
+                <Col md={4} className='border p-3 shadow rounded'>
                     <Row>
-                        <Col md={4} className="m-auto p-3">
+                        <Col className="m-auto p-3">
                             <div>
-                                <h4 className="my-2 font-weight-bold fs-4">Today's Result</h4>
+                                <h4 className="my-2 font-weight-bold fs-4 text-center">Today's Result</h4>
                                 {statschart && Array.isArray(statschart) ? (
                                     statschart.map((char, index) => {
                                         // Processed values
@@ -57,7 +57,7 @@ function Wordlestatechart() {
                                         // console.log('Letters and numbers removed:', lettersAndNumbersRemoved);
                                         return (
                                             <div key={index}>
-                                                <div className={`wordle-score-board-text my-3 fs-5`}>{cleanedScore}</div>
+                                                <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
                                                 <div className={`wldscore m-auto`}>{lettersAndNumbersRemoved}</div>
                                             </div>
                                         );

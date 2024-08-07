@@ -34,11 +34,6 @@ body{
   float:right;
 }
 .wldscore{
-  width: 100%;
+  width: 50%;
   font-size: 25px;
-}
-@media only screen and (max-width: 600px) {
-  .wldscore{
-    width: 50%;
-  }
 }
