@@ -9,9 +9,7 @@ import Popover from 'react-bootstrap/Popover';
 const Header = () => {
 
   const userAuthData = JSON.parse(localStorage.getItem('auth'));
-  // console.log(userAuthData);
   const userData = userAuthData;
-
   const [show, setShow] = useState(false);
   const [target, setTarget] = useState(null);
   const ref = useRef(null);
