@@ -30,7 +30,7 @@ const Headerbar = () => {
   }
   return (
     <Container>
-      <Row class="justify-content-center align-items-center">
+      <Row className="justify-content-center align-items-center">
         <Col xs={3}>
           <img className='img-fluid' src={Logo} style={{width: 150 + 'px'}} alt = "logo"></img>
         </Col>
