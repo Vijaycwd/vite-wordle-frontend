@@ -63,7 +63,7 @@ function Loginform() {
             <p className='text-center'>For now, we’re just playing Wordle and storing results.</p>  
             <p className='text-center'>Please create your profile and then click the Wordle button and go from there!</p>
             {userAuthData ? (
-                <Link className="btn btn-primary btn-lg" to="/statistics">Play Wordle</Link>
+                <Link className="btn btn-primary btn-lg mt-3" to="/statistics">Play Wordle</Link>
                 // <pre>{JSON.stringify(userAuthData, null, 2)}</pre>
             ) : (
                 <>
