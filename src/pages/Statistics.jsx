@@ -1,12 +1,13 @@
 import React from 'react';
-import Header from '../components/Headerbar';
 import Gamebuttons from '../components/Gamebuttons';
-
+import { UserProvider } from '../constant/UserContext';
 function Statistics() {
   return (
     <>
-        <Header/>
+      <UserProvider>
         <Gamebuttons/>
+      </UserProvider>
+        
     </>
     
   )

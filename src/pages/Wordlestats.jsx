@@ -5,9 +5,7 @@ import Wordlestatechart from '../components/Wordlestatechart'
 function Wordlestats() {
   return (
     <>
-        <Header/>
         <Wordlestatechart/>
-
     </>
   )
 }

@@ -4,6 +4,9 @@ body{
 #root{
   width:100%;
 }
+.container{
+  padding: 0px 20px;
+}
 .btn-primary{
   background-color: #00BF63 !important;
   border-color: #00BF63!important;
@@ -40,9 +43,10 @@ body{
 .wldscore{
   width: 50%;
   font-size: 28px;
+  text-align: center;
 }
 @media only screen and (max-width: 600px) {
   .wldscore{
-    font-size: 26px !important;
+    font-size: 20px !important;
   }
 }

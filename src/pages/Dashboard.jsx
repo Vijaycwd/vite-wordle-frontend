@@ -5,7 +5,6 @@ import Games from '../components/Games';
 const Dashboard = () => {
     return (
         <div>
-            <Header/>
             <Games/>
         </div>
     );

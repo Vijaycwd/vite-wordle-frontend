@@ -86,24 +86,22 @@ const Wordlegame = (props) => {
     return (
       <>  
         <ToastContainer/>
-        <Container>
           <Row>
               <Col>
-                <div className="mb-2">
-                  <Button  className="wordle-btn" size="lg" onClick={() => handleShow('WORDLE')}>
+                <div className="my-3">
+                  <Button  className="wordle-btn p-2" size="lg" onClick={() => handleShow('WORDLE')}>
                     Play Wordle
                   </Button>
                 </div>
               </Col>
               <Col>
-                <div className="mb-2">
-                  <Button  className="wordle-btn" size="lg" onClick={handleWordlestate}>
+                <div className="my-3">
+                  <Button  className="wordle-btn p-2" size="lg" onClick={handleWordlestate}>
                     Wordle Stats
                   </Button>
                 </div>
               </Col>
           </Row>
-        </Container>
         <Modal show={show} onHide={handleClose}>
           <Modal.Header closeButton>
             <Modal.Title>{modalContent}</Modal.Title>

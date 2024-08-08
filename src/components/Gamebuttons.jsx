@@ -2,15 +2,17 @@ import React, { useContext } from 'react';
 import { UserContext } from '../constant/UserContext';
 import { Col, Container, Row } from 'react-bootstrap'
 import Wordlelogo from './images/wordle.png'
+import Connectionlogo from './images/connections.jpg'
 import Wordlegame from './Wordlegame'
+import Axios from "axios";
 function Gamebuttons() {
-    const userAuthData = useContext(UserContext);
-    const userData = userAuthData;
-//   const userAuthData = JSON.parse(localStorage.getItem('auth'));
-//   console.log(userAuthData);
-//   const userData = userAuthData;
+    // const userAuthData = useContext(UserContext);
+    // const userData = userAuthData;
+  const userAuthData = JSON.parse(localStorage.getItem('auth'));
+  console.log(userAuthData);
+  const userData = userAuthData;
     
-    console.log('User Data State:', userAuthData);
+    console.log('User Data State:', userData.username);
 
     return (
         <Container>
@@ -20,10 +22,10 @@ function Gamebuttons() {
                 </Col>
            </Row>
             <Row className="justify-content-center align-items-center">
-                <Col sm={6} xs={12} className='border p-3 shadow rounded'>
+                <Col sm={6} className='border p-3 shadow rounded text-center '>
                     <Row className='justify-content-center align-items-center'>
-                    <Col sm={6} xs={4}><img className='img-fluid shadow p-2 bg-body rounded' src= {Wordlelogo}></img></Col>
-                    <Col sm={6} xs={8}><Wordlegame loginUserData = {userData}/></Col>
+                    <Col sm={3} className='text-center'><img className='img-fluid shadow p-2 bg-body rounded' src= {Wordlelogo}></img></Col>
+                    <Col sm={6}><Wordlegame loginUserData = {userData}/></Col>
                     </Row>
                 </Col>
             </Row>

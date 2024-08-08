@@ -1,5 +1,5 @@
 import { Container, Row, Col } from 'react-bootstrap';
-import Logo from './Logo.png';
+import Logo from '../Logo.png';
 import { Link } from 'react-router-dom';
 import { useState, useRef } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -30,9 +30,9 @@ const Headerbar = () => {
   }
   return (
     <Container>
-      <Row className="justify-content-center align-items-center">
+      <Row className="justify-content-center align-items-center py-2">
         <Col xs={3}>
-          <Link to="/"><img className='img-fluid' src={Logo} style={{width: 150 + 'px'}} alt = "logo"></img></Link>
+          <Link to="/"><img className='img-fluid' src={Logo} alt = "logo"></img></Link>
         </Col>
         <Col xs={6}>
           <h2 className='text-center'>WordGAMLE</h2>
