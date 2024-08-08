@@ -9,7 +9,7 @@ import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 import Statistics from './pages/Statistics';
 import Wordlestats from './pages/Wordlestats';
-import { UserProvider } from './auth/constant/UserContext';
+import { UserProvider } from './constant/UserContext';
 
 
 function App() {
