@@ -1,5 +1,6 @@
 import { useState } from 'react';
-
+import React, { useContext } from 'react';
+import { UserContext } from './UserContext';
 import { Container, Row, Col, Form, Button, InputGroup } from 'react-bootstrap';
 import logo from '../Logo.png'
 import Axios from "axios";
@@ -16,7 +17,7 @@ function Loginform() {
         e.preventDefault();
         const form = e.currentTarget;
         if (form.checkValidity() === false) {
-            console.log('false');
+            // console.log('false');
             setValidated(true);
         }
         else{
@@ -26,7 +27,7 @@ function Loginform() {
                 email: email,
                 password: password
             }
-            console.log(userObject);
+            // console.log(userObject);
             Axios.post('https://wordle-server-gf3r.onrender.com/use/login', userObject)
                 .then( res =>{
                     localStorage.setItem('auth', JSON.stringify(res.data));
@@ -43,7 +44,7 @@ function Loginform() {
                     }
                 })
                 .catch((err) => {
-                    console.log(err);
+                    // console.log(err);
                     toast.error("Invalid User Details", {
                         position: "top-center"
                     });
@@ -53,6 +54,12 @@ function Loginform() {
   return (
     <>
     <ToastContainer />
+    <h1>User Data</h1>
+      {userAuthData ? (
+        <pre>{JSON.stringify(userAuthData, null, 2)}</pre>
+      ) : (
+        <p>Loading...</p>
+      )}
     <Container fluid className="login-section">
         <Row className="align-content-center justify-content-center">
         <Col md={4} className='bg-white px-5 py-3'>

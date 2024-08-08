@@ -9,22 +9,25 @@ import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 import Statistics from './pages/Statistics';
 import Wordlestats from './pages/Wordlestats';
+import { UserProvider } from './auth/constant/UserContext';
 
 
 function App() {
   return (
-    <Routes>
-      <Route exact path="/" element={<Userlogin />} />
-      <Route exact path="/login" element={<Userlogin />} />
-      <Route exact path="/register" element={<Registerform />} />
-      <Route path="*" element={<NotFound/>} />
-      <Route exact path='/' element={<ProtectedRouter/>}>
-        <Route exact path='/dashboard' element={<Dashboard/>}/>
-        <Route exact path='/statistics' element={<Statistics/>}/>
-        <Route exact path= '/wordlestats' element={<Wordlestats/>}/>
-      </Route>
-          
-    </Routes>
+    <UserProvider>
+      <Routes>
+        <Route exact path="/" element={<Userlogin />} />
+        <Route exact path="/login" element={<Userlogin />} />
+        <Route exact path="/register" element={<Registerform />} />
+        <Route path="*" element={<NotFound/>} />
+        <Route exact path='/' element={<ProtectedRouter/>}>
+          <Route exact path='/dashboard' element={<Dashboard/>}/>
+          <Route exact path='/statistics' element={<Statistics/>}/>
+          <Route exact path= '/wordlestats' element={<Wordlestats/>}/>
+        </Route>
+      </Routes>
+    </UserProvider>
+    
   );
 }
 
