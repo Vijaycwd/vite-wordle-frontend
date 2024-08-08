@@ -4,6 +4,9 @@ body{
 #root{
   width:100%;
 }
+.btn-primary{
+  background-color: #00BF63 !important;
+}
 .wordle-btn{
   background-color: #a0c35a!important;
   border-color: #a0c35a!important;

@@ -58,12 +58,12 @@ function Loginform() {
       
     <Container fluid className="login-section">
         <Row className="align-content-center justify-content-center">
-        <Col md={4} className='bg-white px-5 py-3'>
+        <Col md={4} className='bg-white px-5 py-3 text-center'>
             <p className='fs-4 text-center'>Welcome to <b>WordGAMLE!</b></p>
             <p className='text-center'>For now, we’re just playing Wordle and storing results.</p>  
             <p className='text-center'>Please create your profile and then click the Wordle button and go from there!</p>
             {userAuthData ? (
-                <Link to="/statistics">Play Wordle</Link>
+                <Link className="btn btn-primary btn-lg" to="/statistics">Play Wordle</Link>
                 // <pre>{JSON.stringify(userAuthData, null, 2)}</pre>
             ) : (
                 <>
