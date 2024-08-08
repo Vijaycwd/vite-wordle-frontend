@@ -6,6 +6,7 @@ body{
 }
 .btn-primary{
   background-color: #00BF63 !important;
+  border-color: #00BF63!important;
 }
 .wordle-btn{
   background-color: #a0c35a!important;
