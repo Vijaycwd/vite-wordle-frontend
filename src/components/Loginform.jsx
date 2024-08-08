@@ -56,7 +56,7 @@ function Loginform() {
     <>
     <ToastContainer />
       
-    <Container fluid className="login-section">
+    <Container className="login-section">
         <Row className="align-content-center justify-content-center">
         <Col md={4} className='bg-white px-5 py-3 text-center'>
             <p className='fs-4 text-center'>Welcome to <b>WordGAMLE!</b></p>
