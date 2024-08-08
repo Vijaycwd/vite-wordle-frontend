@@ -1,21 +1,19 @@
-import React, { useContext } from 'react';
-import { UserContext } from '../constant/UserContext';
+import { React, useState, useEffect } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
 import Wordlelogo from './images/wordle.png'
 import Connectionlogo from './images/connections.jpg'
 import Wordlegame from './Wordlegame'
 import Axios from "axios";
 function Gamebuttons() {
-    const userAuthData = useContext(UserContext);
-    const userData = userAuthData;
-//   const userAuthData = JSON.parse(localStorage.getItem('auth'));
-//   console.log(userAuthData);
-//   const userData = userAuthData;
+  const userAuthData = JSON.parse(localStorage.getItem('auth'));
+  console.log(userAuthData);
+  const userData = userAuthData;
     
-    console.log('User Data State:', userData.username);
+    //   console.log('User Data State:', userdata.username);
 
     return (
         <Container>
+            
            <Row className="justify-content-center align-items-center">
                 <Col sm={6} className='text-center py-3'>
                     <h2>{"Welcome "+userData.username+"!"}</h2>
