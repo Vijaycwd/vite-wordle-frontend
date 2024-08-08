@@ -12,11 +12,10 @@ function Gamebuttons() {
 //   console.log(userAuthData);
 //   const userData = userAuthData;
     
-    //   console.log('User Data State:', userdata.username);
+    console.log('User Data State:', userData.username);
 
     return (
         <Container>
-            
            <Row className="justify-content-center align-items-center">
                 <Col sm={6} className='text-center py-3'>
                     <h2>{"Welcome "+userData.username+"!"}</h2>
