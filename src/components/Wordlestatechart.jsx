@@ -41,24 +41,39 @@ function Wordlestatechart() {
     return (
         <Container>
             <Row className='align-items-center justify-content-center'>
-                <Col md={4} className='border p-3 shadow rounded'>
+                <Col md={6} className='border p-3 shadow rounded'>
                     <Row>
-                        <Col className="m-auto p-3">
+                        <Col md={4} className="m-auto p-3">
                             <div>
-                                <h4 className="my-2 font-weight-bold fs-4 text-center">Today's Result</h4>
+                                <h4 className="my-2 font-weight-bold fs-4">Today's Result</h4>
                                 {statschart && Array.isArray(statschart) ? (
                                     statschart.map((char, index) => {
                                         // Processed values
                                         const cleanedScore = char.wordlescore.replace(/[🟩🟨⬜]/g, "");
                                         const lettersAndNumbersRemoved = char.wordlescore.replace(/[a-zA-Z0-9,/\\]/g, "");
-                                        // Log the processed values
-                                        // console.log('Original score:', char.wordlescore);
-                                        // console.log('Cleaned score (special chars removed):', cleanedScore);
-                                        // console.log('Letters and numbers removed:', lettersAndNumbersRemoved);
+
+                                        // Function to split the wordlescore into 5-character rows
+                                        const splitIntoRows = (score, rowLength = 6) => {
+                                            const rows = [];
+                                            for (let i = 0; i < score.length; i += rowLength) {
+                                                rows.push(score.slice(i, i + rowLength));
+                                            }
+                                            return rows;
+                                        };
+
+                                        // Create rows for the grid
+                                        const gridRows = splitIntoRows(lettersAndNumbersRemoved.replace(/\s+/g, '')
+                                    );
+
                                         return (
                                             <div key={index}>
-                                                <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
-                                                <div className={`wldscore m-auto`}>{lettersAndNumbersRemoved}</div>
+                                                <div className="wordle-score-board-text my-3 fs-5">{cleanedScore}</div>
+                                                <div className="fs-4 m-auto">{lettersAndNumbersRemoved}</div>
+                                                <div className="wordle-grid">
+                                                    {gridRows.map((row, rowIndex) => (
+                                                        <div key={rowIndex} className="wordle-row">{row}</div>
+                                                    ))}
+                                                </div>
                                             </div>
                                         );
                                     })
