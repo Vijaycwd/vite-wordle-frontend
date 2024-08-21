@@ -38,7 +38,7 @@ const Games = () => {
           wordlescore: score,
       }
       console.log(wordleObject);
-      Axios.post('https://wordle-server-gf3r.onrender.com/wordle/wordle-score', wordleObject)
+      Axios.post('https://wordle-server-nta6.onrender.com/wordle/wordle-score', wordleObject)
       .then( res =>{
           if(res){
               createWordle = res.data;
@@ -56,7 +56,7 @@ const Games = () => {
     }, []);
     function getData() {
       Axios.get(
-        "https://wordle-server-gf3r.onrender.com/wordle"
+        "https://wordle-server-nta6.onrender.com/wordle"
       )
       .then((response) => {
         setData(response.data);

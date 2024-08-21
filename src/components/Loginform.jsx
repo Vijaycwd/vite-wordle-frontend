@@ -27,7 +27,7 @@ function Loginform() {
                 password: password
             }
             // console.log(userObject);
-            Axios.post('https://wordle-server-gf3r.onrender.com/use/login', userObject)
+            Axios.post('https://wordle-server-nta6.onrender.com/use/login', userObject)
                 .then( res =>{
                     localStorage.setItem('auth', JSON.stringify(res.data));
                     navigate("/wordle");

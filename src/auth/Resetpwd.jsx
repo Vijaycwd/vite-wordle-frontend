@@ -14,7 +14,7 @@ function Resetpwd() {
         const userObject = {
             email: email
         }
-        Axios.post('https://wordle-server-gf3r.onrender.com/use/reset-password', userObject)
+        Axios.post('https://wordle-server-nta6.onrender.com/use/reset-password', userObject)
         .then( res =>{
             if(res.data === 'Email Not Exist'){
                 toast.error("Email Not Exist !", {

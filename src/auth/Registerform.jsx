@@ -63,7 +63,7 @@ function Registerform() {
 
         const HEADERS = { headers: { 'Content-Type': 'multipart/form-data' } };
         try {
-            const userRes = await Axios.post('https://wordle-server-gf3r.onrender.com/use/create-user', userObject, HEADERS);
+            const userRes = await Axios.post('https://wordle-server-nta6.onrender.com/use/create-user', userObject, HEADERS);
             
             if (userRes.data.message) {
                 toast.error('Error', { position: "top-center" });
@@ -80,7 +80,7 @@ function Registerform() {
                 };
 
                 try {
-                    const statsRes = await Axios.post('https://wordle-server-gf3r.onrender.com/wordle-game-stats/create-stats', TotalGameObject);
+                    const statsRes = await Axios.post('https://wordle-server-nta6.onrender.com/wordle-game-stats/create-stats', TotalGameObject);
                     if (statsRes.data) {
                         console.log("Wordle stats created:", statsRes.data);
                     }
