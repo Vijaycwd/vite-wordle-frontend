@@ -1,0 +1,75 @@
+body{
+  display: block !important;
+}
+#root{
+  width:100%;
+}
+.container{
+  padding: 0px 20px;
+}
+.btn-primary{
+  background-color: #00BF63 !important;
+  border-color: #00BF63!important;
+}
+.wordle-btn{
+  background-color: #a0c35a!important;
+  border-color: #a0c35a!important;
+}
+.connections-btn{
+  background-color: #b0c4ef!important;
+  border-color: #b0c4ef!important;
+}
+.phrazle-btn{
+  background-color: #ba81c5!important;
+  border-color: #ba81c5!important;
+}
+.score-board{
+  width:135px;
+  margin-bottom: 30px;
+}
+.bg-primary-gn{
+  background-color: #a0c35a!important;
+}
+
+.bg-white{
+  background-color: #ffffff;
+}
+.float-left{
+  float:left;
+}
+.float-right{
+  float:right;
+}
+
+.statistics h2{
+  font-weight: 700;
+  font-size: 14px;
+}
+.statistics ul{
+  display: flex;
+  width: 100%;
+  margin-bottom: 10px;
+  list-style: none;
+  text-align: center;
+  padding: 5px;
+}
+.statistics ul li{
+  flex: 1;
+  margin-left: 12px;
+}
+.statistics .value{
+  font-size: 35px;
+  font-weight: 500;
+}
+.statistics .bottom-text{
+  font-size: 12px;
+  font-weight: 400;
+}
+.form-validation-error{
+  color:#ff0000;
+  font-size: 14px;
+
+}
+.score-by-date{
+  list-style: none;
+}
