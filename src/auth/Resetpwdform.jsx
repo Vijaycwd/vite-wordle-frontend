@@ -14,7 +14,7 @@ function Resetpwdform() {
         const userObject = {
             password: password
         }
-        Axios.post(`http://localhost:5001/use/reset-password/${id}/${token}`, userObject)
+        Axios.post(`https://wordle-server-gf3r.onrender.com/use/reset-password/${id}/${token}`, userObject)
         .then( res =>{
             console.log(res.data);
             if(res.data === 'Email Not Exist'){

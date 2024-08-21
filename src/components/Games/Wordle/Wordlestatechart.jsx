@@ -27,7 +27,7 @@ function Wordlestatechart() {
         const endOfDay = new Date();
         endOfDay.setHours(23, 59, 59, 999);
 
-        Axios.get('http://localhost:5001/wordle')
+        Axios.get('https://wordle-server-gf3r.onrender.com/wordle')
             .then((response) => {
                 const scoreData = response.data
                     .filter(item => item.useremail === userEmail)

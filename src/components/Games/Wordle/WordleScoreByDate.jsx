@@ -17,7 +17,7 @@ function WordleScoreByDate() {
     };
 
     const fetchData = () => {
-        axios.get('http://localhost:5001/wordle')
+        axios.get('https://wordle-server-gf3r.onrender.com/wordle')
             .then((response) => {
                 const scoreData = response.data
                     .filter(item => item.useremail === userEmail)

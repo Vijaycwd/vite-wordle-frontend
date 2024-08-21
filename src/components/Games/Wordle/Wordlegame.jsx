@@ -77,12 +77,12 @@ const Wordlegame = (props) => {
             };
     
             try {
-                const res = await Axios.post('http://localhost:5001/wordle/wordle-score', wordleObject);
+                const res = await Axios.post('https://wordle-server-gf3r.onrender.com/wordle/wordle-score', wordleObject);
                 if (res) {
                     // console.log("created", createWordle);
                     
                     // Create the TotalGameObject after setting the state
-                    const currentStats = await Axios.get(`http://localhost:5001/wordle-game-stats/${loginuseremail}`);
+                    const currentStats = await Axios.get(`https://wordle-server-gf3r.onrender.com/wordle-game-stats/${loginuseremail}`);
                     const currentStreak = currentStats.data.currentStreak || 0;
                     const streak = isWin ? currentStreak + 1 : 0;
 
@@ -111,7 +111,7 @@ const Wordlegame = (props) => {
     const updateTotalGamesPlayed = async (TotalGameObject) => {
         try {
             console.log('Sending request with:', TotalGameObject);
-            const res = await Axios.post('http://localhost:5001/wordle-game-stats/update', TotalGameObject);
+            const res = await Axios.post('https://wordle-server-gf3r.onrender.com/wordle-game-stats/update', TotalGameObject);
             if (res) {
                 const wordleStats = res.data;
                 // console.log("Updated", wordleStats);

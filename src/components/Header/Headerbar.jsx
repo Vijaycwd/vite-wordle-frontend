@@ -64,7 +64,7 @@ const Headerbar = () => {
                       
                   ) : (
                     <div>
-                        <img src={`http://localhost:5001/public/uploads/${userData.avatar}`} alt="User Avatar" className="img-fluid" />
+                        <img src={`https://wordle-server-gf3r.onrender.com/public/uploads/${userData.avatar}`} alt="User Avatar" className="img-fluid" />
                         <p className='fs-4 m-0'>{userData.username}</p>
                         <p>{userData.email}</p>
                         <Button onClick ={logout}>Logout</Button>

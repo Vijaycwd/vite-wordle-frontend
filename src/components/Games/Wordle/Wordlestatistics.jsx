@@ -19,7 +19,7 @@ function Wordlestatistics() {
     }, []);
 
     function getStatsValue() {
-        Axios.get(`http://localhost:5001/wordle-game-stats/${userEmail}`)
+        Axios.get(`https://wordle-server-gf3r.onrender.com/wordle-game-stats/${userEmail}`)
             .then((response) => {
                 console.log(response.data);
                 setwordleStatsData(response.data);
