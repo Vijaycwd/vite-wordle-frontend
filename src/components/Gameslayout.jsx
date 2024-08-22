@@ -3,10 +3,7 @@ import { Col, Container, Row } from 'react-bootstrap'
 import Wordlegamesection from './Games/Wordle/Wordlegamesection';
 
 function Gameslayout() {
-    // const userAuthData = useContext(UserContext);
-    // const userData = userAuthData;
   const userAuthData = JSON.parse(localStorage.getItem('auth'));
-//   console.log(userAuthData);
   const userData = userAuthData;
     
     // console.log('User Data State:', userData.username);

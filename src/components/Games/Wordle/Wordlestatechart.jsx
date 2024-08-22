@@ -5,10 +5,9 @@ import { Container, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import WordleScoreByDate from './WordleScoreByDate';
 import Wordlestatistics from './Wordlestatistics';
-import { USER_AUTH_DATA } from '../../../constant/constants';
 
 function Wordlestatechart() {
-    
+    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA.email;
     const [statschart, setStatsChart] = useState([]);
     const [userEmail, setUserEmail] = useState(loginuserEmail);

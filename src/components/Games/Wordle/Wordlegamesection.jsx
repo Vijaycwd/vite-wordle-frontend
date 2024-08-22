@@ -2,10 +2,9 @@ import React from 'react';
 import { Row, Col } from 'react-bootstrap';
 import Wordlelogo from './wordle.png';
 import Wordlegame from './Wordlegame';
-import { USER_AUTH_DATA } from '../../../constant/constants';
 
 function Wordlegamesection() {
-
+    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const userData = USER_AUTH_DATA;
     
     return (

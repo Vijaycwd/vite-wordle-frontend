@@ -5,12 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import Wordlelogo from './wordle.png'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { USER_AUTH_DATA } from '../../../constant/constants';
 
 const Wordlegame = (props) => {
-    
+
+    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const userData = USER_AUTH_DATA;
-    console.log(userData);
+    // console.log(userData);
     const [show, setShow] = useState(false);
     const [modalContent, setModalContent] = useState('');
     const [showForm, setShowForm] = useState(false);
@@ -110,14 +110,14 @@ const Wordlegame = (props) => {
     
     const updateTotalGamesPlayed = async (TotalGameObject) => {
         try {
-            console.log('Sending request with:', TotalGameObject);
+            // console.log('Sending request with:', TotalGameObject);
             const res = await Axios.post('https://wordle-server-nta6.onrender.com/wordle-game-stats/update', TotalGameObject);
             if (res) {
                 const wordleStats = res.data;
                 // console.log("Updated", wordleStats);
             }
         } catch (err) {
-            console.error('Error updating total games played:', err);
+            // console.error('Error updating total games played:', err);
             toast.error('Failed to update total games played', {
                 position: "top-center"
             });

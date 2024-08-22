@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Form, InputGroup, Button, Alert} from 'react-bootstrap';
-import { USER_AUTH_DATA } from '../../../constant/constants';
 
 function WordleScoreByDate() {
-    
+    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA.email;
     
     const [userEmail] = useState(loginuserEmail);
@@ -55,7 +54,6 @@ function WordleScoreByDate() {
             <ul className='score-by-date p-0'>
             {dataFetched && (statsChart.length > 0 ? (
                 statsChart.map(item => {
-                    console.log(true); // This will log `true` for each item in the array
                     const cleanedScore = item.wordlescore.replace(/[🟩🟨⬜]/g, "");
                     const lettersAndNumbersRemoved = item.wordlescore.replace(/[a-zA-Z0-9,/\\]/g, "");
                     const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');

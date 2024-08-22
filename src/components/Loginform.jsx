@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { USER_AUTH_DATA } from '../constant/constants';
 import { Container, Row, Col, Form, Button, InputGroup } from 'react-bootstrap';
 import Axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Link } from 'react-router-dom';
+
 function Loginform() {
+    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const userAuthData = USER_AUTH_DATA;
     const navigate = useNavigate();
     const [validated, setValidated] = useState(false);
@@ -50,9 +51,9 @@ function Loginform() {
                 })
         }
     };
-    console.log(userAuthData);
+    // console.log(userAuthData);
     const isEmptyObject = userAuthData && Object.keys(userAuthData).length === 0;
-    console.log(isEmptyObject);
+    // console.log(isEmptyObject);
   return (
     <>
     <ToastContainer />

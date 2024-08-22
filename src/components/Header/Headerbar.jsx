@@ -5,12 +5,11 @@ import { useState, useRef } from 'react';
 import Button from 'react-bootstrap/Button';
 import Overlay from 'react-bootstrap/Overlay';
 import Popover from 'react-bootstrap/Popover';
-import { USER_AUTH_DATA } from '../../constant/constants';
 
 const Headerbar = () => {
-
+  const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
   const userData = USER_AUTH_DATA;
-  console.log(userData);
+  // console.log(userData);
   const [show, setShow] = useState(false);
   const [target, setTarget] = useState(null);
   const ref = useRef(null);
