@@ -8,8 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const Wordlegame = (props) => {
 
-    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
-    const userData = USER_AUTH_DATA;
+
     // console.log(userData);
     const [show, setShow] = useState(false);
     const [modalContent, setModalContent] = useState('');
