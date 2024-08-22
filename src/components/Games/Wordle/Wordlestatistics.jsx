@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Axios from 'axios';
-
 function Wordlestatistics() {
+    
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA.email;
     const [userEmail, setUserEmail] = useState(loginuserEmail);
@@ -19,7 +19,7 @@ function Wordlestatistics() {
     function getStatsValue() {
         Axios.get(`https://wordle-server-nta6.onrender.com/wordle-game-stats/${userEmail}`)
             .then((response) => {
-                // console.log(response.data);
+                console.log(response.data);
                 setwordleStatsData(response.data);
                 setTotalGame(response.data.totalGamesPlayed);
                 setTotalWin(response.data.totalWinGames);

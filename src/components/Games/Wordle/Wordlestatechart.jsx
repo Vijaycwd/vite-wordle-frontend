@@ -9,15 +9,16 @@ import Wordlestatistics from './Wordlestatistics';
 function Wordlestatechart() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA.email;
+
     const [statschart, setStatsChart] = useState([]);
     const [userEmail, setUserEmail] = useState(loginuserEmail);
     const [totalGame, setTotalGame] = useState('');
 
     useEffect(() => {
-        if (userEmail) {
+        if (loginuserEmail) {
             getStatChart();
         }
-    }, [userEmail]);
+    }, [loginuserEmail]);
 
     function getStatChart() {
         const startOfDay = new Date();

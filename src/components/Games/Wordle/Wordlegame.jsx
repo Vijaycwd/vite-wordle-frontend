@@ -6,10 +6,9 @@ import Wordlelogo from './wordle.png'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+
 const Wordlegame = (props) => {
 
-
-    // console.log(userData);
     const [show, setShow] = useState(false);
     const [modalContent, setModalContent] = useState('');
     const [showForm, setShowForm] = useState(false);
@@ -18,6 +17,7 @@ const Wordlegame = (props) => {
     const [gameisWin, setGameisWin] = useState(false);
     const navigate = useNavigate();
 
+    
     const handleClose = () => setShow(false);
     const handleformClose = () => setShowForm(false);
 
@@ -92,6 +92,7 @@ const Wordlegame = (props) => {
                         lastgameisWin: isWin,
                         currentStreak: streak,
                     };
+                    // console.log(TotalGameObject);
                     await updateTotalGamesPlayed(TotalGameObject); // Pass the updated object
                     
                     setScore('');
@@ -116,7 +117,7 @@ const Wordlegame = (props) => {
                 // console.log("Updated", wordleStats);
             }
         } catch (err) {
-            // console.error('Error updating total games played:', err);
+            console.error('Error updating total games played:', err);
             toast.error('Failed to update total games played', {
                 position: "top-center"
             });
