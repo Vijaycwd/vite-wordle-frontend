@@ -58,7 +58,7 @@ const Headerbar = () => {
                 {/* <Popover.Header as="h3">User </Popover.Header> */}
                 <Popover.Body>
                   <div className='text-center'>
-                    { userData && Object.keys(userData).length <= 0  ? (
+                    { !userData || Object.keys(userData).length <= 0  ? (
                       <Button onClick ={login}>Login</Button>
                       
                   ) : (
