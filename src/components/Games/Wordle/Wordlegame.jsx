@@ -157,9 +157,9 @@ const Wordlegame = (props) => {
                     <div>
                         <p>Click the “Play” button to go to the Wordle website and play. Then:</p>
                         <ol>
-                            <li>PLAY. Play Wordle</li>
-                            <li>COPY. Click SHARE, then COPY to copy your Wordle result</li>
-                            <li>PASTE. Navigate back to WordGAMLE.com to paste your Wordle result</li>
+                            <li><strong>PLAY:</strong>Play Wordle</li>
+                            <li><strong>COPY:</strong>Click SHARE, then COPY to copy your Wordle result</li>
+                            <li><strong>PASTE:</strong>Navigate back to WordGAMLE.com to paste your Wordle result</li>
                         </ol>
                         <Button variant="primary" size="lg" onClick={() => handleNavigation('https://www.nytimes.com/games/wordle/index.html')}>
                             Play
