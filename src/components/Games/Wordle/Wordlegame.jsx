@@ -149,7 +149,7 @@ const Wordlegame = (props) => {
                     </div>
                 </Col>
             </Row>
-            <Modal show={show} onHide={handleClose}>
+            {/* <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>{modalContent}</Modal.Title>
                 </Modal.Header>
@@ -171,7 +171,7 @@ const Wordlegame = (props) => {
                         Close
                     </Button>
                 </Modal.Footer>
-            </Modal>
+            </Modal> */}
 
             <Modal show={showForm} onHide={handleformClose}>
                 <Modal.Header closeButton>

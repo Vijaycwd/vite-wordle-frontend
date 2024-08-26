@@ -73,3 +73,6 @@ body{
 .score-by-date{
   list-style: none;
 }
+::marker {
+  font-weight: bold;
+}
