@@ -51,10 +51,17 @@ const Wordlegame = (props) => {
     
     // console.log(TotalGameObject);
     // console.log(gameisWin);
+    const handleFocus = (event) => {
+        const deviceDetails = navigator.userAgent;
+        if(deviceDetails && deviceDetails.includes("Mobile")) {
+            // console.log('true');
+            event.preventDefault();
+        }
+    };
 
     const onSubmit = async (event) => {
         event.preventDefault();
-    
+        setShowForm(false);
         const wordlescore = score.replace(/[🟩🟨⬜]/g, ""); // Remove emojis if present
         const match = wordlescore.match(/(\d+|X)\/(\d+)/);
     
@@ -96,7 +103,6 @@ const Wordlegame = (props) => {
                     await updateTotalGamesPlayed(TotalGameObject); // Pass the updated object
                     
                     setScore('');
-                    setShowForm(false);
                 }
             } catch (err) {
                 // console.error(err);
@@ -184,6 +190,7 @@ const Wordlegame = (props) => {
                                 <Form.Control
                                     as="textarea"
                                     value={score}
+                                    onFocus={ handleFocus }
                                     onChange={(event) => { setScore(event.target.value); }}
                                     style={{ height: '100px' }}
                                 />
