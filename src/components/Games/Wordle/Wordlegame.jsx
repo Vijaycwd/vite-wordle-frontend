@@ -56,6 +56,7 @@ const Wordlegame = (props) => {
         if(deviceDetails && deviceDetails.includes("Mobile")) {
             // console.log('true');
             event.preventDefault();
+            event.target.blur(); 
         }
     };
 
