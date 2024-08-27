@@ -60,12 +60,20 @@ const Wordlegame = (props) => {
             event.target.readOnly = false; // Remove readonly for non-mobile devices
         }
     };
-    const handlePaste = (event) => {
+    const handlePaste = async (event) => {
+        event.preventDefault(); // Prevent the default paste action
         event.target.readOnly = false; // Temporarily remove readonly
-        setTimeout(() => {
-            event.target.readOnly = true; // Reapply readonly after pasting
-        }, 0);
+    
+        try {
+            const text = await navigator.clipboard.readText(); // Read the clipboard text
+            setScore(text); // Set the score with the clipboard content
+        } catch (err) {
+            console.error('Failed to read clipboard contents:', err);
+        }
+    
+        event.target.readOnly = true; // Reapply readonly after pasting
     };
+    
     const onSubmit = async (event) => {
         event.preventDefault();
         setShowForm(false);
