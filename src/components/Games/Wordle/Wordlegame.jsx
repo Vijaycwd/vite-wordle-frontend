@@ -1,4 +1,4 @@
-import React, { useState, useRef , useEffect  } from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, Button, Modal, Form, FloatingLabel } from 'react-bootstrap';
 import Axios from "axios";
 import { useNavigate } from 'react-router-dom';
@@ -21,37 +21,13 @@ const Wordlegame = (props) => {
     const handleClose = () => setShow(false);
     const handleformClose = () => setShowForm(false);
 
-    const inputRef = useRef(null);
-
-    useEffect(() => {
-        const deviceDetails = navigator.userAgent || '';
-        const isMobile = deviceDetails.includes('Mobile');
-        console.log(isMobile);
-        if (isMobile && inputRef.current) {
-            console.log("true");
-            const handleFocus = () => {
-                inputRef.current.blur(); // Temporarily blur to prevent the keyboard from appearing
-            };
-
-            inputRef.current.addEventListener('focus', handleFocus);
-
-            // Cleanup event listener on component unmount
-            return () => {
-                inputRef.current.removeEventListener('focus', handleFocus);
-            };
-        }
-        else{
-            console.log("false");
-        }
-    }, []);
-
-    // const handleShow = async (event) =>{
-    //     window.open(url, '_blank');
-    //     setShowForm(true);
-    //     setShow(false);
-    //     // setModalContent(content);
-    //     setShow(true);
-    // };
+    const handleShow = async (event) =>{
+        window.open(url, '_blank');
+        setShowForm(true);
+        setShow(false);
+        // setModalContent(content);
+        setShow(true);
+    };
 
     const handleNavigation = (url) => {
         window.open(url, '_blank');
@@ -222,7 +198,7 @@ const Wordlegame = (props) => {
                                 <Form.Control
                                     as="textarea"
                                     value={score}
-                                    ref={inputRef}
+                                    onFocus={handleFocus}
                                     onChange={(event) => { setScore(event.target.value); }}
                                     style={{ height: '100px' }}
                                 />
