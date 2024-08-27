@@ -26,8 +26,9 @@ const Wordlegame = (props) => {
     useEffect(() => {
         const deviceDetails = navigator.userAgent || '';
         const isMobile = deviceDetails.includes('Mobile');
-
+        console.log(isMobile);
         if (isMobile && inputRef.current) {
+            console.log("true");
             const handleFocus = () => {
                 inputRef.current.blur(); // Temporarily blur to prevent the keyboard from appearing
             };
@@ -38,6 +39,9 @@ const Wordlegame = (props) => {
             return () => {
                 inputRef.current.removeEventListener('focus', handleFocus);
             };
+        }
+        else{
+            console.log("false");
         }
     }, []);
 
@@ -71,10 +75,11 @@ const Wordlegame = (props) => {
     
     // console.log(TotalGameObject);
     // console.log(gameisWin);
+
     const handleFocus = (event) => {
         const deviceDetails = navigator.userAgent;
         if(deviceDetails && deviceDetails.includes("Mobile")) {
-            // console.log('true');
+            console.log('true');
             event.preventDefault();
         }
     };
@@ -92,6 +97,13 @@ const Wordlegame = (props) => {
             
             // Set the win state and ensure the object is created with the updated state
             setGameisWin(isWin);
+            
+             // Update guess distribution based on the number of guesses used
+            const updatedGuessDistribution = [...guessDistribution];
+            if (isWin && guessesUsed <= 6) {
+                updatedGuessDistribution[guessesUsed - 1] += 1;
+            }
+            setGuessDistribution(updatedGuessDistribution);
             
             const wordleObject = {
                 username: loginusername,
@@ -118,10 +130,10 @@ const Wordlegame = (props) => {
                         totalWinGames: isWin ? (currentStats.data.totalWinGames || 0) + 1 : currentStats.data.totalWinGames || 0,
                         lastgameisWin: isWin,
                         currentStreak: streak,
+                        guessDistribution: updatedGuessDistribution,
                     };
-                    // console.log(TotalGameObject);
+                    console.log(TotalGameObject);
                     await updateTotalGamesPlayed(TotalGameObject); // Pass the updated object
-                    
                     setScore('');
                 }
             } catch (err) {
@@ -169,7 +181,7 @@ const Wordlegame = (props) => {
                     </div>
                 </Col>
             </Row>
-            {/* <Modal show={show} onHide={handleClose}>
+            <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>{modalContent}</Modal.Title>
                 </Modal.Header>
@@ -177,9 +189,9 @@ const Wordlegame = (props) => {
                     <div>
                         <p>Click the “Play” button to go to the Wordle website and play. Then:</p>
                         <ol>
-                            <li><b>PLAY:</b> Play Wordle</li>
-                            <li><b>COPY:</b> Click SHARE, then COPY to copy your Wordle result</li>
-                            <li><b>PASTE:</b> Navigate back to WordGAMLE.com to paste your Wordle result</li>
+                            <li><strong>PLAY:</strong>Play Wordle</li>
+                            <li><strong>COPY:</strong>Click SHARE, then COPY to copy your Wordle result</li>
+                            <li><strong>PASTE:</strong>Navigate back to WordGAMLE.com to paste your Wordle result</li>
                         </ol>
                         <Button variant="primary" size="lg" onClick={() => handleNavigation('https://www.nytimes.com/games/wordle/index.html')}>
                             Play
@@ -191,7 +203,7 @@ const Wordlegame = (props) => {
                         Close
                     </Button>
                 </Modal.Footer>
-            </Modal> */}
+            </Modal>
 
             <Modal show={showForm} onHide={handleformClose}>
                 <Modal.Header closeButton>
