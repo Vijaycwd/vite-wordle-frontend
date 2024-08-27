@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef , useEffect  } from 'react';
 import { Container, Row, Col, Button, Modal, Form, FloatingLabel } from 'react-bootstrap';
 import Axios from "axios";
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +20,26 @@ const Wordlegame = (props) => {
     
     const handleClose = () => setShow(false);
     const handleformClose = () => setShowForm(false);
+
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+        const deviceDetails = navigator.userAgent || '';
+        const isMobile = deviceDetails.includes('Mobile');
+
+        if (isMobile && inputRef.current) {
+            const handleFocus = () => {
+                inputRef.current.blur(); // Temporarily blur to prevent the keyboard from appearing
+            };
+
+            inputRef.current.addEventListener('focus', handleFocus);
+
+            // Cleanup event listener on component unmount
+            return () => {
+                inputRef.current.removeEventListener('focus', handleFocus);
+            };
+        }
+    }, []);
 
     // const handleShow = async (event) =>{
     //     window.open(url, '_blank');
@@ -190,7 +210,7 @@ const Wordlegame = (props) => {
                                 <Form.Control
                                     as="textarea"
                                     value={score}
-                                    onFocus={ handleFocus }
+                                    ref={inputRef}
                                     onChange={(event) => { setScore(event.target.value); }}
                                     style={{ height: '100px' }}
                                 />
