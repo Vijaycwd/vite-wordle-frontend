@@ -54,9 +54,10 @@ const Wordlegame = (props) => {
 
     const handleFocus = (event) => {
         const deviceDetails = navigator.userAgent;
-        if(deviceDetails && deviceDetails.includes("Mobile")) {
-            console.log('true');
-            event.preventDefault();
+        if (deviceDetails && deviceDetails.includes("Mobile")) {
+            event.target.readOnly = true; // Set input field to readonly to prevent mobile keyboard from appearing
+        } else {
+            event.target.readOnly = false; // Remove readonly for non-mobile devices
         }
     };
 
