@@ -1,35 +1,24 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Button, Modal, Form, FloatingLabel } from 'react-bootstrap';
+import { Row, Col, Button, Modal, Form, FloatingLabel } from 'react-bootstrap';
 import Axios from "axios";
 import { useNavigate } from 'react-router-dom';
-import Wordlelogo from './wordle.png'
+import Wordlelogo from './wordle.png';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 
 const Wordlegame = (props) => {
 
     const [show, setShow] = useState(false);
-    const [modalContent, setModalContent] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [score, setScore] = useState('');
     const [guessDistribution, setGuessDistribution] = useState([0, 0, 0, 0, 0, 0]); // Initialize with 6 guesses
     const [gameisWin, setGameisWin] = useState(false);
     const navigate = useNavigate();
 
-    
     const handleClose = () => setShow(false);
     const handleformClose = () => setShowForm(false);
 
-    const handleShow = async (event) =>{
-        window.open(url, '_blank');
-        setShowForm(true);
-        setShow(false);
-        // setModalContent(content);
-        setShow(true);
-    };
-
-    const handleNavigation = (url) => {
+    const handleShow = (url) => {
         window.open(url, '_blank');
         setShowForm(true);
         setShow(false);
@@ -48,9 +37,6 @@ const Wordlegame = (props) => {
         useremail: loginuseremail,
         totalWinGames: gameisWin ? 1 : 0,
     }
-    
-    // console.log(TotalGameObject);
-    // console.log(gameisWin);
 
     const handleFocus = (event) => {
         const deviceDetails = navigator.userAgent;
@@ -60,55 +46,52 @@ const Wordlegame = (props) => {
             event.target.readOnly = false; // Remove readonly for non-mobile devices
         }
     };
+
     const handlePaste = async (event) => {
         event.preventDefault(); // Prevent the default paste action
         event.target.readOnly = false; // Temporarily remove readonly
-    
         try {
             const text = await navigator.clipboard.readText(); // Read the clipboard text
             setScore(text); // Set the score with the clipboard content
         } catch (err) {
             console.error('Failed to read clipboard contents:', err);
         }
-    
         event.target.readOnly = true; // Reapply readonly after pasting
     };
-    
+
     const onSubmit = async (event) => {
         event.preventDefault();
         setShowForm(false);
         const wordlescore = score.replace(/[🟩🟨⬜]/g, ""); // Remove emojis if present
         const match = wordlescore.match(/(\d+|X)\/(\d+)/);
-    
+
         if (match) {
             const guessesUsed = parseInt(match[1], 10); // Extract number of guesses used
             const totalGuesses = parseInt(match[2], 10); // Extract total guesses allowed
             const isWin = guessesUsed <= totalGuesses; // Check if the game was won
-            
+
             // Set the win state and ensure the object is created with the updated state
             setGameisWin(isWin);
-            
-             // Update guess distribution based on the number of guesses used
+
+            // Update guess distribution based on the number of guesses used
             const updatedGuessDistribution = [...guessDistribution];
             if (isWin && guessesUsed <= 6) {
                 updatedGuessDistribution[guessesUsed - 1] += 1;
             }
             setGuessDistribution(updatedGuessDistribution);
-            
+
             const wordleObject = {
                 username: loginusername,
                 useremail: loginuseremail,
                 wordlescore: score,
-                guessDistribution: guessDistribution,
+                guessDistribution: updatedGuessDistribution,
                 isWin: isWin,
                 createdAt: new Date().toISOString(),
             };
-    
+
             try {
                 const res = await Axios.post('https://wordle-server-nta6.onrender.com/wordle/wordle-score', wordleObject);
                 if (res) {
-                    // console.log("created", createWordle);
-                    
                     // Create the TotalGameObject after setting the state
                     const currentStats = await Axios.get(`https://wordle-server-nta6.onrender.com/wordle-game-stats/${loginuseremail}`);
                     const currentStreak = currentStats.data.currentStreak || 0;
@@ -127,7 +110,6 @@ const Wordlegame = (props) => {
                     setScore('');
                 }
             } catch (err) {
-                // console.error(err);
                 const errorMsg = err.response.data.message;
                 toast.error(errorMsg, {
                     position: "top-center"
@@ -135,10 +117,9 @@ const Wordlegame = (props) => {
             }
         }
     };
-    
+
     const updateTotalGamesPlayed = async (TotalGameObject) => {
         try {
-            // console.log('Sending request with:', TotalGameObject);
             const res = await Axios.post('https://wordle-server-nta6.onrender.com/wordle-game-stats/update', TotalGameObject);
             if (res) {
                 const wordleStats = res.data;
@@ -153,12 +134,12 @@ const Wordlegame = (props) => {
     };
 
     return (
-        <>  
+        <>
             <ToastContainer />
             <Row>
                 <Col>
                     <div className="my-3">
-                        <Button className="wordle-btn px-5"  onClick={() => handleNavigation('https://www.nytimes.com/games/wordle/index.html')}>
+                        <Button className="wordle-btn px-5" onClick={() => handleShow('https://www.nytimes.com/games/wordle/index.html')}>
                             Play
                         </Button>
                     </div>
@@ -179,14 +160,14 @@ const Wordlegame = (props) => {
                     <div>
                         <p>Click the “Play” button to go to the Wordle website and play. Then:</p>
                         <ol>
-                            <li><strong>PLAY:</strong>Play Wordle</li>
-                            <li><strong>COPY:</strong>Click SHARE, then COPY to copy your Wordle result</li>
-                            <li><strong>PASTE:</strong>Navigate back to WordGAMLE.com to paste your Wordle result</li>
+                            <li><strong>PLAY:</strong> Play Wordle</li>
+                            <li><strong>COPY:</strong> Click SHARE, then COPY to copy your Wordle result</li>
+                            <li><strong>PASTE:</strong> Navigate back to WordGAMLE.com to paste your Wordle result</li>
                         </ol>
-                        <Button variant="primary" size="lg" onClick={() => handleNavigation('https://www.nytimes.com/games/wordle/index.html')}>
+                        <Button variant="primary" size="lg" onClick={() => handleShow('https://www.nytimes.com/games/wordle/index.html')}>
                             Play
                         </Button>
-                    </div> 
+                    </div>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>
@@ -206,7 +187,7 @@ const Wordlegame = (props) => {
                             <Form.Control type="text" placeholder="Enter Name" value={loginusername} readOnly />
                             <Form.Text className="text-muted"></Form.Text>
                         </Form.Group>
-                        <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Group className="mb-3" controlId="formBasicScore">
                             <Form.Label>Paste Result</Form.Label>
                             <FloatingLabel controlId="floatingTextarea2" label="">
                                 <Form.Control
@@ -223,7 +204,7 @@ const Wordlegame = (props) => {
                         <Button variant="primary" type="submit">
                             Submit
                         </Button>
-                    </Form> 
+                    </Form>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleformClose}>
