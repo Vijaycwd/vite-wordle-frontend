@@ -39,23 +39,27 @@ const Wordlegame = (props) => {
     }
 
     const handleFocus = (event) => {
-        const deviceDetails = navigator.userAgent;
-        if (deviceDetails && deviceDetails.includes("Mobile")) {
-            event.target.readOnly = true; // Set input field to readonly to prevent mobile keyboard from appearing
-        } else {
-            event.target.readOnly = false; // Remove readonly for non-mobile devices
-        }
+        // Ensure readonly status is managed correctly
+        setTimeout(() => {
+            const deviceDetails = navigator.userAgent;
+            if (deviceDetails && deviceDetails.includes("Mobile")) {
+                event.target.readOnly = true; // Set input field to readonly to prevent mobile keyboard from appearing
+            } else {
+                event.target.readOnly = false; // Remove readonly for non-mobile devices
+            }
+        }, 0);
     };
-
-    const handlePaste = async (event) => {
+    
+    const handlePaste = (event) => {
         event.preventDefault(); // Prevent the default paste action
-        event.target.readOnly = false; // Temporarily remove readonly
-        try {
-            const text = await navigator.clipboard.readText(); // Read the clipboard text
-            setScore(text); // Set the score with the clipboard content
-        } catch (err) {
-            console.error('Failed to read clipboard contents:', err);
-        }
+    
+        // Get pasted text directly from clipboard data
+        const pastedText = (event.clipboardData || window.clipboardData).getData('text');
+        
+        // Set the score with the pasted content
+        setScore(pastedText);
+    
+        // Optionally, you can reapply readonly state here, if needed
         event.target.readOnly = true; // Reapply readonly after pasting
     };
 
