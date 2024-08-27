@@ -47,7 +47,7 @@ const Wordlegame = (props) => {
             } else {
                 event.target.readOnly = false; // Remove readonly for non-mobile devices
             }
-        }, 500);
+        }, 5000);
     };
     
     const handlePaste = (event) => {
