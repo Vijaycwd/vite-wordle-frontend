@@ -60,7 +60,12 @@ const Wordlegame = (props) => {
             event.target.readOnly = false; // Remove readonly for non-mobile devices
         }
     };
-
+    const handlePaste = (event) => {
+        event.target.readOnly = false; // Temporarily remove readonly
+        setTimeout(() => {
+            event.target.readOnly = true; // Reapply readonly after pasting
+        }, 0);
+    };
     const onSubmit = async (event) => {
         event.preventDefault();
         setShowForm(false);
@@ -200,7 +205,9 @@ const Wordlegame = (props) => {
                                     as="textarea"
                                     value={score}
                                     onFocus={handleFocus}
+                                    onBlur={(event) => { event.target.readOnly = true; }} // Reapply readonly on blur
                                     onChange={(event) => { setScore(event.target.value); }}
+                                    onPaste={handlePaste} // Allow pasting
                                     style={{ height: '100px' }}
                                 />
                             </FloatingLabel>
