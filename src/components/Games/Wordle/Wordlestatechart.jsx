@@ -46,7 +46,6 @@ function Wordlestatechart() {
                 setLoading(false);
             });
     }
-
     
     // Function to slice the string into rows of a specified length
     function splitIntoRows(inputString, rowLength) {
