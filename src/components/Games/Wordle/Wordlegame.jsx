@@ -197,7 +197,7 @@ const Wordlegame = (props) => {
                                 <Form.Control
                                     as="textarea"
                                     value={score}
-                                    onFocus={handleFocus}
+                                    // onFocus={handleFocus}
                                     // onBlur={(event) => { event.target.readOnly = true; }} // Reapply readonly on blur
                                     onChange={(event) => { setScore(event.target.value); }}
                                     // onPaste={handlePaste} // Allow pasting
