@@ -38,30 +38,30 @@ const Wordlegame = (props) => {
         totalWinGames: gameisWin ? 1 : 0,
     }
 
-    const handleFocus = (event) => {
-        // Ensure readonly status is managed correctly
-        setTimeout(() => {
-            const deviceDetails = navigator.userAgent;
-            if (deviceDetails && deviceDetails.includes("Mobile")) {
-                event.target.readOnly = true; // Set input field to readonly to prevent mobile keyboard from appearing
-            } else {
-                event.target.readOnly = false; // Remove readonly for non-mobile devices
-            }
-        }, 8000);
-    };
+    // const handleFocus = (event) => {
+    //     // Ensure readonly status is managed correctly
+    //     setTimeout(() => {
+    //         const deviceDetails = navigator.userAgent;
+    //         if (deviceDetails && deviceDetails.includes("Mobile")) {
+    //             event.target.readOnly = true; // Set input field to readonly to prevent mobile keyboard from appearing
+    //         } else {
+    //             event.target.readOnly = false; // Remove readonly for non-mobile devices
+    //         }
+    //     }, 8000);
+    // };
     
-    const handlePaste = (event) => {
-        event.preventDefault(); // Prevent the default paste action
+    // const handlePaste = (event) => {
+    //     event.preventDefault(); // Prevent the default paste action
     
-        // Get pasted text directly from clipboard data
-        const pastedText = (event.clipboardData || window.clipboardData).getData('text');
+    //     // Get pasted text directly from clipboard data
+    //     const pastedText = (event.clipboardData || window.clipboardData).getData('text');
         
-        // Set the score with the pasted content
-        setScore(pastedText);
+    //     // Set the score with the pasted content
+    //     setScore(pastedText);
     
-        // Optionally, you can reapply readonly state here, if needed
-        event.target.readOnly = true; // Reapply readonly after pasting
-    };
+    //     // Optionally, you can reapply readonly state here, if needed
+    //     event.target.readOnly = true; // Reapply readonly after pasting
+    // };
 
     const onSubmit = async (event) => {
         event.preventDefault();
@@ -198,9 +198,9 @@ const Wordlegame = (props) => {
                                     as="textarea"
                                     value={score}
                                     onFocus={handleFocus}
-                                    onBlur={(event) => { event.target.readOnly = true; }} // Reapply readonly on blur
+                                    // onBlur={(event) => { event.target.readOnly = true; }} // Reapply readonly on blur
                                     onChange={(event) => { setScore(event.target.value); }}
-                                    onPaste={handlePaste} // Allow pasting
+                                    // onPaste={handlePaste} // Allow pasting
                                     style={{ height: '100px' }}
                                 />
                             </FloatingLabel>
