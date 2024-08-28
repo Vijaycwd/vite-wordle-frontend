@@ -13,6 +13,7 @@ function Wordlestatechart() {
     const [statschart, setStatsChart] = useState([]);
     const [userEmail, setUserEmail] = useState(loginuserEmail);
     const [totalGame, setTotalGame] = useState('');
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (loginuserEmail) {
@@ -36,11 +37,13 @@ function Wordlestatechart() {
                         return itemDate >= startOfDay && itemDate <= endOfDay;
                     });
                 const PlayedGame = response.data.filter(item => item.useremail === userEmail);
+                setLoading(false);
                 setStatsChart(scoreData);
                 setTotalGame(PlayedGame.length);
             })
             .catch((error) => {
                 console.error("Error fetching data: ", error);
+                setLoading(false);
             });
     }
 
@@ -63,34 +66,41 @@ function Wordlestatechart() {
                         <Col md={4} className="m-auto p-3">
                             <div>
                                 <h4 className="my-2 font-weight-bold fs-4 text-center">Today's Result</h4>
-                                {statschart && Array.isArray(statschart) && statschart.length > 0 ? (
-                                    statschart.map((char, index) => {
-                                        // Processed values
-                                        const cleanedScore = char.wordlescore.replace(/[🟩🟨⬜]/g, "");
-                                        const lettersAndNumbersRemoved = char.wordlescore.replace(/[a-zA-Z0-9,/\\]/g, "");
-                                        const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
-                                        const wordleScores = splitIntoRows(removespace, 5);
-                                        const guess = char.guessdistribution;
-                                        const totalWins = statschart.reduce((total, char) => {
-                                            const guess = char.guessdistribution;
-                                            return total + guess.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-                                        }, 0);
-                                        return (
-                                            <div key={index}>
-                                                <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
-                                                <pre className='text-center'>
-                                                    {wordleScores.map((row, rowIndex) => (
-                                                        <div key={rowIndex}>{row}</div>
-                                                    ))}
-                                                </pre>
-                                            </div>
-                                        );
-                                    })
-                                ) : (
+                                
+                                {loading ? (
                                     <div className='text-center my-4'>
-                                        <p>You have not played today.</p>
-                                        <Link className='btn btn-primary wordle-btn'  to="/wordle">Play Now</Link>
+                                        <p>Loading...</p>
+                                        {/* You can also add a spinner here if you prefer */}
                                     </div>
+                                ) : (
+                                    statschart && Array.isArray(statschart) && statschart.length > 0 ? (
+                                        statschart.map((char, index) => {
+                                            const cleanedScore = char.wordlescore.replace(/[🟩🟨⬜]/g, "");
+                                            const lettersAndNumbersRemoved = char.wordlescore.replace(/[a-zA-Z0-9,/\\]/g, "");
+                                            const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
+                                            const wordleScores = splitIntoRows(removespace, 5);
+                                            const guess = char.guessdistribution;
+                                            const totalWins = statschart.reduce((total, char) => {
+                                                const guess = char.guessdistribution;
+                                                return total + guess.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+                                            }, 0);
+                                            return (
+                                                <div key={index}>
+                                                    <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
+                                                    <pre className='text-center'>
+                                                        {wordleScores.map((row, rowIndex) => (
+                                                            <div key={rowIndex}>{row}</div>
+                                                        ))}
+                                                    </pre>
+                                                </div>
+                                            );
+                                        })
+                                    ) : (
+                                        <div className='text-center my-4'>
+                                            <p>You have not played today.</p>
+                                            <Link className='btn btn-primary wordle-btn' to="/wordle">Play Now</Link>
+                                        </div>
+                                    )
                                 )}
                             </div>
                         </Col>
