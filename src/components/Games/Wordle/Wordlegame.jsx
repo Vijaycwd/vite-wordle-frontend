@@ -7,7 +7,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Wordlegame = (props) => {
-
+    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
+    const userData = USER_AUTH_DATA;
+    
     const [show, setShow] = useState(false);
     const [showForm, setShowForm] = useState(false);
     const [score, setScore] = useState('');
@@ -29,8 +31,8 @@ const Wordlegame = (props) => {
         navigate('/wordlestats');
     };
 
-    const loginusername = props.loginUserData.username;
-    const loginuseremail = props.loginUserData.email;
+    const loginusername = userData.username;
+    const loginuseremail = userData.email;
 
     const TotalGameObject = {
         username: loginusername,
