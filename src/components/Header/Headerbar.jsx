@@ -36,7 +36,7 @@ const Headerbar = () => {
           </Link>
         </Col>
         <Col xs={6}>
-          <img className='img-fluid' src={TitleLogo} alt="WordleGamle" />
+          <img className='img-fluid d-block m-auto' src={TitleLogo} alt="WordleGamle" />
         </Col>
         <Col xs={3} className="d-flex justify-content-end">
           <Link to="/wordlestats">
