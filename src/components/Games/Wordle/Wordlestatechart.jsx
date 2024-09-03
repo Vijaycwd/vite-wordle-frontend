@@ -17,10 +17,8 @@ function Wordlestatechart() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (loginuserEmail) {
             getStatChart();
-        }
-    }, [loginuserEmail]);
+    }, []);
 
     function getStatChart() {
         const startOfDay = new Date();
