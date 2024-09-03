@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Row, Col, Button, Modal, Form, FloatingLabel } from 'react-bootstrap';
+import { Button, Modal, Form, FloatingLabel } from 'react-bootstrap';
 import Axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import Wordlelogo from './wordle.png';
@@ -24,11 +24,6 @@ function WordlePlayService() {
         window.open(url, '_blank');
         setShowForm(true);
         setShow(false);
-    };
-
-    const handleWordlestate = async (event) => {
-        event.preventDefault();
-        navigate('/wordlestats');
     };
 
     const loginusername = userData.username;

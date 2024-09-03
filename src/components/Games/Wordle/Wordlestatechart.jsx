@@ -5,7 +5,7 @@ import { Container, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import WordleScoreByDate from './WordleScoreByDate';
 import Wordlestatistics from './Wordlestatistics';
-import Wordlegame from './Wordlegame';
+import WordlePlayService from './WordlePlayService';
 
 function Wordlestatechart() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
@@ -98,7 +98,7 @@ function Wordlestatechart() {
                                     ) : (
                                         <div className='text-center my-4'>
                                             <p>You have not played today.</p>
-                                            <Wordlegame/>
+                                            <WordlePlayService/>
                                         </div>
                                     )
                                 )}
