@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Container, Row, Col, Button, Overlay, Popover } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Logo from '../../Logo.png';
+import TitleLogo from '../../WordleTitleLogo.png'
 
 const Headerbar = () => {
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
@@ -35,7 +36,7 @@ const Headerbar = () => {
           </Link>
         </Col>
         <Col xs={6}>
-          <h2 className='text-center'>WordGAMLE</h2>
+          <h2 className='text-center'>{TitleLogo}</h2>
         </Col>
         <Col xs={3} className="d-flex justify-content-end">
           <Link to="/wordlestats">
