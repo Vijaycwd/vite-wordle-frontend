@@ -7,34 +7,33 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function WordlePlayService() {
-    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
-    const userData = USER_AUTH_DATA;
+    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {}; // Fallback if auth is missing
+    const { username: loginUsername, email: loginUserEmail } = USER_AUTH_DATA;
 
-    const [show, setShow] = useState(false);
     const [showForm, setShowForm] = useState(false);
     const [score, setScore] = useState('');
     const [guessDistribution, setGuessDistribution] = useState([0, 0, 0, 0, 0, 0]); // Initialize with 6 guesses
     const [gameIsWin, setGameIsWin] = useState(false);
+
     const navigate = useNavigate();
 
-    const handleClose = () => setShow(false);
-    const handleFormClose = () => setShowForm(false);
+    const handleFormClose = () => {
+        setShowForm(false);
+        setScore('');
+    };
 
     const handleShow = (url) => {
         window.open(url, '_blank');
         setShowForm(true);
-        setShow(false);
     };
-
-    const loginUsername = userData.username;
-    const loginUserEmail = userData.email;
 
     const onSubmit = async (event) => {
         event.preventDefault();
         setShowForm(false);
 
         const currentTime = new Date().toISOString(); // User's current local time
-        const createdAt = new Date().toISOString(); // The time the game was completed
+        const createdAt = new Date().toISOString(); // Time when the game was completed
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; // Get user's time zone
 
         const wordleScore = score.replace(/[🟩🟨⬜]/g, ""); // Remove emojis if present
         const match = wordleScore.match(/(\d+|X)\/(\d+)/);
@@ -44,10 +43,8 @@ function WordlePlayService() {
             const totalGuesses = parseInt(match[2], 10); // Extract total guesses allowed
             const isWin = guessesUsed <= totalGuesses; // Check if the game was won
 
-            // Set the win state
+            // Update win state and guess distribution
             setGameIsWin(isWin);
-
-            // Update guess distribution based on the number of guesses used
             const updatedGuessDistribution = [...guessDistribution];
             if (isWin && guessesUsed <= 6) {
                 updatedGuessDistribution[guessesUsed - 1] += 1;
@@ -61,7 +58,8 @@ function WordlePlayService() {
                 guessDistribution: updatedGuessDistribution,
                 isWin: isWin,
                 createdAt: createdAt, // Time when the score was created
-                currentUserTime: currentTime // Pass the current user's time
+                currentUserTime: currentTime, // Pass the current user's time
+                timeZone: timeZone // Add user's timezone
             };
 
             try {
