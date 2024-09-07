@@ -37,8 +37,8 @@ function WordlePlayService() {
     const onSubmit = async (event) => {
         event.preventDefault();
         setShowForm(false);
-        const currentTime = new Date(); // User's current local time
-        const createdAt = new Date(); // The time the game was completed
+        const currentTime = new Date().toISOString(); // User's current local time
+        const createdAt = new Date().toISOString();// The time the game was completed
 
         const wordlescore = score.replace(/[🟩🟨⬜]/g, ""); // Remove emojis if present
         const match = wordlescore.match(/(\d+|X)\/(\d+)/);
