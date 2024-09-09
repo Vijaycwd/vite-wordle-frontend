@@ -1,54 +1,47 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { Form, InputGroup, Button, Alert} from 'react-bootstrap';
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 function WordleScoreByDate() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA.email;
     
     const [userEmail] = useState(loginuserEmail);
+    const [selectedDate, setSelectedDate] = useState(null);
     const [statsChart, setStatsChart] = useState([]);
-    const [selectedDate, setSelectedDate] = useState('');
-    const dateInputRef = useRef(null);
     const [dataFetched, setDataFetched] = useState(false);
-    const handleDateChange = (event) => {
-        setSelectedDate(event.target.value);
+
+    const handleDateChange = (e) => {
+        setSelectedDate(e.target.value); // Assuming the date picker returns a date in a suitable format
+    };
+
+    const [startDate, setStartDate] = useState(null);
+
+    const handleDateChanges = (date) => {
+        setStartDate(date);
+    };
+
+    const fetchDatas = () => {
+        console.log("Fetching data for date:", startDate);
+        // Add your data fetching logic here
     };
 
     const fetchData = () => {
-        if (!selectedDate) {
-            dateInputRef.current.focus();
-        }
-        else{
-            axios.get('https://wordle-server-nta6.onrender.com/wordle')
-                .then((response) => {
-                    const scoreData = response.data
-                        .filter(item => item.useremail === userEmail)
-                        .filter(item => new Date(item.createdAt).toDateString() === new Date(selectedDate).toDateString()); // Filter by date
-                    setStatsChart(scoreData);
-                    setDataFetched(true);
-                })
-                .catch((error) => {
-                    console.error("Error fetching data: ", error);
-                });
-            };
-        }
-        
-    // const fetchData = (date) => {
-    //     axios.get('https://wordle-server-nta6.onrender.com/wordle')
-    //         .then((response) => {
-    //             const scoreData = response.data
-    //                 .filter(item => item.useremail === userEmail)
-    //                 .filter(item => new Date(item.createdAt).toDateString() === new Date(date).toDateString()); // Filter by date
-    //             setStatsChart(scoreData);
-    //             setDataFetched(true);
-    //         })
-    //         .catch((error) => {
-    //             console.error("Error fetching data: ", error);
-    //         });
-    // };
+        axios.get('https://wordle-server-nta6.onrender.com/wordle')
+            .then((response) => {
+                const scoreData = response.data
+                    .filter(item => item.useremail === userEmail)
+                    .filter(item => new Date(item.createdAt).toDateString() === new Date(selectedDate).toDateString()); // Filter by date
+                setStatsChart(scoreData);
+                setDataFetched(true);
+            })
+            .catch((error) => {
+                console.error("Error fetching data: ", error);
+            });
+    };
+
         
     // Function to slice the string into rows of a specified length
     function splitIntoRows(inputString, rowLength) {
@@ -60,35 +53,49 @@ function WordleScoreByDate() {
         return rows;
     }
 
-    // const [startDate, setStartDate] = useState(new Date());
-
-    // const handleDateChanges = (date) => {
-    //     setStartDate(date);
-    //     fetchData(date);
-    //     console.log("Selected date:", date);
-    // };
     return (
         <>
+
+<InputGroup className="mb-3">
+            <Form.Label htmlFor="inputdate">Select a Date</Form.Label>
+            <DatePicker
+                selected={startDate}
+                onChange={handleDateChange}
+                dateFormat="yyyy-MM-dd"
+                className="form-control"
+                aria-describedby="dateHelpBlock"
+                onClick={() => {
+                    // Trigger date picker open on click
+                }}
+            />
+            <Button
+                variant="primary"
+                className='wordle-btn'
+                onClick={() => {
+                    // If startDate is null, open the date picker
+                    if (!startDate) {
+                        // Open the date picker
+                        document.querySelector('.react-datepicker__input-container input').focus();
+                    } else {
+                        fetchData();
+                    }
+                }}
+            >
+                Go To Date
+            </Button>
+            <Form.Text id="dateHelpBlock" muted>
+                Choose a date from the calendar.
+            </Form.Text>
+        </InputGroup>
             <InputGroup className="mb-3">
             <Form.Control
                 type="date"
                 id="inputdate"
-                aria-describedby="dateHelpBlock"
-                value={selectedDate}
+                aria-describedby="passwordHelpBlock"
                 onChange={handleDateChange}
-                ref={dateInputRef} // Attach ref to the input
             />
             <Button variant="primary" className='wordle-btn' onClick={fetchData} >Go To Date</Button>
             </InputGroup> 
-
-            {/* <DatePicker
-                selected={startDate}
-                onChange={handleDateChanges}
-                dateFormat="dd-MM-yyyy"
-                className="form-control"
-                aria-describedby="dateHelpBlock"
-            /> */}
-            
             <ul className='score-by-date p-0'>
             {dataFetched && (statsChart.length > 0 ? (
                 statsChart.map(item => {
