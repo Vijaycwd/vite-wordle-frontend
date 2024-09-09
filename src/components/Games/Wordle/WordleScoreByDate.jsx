@@ -62,15 +62,15 @@ function WordleScoreByDate() {
     };
     return (
         <>
-            <InputGroup className="mb-3">
+            {/* <InputGroup className="mb-3">
             <Form.Control
-                type="text"
+                type="date"
                 id="inputdate"
                 aria-describedby="dateHelpBlock"
                 onChange={handleDateChange}
             />
             <Button variant="primary" className='wordle-btn' onClick={fetchData} >Go To Date</Button>
-            </InputGroup> 
+            </InputGroup>  */}
 
             <DatePicker
                 selected={startDate}
