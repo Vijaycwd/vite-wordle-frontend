@@ -16,12 +16,25 @@ function WordleScoreByDate() {
         setSelectedDate(e.target.value); // Assuming the date picker returns a date in a suitable format
     };
 
+    // const fetchData = () => {
+    //     axios.get('https://wordle-server-nta6.onrender.com/wordle')
+    //         .then((response) => {
+    //             const scoreData = response.data
+    //                 .filter(item => item.useremail === userEmail)
+    //                 .filter(item => new Date(item.createdAt).toDateString() === new Date(selectedDate).toDateString()); // Filter by date
+    //             setStatsChart(scoreData);
+    //             setDataFetched(true);
+    //         })
+    //         .catch((error) => {
+    //             console.error("Error fetching data: ", error);
+    //         });
+    // };
     const fetchData = (date) => {
         axios.get('https://wordle-server-nta6.onrender.com/wordle')
             .then((response) => {
                 const scoreData = response.data
                     .filter(item => item.useremail === userEmail)
-                    .filter(item => new Date(item.createdAt).toDateString() === new Date(selectedDate).toDateString()); // Filter by date
+                    .filter(item => new Date(item.createdAt).toDateString() === new Date(date).toDateString()); // Filter by date
                 setStatsChart(scoreData);
                 setDataFetched(true);
             })
@@ -29,7 +42,6 @@ function WordleScoreByDate() {
                 console.error("Error fetching data: ", error);
             });
     };
-
         
     // Function to slice the string into rows of a specified length
     function splitIntoRows(inputString, rowLength) {
