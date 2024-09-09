@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import { Form, InputGroup, Button, Alert} from 'react-bootstrap';
 import DatePicker from "react-datepicker";
@@ -9,26 +9,33 @@ function WordleScoreByDate() {
     const loginuserEmail = USER_AUTH_DATA.email;
     
     const [userEmail] = useState(loginuserEmail);
-    // const [selectedDate, setSelectedDate] = useState(null);
     const [statsChart, setStatsChart] = useState([]);
+    const [selectedDate, setSelectedDate] = useState('');
+    const dateInputRef = useRef(null);
     const [dataFetched, setDataFetched] = useState(false);
-    const handleDateChange = (e) => {
-        setSelectedDate(e.target.value); // Assuming the date picker returns a date in a suitable format
+    const handleDateChange = (event) => {
+        setSelectedDate(event.target.value);
     };
 
     const fetchData = () => {
-        axios.get('https://wordle-server-nta6.onrender.com/wordle')
-            .then((response) => {
-                const scoreData = response.data
-                    .filter(item => item.useremail === userEmail)
-                    .filter(item => new Date(item.createdAt).toDateString() === new Date(selectedDate).toDateString()); // Filter by date
-                setStatsChart(scoreData);
-                setDataFetched(true);
-            })
-            .catch((error) => {
-                console.error("Error fetching data: ", error);
-            });
-    };
+        if (!selectedDate) {
+            dateInputRef.current.focus();
+        }
+        else{
+            axios.get('https://wordle-server-nta6.onrender.com/wordle')
+                .then((response) => {
+                    const scoreData = response.data
+                        .filter(item => item.useremail === userEmail)
+                        .filter(item => new Date(item.createdAt).toDateString() === new Date(selectedDate).toDateString()); // Filter by date
+                    setStatsChart(scoreData);
+                    setDataFetched(true);
+                })
+                .catch((error) => {
+                    console.error("Error fetching data: ", error);
+                });
+            };
+        }
+        
     // const fetchData = (date) => {
     //     axios.get('https://wordle-server-nta6.onrender.com/wordle')
     //         .then((response) => {
@@ -67,7 +74,9 @@ function WordleScoreByDate() {
                 type="date"
                 id="inputdate"
                 aria-describedby="dateHelpBlock"
+                value={selectedDate}
                 onChange={handleDateChange}
+                ref={dateInputRef} // Attach ref to the input
             />
             <Button variant="primary" className='wordle-btn' onClick={fetchData} >Go To Date</Button>
             </InputGroup> 
