@@ -9,32 +9,19 @@ function WordleScoreByDate() {
     const loginuserEmail = USER_AUTH_DATA.email;
     
     const [userEmail] = useState(loginuserEmail);
-    const [selectedDate, setSelectedDate] = useState(null);
+    // const [selectedDate, setSelectedDate] = useState(null);
     const [statsChart, setStatsChart] = useState([]);
     const [dataFetched, setDataFetched] = useState(false);
     const handleDateChange = (e) => {
         setSelectedDate(e.target.value); // Assuming the date picker returns a date in a suitable format
     };
 
-    // const fetchData = () => {
-    //     axios.get('https://wordle-server-nta6.onrender.com/wordle')
-    //         .then((response) => {
-    //             const scoreData = response.data
-    //                 .filter(item => item.useremail === userEmail)
-    //                 .filter(item => new Date(item.createdAt).toDateString() === new Date(selectedDate).toDateString()); // Filter by date
-    //             setStatsChart(scoreData);
-    //             setDataFetched(true);
-    //         })
-    //         .catch((error) => {
-    //             console.error("Error fetching data: ", error);
-    //         });
-    // };
-    const fetchData = (date) => {
+    const fetchData = () => {
         axios.get('https://wordle-server-nta6.onrender.com/wordle')
             .then((response) => {
                 const scoreData = response.data
                     .filter(item => item.useremail === userEmail)
-                    .filter(item => new Date(item.createdAt).toDateString() === new Date(date).toDateString()); // Filter by date
+                    .filter(item => new Date(item.createdAt).toDateString() === new Date(selectedDate).toDateString()); // Filter by date
                 setStatsChart(scoreData);
                 setDataFetched(true);
             })
@@ -42,6 +29,19 @@ function WordleScoreByDate() {
                 console.error("Error fetching data: ", error);
             });
     };
+    // const fetchData = (date) => {
+    //     axios.get('https://wordle-server-nta6.onrender.com/wordle')
+    //         .then((response) => {
+    //             const scoreData = response.data
+    //                 .filter(item => item.useremail === userEmail)
+    //                 .filter(item => new Date(item.createdAt).toDateString() === new Date(date).toDateString()); // Filter by date
+    //             setStatsChart(scoreData);
+    //             setDataFetched(true);
+    //         })
+    //         .catch((error) => {
+    //             console.error("Error fetching data: ", error);
+    //         });
+    // };
         
     // Function to slice the string into rows of a specified length
     function splitIntoRows(inputString, rowLength) {
@@ -53,16 +53,16 @@ function WordleScoreByDate() {
         return rows;
     }
 
-    const [startDate, setStartDate] = useState(new Date());
+    // const [startDate, setStartDate] = useState(new Date());
 
-    const handleDateChanges = (date) => {
-        setStartDate(date);
-        fetchData(date);
-        console.log("Selected date:", date);
-    };
+    // const handleDateChanges = (date) => {
+    //     setStartDate(date);
+    //     fetchData(date);
+    //     console.log("Selected date:", date);
+    // };
     return (
         <>
-            {/* <InputGroup className="mb-3">
+            <InputGroup className="mb-3">
             <Form.Control
                 type="date"
                 id="inputdate"
@@ -70,15 +70,15 @@ function WordleScoreByDate() {
                 onChange={handleDateChange}
             />
             <Button variant="primary" className='wordle-btn' onClick={fetchData} >Go To Date</Button>
-            </InputGroup>  */}
+            </InputGroup> 
 
-            <DatePicker
+            {/* <DatePicker
                 selected={startDate}
                 onChange={handleDateChanges}
                 dateFormat="dd-MM-yyyy"
                 className="form-control"
                 aria-describedby="dateHelpBlock"
-            />
+            /> */}
             
             <ul className='score-by-date p-0'>
             {dataFetched && (statsChart.length > 0 ? (
