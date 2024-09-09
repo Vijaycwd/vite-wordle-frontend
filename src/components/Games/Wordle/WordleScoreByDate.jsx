@@ -18,6 +18,14 @@ function WordleScoreByDate() {
     };
 
     const fetchData = () => {
+        if (!selectedDate) {
+            // If the selected date is empty, show the date picker
+            if (dateInputRef.current) {
+                dateInputRef.current.showPicker();
+            }
+            return;
+        }
+
         axios.get('https://wordle-server-nta6.onrender.com/wordle')
             .then((response) => {
                 const scoreData = response.data
@@ -41,13 +49,6 @@ function WordleScoreByDate() {
         return rows;
     }
 
-    // Trigger the date picker to show
-    const handleFocus = () => {
-        if (dateInputRef.current) {
-            dateInputRef.current.showPicker();
-        }
-    };
-
     return (
         <>
             <InputGroup className="mb-3">
@@ -56,7 +57,6 @@ function WordleScoreByDate() {
                     id="inputdate"
                     aria-describedby="passwordHelpBlock"
                     onChange={handleDateChange}
-                    onFocus={handleFocus} // Use the focus event handler
                     ref={dateInputRef} // Attach ref to the input
                 />
                 <Button variant="primary" className='wordle-btn' onClick={fetchData}>Go To Date</Button>
