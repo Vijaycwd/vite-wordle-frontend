@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import { Form, InputGroup, Button, Alert } from 'react-bootstrap';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css'; // Import date picker styles
 
 function WordleScoreByDate() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
@@ -13,11 +15,11 @@ function WordleScoreByDate() {
     const [error, setError] = useState(null); // Optional: manage error message
     const dateInputRef = useRef(null); // Ref to the date input field
 
-    const handleDateChange = (e) => {
-        setSelectedDate(e.target.value); // Assuming the date picker returns a date in a suitable format
+    const handleDateChange = (date) => {
+        setSelectedDate(date); // Handle date change
     };
 
-    const fetchData = () => {
+    const handleSubmit = () => {
         if (!selectedDate) {
             // Focus on the date input field to trigger the date picker
             if (dateInputRef.current) {
@@ -41,6 +43,12 @@ function WordleScoreByDate() {
             });
     };
 
+    const handleClear = () => {
+        setSelectedDate(null);
+        setStatsChart([]);
+        setDataFetched(false);
+    };
+
     // Function to slice the string into rows of a specified length
     function splitIntoRows(inputString, rowLength) {
         const rows = [];
@@ -54,14 +62,15 @@ function WordleScoreByDate() {
     return (
         <>
             <InputGroup className="mb-3">
-                <Form.Control
-                    type="date"
-                    id="inputdate"
-                    aria-describedby="passwordHelpBlock"
+                <DatePicker
+                    selected={selectedDate}
                     onChange={handleDateChange}
-                    ref={dateInputRef} // Attach the ref to the date input field
+                    dateFormat="yyyy-MM-dd"
+                    ref={dateInputRef} // Attach the ref to the DatePicker component
+                    className="form-control" // Ensure it has similar styling to the default input
                 />
-                <Button variant="primary" className='wordle-btn' onClick={fetchData}>Go To Date</Button>
+                <Button variant="primary" className='wordle-btn' onClick={handleSubmit}>Go To Date</Button>
+                <Button variant="secondary" className='wordle-btn' onClick={handleClear}>Clear</Button>
             </InputGroup> 
             {error && <Alert variant='danger' className='p-1'>{error}</Alert>} {/* Display error message */}
             <ul className='score-by-date p-0'>
