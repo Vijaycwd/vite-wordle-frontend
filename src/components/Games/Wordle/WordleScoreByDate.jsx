@@ -40,6 +40,14 @@ function WordleScoreByDate() {
         }
         return rows;
     }
+    const [startDate, setStartDate] = useState(new Date());
+    const ExampleCustomInput = forwardRef(
+        ({ value, onClick, className }, ref) => (
+        <button className={className} onClick={onClick} ref={ref}>
+            {value}
+        </button>
+        ),
+    );
 
     return (
         <>
@@ -52,6 +60,13 @@ function WordleScoreByDate() {
             />
             <Button variant="primary" className='wordle-btn' onClick={fetchData} >Go To Date</Button>
             </InputGroup> 
+
+            <DatePicker
+            selected={startDate}
+            onChange={(date) => setStartDate(date)}
+            customInput={<ExampleCustomInput className="example-custom-input" />}
+            />
+            
             <ul className='score-by-date p-0'>
             {dataFetched && (statsChart.length > 0 ? (
                 statsChart.map(item => {
