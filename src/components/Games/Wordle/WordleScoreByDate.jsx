@@ -16,6 +16,11 @@ function WordleScoreByDate() {
     const handleDateChange = (e) => {
         setSelectedDate(e.target.value); // Assuming the date picker returns a date in a suitable format
     };
+    const handleFocus = () => {
+        if (dateInputRef.current) {
+            dateInputRef.current.showPicker();
+        }
+    };
 
     const fetchData = () => {
         if (!selectedDate) {
@@ -57,6 +62,7 @@ function WordleScoreByDate() {
                     id="inputdate"
                     aria-describedby="passwordHelpBlock"
                     onChange={handleDateChange}
+                    onFocus={handleFocus}
                     ref={dateInputRef} // Attach ref to the input
                 />
                 <Button variant="primary" className='wordle-btn' onClick={fetchData}>Go To Date</Button>
