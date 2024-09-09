@@ -46,6 +46,7 @@ function WordleScoreByDate() {
 
     const handleDateChanges = (date) => {
         setStartDate(date);
+        fetchData();
         console.log("Selected date:", date);
     };
     return (
@@ -63,7 +64,7 @@ function WordleScoreByDate() {
             <DatePicker
                 selected={startDate}
                 onChange={handleDateChanges}
-                dateFormat="yyyy-MM-dd"
+                dateFormat="dd-MM-yyyy"
                 className="form-control"
                 aria-describedby="dateHelpBlock"
             />
