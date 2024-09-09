@@ -12,12 +12,11 @@ function WordleScoreByDate() {
     const [selectedDate, setSelectedDate] = useState(null);
     const [statsChart, setStatsChart] = useState([]);
     const [dataFetched, setDataFetched] = useState(false);
-
     const handleDateChange = (e) => {
         setSelectedDate(e.target.value); // Assuming the date picker returns a date in a suitable format
     };
 
-    const fetchData = () => {
+    const fetchData = (date) => {
         axios.get('https://wordle-server-nta6.onrender.com/wordle')
             .then((response) => {
                 const scoreData = response.data
@@ -46,7 +45,7 @@ function WordleScoreByDate() {
 
     const handleDateChanges = (date) => {
         setStartDate(date);
-        fetchData();
+        fetchData(date);
         console.log("Selected date:", date);
     };
     return (
