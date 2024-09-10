@@ -12,9 +12,20 @@ function WordleScoreByDate() {
     const [dataFetched, setDataFetched] = useState(false);
     
     const dateInputRef = useRef(null);
-
+    const formatDate = (dateValue) => {
+        const dateObj = new Date(dateValue);
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+        const year = dateObj.getFullYear();
+        
+        // Return the formatted date in DD-MM-YYYY format
+        return `${day}-${month}-${year}`;
+    };
+    
     const handleDateChange = (e) => {
-        setSelectedDate(e.target.value); // Assuming the date picker returns a date in a suitable format
+        setSelectedDate(e.target.value);
+        const formattedDate = formatDate(dateValue); // Format the date as DD-MM-YYYY
+        setSelectedDate(formattedDate); // Set the formatted date
     };
     const handleFocus = () => {
         if (dateInputRef.current) {
