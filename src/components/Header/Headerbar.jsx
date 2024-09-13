@@ -21,7 +21,6 @@ const Headerbar = () => {
     localStorage.clear();
     window.location.href = '/';
   };
-
   const login = async (event) => {
     event.preventDefault();
     window.location.href = '/';
@@ -63,12 +62,15 @@ const Headerbar = () => {
                     {!userData || Object.keys(userData).length <= 0 ? (
                       <Button onClick={login}>Login</Button>
                     ) : (
+                      <>
                       <div>
                         <img src={`https://wordle-server-nta6.onrender.com/public/uploads/${userData.avatar}`} alt="User Avatar" className="img-fluid" />
                         <p className='fs-4 m-0'>{userData.username}</p>
                         <p>{userData.email}</p>
                         <Button onClick={logout}>Logout</Button>
+                        <Button>Edit</Button>
                       </div>
+                      </>
                     )}
                   </div>
                 </Popover.Body>
