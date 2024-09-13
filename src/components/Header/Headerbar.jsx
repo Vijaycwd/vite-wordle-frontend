@@ -68,7 +68,7 @@ const Headerbar = () => {
                         <p className='fs-4 m-0'>{userData.username}</p>
                         <p>{userData.email}</p>
                         <Button onClick={logout}>Logout</Button>
-                        <Button>Edit</Button>
+                        <Button onClick={() => editUser(userData.username, userData.email, userData._id, true)}>Edit</Button>
                       </div>
                       </>
                     )}
