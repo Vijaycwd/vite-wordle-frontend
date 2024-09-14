@@ -91,9 +91,11 @@ const Headerbar = () => {
         }
     } catch (error) {
         console.error("Error updating user:", error.response ? error.response.data : error.message);
+        console.log(error.response.data.message);
     }
   } 
   return (
+    
     <Container>
       <Row className="justify-content-center align-items-center py-2">
         <Col xs={3}>
