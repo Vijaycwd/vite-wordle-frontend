@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import Wordlegamesection from './Games/Wordle/Wordlegamesection';
+import { UserContext } from '../constant/UserContext'; 
 
 function Gameslayout() {
+
+  const { userDatadetails } = useContext(UserContext);
+  console.log(userDatadetails);
   // Create a state variable for userAuthData
   const [userData, setUserData] = useState(() => {
     // Initialize the state from localStorage (to prevent undefined on initial load)
