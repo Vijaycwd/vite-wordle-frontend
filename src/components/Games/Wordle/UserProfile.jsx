@@ -3,7 +3,7 @@ import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import Axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Logo from '../../Logo.png'
+import Logo from '../Logo.png';
 import { useNavigate } from "react-router-dom";
 function UserProfile() {
     const [username, setUsername] = useState();
@@ -101,7 +101,7 @@ function UserProfile() {
         <Container>
             <Row className='align-content-center justify-content-center'> 
                 <Col md={4}>
-                    <img src={Logo  } alt="logo" className='d-block m-auto'></img>
+                    <img src={Logo} alt="logo" className='d-block m-auto'></img>
                     <h5>Create New Account</h5>
                     <Form className="js-validation-signup">
                         <Form.Group>
