@@ -125,15 +125,15 @@ const Headerbar = () => {
                     {!userData || Object.keys(userData).length <= 0 ? (
                       <Button onClick={login}>Login</Button>
                     ) : (
-                      <>
                       <div>
                         <img src={`https://wordle-server-nta6.onrender.com/public/uploads/${userData.avatar}`} alt="User Avatar" className="img-fluid" />
                         <p className='fs-4 m-0'>{userData.username}</p>
                         <p>{userData.email}</p>
-                        <Button onClick={logout}>Logout</Button>
-                        <Button onClick={() => editUser(userData.username, userData.email, userData._id, true)}>Edit</Button>
+                        <div className='user-button'>
+                          <Button onClick={()=>handleOpenPopup(userData._id, userData.username, userData.email)}>Profile</Button>
+                          <Button onClick={logout}>Logout</Button>
+                        </div>
                       </div>
-                      </>
                     )}
                   </div>
                 </Popover.Body>
@@ -183,6 +183,7 @@ const Headerbar = () => {
             </Container>
         </div>
       )}
+      
     </Container>
   );
 };
