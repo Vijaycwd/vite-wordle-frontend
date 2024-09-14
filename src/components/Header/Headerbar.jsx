@@ -27,8 +27,7 @@ const Headerbar = () => {
     event.preventDefault();
     window.location.href = '/';
   };
-  const editUser = async (event) => {
-    event.preventDefault();
+  const editUser = async () => {
     navigate('/edit-profile');
   };
 
