@@ -64,7 +64,6 @@ const Headerbar = () => {
     setConfirmpassword(password);
     setAvatar(avatar);
     setUserid(_id);
-    navigate('/edit-profile');
   };
 
   // Function to close the popup
@@ -121,7 +120,9 @@ const Headerbar = () => {
     }
   } 
   
-
+  const handleuserprofile = async (event) => {
+    navigate('/edit-profile');
+  }
   return (
     <>
     <Container>
@@ -164,7 +165,8 @@ const Headerbar = () => {
                         <p className='fs-4 m-0'>{userData.username}</p>
                         <p>{userData.email}</p>
                         <div className='user-button'>
-                          <Button onClick={()=>handleOpenPopup(userData._id, userData.username, userData.email)}>Profile</Button>
+                          {/* <Button onClick={()=>handleOpenPopup(userData._id, userData.username, userData.email)}>Profile</Button> */}
+                          <Button onClick={()=>handleuserprofile(userData._id, userData.username, userData.email)}>Profile</Button>
                           <Button onClick={logout}>Logout</Button>
                         </div>
                       </div>
