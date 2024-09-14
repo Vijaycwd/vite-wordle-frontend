@@ -27,10 +27,10 @@ function Gameslayout() {
   }, []);
 
   // If userData is not available, prevent rendering null or undefined values
-  if (!userData || !userData.username) {
-    return <div>Loading...</div>;
-  }
-
+  // if (!userData) {
+  //   return <div>Loading...</div>;
+  // }
+  console.log(userData);
   return (
     <Container>
       <Row className="justify-content-center align-items-center">
