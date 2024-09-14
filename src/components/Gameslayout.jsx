@@ -5,8 +5,7 @@ import Wordlegamesection from './Games/Wordle/Wordlegamesection';
 function Gameslayout() {
   const userAuthData = JSON.parse(localStorage.getItem('auth'));
   const userData = userAuthData;
-    
-    // console.log('User Data State:', userData.username);
+  console.log('User Data State:', userData.username);
 
     return (
         <Container>
