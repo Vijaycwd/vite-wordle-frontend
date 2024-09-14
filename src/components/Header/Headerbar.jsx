@@ -27,8 +27,11 @@ const Headerbar = () => {
     event.preventDefault();
     window.location.href = '/';
   };
-  const editUser = async () => {
-    navigate('/edit-profile');
+  const editUser = (username, email, id, isEditing) => {
+    // Navigate and pass data to the edit page
+    navigate('/edit-profile', {
+      state: { username, email, id, isEditing }
+    });
   };
 
   return (
