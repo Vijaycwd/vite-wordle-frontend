@@ -55,6 +55,7 @@ const Headerbar = () => {
     setUserid(_id);
   };
   const updateUser = async (event) => {
+    setPopupVisible(false);
     const userObject = {
         username: username,
         email: email,
@@ -62,7 +63,6 @@ const Headerbar = () => {
         confirmpassword: confirmpassword,
         avatar: avatar
     }
-    console.log(userObject);
     const validation =(userObject) =>{
         const errors = {};
 
