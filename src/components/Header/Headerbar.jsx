@@ -1,8 +1,11 @@
-import React, { useState, useRef } from 'react';
-import { Container, Row, Col, Button, Overlay, Popover } from 'react-bootstrap';
+import React, { useState, useRef,  useEffect } from 'react';
+import { Container, Row, Col, Button, Overlay, Popover, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Logo from '../../Logo.png';
 import TitleLogo from '../../WordleTitleLogo.png'
+import Registerform from '../../auth/Registerform';
+import { useNavigate } from "react-router-dom";
+import Axios from "axios";
 
 const Headerbar = () => {
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
@@ -10,6 +13,16 @@ const Headerbar = () => {
   const [show, setShow] = useState(false);
   const [target, setTarget] = useState(null);
   const ref = useRef(null);
+
+
+  const [userid, setUserid] = useState();
+  const [username, setUsername] = useState();
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
+  const [confirmpassword, setConfirmpassword] = useState();
+  const [avatar, setAvatar] = useState();
+  const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
 
   const handleClick = (event) => {
     setShow(!show);
@@ -25,7 +38,57 @@ const Headerbar = () => {
     event.preventDefault();
     window.location.href = '/';
   };
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const handleOpenPopup = (_id, username, email, password) => {
+    setPopupVisible(true);
+    setUsername(username);
+    setEmail(email);
+    setPassword(password);
+    setConfirmpassword(password);
+    setAvatar(avatar);
+    setUserid(_id);
+  };
+  const updateUser = async (event) => {
+    const userObject = {
+        username: username,
+        email: email,
+        password: password,
+        confirmpassword: confirmpassword,
+        avatar: avatar
+    }
+    console.log(userObject);
+    const validation =(userObject) =>{
+        const errors = {};
 
+        if(!userObject.username){   
+            errors.username = "Username Required";
+        }
+        if(!userObject.email){   
+            errors.email = "Email Required";
+        }
+        if(!userObject.password){   
+            errors.password = "Password Required";
+        }
+        if(!userObject.confirmpassword){   
+            errors.confirmpassword = "Password Required";
+        }
+        return errors;
+    }
+    setErrors(validation(userObject));
+    console.log(userObject);
+    try {
+        const response = await Axios.put(`https://wordle-server-nta6.onrender.com/use/${userid}`, userObject, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        if (response) {
+            console.log('User updated successfully');
+        }
+    } catch (error) {
+        console.error("Error updating user:", error.response ? error.response.data : error.message);
+    }
+  } 
   return (
     <Container>
       <Row className="justify-content-center align-items-center py-2">
@@ -79,6 +142,47 @@ const Headerbar = () => {
           </div>
         </Col>
       </Row>
+      {isPopupVisible && (
+        <div className="user-profile-popup">
+            <Container>
+                <Row className='align-content-center justify-content-center'> 
+                    <Col md={4} className="user-register-form">
+                        <img src={Logo} alt="logo" className='d-block m-auto'></img>
+                        <h5>Create New Account</h5>
+                        <Form className="js-validation-signup ">
+                            <Form.Group>
+                                <Form.Label>Name</Form.Label>
+                                <Form.Control type="text" className="" value={username} onChange={(e) => { setUsername(e.target.value);}} placeholder='Enter the name'/>
+                                {errors.username && <p className='form-validation-error'>{errors.username}</p>}
+                            </Form.Group>
+                            
+                            <Form.Group>
+                                <Form.Label>Email</Form.Label>
+                                <Form.Control type="email"  value={email} onChange={(e) => { setEmail(e.target.value);}} placeholder='Enter the email'/>
+                                {errors.email && <p className='form-validation-error'>{errors.email}</p>}
+                            </Form.Group>
+
+                            <Form.Group >
+                                <Form.Label>New Password</Form.Label>
+                                <Form.Control type="password" className=""  onChange={(e) => { setPassword(e.target.value);}} placeholder='Enter the password'/>
+                                {errors.password && <p className='form-validation-error'>{errors.password}</p>}
+                            </Form.Group>
+                            <Form.Group >
+                                <Form.Label>Confirm Password</Form.Label>
+                                <Form.Control type="password" className=""  onChange={(e) => { setConfirmpassword(e.target.value);}} placeholder='Enter the conform password'/>
+                                {errors.confirmpassword && <p className='form-validation-error'>{errors.confirmpassword}</p>}
+                            </Form.Group>
+                            <Form.Group controlId="formFile" className="mb-3">
+                                <Form.Label>Profile Picture</Form.Label>
+                                <Form.Control type="file" name="avatar" onChange={handleUpload}  />
+                            </Form.Group>
+                            <Button className="btn btn-block btn-hero-lg btn-hero-success mt-4"  onClick={() => updateUser()} ><i className="fa fa-fw fa-plus mr-1"></i>Update</Button>
+                        </Form>
+                    </Col>
+                </Row>
+            </Container>
+        </div>
+      )}
     </Container>
   );
 };
