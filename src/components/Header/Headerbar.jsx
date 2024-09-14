@@ -24,6 +24,10 @@ const Headerbar = () => {
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
+  const handleUpload = async (e) => {
+    setAvatar(e.target.files[0]);
+  }
+
   const handleClick = (event) => {
     setShow(!show);
     setTarget(event.target);
