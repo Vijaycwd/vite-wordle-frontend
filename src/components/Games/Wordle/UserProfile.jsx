@@ -1,28 +1,107 @@
-import React from 'react'
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Form, Button } from 'react-bootstrap';
+import Axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Container, Row, Col, Button, Form } from 'react-bootstrap';
-import Logo from '../../Logo.png';
-
+import logo from '../Logo.png'
+import { useNavigate } from "react-router-dom";
 function UserProfile() {
-  const location = useLocation();
-  const { username, email, id, isEditing } = location.state || {};
+    const [username, setUsername] = useState();
+    const [email, setEmail] = useState();
+    const [password, setPassword] = useState();
+    const [confirmpassword, setConfirmpassword] = useState();
+    const [avatar, setAvatar] = useState();
+    const [errors, setErrors] = useState({});
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        // Simulate a default file (e.g., from an initial value or previous upload)
+        const defaultFile = new File([""], "defaultAvatar.png", { type: "image/png" });
+        // Set the default file to state
+        setAvatar(defaultFile);
+    }, []);
+
+    const handleUpload = async (e) => {
+
+        setAvatar(e.target.files[0]);
+    }
+
+
+    const signUp = async (e) => {
+        
+        const userObject = {
+            username: username,
+            email: email,
+            password: password,
+            confirmpassword: confirmpassword,
+            avatar: avatar
+        }
+        console.log(userObject);
+        const validation =(userObject) =>{
+            const errors = {};
+
+            if(!userObject.username){   
+                errors.username = "Username Required";
+            }
+            if(!userObject.email){   
+                errors.email = "Email Required";
+            }
+            if(!userObject.password){   
+                errors.password = "Password Required";
+            }
+            if(!userObject.confirmpassword){   
+                errors.confirmpassword = "Password Required";
+            }
+            return errors;
+        }
+        
+
+        setErrors(validation(userObject));
+        // console.log(userObject);
+        
+        
+
+        const HEADERS = { headers: { 'Content-Type': 'multipart/form-data' } };
+        try {
+            const userRes = await Axios.post('https://wordle-server-nta6.onrender.com/use/create-user', userObject, HEADERS);
+            
+            if (userRes.data.message) {
+                toast.error('Error', { position: "top-center" });
+            } else {
+                toast.success('User Created!', { position: "top-center" });
+
+                // Create the Wordle stats after the user is successfully created
+                const TotalGameObject = {
+                    username,
+                    useremail: email,
+                    totalWinGames: 0,
+                    lastgameisWin: 0,
+                    currentStreak: 0,
+                };
+
+                try {
+                    const statsRes = await Axios.post('https://wordle-server-nta6.onrender.com/wordle-game-stats/create-stats', TotalGameObject);
+                    if (statsRes.data) {
+                        console.log("Wordle stats created:", statsRes.data);
+                    }
+                } catch (err) {
+                    console.error('Error creating Wordle stats:', err);
+                    toast.error('Failed to create Wordle stats', { position: "top-center" });
+                }
+
+                navigate("/login");
+            }
+        } catch (err) {
+            toast.error(err.response?.data || "Error occurred", { position: "top-center" });
+        }    
+      }
   return (
-    <div>
-      <div>
-        <h1>Edit Profile</h1>
-        <p>Username: {username}</p>
-        <p>Email: {email}</p>
-        <p>ID: {id}</p>
-        <p>Is Editing: {isEditing ? "Yes" : "No"}</p>
-        {/* Add your form and logic for updating the profile here */}
-      </div>
-      <ToastContainer />
+    <>  
+        <ToastContainer />
         <Container>
             <Row className='align-content-center justify-content-center'> 
                 <Col md={4}>
-                    <img src={Logo} alt="logo" className='d-block m-auto'></img>
+                    <img src={logo} alt="logo" className='d-block m-auto'></img>
                     <h5>Create New Account</h5>
                     <Form className="js-validation-signup">
                         <Form.Group>
@@ -56,7 +135,7 @@ function UserProfile() {
                 </Col>
             </Row>
         </Container>
-    </div>
+    </>
   )
 }
 
