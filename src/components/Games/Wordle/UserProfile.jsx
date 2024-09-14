@@ -101,7 +101,7 @@ function UserProfile() {
         <Container>
             <Row className='align-content-center justify-content-center'> 
                 <Col md={4}>
-                    <img src={logo} alt="logo" className='d-block m-auto'></img>
+                    <img src={Logo  } alt="logo" className='d-block m-auto'></img>
                     <h5>Create New Account</h5>
                     <Form className="js-validation-signup">
                         <Form.Group>
