@@ -103,9 +103,16 @@ const Headerbar = () => {
                 'Content-Type': 'multipart/form-data'
             }
         });
-        if (response) {
-            console.log('User updated successfully');
-        }
+        if (response.status === 200) {
+          // Show success toast and update the user details in local storage
+          toast.success("User updated successfully", {
+              position: "top-center"
+          });
+          const updatedUser = response.data.user; 
+          // Update localStorage with new user data if response contains updated data
+          localStorage.setItem('auth', JSON.stringify(updatedUser));
+
+      }
     } catch (error) {
         console.error("Error updating user:", error.response ? error.response.data : error.message);
     }
