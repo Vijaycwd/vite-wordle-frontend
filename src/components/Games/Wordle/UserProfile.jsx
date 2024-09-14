@@ -3,7 +3,7 @@ import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import Axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import logo from '../Logo.png'
+import Logo from '../../Logo.png'
 import { useNavigate } from "react-router-dom";
 function UserProfile() {
     const [username, setUsername] = useState();
