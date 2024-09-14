@@ -6,6 +6,8 @@ import TitleLogo from '../../WordleTitleLogo.png'
 import Registerform from '../../auth/Registerform';
 import { useNavigate } from "react-router-dom";
 import Axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Headerbar = () => {
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
@@ -120,6 +122,7 @@ const Headerbar = () => {
   
 
   return (
+    <>
     <Container>
       <Row className="justify-content-center align-items-center py-2">
         <Col xs={3}>
@@ -215,6 +218,8 @@ const Headerbar = () => {
       )}
       
     </Container>
+    <ToastContainer/>
+    </>
   );
 };
 
