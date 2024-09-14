@@ -70,12 +70,12 @@ const Headerbar = () => {
         if(!userObject.email){   
             errors.email = "Email Required";
         }
-        if(!userObject.password){   
-            errors.password = "Password Required";
-        }
-        if(!userObject.confirmpassword){   
-            errors.confirmpassword = "Password Required";
-        }
+        // if(!userObject.password){   
+        //     errors.password = "Password Required";
+        // }
+        // if(!userObject.confirmpassword){   
+        //     errors.confirmpassword = "Password Required";
+        // }
         return errors;
     }
     setErrors(validation(userObject));
