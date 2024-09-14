@@ -7,34 +7,7 @@ function Gameslayout() {
 
   const { userDatadetails } = useContext(UserContext);
   console.log(userDatadetails);
-  // Create a state variable for userAuthData
-  const [userData, setUserData] = useState(() => {
-    // Initialize the state from localStorage (to prevent undefined on initial load)
-    const userAuthData = JSON.parse(localStorage.getItem('auth'));
-    return userAuthData || {};
-  });
 
-  // Use useEffect to listen for changes in localStorage
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const userAuthData = JSON.parse(localStorage.getItem('auth'));
-      setUserData(userAuthData);
-    };
-
-    // Listen for the 'storage' event which is triggered when localStorage is updated
-    window.addEventListener('storage', handleStorageChange);
-
-    // Cleanup the event listener when the component unmounts
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
-
-  // If userData is not available, prevent rendering null or undefined values
-  // if (!userData) {
-  //   return <div>Loading...</div>;
-  // }
-  console.log(userData);
   return (
     <Container>
       <Row className="justify-content-center align-items-center">
