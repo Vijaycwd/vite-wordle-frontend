@@ -89,7 +89,9 @@ const Headerbar = () => {
             }
         });
         if (response) {
-            console.log('User updated successfully');
+            toast.sucess(response.data.message, {
+              position: "top-center"
+          });
         }
     } catch (error) {
         console.error("Error updating user:", error.response ? error.response.data : error.message);
