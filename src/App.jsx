@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 import Statistics from './pages/Statistics';
 import Wordlestats from './components/Games/Wordle/Wordlestats';
+import UserProfile from './components/Games/Wordle/UserProfile';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route  path='/dashboard' element={<Dashboard/>}/>
           <Route  path='/wordle' element={<Statistics/>}/>
           <Route  path= '/wordlestats' element={<Wordlestats/>}/>
+          <Route  path= '/edit-profile' element={<UserProfile/>}/>
         </Route>
       </Routes>
     </Layout>

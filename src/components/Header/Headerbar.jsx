@@ -64,6 +64,7 @@ const Headerbar = () => {
     setConfirmpassword(password);
     setAvatar(avatar);
     setUserid(_id);
+    navigate('/edit-profile');
   };
 
   // Function to close the popup
