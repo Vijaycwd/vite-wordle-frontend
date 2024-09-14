@@ -90,9 +90,6 @@ function Loginform() {
                                                         value={password}
                                                         name="login-password"
                                                     />
-                                                    <InputGroup.Text onClick={togglePasswordVisibility} style={{ cursor: 'pointer' }}>
-                                                        <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-                                                    </InputGroup.Text>
                                                     <Form.Control.Feedback type="invalid">
                                                         Please enter a password.
                                                     </Form.Control.Feedback>
