@@ -88,10 +88,11 @@ const Headerbar = () => {
                 'Content-Type': 'multipart/form-data'
             }
         });
-        if (response) {
+        if (response.status === 200) {
             toast.success(response.data.message, {
               position: "top-center"
-          });
+            });
+            localStorage.setItem('auth', JSON.stringify(response.data));
         }
     } catch (error) {
         console.error("Error updating user:", error.response ? error.response.data : error.message);
