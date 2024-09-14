@@ -3,6 +3,7 @@ import { Container, Row, Col, Button, Overlay, Popover } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Logo from '../../Logo.png';
 import TitleLogo from '../../WordleTitleLogo.png'
+import { useNavigate } from "react-router-dom";
 
 const Headerbar = () => {
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
@@ -10,6 +11,7 @@ const Headerbar = () => {
   const [show, setShow] = useState(false);
   const [target, setTarget] = useState(null);
   const ref = useRef(null);
+  const navigate = useNavigate();
 
   const handleClick = (event) => {
     setShow(!show);
@@ -24,6 +26,10 @@ const Headerbar = () => {
   const login = async (event) => {
     event.preventDefault();
     window.location.href = '/';
+  };
+  const editUser = async (event) => {
+    event.preventDefault();
+    navigate('/edit-profile');
   };
 
   return (
