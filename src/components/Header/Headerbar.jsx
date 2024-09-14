@@ -89,7 +89,7 @@ const Headerbar = () => {
             }
         });
         if (response) {
-            toast.sucess(response.data.message, {
+            toast.success(response.data.message, {
               position: "top-center"
           });
         }
