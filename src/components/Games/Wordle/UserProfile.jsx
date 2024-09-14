@@ -2,6 +2,7 @@ import React from 'react'
 import { useLocation } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Container, Row, Col, Button } from 'react-bootstrap';
 
 function UserProfile() {
   const location = useLocation();
