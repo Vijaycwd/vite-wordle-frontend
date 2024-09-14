@@ -92,7 +92,7 @@ const Headerbar = () => {
             toast.success(response.data.message, {
               position: "top-center"
             });
-            localStorage.setItem('auth', JSON.stringify(response.data.user));
+            localStorage.setItem('auth', JSON.stringify(response.data));
         }
     } catch (error) {
         console.error("Error updating user:", error.response ? error.response.data : error.message);
