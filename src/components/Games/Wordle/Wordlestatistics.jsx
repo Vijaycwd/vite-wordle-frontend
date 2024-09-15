@@ -7,9 +7,9 @@ function Wordlestatistics() {
     const [userEmail, setUserEmail] = useState(loginuserEmail);
     const [totalGame, setTotalGame] = useState('');
     const [totalWin, setTotalWin] = useState('');
-    const [wordleStatsData, setwordleStatsData] = useState();
-    const [currentStreak, setcurrentStreak] = useState();
-    const [maxStreak, setmaxStreak] = useState();
+    const [wordleStatsData, setwordleStatsData] = useState('');
+    const [currentStreak, setcurrentStreak] = useState('');
+    const [maxStreak, setmaxStreak] = useState('');
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
