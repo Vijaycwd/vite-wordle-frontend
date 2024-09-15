@@ -5,9 +5,14 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Logo from '../../../Logo.png';
 import { useNavigate } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
+
 function UserProfile() {
-    const [username, setUsername] = useState();
-    const [email, setEmail] = useState();
+    const location = useLocation();
+    const { username, email, id, isEditing } = location.state || {}; 
+    // const [username, setUsername] = useState();
+    // const [email, setEmail] = useState();
+    
     const [password, setPassword] = useState();
     const [confirmpassword, setConfirmpassword] = useState();
     const [avatar, setAvatar] = useState();
@@ -99,6 +104,14 @@ function UserProfile() {
     <>  
         <ToastContainer />
         <Container>
+        <div>
+            <h1>Edit Profile</h1>
+            <p>Username: {username}</p>
+            <p>Email: {email}</p>
+            <p>ID: {id}</p>
+            <p>Is Editing: {isEditing ? "Yes" : "No"}</p>
+            {/* Add your form and logic for updating the profile here */}
+        </div>
             <Row className='align-content-center justify-content-center'> 
                 <Col md={4}>
                     <img src={Logo} alt="logo" className='d-block m-auto'></img>
