@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 const Headerbar = () => {
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
   const userData = USER_AUTH_DATA;
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(null);
   const [target, setTarget] = useState(null);
   const ref = useRef(null);
   const navigate = useNavigate();
