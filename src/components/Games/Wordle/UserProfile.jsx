@@ -32,48 +32,52 @@ function UserProfile() {
 
         setAvatar(e.target.files[0]);
     }
-
+    const validation = (userObject) => {
+        const errors = {};
+    
+        if (!userObject.username) {   
+            errors.username = "Username Required";
+        }
+        if (!userObject.email) {   
+            errors.email = "Email Required";
+        }
+        // Add more validations for password if needed
+        return errors;
+    };
 
     const updateUser = async (e) => {
-        
-        setErrors(validation(userObject));
-        // console.log(userObject);
-        setName('');
-        setEmail('');
-        setId('');
+        e.preventDefault(); // Prevent default form submission behavior if needed
+    
         const userObject = {
             username: username,
             email: email,
             password: password,
             confirmpassword: confirmpassword,
             avatar: avatar
+        };
+    
+        // Perform validation
+        const validationErrors = validation(userObject);
+        setErrors(validationErrors);
+    
+        if (Object.keys(validationErrors).length === 0) {
+            // No validation errors, proceed with the update
+            try {
+                const response = await Axios.put(`https://wordle-server-nta6.onrender.com/use/${id}`, userObject);
+                if (response) {
+                    console.log('User updated successfully');
+                    toast.success('Profile updated successfully');
+                    navigate('/some-other-page'); // Navigate to another page if needed
+                }
+            } catch (err) {
+                console.error('Error updating user:', err);
+            }
+        } else {
+            // There are validation errors
+            console.log('Validation errors:', validationErrors);
         }
-        console.log(userObject);
-        const validation =(userObject) =>{
-            const errors = {};
-
-            if(!userObject.username){   
-                errors.username = "Username Required";
-            }
-            if(!userObject.email){   
-                errors.email = "Email Required";
-            }
-            // if(!userObject.password){   
-            //     errors.password = "Password Required";
-            // }
-            // if(!userObject.confirmpassword){   
-            //     errors.confirmpassword = "Password Required";
-            // }
-            return errors;
-        }
-        Axios.put(`http://localhost:5001/use/${id}`, userObject)
-            .then( res =>{
-            if(res){
-                console.log('Employee Update successfully');  
-            }
-            })
-            .catch((err) => {console.error(err);})  
-      }
+    };
+    
   return (
     <>  
         <ToastContainer />
