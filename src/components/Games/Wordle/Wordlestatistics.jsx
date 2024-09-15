@@ -5,11 +5,11 @@ function Wordlestatistics() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA.email;
     const [userEmail, setUserEmail] = useState(loginuserEmail);
-    const [totalGame, setTotalGame] = useState('');
-    const [totalWin, setTotalWin] = useState('');
-    const [wordleStatsData, setwordleStatsData] = useState();
-    const [currentStreak, setcurrentStreak] = useState();
-    const [maxStreak, setmaxStreak] = useState();
+    const [totalGame, setTotalGame] = useState(null);
+    const [totalWin, setTotalWin] = useState(null);
+    const [wordleStatsData, setwordleStatsData] = useState(null);
+    const [currentStreak, setcurrentStreak] = useState(null);
+    const [maxStreak, setmaxStreak] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
