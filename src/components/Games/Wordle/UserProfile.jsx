@@ -118,7 +118,7 @@ function UserProfile() {
                             <Form.Label>Profile Picture</Form.Label>
                             <Form.Control type="file" name="avatar" onChange={handleUpload}  />
                         </Form.Group>
-                        <Button className="btn btn-block btn-hero-lg btn-hero-success mt-4"  onClick={() => updateUser()} ><i className="fa fa-fw fa-plus mr-1"></i> Update</Button>
+                        <Button className="btn btn-block btn-hero-lg btn-hero-success mt-4"  onClick={(e) => updateUser(e)} ><i className="fa fa-fw fa-plus mr-1"></i> Update</Button>
                     </Form>
                 </Col>
             </Row>
