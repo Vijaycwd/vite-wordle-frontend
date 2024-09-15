@@ -35,8 +35,6 @@ function UserProfile() {
 
 
     const updateUser = async (e) => {
-        e.preventDefault();
-        console.log(userObject);
         const validation =(userObject) =>{
             const errors = {};
 
