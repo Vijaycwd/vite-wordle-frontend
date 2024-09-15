@@ -13,8 +13,8 @@ function UserProfile() {
     // const [username, setUsername] = useState();
     // const [email, setEmail] = useState();
     
-    const [password, setPassword] = useState();
-    const [confirmpassword, setConfirmpassword] = useState();
+    const [password, setPassword] = useState(null);
+    const [confirmpassword, setConfirmpassword] = useState(null);
     const [avatar, setAvatar] = useState();
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
