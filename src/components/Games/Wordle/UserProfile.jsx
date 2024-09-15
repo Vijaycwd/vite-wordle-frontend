@@ -32,15 +32,8 @@ function UserProfile() {
     }
 
 
-    const signUp = async (e) => {
-        
-        const userObject = {
-            username: username,
-            email: email,
-            password: password,
-            confirmpassword: confirmpassword,
-            avatar: avatar
-        }
+    const updateUser = async (e) => {
+        e.preventDefault();
         console.log(userObject);
         const validation =(userObject) =>{
             const errors = {};
@@ -51,65 +44,47 @@ function UserProfile() {
             if(!userObject.email){   
                 errors.email = "Email Required";
             }
-            if(!userObject.password){   
-                errors.password = "Password Required";
-            }
-            if(!userObject.confirmpassword){   
-                errors.confirmpassword = "Password Required";
-            }
+            // if(!userObject.password){   
+            //     errors.password = "Password Required";
+            // }
+            // if(!userObject.confirmpassword){   
+            //     errors.confirmpassword = "Password Required";
+            // }
             return errors;
         }
         
 
         setErrors(validation(userObject));
         // console.log(userObject);
-        
-        
-
-        const HEADERS = { headers: { 'Content-Type': 'multipart/form-data' } };
-        try {
-            const userRes = await Axios.post('https://wordle-server-nta6.onrender.com/use/create-user', userObject, HEADERS);
-            
-            if (userRes.data.message) {
-                toast.error('Error', { position: "top-center" });
-            } else {
-                toast.success('User Created!', { position: "top-center" });
-
-                // Create the Wordle stats after the user is successfully created
-                const TotalGameObject = {
-                    username,
-                    useremail: email,
-                    totalWinGames: 0,
-                    lastgameisWin: 0,
-                    currentStreak: 0,
-                };
-
-                try {
-                    const statsRes = await Axios.post('https://wordle-server-nta6.onrender.com/wordle-game-stats/create-stats', TotalGameObject);
-                    if (statsRes.data) {
-                        console.log("Wordle stats created:", statsRes.data);
-                    }
-                } catch (err) {
-                    console.error('Error creating Wordle stats:', err);
-                    toast.error('Failed to create Wordle stats', { position: "top-center" });
-                }
-
-                navigate("/login");
+        setName('');
+        setEmail('');
+        setId('');
+        const userObject = {
+            username: username,
+            email: email,
+            password: password,
+            confirmpassword: confirmpassword,
+            avatar: avatar
+        }
+        console.log(userObject);
+        Axios.put(`http://localhost:5001/use/${id}`, userObject)
+            .then( res =>{
+            if(res){
+                console.log('Employee Update successfully');  
             }
-        } catch (err) {
-            toast.error(err.response?.data || "Error occurred", { position: "top-center" });
-        }    
+            })
+            .catch((err) => {console.error(err);})  
       }
   return (
     <>  
         <ToastContainer />
         <Container>
         <div>
-            <h1>Edit Profile</h1>
+            {/* <h1>Edit Profile</h1>
             <p>Username: {username}</p>
-            <p>Email: {email}</p>
+            <p>Email: {email}</p> */}
             <p>ID: {id}</p>
-            <p>Is Editing: {isEditing ? "Yes" : "No"}</p>
+            {/* <p>Is Editing: {isEditing ? "Yes" : "No"}</p> */}
             {/* Add your form and logic for updating the profile here */}
         </div>
             <Row className='align-content-center justify-content-center'> 
@@ -143,7 +118,7 @@ function UserProfile() {
                             <Form.Label>Profile Picture</Form.Label>
                             <Form.Control type="file" name="avatar" onChange={handleUpload}  />
                         </Form.Group>
-                        <Button className="btn btn-block btn-hero-lg btn-hero-success mt-4"  onClick={() => signUp()} ><i className="fa fa-fw fa-plus mr-1"></i> Sign Up</Button>
+                        <Button className="btn btn-block btn-hero-lg btn-hero-success mt-4"  onClick={() => updateUser()} ><i className="fa fa-fw fa-plus mr-1"></i> Update</Button>
                     </Form>
                 </Col>
             </Row>
