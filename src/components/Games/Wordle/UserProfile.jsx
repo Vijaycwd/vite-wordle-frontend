@@ -9,8 +9,10 @@ import { useLocation } from 'react-router-dom';
 
 function UserProfile() {
     const location = useLocation();
-    const { username, email, id, isEditing } = location.state || {}; 
-    // const [username, setUsername] = useState();
+    // const { username, email, id, isEditing } = location.state || {}; 
+    const [username, setUsername] = useState(location.state?.username || "");
+    const [email, setEmail] = useState(location.state?.email || "");
+    const id = location.state?.id;
     // const [email, setEmail] = useState();
     
     const [password, setPassword] = useState(null);
