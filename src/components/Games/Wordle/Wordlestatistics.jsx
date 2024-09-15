@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Axios from 'axios';
+
 function Wordlestatistics() {
     
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
