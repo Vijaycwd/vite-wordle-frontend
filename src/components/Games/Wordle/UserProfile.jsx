@@ -35,6 +35,20 @@ function UserProfile() {
 
 
     const updateUser = async (e) => {
+        
+        setErrors(validation(userObject));
+        // console.log(userObject);
+        setName('');
+        setEmail('');
+        setId('');
+        const userObject = {
+            username: username,
+            email: email,
+            password: password,
+            confirmpassword: confirmpassword,
+            avatar: avatar
+        }
+        console.log(userObject);
         const validation =(userObject) =>{
             const errors = {};
 
@@ -52,21 +66,6 @@ function UserProfile() {
             // }
             return errors;
         }
-        
-
-        setErrors(validation(userObject));
-        // console.log(userObject);
-        setName('');
-        setEmail('');
-        setId('');
-        const userObject = {
-            username: username,
-            email: email,
-            password: password,
-            confirmpassword: confirmpassword,
-            avatar: avatar
-        }
-        console.log(userObject);
         Axios.put(`http://localhost:5001/use/${id}`, userObject)
             .then( res =>{
             if(res){
