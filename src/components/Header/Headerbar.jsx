@@ -10,7 +10,7 @@ const Headerbar = () => {
   const userData = USER_AUTH_DATA;
   const [show, setShow] = useState(null);
   const [target, setTarget] = useState(null);
-  const ref = useRef(null);
+  const ref = useRef('');
   const navigate = useNavigate();
 
   const handleClick = (event) => {
