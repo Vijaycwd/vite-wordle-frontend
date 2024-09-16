@@ -64,13 +64,11 @@ function UserProfile() {
             try {
                 const response = await Axios.put(`https://wordle-server-nta6.onrender.com/use/${id}`, userObject, HEADERS);
                 if (response) {
-                    console.log('User updated successfully');
-                    toast.success('Profile updated successfully');
-                    
                     // Update the localStorage with the new user data
                     const updatedAuthData = { ...USER_AUTH_DATA, username: username, email: email, avatar: avatar };
                     localStorage.setItem('auth', JSON.stringify(updatedAuthData));
-
+                    console.log('User updated successfully');
+                    toast.success('Profile updated successfully');
                     // Optionally, navigate the user to another page
                     navigate('/wordle');
                 }
