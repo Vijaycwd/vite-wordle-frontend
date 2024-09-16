@@ -68,13 +68,17 @@ function UserProfile() {
                     const updatedAuthData = { ...USER_AUTH_DATA, username: username, email: email, avatar: avatar };
                     localStorage.setItem('auth', JSON.stringify(updatedAuthData));
                     //console.log('User updated successfully');
-                    toast.success('Profile updated successfully');
+                    toast.success('Profile updated successfully!', {
+                        position: "top-center"
+                    });
                     // Optionally, navigate the user to another page
                     navigate('/wordle');
                 }
             } catch (err) {
                 //console.error('Error updating user:', err.response.data.message);
-                toast.error(err.response.data.message);
+                toast.error(err.response.data.message, {
+                    position: "top-center"
+                });
             }
         } else {
             // There are validation errors
