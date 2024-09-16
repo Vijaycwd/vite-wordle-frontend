@@ -73,7 +73,8 @@ function UserProfile() {
                     navigate('/wordle');
                 }
             } catch (err) {
-                console.error('Error updating user:', err);
+                console.error('Error updating user:', err.response.data.message);
+                toast.error(err.response.data.message);
             }
         } else {
             // There are validation errors
