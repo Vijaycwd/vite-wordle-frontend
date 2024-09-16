@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from 'react-router-dom';
 
 function UserProfile() {
+    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const location = useLocation();
     const [username, setUsername] = useState(location.state?.username || "");
     const [email, setEmail] = useState(location.state?.email || "");
