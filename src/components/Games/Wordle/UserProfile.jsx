@@ -61,7 +61,7 @@ function UserProfile() {
         if (Object.keys(validationErrors).length === 0) {
             // No validation errors, proceed with the update
             try {
-                const response = await Axios.put(`https://wordle-server-nta6.onrender.com/use/${id}`, userObject, HEADERS);
+                Axios.put(`https://wordle-server-nta6.onrender.com/use/${id}`, userObject, HEADERS);
                 if (response) {
                     console.log('User updated successfully');
                     toast.success('Profile updated successfully');
