@@ -67,18 +67,19 @@ function UserProfile() {
                     // Update the localStorage with the new user data
                     const updatedAuthData = { ...USER_AUTH_DATA, username: username, email: email, avatar: avatar };
                     localStorage.setItem('auth', JSON.stringify(updatedAuthData));
-                    console.log('User updated successfully');
+                    //console.log('User updated successfully');
                     toast.success('Profile updated successfully');
                     // Optionally, navigate the user to another page
                     navigate('/wordle');
                 }
             } catch (err) {
-                console.error('Error updating user:', err.response.data.message);
+                //console.error('Error updating user:', err.response.data.message);
                 toast.error(err.response.data.message);
             }
         } else {
             // There are validation errors
-            console.log('Validation errors:', validationErrors);
+            //console.log('Validation errors:', validationErrors);
+            toast.error(validationErrors);
         }
     };
     
