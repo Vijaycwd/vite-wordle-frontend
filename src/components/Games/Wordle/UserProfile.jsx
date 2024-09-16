@@ -57,10 +57,11 @@ function UserProfile() {
         const validationErrors = validation(userObject);
         setErrors(validationErrors);
     
+        const HEADERS = { headers: { 'Content-Type': 'multipart/form-data' } };
         if (Object.keys(validationErrors).length === 0) {
             // No validation errors, proceed with the update
             try {
-                const response = await Axios.put(`https://wordle-server-nta6.onrender.com/use/${id}`, userObject);
+                const response = await Axios.put(`https://wordle-server-nta6.onrender.com/use/${id}`, userObject, HEADERS);
                 if (response) {
                     console.log('User updated successfully');
                     toast.success('Profile updated successfully');
@@ -79,14 +80,6 @@ function UserProfile() {
     <>  
         <ToastContainer />
         <Container>
-        <div>
-            {/* <h1>Edit Profile</h1>
-            <p>Username: {username}</p>
-            <p>Email: {email}</p> */}
-            <p>ID: {id}</p>
-            {/* <p>Is Editing: {isEditing ? "Yes" : "No"}</p> */}
-            {/* Add your form and logic for updating the profile here */}
-        </div>
             <Row className='align-content-center justify-content-center'> 
                 <Col md={4}>
                     <img src={Logo} alt="logo" className='d-block m-auto'></img>
