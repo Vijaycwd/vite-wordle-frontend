@@ -28,6 +28,7 @@ const Headerbar = () => {
     window.location.href = '/';
   };
   const editUser = (username, email, id, isEditing) => {
+    setShow(!show);
     // Navigate and pass data to the edit page
     navigate('/edit-profile', {
       state: { username, email, id, isEditing }
