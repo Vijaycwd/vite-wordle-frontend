@@ -65,7 +65,6 @@ function UserProfile() {
                 if (response) {
                     console.log('User updated successfully');
                     toast.success('Profile updated successfully');
-                    navigate('/some-other-page'); // Navigate to another page if needed
                 }
             } catch (err) {
                 console.error('Error updating user:', err);
