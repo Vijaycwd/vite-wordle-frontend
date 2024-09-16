@@ -21,11 +21,11 @@ const Headerbar = () => {
   const logout = async (event) => {
     event.preventDefault();
     localStorage.clear();
-    window.location.href = '/';
+    navigate('/');
   };
   const login = async (event) => {
     event.preventDefault();
-    window.location.href = '/';
+    navigate('/');
   };
   const editUser = (username, email, id, isEditing) => {
     setShow(!show);
