@@ -88,6 +88,7 @@ function UserProfile() {
     <>  
         
         <Container>
+            <ToastContainer />
             <Row className='align-content-center justify-content-center'> 
                 <Col md={4}>
                     <img src={Logo} alt="logo" className='d-block m-auto'></img>
@@ -124,7 +125,6 @@ function UserProfile() {
                 </Col>
             </Row>
         </Container>
-        <ToastContainer />
     </>
   )
 }
