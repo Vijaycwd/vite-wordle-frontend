@@ -22,10 +22,10 @@ function Wordlestatechart() {
     function getStatChart() {
         const startOfDay = new Date();
         startOfDay.setHours(0, 0, 0, 0);
-
+    
         const endOfDay = new Date();
         endOfDay.setHours(23, 59, 59, 999);
-
+    
         Axios.get('https://wordle-server-nta6.onrender.com/wordle')
             .then((response) => {
                 const scoreData = response.data
@@ -43,7 +43,7 @@ function Wordlestatechart() {
                 console.error("Error fetching data: ", error);
                 setLoading(false);
             });
-    }
+    }    
     
     // Function to slice the string into rows of a specified length
     function splitIntoRows(inputString, rowLength) {
@@ -89,7 +89,7 @@ function Wordlestatechart() {
                                     ) : (
                                         <div className='text-center my-4'>
                                             <p>You have not played today.</p>
-                                            <WordlePlayService updateStatsChart={getStatChart}/>
+                                            <WordlePlayService updateStatsChart={getStatChart} />
                                         </div>
                                     )
                                 )}

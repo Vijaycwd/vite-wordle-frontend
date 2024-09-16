@@ -69,6 +69,12 @@ function WordlePlayService({ updateStatsChart }) {
                 const res = await Axios.post('https://wordle-server-nta6.onrender.com/wordle/wordle-score', wordleObject);
 
                 if (res) {
+
+                    if (typeof updateStatsChart === 'function') {
+                        updateStatsChart();  // Refresh chart after successful submission
+                    }
+                    setScore(''); 
+                    
                     const currentStats = await Axios.get(`https://wordle-server-nta6.onrender.com/wordle-game-stats/${loginUserEmail}`);
                     const currentStreak = currentStats.data.currentStreak || 0;
                     const streak = isWin ? currentStreak + 1 : 0;
