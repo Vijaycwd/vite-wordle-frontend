@@ -6,7 +6,7 @@ import Wordlelogo from './wordle.png';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-function WordlePlayService() {
+function WordlePlayService({ updateStatsChart }) {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {}; // Fallback if auth is missing
     const { username: loginUsername, email: loginUserEmail } = USER_AUTH_DATA;
 
@@ -29,6 +29,9 @@ function WordlePlayService() {
 
     const onSubmit = async (event) => {
         event.preventDefault();
+        if (typeof updateStatsChart === 'function') {
+            updateStatsChart();
+        }
         setShowForm(false);
 
         const currentTime = new Date().toISOString(); // User's current local time

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Axios from 'axios';
 import './WordleScores.css';
 import { Container, Row, Col } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
 import WordleScoreByDate from './WordleScoreByDate';
 import Wordlestatistics from './Wordlestatistics';
 import WordlePlayService from './WordlePlayService';
@@ -17,7 +16,7 @@ function Wordlestatechart() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-            getStatChart();
+        getStatChart();
     }, []);
 
     function getStatChart() {
@@ -32,7 +31,7 @@ function Wordlestatechart() {
                 const scoreData = response.data
                     .filter(item => item.useremail === userEmail)
                     .filter(item => {
-                        const itemDate = new Date(item.createdAt); // Change 'timestamp' to your actual date field name
+                        const itemDate = new Date(item.createdAt); 
                         return itemDate >= startOfDay && itemDate <= endOfDay;
                     });
                 const PlayedGame = response.data.filter(item => item.useremail === userEmail);
@@ -49,7 +48,7 @@ function Wordlestatechart() {
     // Function to slice the string into rows of a specified length
     function splitIntoRows(inputString, rowLength) {
         const rows = [];
-        const charArray = Array.from(inputString); // Convert string to array of characters
+        const charArray = Array.from(inputString); 
         for (let i = 0; i < charArray.length; i += rowLength) {
             rows.push(charArray.slice(i, i + rowLength).join(' '));
         }
@@ -68,7 +67,6 @@ function Wordlestatechart() {
                                 {loading ? (
                                     <div className='text-center my-4'>
                                         <p>Loading...</p>
-                                        {/* You can also add a spinner here if you prefer */}
                                     </div>
                                 ) : (
                                     statschart && Array.isArray(statschart) && statschart.length > 0 ? (
@@ -77,11 +75,6 @@ function Wordlestatechart() {
                                             const lettersAndNumbersRemoved = char.wordlescore.replace(/[a-zA-Z0-9,/\\]/g, "");
                                             const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
                                             const wordleScores = splitIntoRows(removespace, 5);
-                                            const guess = char.guessdistribution;
-                                            const totalWins = statschart.reduce((total, char) => {
-                                                const guess = char.guessdistribution;
-                                                return total + guess.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-                                            }, 0);
                                             return (
                                                 <div key={index}>
                                                     <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
@@ -96,7 +89,7 @@ function Wordlestatechart() {
                                     ) : (
                                         <div className='text-center my-4'>
                                             <p>You have not played today.</p>
-                                            <WordlePlayService/>
+                                            <WordlePlayService updateStatsChart={getStatChart}/>
                                         </div>
                                     )
                                 )}
