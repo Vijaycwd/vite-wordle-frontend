@@ -90,7 +90,7 @@ function UserProfile() {
             <Row className='align-content-center justify-content-center'> 
                 <Col md={4}>
                     <img src={Logo} alt="logo" className='d-block m-auto'></img>
-                    <h5>Create New Account</h5>
+                    <h5>Profile</h5>
                     <Form className="js-validation-signup">
                         <Form.Group>
                             <Form.Label>Name</Form.Label>
