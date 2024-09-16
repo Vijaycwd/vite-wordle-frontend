@@ -76,8 +76,10 @@ const Headerbar = () => {
                         <img src={`https://wordle-server-nta6.onrender.com/public/uploads/${userData.avatar}`} alt="User Avatar" className="img-fluid" />
                         <p className='fs-4 m-0'>{userData.username}</p>
                         <p>{userData.email}</p>
-                        <Button onClick={logout}>Logout</Button>
-                        <Button onClick={() => editUser(userData.username, userData.email, userData._id, true)}>Edit</Button>
+                        <div className="user-profile-button">
+                          <Button onClick={() => editUser(userData.username, userData.email, userData._id, true)}>Edit</Button>
+                          <Button onClick={logout}>Logout</Button>
+                        </div>
                       </div>
                       </>
                     )}
