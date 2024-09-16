@@ -44,7 +44,7 @@ function UserProfile() {
 
     const updateUser = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior if needed
-    
+
         const userObject = {
             username: username,
             email: email,
@@ -52,19 +52,26 @@ function UserProfile() {
             confirmpassword: confirmpassword,
             avatar: avatar
         };
-    
+
         // Perform validation
         const validationErrors = validation(userObject);
         setErrors(validationErrors);
-    
+
         const HEADERS = { headers: { 'Content-Type': 'multipart/form-data' } };
         if (Object.keys(validationErrors).length === 0) {
             // No validation errors, proceed with the update
             try {
-                Axios.put(`https://wordle-server-nta6.onrender.com/use/${id}`, userObject, HEADERS);
+                const response = await Axios.put(`https://wordle-server-nta6.onrender.com/use/${id}`, userObject, HEADERS);
                 if (response) {
                     console.log('User updated successfully');
                     toast.success('Profile updated successfully');
+                    
+                    // Update the localStorage with the new user data
+                    const updatedAuthData = { ...USER_AUTH_DATA, username: username, email: email, avatar: avatar };
+                    localStorage.setItem('auth', JSON.stringify(updatedAuthData));
+
+                    // Optionally, navigate the user to another page
+                    navigate('/wordle');
                 }
             } catch (err) {
                 console.error('Error updating user:', err);
@@ -75,9 +82,10 @@ function UserProfile() {
         }
     };
     
+    
   return (
     <>  
-        <ToastContainer />
+        
         <Container>
             <Row className='align-content-center justify-content-center'> 
                 <Col md={4}>
@@ -115,6 +123,7 @@ function UserProfile() {
                 </Col>
             </Row>
         </Container>
+        <ToastContainer />
     </>
   )
 }
