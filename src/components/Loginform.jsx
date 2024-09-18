@@ -90,6 +90,9 @@ function Loginform() {
                                                         value={password}
                                                         name="login-password"
                                                     />
+                                                    <Button variant="outline-secondary" onClick={togglePasswordVisibility}>
+                                                        <i className={showPassword ? "fa fa-eye-slash" : "fa fa-eye"}></i>
+                                                    </Button>
                                                     <Form.Control.Feedback type="invalid">
                                                         Please enter a password.
                                                     </Form.Control.Feedback>
