@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Link } from 'react-router-dom';
+import '@fortawesome/fontawesome-free/css/all.min.css';  // Make sure this is imported
 
 function Loginform() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
@@ -90,9 +91,9 @@ function Loginform() {
                                                         value={password}
                                                         name="login-password"
                                                     />
-                                                    <Button variant="outline-secondary" onClick={togglePasswordVisibility}>
-                                                        <i className={showPassword ? "fa fa-eye-slash" : "fa fa-eye"}></i>
-                                                    </Button>
+                                                    <InputGroup.Text>
+                                                        <i className={showPassword ? "fa fa-eye-slash" : "fa fa-eye"} onClick={togglePasswordVisibility}></i>
+                                                    </InputGroup.Text>
                                                     <Form.Control.Feedback type="invalid">
                                                         Please enter a password.
                                                     </Form.Control.Feedback>
