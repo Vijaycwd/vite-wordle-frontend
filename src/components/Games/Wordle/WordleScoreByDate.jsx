@@ -27,6 +27,9 @@ function WordleScoreByDate() {
         const formattedDate = formatDate(dateValue); // Format the date as DD-MM-YYYY
         setSelectedDate(formattedDate); // Set the formatted date
     };
+
+    const today = new Date().toISOString().split('T')[0];
+    
     const handleFocus = () => {
         if (dateInputRef.current) {
             dateInputRef.current.showPicker();
@@ -74,7 +77,8 @@ function WordleScoreByDate() {
                     aria-describedby="passwordHelpBlock"
                     onChange={handleDateChange}
                     onFocus={handleFocus}
-                    ref={dateInputRef} // Attach ref to the input
+                    ref={dateInputRef}
+                    min={today} // Attach ref to the input
                 />
                 <Button variant="primary" className='wordle-btn' onClick={fetchData}>Go To Date</Button>
             </InputGroup> 
