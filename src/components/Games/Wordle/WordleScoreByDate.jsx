@@ -45,6 +45,7 @@ function WordleScoreByDate() {
             return;
         }
 
+        
         axios.get('https://wordle-server-nta6.onrender.com/wordle')
             .then((response) => {
                 const scoreData = response.data
