@@ -29,7 +29,7 @@ function WordleScoreByDate() {
     };
 
     const today = new Date().toISOString().split('T')[0];
-    
+
     const handleFocus = () => {
         if (dateInputRef.current) {
             dateInputRef.current.showPicker();
@@ -78,7 +78,7 @@ function WordleScoreByDate() {
                     onChange={handleDateChange}
                     onFocus={handleFocus}
                     ref={dateInputRef}
-                    min={today} // Attach ref to the input
+                    max={today} // Attach ref to the input
                 />
                 <Button variant="primary" className='wordle-btn' onClick={fetchData}>Go To Date</Button>
             </InputGroup> 
