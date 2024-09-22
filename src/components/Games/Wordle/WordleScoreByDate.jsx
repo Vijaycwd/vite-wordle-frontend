@@ -56,9 +56,9 @@ function WordleScoreByDate() {
     }
 
     const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
-        <button className="example-custom-input" onClick={onClick} ref={ref}>
+        <Button className="example-custom-input wordle-btn px-5 btn btn-primary" onClick={onClick} ref={ref}>
             Go To Date
-        </button>
+        </Button>
     ));
 
     return (
