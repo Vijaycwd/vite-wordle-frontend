@@ -71,7 +71,7 @@ function WordleScoreByDate() {
                     dateFormat="dd-MM-yyyy"
                 />
             </div>
-            <ul className='score-by-date p-0'>
+            <ul className='score-by-date p-2'>
                 {dataFetched && (statsChart.length > 0 ? (
                     statsChart.map(item => {
                         const cleanedScore = item.wordlescore.replace(/[🟩🟨⬜]/g, "");
