@@ -63,12 +63,14 @@ function WordleScoreByDate() {
 
     return (
         <>
-            <DatePicker
-                selected={startDate}
-                onChange={handleDateChange}
-                customInput={<ExampleCustomInput />}
-                dateFormat="dd-MM-yyyy"
-            />
+            <div className='text-center'>
+                <DatePicker
+                    selected={startDate}
+                    onChange={handleDateChange}
+                    customInput={<ExampleCustomInput />}
+                    dateFormat="dd-MM-yyyy"
+                />
+            </div>
             <ul className='score-by-date p-0'>
                 {dataFetched && (statsChart.length > 0 ? (
                     statsChart.map(item => {
