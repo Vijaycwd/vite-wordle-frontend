@@ -7,7 +7,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 function WordleScoreByDate() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA.email;
-
     const [userEmail] = useState(loginuserEmail);
     const [selectedDate, setSelectedDate] = useState(null);
     const [statsChart, setStatsChart] = useState([]);
