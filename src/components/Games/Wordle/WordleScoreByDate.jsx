@@ -69,6 +69,7 @@ function WordleScoreByDate() {
                     onChange={handleDateChange}
                     customInput={<ExampleCustomInput />}
                     dateFormat="dd-MM-yyyy"
+                    maxDate={new Date()}
                 />
             </div>
             <ul className='score-by-date p-2'>
