@@ -81,11 +81,11 @@ function WordleScoreByDate() {
     return (
         <>
             <DatePicker
-            selected={startDate}
+            selected={fetchData}
             onChange={(date) => setStartDate(date)}
             customInput={<ExampleCustomInput className="example-custom-input" />}
             />
-            <InputGroup className="mb-3">
+            {/* <InputGroup className="mb-3">
                 <Form.Control
                     type="date"
                     id="inputdate"
@@ -96,7 +96,7 @@ function WordleScoreByDate() {
                     max={today} // Attach ref to the input
                 />
                 <Button variant="primary" className='wordle-btn' onClick={fetchData}>Go To Date</Button>
-            </InputGroup> 
+            </InputGroup>  */}
             <ul className='score-by-date p-0'>
                 {dataFetched && (statsChart.length > 0 ? (
                     statsChart.map(item => {
