@@ -1,6 +1,8 @@
-import React, { useState, useRef, forwardRef  } from 'react';
+import React, { useState, useRef, forwardRef } from 'react';
 import axios from 'axios';
 import { Form, InputGroup, Button, Alert } from 'react-bootstrap';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 function WordleScoreByDate() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
@@ -68,17 +70,21 @@ function WordleScoreByDate() {
         }
         return rows;
     }
-    
     const [startDate, setStartDate] = useState(new Date());
     const ExampleCustomInput = forwardRef(
-      ({ value, onClick, className }, ref) => (
-        <button className={className} onClick={onClick} ref={ref}>
-         Go To Date
-        </button>
-      ),
-    )
+        ({ value, onClick, className }, ref) => (
+          <button className={className} onClick={onClick} ref={ref}>
+            Go To Date
+          </button>
+        ),
+    );
     return (
         <>
+            <DatePicker
+            selected={startDate}
+            onChange={(date) => setStartDate(date)}
+            customInput={<ExampleCustomInput className="example-custom-input" />}
+            />
             <InputGroup className="mb-3">
                 <Form.Control
                     type="date"
@@ -90,12 +96,7 @@ function WordleScoreByDate() {
                     max={today} // Attach ref to the input
                 />
                 <Button variant="primary" className='wordle-btn' onClick={fetchData}>Go To Date</Button>
-            </InputGroup>
-            <DatePicker
-            selected={startDate}
-            onChange={(date) => setStartDate(date)}
-            customInput={<ExampleCustomInput className="example-custom-input" />}
-            /> 
+            </InputGroup> 
             <ul className='score-by-date p-0'>
                 {dataFetched && (statsChart.length > 0 ? (
                     statsChart.map(item => {
