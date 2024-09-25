@@ -13,6 +13,9 @@ function WordleScoreByDate() {
     const [dataFetched, setDataFetched] = useState(false);
     const [startDate, setStartDate] = useState(new Date());
 
+    // Get user's time zone
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
     // Function to format the selected date in DD-MM-YYYY format
     const formatDate = (date) => {
         const day = String(date.getDate()).padStart(2, '0');
@@ -29,37 +32,13 @@ function WordleScoreByDate() {
         fetchData(formattedDate);  // Trigger data fetching after date selection
     };
 
-    // Fetch data based on the selected date
-    // const fetchData = (date) => {
-    //     axios.get('https://wordle-server-nta6.onrender.com/wordle')
-    //         .then((response) => {
-    //             const scoreData = response.data
-    //                 .filter(item => item.useremail === userEmail)
-    //                 .filter(item => new Date(item.createdAt).toDateString() === new Date(date.split('-').reverse().join('-')).toDateString()); // Filter by selected date
-    //             setStatsChart(scoreData);
-    //             setDataFetched(true);
-    //         })
-    //         .catch((error) => {
-    //             console.error("Error fetching data: ", error);
-    //         });
-    // };
-
+    // Fetch data based on the selected date and user's time zone
     const fetchData = (date) => {
-        axios.get('https://wordle-server-nta6.onrender.com/wordle')
+        axios.get(`https://wordle-server-nta6.onrender.com/wordle?date=${date}&timeZone=${userTimeZone}`)
             .then((response) => {
                 const scoreData = response.data
                     .filter(item => item.useremail === userEmail)
-                    .filter(item => {
-                        // Normalize both dates to UTC and compare
-                        const itemDate = new Date(item.createdAt);
-                        const selectedDateUTC = new Date(date.split('-').reverse().join('-'));
-                        
-                        // Set the time of both dates to midnight UTC for comparison
-                        itemDate.setUTCHours(0, 0, 0, 0);
-                        selectedDateUTC.setUTCHours(0, 0, 0, 0);
-    
-                        return itemDate.getTime() === selectedDateUTC.getTime();
-                    });
+                    .filter(item => new Date(item.createdAt).toDateString() === new Date(date.split('-').reverse().join('-')).toDateString()); // Filter by selected date
                 setStatsChart(scoreData);
                 setDataFetched(true);
             })
@@ -77,11 +56,13 @@ function WordleScoreByDate() {
         }
         return rows;
     }
+
     // Format createdAt to DD-MM-YYYY before displaying
     const formatCreatedAt = (createdAt) => {
         const date = new Date(createdAt);
         return formatDate(date);  // Reuse the formatDate function to format createdAt
     };
+
     const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
         <Button className="example-custom-input wordle-btn px-5 btn btn-primary" onClick={onClick} ref={ref}>
             Go To Date
@@ -106,7 +87,6 @@ function WordleScoreByDate() {
                         const lettersAndNumbersRemoved = item.wordlescore.replace(/[a-zA-Z0-9,/\\]/g, "");
                         const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
                         const wordleScores = splitIntoRows(removespace, 5);
-                        console.log(item);
                         return (
                             <li key={item._id}>
                                 <div className='text-center'>
