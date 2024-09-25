@@ -45,6 +45,7 @@ function Wordlestatechart() {
             });
     }    
     
+    
     // Function to slice the string into rows of a specified length
     function splitIntoRows(inputString, rowLength) {
         const rows = [];
