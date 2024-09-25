@@ -20,22 +20,17 @@ function Wordlestatechart() {
     }, []);
 
     function getStatChart() {
-        // const startOfDay = new Date();
-        // startOfDay.setHours(0, 0, 0, 0);
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
     
-        // const endOfDay = new Date();
-        // endOfDay.setHours(23, 59, 59, 999);
-        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        console.log(timeZone);
-        Axios.get(`https://wordle-server-nta6.onrender.com/wordle?timeZone=${encodeURIComponent(timeZone)}`)
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
+    
+        Axios.get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}`)
             .then((response) => {
-                const scoreData = response.data
-                    .filter(item => item.useremail === userEmail)
-                    .filter(item => {
-                        const itemDate = new Date(item.createdAt); 
-                        return itemDate >= startOfDay && itemDate <= endOfDay;
-                    });
-                const PlayedGame = response.data.filter(item => item.useremail === userEmail);
+                const scoreData = response.data;
+                console.log('Data', scoreData);
+                const PlayedGame = response.data;
                 setLoading(false);
                 setStatsChart(scoreData);
                 setTotalGame(PlayedGame.length);
@@ -46,7 +41,6 @@ function Wordlestatechart() {
             });
     }    
     
-
     // Function to slice the string into rows of a specified length
     function splitIntoRows(inputString, rowLength) {
         const rows = [];
