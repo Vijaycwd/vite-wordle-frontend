@@ -53,7 +53,11 @@ function WordleScoreByDate() {
         }
         return rows;
     }
-
+    // Format createdAt to DD-MM-YYYY before displaying
+    const formatCreatedAt = (createdAt) => {
+        const date = new Date(createdAt);
+        return formatDate(date);  // Reuse the formatDate function to format createdAt
+    };
     const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
         <Button className="example-custom-input wordle-btn px-5 btn btn-primary" onClick={onClick} ref={ref}>
             Go To Date
@@ -78,9 +82,11 @@ function WordleScoreByDate() {
                         const lettersAndNumbersRemoved = item.wordlescore.replace(/[a-zA-Z0-9,/\\]/g, "");
                         const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
                         const wordleScores = splitIntoRows(removespace, 5);
+                        console.log(item);
                         return (
                             <li key={item._id}>
                                 <div className='text-center'>
+                                    <p className='my-1'>{formatCreatedAt(item.createdAt)}</p>
                                     <p className='m-0'><strong>{item.username}</strong></p>
                                     <p className='m-1'>{cleanedScore}</p>
                                     {wordleScores.map((row, rowIndex) => (
