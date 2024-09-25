@@ -30,12 +30,36 @@ function WordleScoreByDate() {
     };
 
     // Fetch data based on the selected date
+    // const fetchData = (date) => {
+    //     axios.get('https://wordle-server-nta6.onrender.com/wordle')
+    //         .then((response) => {
+    //             const scoreData = response.data
+    //                 .filter(item => item.useremail === userEmail)
+    //                 .filter(item => new Date(item.createdAt).toDateString() === new Date(date.split('-').reverse().join('-')).toDateString()); // Filter by selected date
+    //             setStatsChart(scoreData);
+    //             setDataFetched(true);
+    //         })
+    //         .catch((error) => {
+    //             console.error("Error fetching data: ", error);
+    //         });
+    // };
+
     const fetchData = (date) => {
         axios.get('https://wordle-server-nta6.onrender.com/wordle')
             .then((response) => {
                 const scoreData = response.data
                     .filter(item => item.useremail === userEmail)
-                    .filter(item => new Date(item.createdAt).toDateString() === new Date(date.split('-').reverse().join('-')).toDateString()); // Filter by selected date
+                    .filter(item => {
+                        // Normalize both dates to UTC and compare
+                        const itemDate = new Date(item.createdAt);
+                        const selectedDateUTC = new Date(date.split('-').reverse().join('-'));
+                        
+                        // Set the time of both dates to midnight UTC for comparison
+                        itemDate.setUTCHours(0, 0, 0, 0);
+                        selectedDateUTC.setUTCHours(0, 0, 0, 0);
+    
+                        return itemDate.getTime() === selectedDateUTC.getTime();
+                    });
                 setStatsChart(scoreData);
                 setDataFetched(true);
             })
