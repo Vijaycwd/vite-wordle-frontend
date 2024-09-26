@@ -100,7 +100,7 @@ function Wordlestatechart() {
                                     ) : (
                                         <div className='text-center my-4'>
                                             <p>You have not played today.</p>
-                                            <WordlePlayService/>
+                                            <WordlePlayService updateStatsChart={getStatChart} />
                                         </div>
                                     )
                                 )}
