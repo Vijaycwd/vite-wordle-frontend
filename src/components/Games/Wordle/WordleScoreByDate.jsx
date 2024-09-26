@@ -31,7 +31,7 @@ function WordleScoreByDate() {
 
     // Fetch data based on the selected date
     const fetchData = (date) => {
-        axios.get('https://wordle-server-nta6.onrender.com/wordle')
+        axios.get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}`)
             .then((response) => {
                 const scoreData = response.data
                     .filter(item => item.useremail === userEmail)
@@ -86,9 +86,9 @@ function WordleScoreByDate() {
                         return (
                             <li key={item._id}>
                                 <div className='text-center'>
-                                    <p className='my-1'>{formatCreatedAt(item.createdAt)}</p>
                                     <p className='m-0'><strong>{item.username}</strong></p>
                                     <p className='m-1'>{cleanedScore}</p>
+                                    <p className='my-1'>{formatCreatedAt(item.createdAt)}</p>
                                     {wordleScores.map((row, rowIndex) => (
                                         <p className='m-1' key={rowIndex}>{row}</p>
                                     ))}
