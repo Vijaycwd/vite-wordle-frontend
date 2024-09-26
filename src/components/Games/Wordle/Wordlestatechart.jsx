@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Axios from 'axios';
 import './WordleScores.css';
 import { Container, Row, Col } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import WordleScoreByDate from './WordleScoreByDate';
 import Wordlestatistics from './Wordlestatistics';
 import WordlePlayService from './WordlePlayService';
@@ -16,20 +17,24 @@ function Wordlestatechart() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        getStatChart();
+            getStatChart();
     }, []);
 
     function getStatChart() {
         const startOfDay = new Date();
         startOfDay.setHours(0, 0, 0, 0);
-    
+
         const endOfDay = new Date();
         endOfDay.setHours(23, 59, 59, 999);
-    
+
         Axios.get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}`)
             .then((response) => {
-                const scoreData = response.data;
-                console.log('Data', scoreData);
+                // console.log(response.data);
+                const scoreData = response.data
+                    .filter(item => {
+                        const itemDate = new Date(item.createdAt); // Change 'timestamp' to your actual date field name
+                        return itemDate >= startOfDay && itemDate <= endOfDay;
+                    });
                 const PlayedGame = response.data;
                 setLoading(false);
                 setStatsChart(scoreData);
@@ -39,12 +44,12 @@ function Wordlestatechart() {
                 console.error("Error fetching data: ", error);
                 setLoading(false);
             });
-    }    
+    }
     
     // Function to slice the string into rows of a specified length
     function splitIntoRows(inputString, rowLength) {
         const rows = [];
-        const charArray = Array.from(inputString); 
+        const charArray = Array.from(inputString); // Convert string to array of characters
         for (let i = 0; i < charArray.length; i += rowLength) {
             rows.push(charArray.slice(i, i + rowLength).join(' '));
         }
@@ -63,6 +68,7 @@ function Wordlestatechart() {
                                 {loading ? (
                                     <div className='text-center my-4'>
                                         <p>Loading...</p>
+                                        {/* You can also add a spinner here if you prefer */}
                                     </div>
                                 ) : (
                                     statschart && Array.isArray(statschart) && statschart.length > 0 ? (
@@ -71,9 +77,18 @@ function Wordlestatechart() {
                                             const lettersAndNumbersRemoved = char.wordlescore.replace(/[a-zA-Z0-9,/\\]/g, "");
                                             const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
                                             const wordleScores = splitIntoRows(removespace, 5);
+                                            const guess = char.guessdistribution;
+                                            const totalWins = statschart.reduce((total, char) => {
+                                                const guess = char.guessdistribution;
+                                                return total + guess.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+                                            }, 0);
+                                            const createDate = char.createdAt;
+                                            const date = new Date(createDate);
+                                            const todayDate = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
                                             return (
                                                 <div key={index}>
                                                     <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
+                                                    <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
                                                     <pre className='text-center'>
                                                         {wordleScores.map((row, rowIndex) => (
                                                             <div key={rowIndex}>{row}</div>
@@ -85,7 +100,7 @@ function Wordlestatechart() {
                                     ) : (
                                         <div className='text-center my-4'>
                                             <p>You have not played today.</p>
-                                            <WordlePlayService updateStatsChart={getStatChart} />
+                                            <WordlePlayService/>
                                         </div>
                                     )
                                 )}

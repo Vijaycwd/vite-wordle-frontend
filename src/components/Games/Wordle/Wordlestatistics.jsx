@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Axios from 'axios';
-
 function Wordlestatistics() {
     
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
@@ -8,9 +7,9 @@ function Wordlestatistics() {
     const [userEmail, setUserEmail] = useState(loginuserEmail);
     const [totalGame, setTotalGame] = useState('');
     const [totalWin, setTotalWin] = useState('');
-    const [wordleStatsData, setwordleStatsData] = useState('');
-    const [currentStreak, setcurrentStreak] = useState('');
-    const [maxStreak, setmaxStreak] = useState('');
+    const [wordleStatsData, setwordleStatsData] = useState();
+    const [currentStreak, setcurrentStreak] = useState();
+    const [maxStreak, setmaxStreak] = useState();
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -20,13 +19,16 @@ function Wordlestatistics() {
     function getStatsValue() {
         Axios.get(`https://wordle-server-nta6.onrender.com/wordle-game-stats/${userEmail}`)
             .then((response) => {
-                console.log(response.data);
-                setwordleStatsData(response.data);
-                setTotalGame(response.data.totalGamesPlayed);
-                setTotalWin(response.data.totalWinGames);
-                setcurrentStreak(response.data.currentStreak);
-                setmaxStreak(response.data.maxStreak);
-                setLoading(false);
+                // console.log(response.data);
+                
+                response.data.forEach((item, index) => {
+                    setwordleStatsData(item);
+                    setTotalGame(item.totalGamesPlayed);
+                    setTotalWin(item.totalWinGames);
+                    setcurrentStreak(item.currentStreak);
+                    setmaxStreak(item.maxStreak);
+                    setLoading(false);
+                });      
             })
             .catch((error) => {
                 console.error("Error fetching data: ", error);
