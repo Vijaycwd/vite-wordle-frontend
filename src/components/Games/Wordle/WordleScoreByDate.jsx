@@ -26,8 +26,8 @@ function WordleScoreByDate() {
     const handleDateChange = (date) => {
         // Use moment-timezone to format the selected date
         const formattedDate = moment(date).tz(timeZone).format("DD-MM-YYYY");
-        console.log("Original createdAt:", stat.createdAt);
-        console.log("Formatted createdAtLocal:", moment.tz(stat.createdAt, timeZone).format('DD-MM-YYYY HH:mm:ss'));
+        console.log("Original createdAt:", date);
+        console.log("Formatted createdAtLocal:", moment.tz(date, timeZone).format('DD-MM-YYYY HH:mm:ss'));
         console.log(formattedDate);
         setSelectedDate(formattedDate);
         setStartDate(date);
