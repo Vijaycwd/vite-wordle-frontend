@@ -31,7 +31,6 @@ function WordleScoreByDate() {
         console.log(formattedDate);
         setSelectedDate(formattedDate);
         setStartDate(date);
-
         // Trigger data fetching after date selection with the formatted date
         fetchData(formattedDate);
     };
