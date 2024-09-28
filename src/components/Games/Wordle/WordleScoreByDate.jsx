@@ -32,7 +32,7 @@ function WordleScoreByDate() {
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     // Fetch data based on the selected date
     const fetchData = (date) => {
-        axios.get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}/?timeZone=${timeZone}`)
+        axios.get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}?timeZone=${timeZone}`)
             .then((response) => {
                 const scoreData = response.data
                     .filter(item => item.useremail === userEmail)
