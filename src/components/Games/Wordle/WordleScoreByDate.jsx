@@ -32,22 +32,21 @@ function WordleScoreByDate() {
         setStartDate(date);
         // Trigger data fetching after date selection with the formatted date
         fetchData(formattedDate);
-        const fetchData = (date) => {
-            axios.get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}?timeZone=${timeZone}&targetDate=${formattedDate}`)
-                .then((response) => {
-                    const scoreData = response.data
-                        .filter(item => item.useremail === userEmail)
-                        .filter(item => new Date(item.createdAt).toDateString() === new Date(date.split('-').reverse().join('-')).toDateString()); // Filter by selected date
-                    setStatsChart(scoreData);
-                    setDataFetched(true);
-                })
-                .catch((error) => {
-                    console.error("Error fetching data: ", error);
-                });
-        };
     };
     
-    
+    const fetchData = (date) => {
+        axios.get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}?timeZone=${timeZone}&targetDate=${formattedDate}`)
+            .then((response) => {
+                const scoreData = response.data
+                    .filter(item => item.useremail === userEmail)
+                    .filter(item => new Date(item.createdAt).toDateString() === new Date(date.split('-').reverse().join('-')).toDateString()); // Filter by selected date
+                setStatsChart(scoreData);
+                setDataFetched(true);
+            })
+            .catch((error) => {
+                console.error("Error fetching data: ", error);
+            });
+    };
     // Fetch data based on the selected date
     
 
