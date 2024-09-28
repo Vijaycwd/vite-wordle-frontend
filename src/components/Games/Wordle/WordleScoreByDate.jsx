@@ -25,31 +25,32 @@ function WordleScoreByDate() {
     // Handle date selection
     const handleDateChange = (date) => {
         // Use moment-timezone to format the selected date
-        const formattedDate = moment(date).tz(timeZone).format("DD-MM-YYYY");
         console.log("Original createdAt:", date);
-        console.log("Formatted createdAtLocal:", moment.tz(date, timeZone).format('DD-MM-YYYY HH:mm:ss'));
+        const formattedDate =  moment.tz(date, timeZone).format('DD-MM-YYYY HH:mm:ss');
         console.log(formattedDate);
         setSelectedDate(formattedDate);
         setStartDate(date);
         // Trigger data fetching after date selection with the formatted date
         fetchData(formattedDate);
+
+        const fetchData = (date) => {
+            axios.get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}/?timeZone=${timeZone}&targetDate=${formattedDate}`)
+                .then((response) => {
+                    const scoreData = response.data
+                        .filter(item => item.useremail === userEmail)
+                        .filter(item => new Date(item.createdAt).toDateString() === new Date(date.split('-').reverse().join('-')).toDateString()); // Filter by selected date
+                    setStatsChart(scoreData);
+                    setDataFetched(true);
+                })
+                .catch((error) => {
+                    console.error("Error fetching data: ", error);
+                });
+        };
     };
     
     
     // Fetch data based on the selected date
-    const fetchData = (date) => {
-        axios.get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}/?timeZone=${timeZone}`)
-            .then((response) => {
-                const scoreData = response.data
-                    .filter(item => item.useremail === userEmail)
-                    .filter(item => new Date(item.createdAt).toDateString() === new Date(date.split('-').reverse().join('-')).toDateString()); // Filter by selected date
-                setStatsChart(scoreData);
-                setDataFetched(true);
-            })
-            .catch((error) => {
-                console.error("Error fetching data: ", error);
-            });
-    };
+    
 
     // Function to slice the string into rows of a specified length
     function splitIntoRows(inputString, rowLength) {
@@ -78,7 +79,7 @@ function WordleScoreByDate() {
                     selected={startDate}
                     onChange={handleDateChange}
                     customInput={<ExampleCustomInput />}
-                    dateFormat="dd-MM-yyyy"
+                    dateFormat="DD-MM-YYYY"
                     maxDate={new Date()}
                 />
             </div>
