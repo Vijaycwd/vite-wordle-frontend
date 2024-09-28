@@ -32,7 +32,6 @@ function WordleScoreByDate() {
         setStartDate(date);
         // Trigger data fetching after date selection with the formatted date
         fetchData(formattedDate);
-
         const fetchData = (date) => {
             axios.get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}?timeZone=${timeZone}&targetDate=${formattedDate}`)
                 .then((response) => {

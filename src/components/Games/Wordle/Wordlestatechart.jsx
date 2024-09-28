@@ -23,7 +23,6 @@ function Wordlestatechart() {
     function getStatChart() {
         const startOfDay = new Date();
         startOfDay.setHours(0, 0, 0, 0);
-
         const endOfDay = new Date();
         endOfDay.setHours(23, 59, 59, 999);
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
