@@ -34,9 +34,10 @@ function WordleScoreByDate() {
     const fetchData = (date) => {
         axios.get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}?timeZone=${timeZone}`)
             .then((response) => {
+                const selectedDate = new Date(date.split('-').reverse().join('-')).toDateString(); // Format selected date
                 const scoreData = response.data
                     .filter(item => item.useremail === userEmail)
-                    .filter(item => new Date(item.createdAt).toDateString() === new Date(date.split('-').reverse().join('-')).toDateString()); // Filter by selected date
+                    .filter(item => new Date(item.createdAtLocal.split(' ')[0]).toDateString() === selectedDate); // Use createdAtLocal for comparison
                 setStatsChart(scoreData);
                 setDataFetched(true);
             })
@@ -44,7 +45,7 @@ function WordleScoreByDate() {
                 console.error("Error fetching data: ", error);
             });
     };
-
+    
     // Function to slice the string into rows of a specified length
     function splitIntoRows(inputString, rowLength) {
         const rows = [];
