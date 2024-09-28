@@ -23,10 +23,11 @@ function Wordlestatechart() {
     function getStatChart() {
         const startOfDay = new Date();
         startOfDay.setHours(0, 0, 0, 0);
+
         const endOfDay = new Date();
         endOfDay.setHours(23, 59, 59, 999);
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        Axios.get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}?timeZone=${timeZone}`)
+        Axios.get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}/?timeZone=${timeZone}`)
             .then((response) => {
                 // console.log(response.data);
                 const scoreData = response.data
@@ -54,6 +55,7 @@ function Wordlestatechart() {
         }
         return rows;
     }
+
     return (
         <Container>
             <Row className='align-items-center justify-content-center'>

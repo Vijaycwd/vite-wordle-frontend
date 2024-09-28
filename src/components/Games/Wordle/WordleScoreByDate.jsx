@@ -3,16 +3,16 @@ import axios from 'axios';
 import { Button, Alert } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import moment from 'moment-timezone';
 
 function WordleScoreByDate() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA.email;
     const [userEmail] = useState(loginuserEmail);
+    const [selectedDate, setSelectedDate] = useState(null);
     const [statsChart, setStatsChart] = useState([]);
     const [dataFetched, setDataFetched] = useState(false);
     const [startDate, setStartDate] = useState(new Date());
-    const [selectedDate, setSelectedDate] = useState("");
+
     // Function to format the selected date in DD-MM-YYYY format
     const formatDate = (date) => {
         const day = String(date.getDate()).padStart(2, '0');
@@ -20,24 +20,19 @@ function WordleScoreByDate() {
         const year = date.getFullYear();
         return `${day}-${month}-${year}`;
     };
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    console.log(timeZone);
+
     // Handle date selection
     const handleDateChange = (date) => {
-        // Use moment-timezone to format the selected date
-        console.log("Original createdAt:", date);
-        const formattedDate =  moment.tz(date, timeZone).format('DD-MM-YYYY HH:mm:ss');
-        console.log(formattedDate);
+        const formattedDate = formatDate(date);
         setSelectedDate(formattedDate);
         setStartDate(date);
-        // Trigger data fetching after date selection with the formatted date
-        fetchData(formattedDate);
+        fetchData(formattedDate);  // Trigger data fetching after date selection
     };
-    
+
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // Fetch data based on the selected date
     const fetchData = (date) => {
-        const url = `https://wordle-server-nta6.onrender.com/wordle/${userEmail}?timeZone=${timeZone}&targetDate=${selectedDate}`;
-        console.log(url);
-        axios.get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}?timeZone=${timeZone}&targetDate=${selectedDate}`)
+        axios.get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}/?timeZone=${timeZone}`)
             .then((response) => {
                 const scoreData = response.data
                     .filter(item => item.useremail === userEmail)
@@ -49,8 +44,6 @@ function WordleScoreByDate() {
                 console.error("Error fetching data: ", error);
             });
     };
-    // Fetch data based on the selected date
-    
 
     // Function to slice the string into rows of a specified length
     function splitIntoRows(inputString, rowLength) {
@@ -79,7 +72,7 @@ function WordleScoreByDate() {
                     selected={startDate}
                     onChange={handleDateChange}
                     customInput={<ExampleCustomInput />}
-                    dateFormat="DD-MM-YYYY"
+                    dateFormat="dd-MM-yyyy"
                     maxDate={new Date()}
                 />
             </div>
