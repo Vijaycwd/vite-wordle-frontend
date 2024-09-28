@@ -3,16 +3,16 @@ import axios from 'axios';
 import { Button, Alert } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import moment from 'moment-timezone';
 
 function WordleScoreByDate() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA.email;
     const [userEmail] = useState(loginuserEmail);
-    const [selectedDate, setSelectedDate] = useState(null);
     const [statsChart, setStatsChart] = useState([]);
     const [dataFetched, setDataFetched] = useState(false);
     const [startDate, setStartDate] = useState(new Date());
-
+    const [selectedDate, setSelectedDate] = useState("");
     // Function to format the selected date in DD-MM-YYYY format
     const formatDate = (date) => {
         const day = String(date.getDate()).padStart(2, '0');
@@ -20,16 +20,20 @@ function WordleScoreByDate() {
         const year = date.getFullYear();
         return `${day}-${month}-${year}`;
     };
-
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     // Handle date selection
     const handleDateChange = (date) => {
-        const formattedDate = formatDate(date);
+        // Use moment-timezone to format the selected date
+        const formattedDate = moment(date).tz(timeZone).format("DD-MM-YYYY");
+        console.log(formattedDate);
         setSelectedDate(formattedDate);
         setStartDate(date);
-        fetchData(formattedDate);  // Trigger data fetching after date selection
-    };
 
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        // Trigger data fetching after date selection with the formatted date
+        fetchData(formattedDate);
+    };
+    
+    
     // Fetch data based on the selected date
     const fetchData = (date) => {
         axios.get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}/?timeZone=${timeZone}`)
