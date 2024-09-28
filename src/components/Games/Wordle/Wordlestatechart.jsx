@@ -54,7 +54,6 @@ function Wordlestatechart() {
         }
         return rows;
     }
-
     return (
         <Container>
             <Row className='align-items-center justify-content-center'>
