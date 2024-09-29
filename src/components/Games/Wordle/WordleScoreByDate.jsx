@@ -26,18 +26,15 @@ function WordleScoreByDate() {
         const formattedDate = formatDate(date);
         setSelectedDate(formattedDate);
         setStartDate(date);
-        fetchData(formattedDate);  // Trigger data fetching after date selection
+        fetchDataByDate(formattedDate);  // Trigger data fetching after date selection
     };
 
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     // Fetch data based on the selected date
-    const fetchData = (date) => {
-        axios.get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}?timeZone=${timeZone}`)
+    const fetchDataByDate = (date) => {
+        axios.get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}/date?date=${date}&timeZone=${timeZone}`)
             .then((response) => {
-                const selectedDate = new Date(date.split('-').reverse().join('-')).toDateString(); // Format selected date
-                const scoreData = response.data
-                    .filter(item => item.useremail === userEmail)
-                    .filter(item => new Date(item.createdAtLocal.split(' ')[0]).toDateString() === selectedDate); // Use createdAtLocal for comparison
+                const scoreData = response.data;
                 setStatsChart(scoreData);
                 setDataFetched(true);
             })
