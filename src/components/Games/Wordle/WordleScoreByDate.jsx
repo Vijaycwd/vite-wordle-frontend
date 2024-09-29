@@ -29,19 +29,35 @@ function WordleScoreByDate() {
         fetchDataByDate(formattedDate);  // Trigger data fetching after date selection
     };
 
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    // Fetch data based on the selected date
     const fetchDataByDate = (date) => {
-        axios.get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}/date?date=${date}&timeZone=${timeZone}`)
+         // Replace with the logged-in user's email
+        const timeZone = moment.tz.guess(); // Automatically get the user's local time zone
+    
+        // Construct the date string in the format 'YYYY-MM-DD' to match the backend format
+        const formattedDate = moment(date, 'DD-MM-YYYY').format('DD-MM-YYYY');
+    
+        // Make the API request to the new endpoint with the date and timeZone as query parameters
+        axios
+            .get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}/date`, {
+                params: {
+                    date: formattedDate,
+                    timeZone: timeZone,
+                },
+            })
             .then((response) => {
-                const scoreData = response.data;
-                setStatsChart(scoreData);
+                setStatsChart(response.data);
                 setDataFetched(true);
             })
             .catch((error) => {
-                console.error("Error fetching data: ", error);
+                console.error('Error fetching data:', error);
             });
     };
+    
+    // Example usage in a component or useEffect
+    useEffect(() => {
+        const today = moment().format('DD-MM-YYYY'); // Get today's date in 'YYYY-MM-DD' format
+        fetchDataByDate(today); // Fetch data for today's date
+    }, []);
     
     // Function to slice the string into rows of a specified length
     function splitIntoRows(inputString, rowLength) {
