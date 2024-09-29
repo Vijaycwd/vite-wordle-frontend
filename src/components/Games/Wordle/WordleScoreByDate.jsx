@@ -12,6 +12,7 @@ function WordleScoreByDate() {
     const [selectedDate, setSelectedDate] = useState(null);
     const [statsChart, setStatsChart] = useState([]);
     const [dataFetched, setDataFetched] = useState(false);
+    const [dataFetchedError, setFetchedError] = useState(true);
     const [startDate, setStartDate] = useState(new Date());
 
     // Function to format the selected date in DD-MM-YYYY format
@@ -48,17 +49,16 @@ function WordleScoreByDate() {
             .then((response) => {
                 setStatsChart(response.data);
                 setDataFetched(true);
+                setFetchedError(false);
             })
             .catch((error) => {
-                console.error('Error fetching data:', error);
+                // console.error('Error fetching data:', error);
+                setStatsChart([]); // Set statsChart to an empty array if no data is found or an error occurs
+                setDataFetched(true);
+                setFetchedError(true);
             });
     };
     
-    // Example usage in a component or useEffect
-    useEffect(() => {
-        const today = moment().format('DD-MM-YYYY'); // Get today's date in 'YYYY-MM-DD' format
-        fetchDataByDate(today); // Fetch data for today's date
-    }, []);
     
     // Function to slice the string into rows of a specified length
     function splitIntoRows(inputString, rowLength) {
@@ -79,7 +79,7 @@ function WordleScoreByDate() {
             Go To Date
         </Button>
     ));
-    console.log("Score",statsChart);
+
     return (
         <>
             <div className='text-center'>
@@ -87,18 +87,17 @@ function WordleScoreByDate() {
                     selected={startDate}
                     onChange={handleDateChange}
                     customInput={<ExampleCustomInput />}
-                    dateFormat="dd-MM-yyyy"
+                    dateFormat="DD-MM-YYYY"
                     maxDate={new Date()}
                 />
             </div>
             <ul className='score-by-date p-2'>
-                {dataFetched && (statsChart.length > 0 ? (
+                {dataFetched && statsChart.length > 0 ? (
                     statsChart.map(item => {
                         const cleanedScore = item.wordlescore.replace(/[🟩🟨⬜]/g, "");
                         const lettersAndNumbersRemoved = item.wordlescore.replace(/[a-zA-Z0-9,/\\]/g, "");
                         const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
                         const wordleScores = splitIntoRows(removespace, 5);
-                        console.log(item);
                         return (
                             <li key={item._id}>
                                 <div className='text-center'>
@@ -113,10 +112,12 @@ function WordleScoreByDate() {
                         );
                     })
                 ) : (
-                    <Alert key='danger' variant='danger' className='p-1'>
-                        No data found for the selected date.
-                    </Alert>
-                ))}
+                    dataFetched && (
+                        <Alert key='danger' variant='danger' className='p-1'>
+                            No data found for the selected date.
+                        </Alert>
+                    )
+                )}
             </ul>
         </>
     );
