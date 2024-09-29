@@ -79,7 +79,7 @@ function WordleScoreByDate() {
             Go To Date
         </Button>
     ));
-    console.log(dataFetched);
+    console.log("Score",statsChart);
     return (
         <>
             <div className='text-center'>
