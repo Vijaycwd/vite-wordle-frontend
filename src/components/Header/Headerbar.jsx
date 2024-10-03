@@ -1,16 +1,16 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Container, Row, Col, Button, Overlay, Popover } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Logo from '../../Logo.png';
-import TitleLogo from '../../WordleTitleLogo.png'
+import TitleLogo from '../../WordleTitleLogo.png';
 import { useNavigate } from "react-router-dom";
 
 const Headerbar = () => {
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
   const userData = USER_AUTH_DATA;
-  const [show, setShow] = useState(null);
+  const [show, setShow] = useState(false);
   const [target, setTarget] = useState(null);
-  const ref = useRef('');
+  const ref = useRef(null);
   const navigate = useNavigate();
 
   const handleClick = (event) => {
@@ -20,22 +20,38 @@ const Headerbar = () => {
 
   const logout = async (event) => {
     event.preventDefault();
-    setShow(!show);
+    setShow(false);
     localStorage.clear();
     navigate('/');
   };
+
   const login = async (event) => {
     event.preventDefault();
-    setShow(!show);
+    setShow(false);
     navigate('/');
   };
+
   const editUser = (username, email, id, isEditing) => {
-    setShow(!show);
-    // Navigate and pass data to the edit page
+    setShow(false);
     navigate('/edit-profile', {
       state: { username, email, id, isEditing }
     });
   };
+
+  // Close Popover when clicking outside
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setShow(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, []);
 
   return (
     <Container>
@@ -46,7 +62,7 @@ const Headerbar = () => {
           </Link>
         </Col>
         <Col xs={6}>
-          <img className='img-fluid d-block m-auto' src={TitleLogo} alt="WordleGamle" />
+          <img className='img-fluid d-block m-auto' src={TitleLogo} alt="WordleGame" />
         </Col>
         <Col xs={3} className="d-flex justify-content-end">
           <Link to="/wordlestats">
@@ -64,7 +80,7 @@ const Headerbar = () => {
               show={show}
               target={target}
               placement="bottom"
-              container={ref}
+              container={ref.current}
               containerPadding={20}
             >
               <Popover id="popover-contained">
@@ -74,15 +90,15 @@ const Headerbar = () => {
                       <Button onClick={login}>Login</Button>
                     ) : (
                       <>
-                      <div>
-                        <img src={`https://wordle-server-nta6.onrender.com/public/uploads/${userData.avatar}`} alt="User Avatar" className="img-fluid" />
-                        <p className='fs-4 m-0'>{userData.username}</p>
-                        <p>{userData.email}</p>
-                        <div className="user-profile-button">
-                          <Button onClick={() => editUser(userData.username, userData.email, userData._id, true)}>Edit</Button>
-                          <Button onClick={logout}>Logout</Button>
+                        <div>
+                          <img src={`https://wordle-server-nta6.onrender.com/public/uploads/${userData.avatar}`} alt="User Avatar" className="img-fluid" />
+                          <p className='fs-4 m-0'>{userData.username}</p>
+                          <p>{userData.email}</p>
+                          <div className="user-profile-button">
+                            <Button onClick={() => editUser(userData.username, userData.email, userData._id, true)}>Edit</Button>
+                            <Button onClick={logout}>Logout</Button>
+                          </div>
                         </div>
-                      </div>
                       </>
                     )}
                   </div>
