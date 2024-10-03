@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import Logo from '../../Logo.png';
 import TitleLogo from '../../WordleTitleLogo.png';
 import { useNavigate } from "react-router-dom";
+import '@fortawesome/fontawesome-free/css/all.min.css'; 
 
 const Headerbar = () => {
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
@@ -92,7 +93,7 @@ const Headerbar = () => {
                       <>
                         <div>
                           <img src={`https://wordle-server-nta6.onrender.com/public/uploads/${userData.avatar}`} alt="User Avatar" className="img-fluid" />
-                          <p className='fs-4 m-0'>{userData.username}</p>
+                          <p className='fs-4 m-0'>{userData.username}<i className="fa fa-edit fa fa-edit edit-icon" onClick={() => editUser(userData.username, userData.email, userData._id, true)}></i></p>
                           <p>{userData.email}</p>
                           <div className="user-profile-button">
                             <Button onClick={() => editUser(userData.username, userData.email, userData._id, true)}>Edit</Button>

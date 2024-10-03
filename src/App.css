@@ -95,3 +95,10 @@ body{
   display: flex;
   justify-content: space-around;
 }
+.edit-icon {
+  font-size: 14px;
+  position: absolute;
+  top: 25%;
+  right: 28%;
+  cursor: pointer;
+}
