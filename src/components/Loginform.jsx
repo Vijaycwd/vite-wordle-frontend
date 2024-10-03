@@ -59,7 +59,8 @@ function Loginform() {
                 <Row className="align-content-center justify-content-center">
                     <Col md={4} className='bg-white px-5 py-3 text-center'>
                         <p className='fs-4 text-center'>Welcome to <b>WordGAMLE!</b></p>
-                        <p className='text-center'>For now, we’re just playing Wordle and storing results.</p>
+                        <p className='text-center'>Soon we’ll be playing various games and creating groups and leaderboards.  But, for now we’re just playing Wordle, and storing results.
+                        </p>
                         <p className='text-center'>Please create your profile and then click the Wordle button and go from there!</p>
                         {!userAuthData || isEmptyObject ? (
                             <>
