@@ -11,6 +11,7 @@ function WordlePlayService({ updateStatsChart }) {
     const { username: loginUsername, email: loginUserEmail } = USER_AUTH_DATA;
 
     const [showForm, setShowForm] = useState(false);
+    const [showLoginPrompt, setShowLoginPrompt] = useState(false); // State for login prompt modal
     const [score, setScore] = useState('');
     const [guessDistribution, setGuessDistribution] = useState([0, 0, 0, 0, 0, 0]); // Initialize with 6 guesses
     const [gameIsWin, setGameIsWin] = useState(false);
@@ -22,7 +23,15 @@ function WordlePlayService({ updateStatsChart }) {
         setScore('');
     };
 
+    const handleLoginPromptClose = () => {
+        setShowLoginPrompt(false);
+    };
+
     const handleShow = (url) => {
+        if (!loginUsername || !loginUserEmail) {
+            setShowLoginPrompt(true); // Show login prompt if user is not logged in
+            return; // Prevent opening the URL if not logged in
+        }
         window.open(url, '_blank');
         setShowForm(true);
     };
@@ -121,9 +130,28 @@ function WordlePlayService({ updateStatsChart }) {
                     Play
                 </Button>
             </div>
-            <Modal show={showForm} onHide={handleFormClose}>
+
+            {/* Login Prompt Modal */}
+            <Modal show={showLoginPrompt} onHide={handleLoginPromptClose}>
                 <Modal.Header closeButton>
+                    <Modal.Title>Login Required</Modal.Title>
                 </Modal.Header>
+                <Modal.Body>
+                    <p>Please log in or create an account to play Wordle and track your scores.</p>
+                    <div className="d-flex justify-content-between">
+                        <Button variant="primary" onClick={() => navigate('/login')}>
+                            Login
+                        </Button>
+                        <Button variant="secondary" onClick={() => navigate('/register')}>
+                            Create Profile
+                        </Button>
+                    </div>
+                </Modal.Body>
+            </Modal>
+
+            {/* Score Submission Modal */}
+            <Modal show={showForm} onHide={handleFormClose}>
+                <Modal.Header closeButton></Modal.Header>
                 <Modal.Body>
                     <img className='img-fluid d-block m-auto' alt="wordle-logo" style={{ width: "100px" }} src={Wordlelogo}></img>
                     <Form onSubmit={onSubmit}>

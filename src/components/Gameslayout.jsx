@@ -12,7 +12,12 @@ function Gameslayout() {
         <Container>
            <Row className="justify-content-center align-items-center">
                 <Col  className='text-center py-3'>
+                  {userData ? (
                     <h2>{"Welcome "+userData.username+"!"}</h2>
+                  ):(
+                    <h2>{"Welcome Guest!"}</h2>
+                  )}
+                    
                 </Col>
            </Row>
            <Row className="justify-content-center align-items-center">

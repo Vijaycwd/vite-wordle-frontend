@@ -6,6 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Link } from 'react-router-dom';
 import '@fortawesome/fontawesome-free/css/all.min.css';  // Make sure this is imported
+import Logo from '../Logo.png';
 
 function Loginform() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
@@ -58,20 +59,10 @@ function Loginform() {
             <Container className="login-section">
                 <Row className="align-content-center justify-content-center">
                     <Col md={4} className='bg-white px-5 py-3 text-center'>
-                        <p className='fs-4 text-center'>Welcome to <b>WordGAMLE!</b></p>
-                        <p className='text-center'>Soon we’ll be playing various games and creating groups and leaderboards.  But, for now we’re just playing Wordle, and storing results.
-                        </p>
-                        <p className='text-center'>Please create your profile and then click the Wordle button and go from there!</p>
                         {!userAuthData || isEmptyObject ? (
-                            <>
-                                <div>
-                                    <Link className="btn btn-primary btn-lg mt-3" to="/register" style={{width:"60%"}}>Create Profile</Link>
-                                </div>
-                                {showLoginForm && (
-                                    <>
                                         <div>
                                         
-                                        <h4 className='mt-5'>Sign In</h4>
+                                        <h4 className='my-4'>Login</h4>
                                         <Form noValidate validated={validated} onSubmit={handleSubmit}>
                                             <Row className="mb-3">
                                                 <Col>
@@ -115,7 +106,7 @@ function Loginform() {
                                                 </Col>
                                             </Row>
                                             <Button type="submit">
-                                                <i className="fa fa-fw fa-sign-in-alt mr-1"></i>Sign In
+                                                <i className="fa fa-fw fa-sign-in-alt mr-1"></i>Login
                                             </Button>
                                         </Form>
                                         <div className='btn-section my-3'>
@@ -123,14 +114,13 @@ function Loginform() {
                                                 <i className="fa fa-exclamation-triangle text-muted mr-1"></i> Forgot password
                                             </Link>
                                         </div>
-                                        </div>
-                                    </>
-                                )}
-                                {showLoginForm ? '' : <Button className="btn btn-primary btn-lg mt-3" onClick={showLoginformClick} style={{width:"60%"}}>Login
-                                </Button>}
-                            </>
+                                        </div> 
                         ) : (
-                            <Link className="btn btn-primary btn-lg mt-3" to="/wordle">Wordle</Link>
+                            <div>
+                                <h2 className='my-2'>{"Welcome "+userAuthData.username+"!"}</h2>
+                                <p className='my-3'>You are successfully logged in.</p>
+                                <Link className="btn btn-primary btn-lg my-3" to="/wordlestats" style={{width:"60%"}}>Your Stats</Link>
+                            </div>
                         )}
                     </Col>
                 </Row>
