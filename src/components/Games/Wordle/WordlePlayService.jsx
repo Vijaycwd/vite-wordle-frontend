@@ -99,6 +99,7 @@ function WordlePlayService({ updateStatsChart }) {
                     
                     await updateTotalGamesPlayed(TotalGameObject);
                     setScore('');
+                    navigate('/wordlestats');
                 }
             } catch (err) {
                 const errorMsg = err.response?.data?.message || 'An unexpected error occurred.';
