@@ -2,9 +2,7 @@ import React, { useState } from 'react'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Axios from "axios";
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import {Container, Row, Col, Button} from 'react-bootstrap';
 
 function Resetpwd() {
     const [email, setEmail] =useState();
@@ -43,13 +41,7 @@ function Resetpwd() {
                 <Col md={{ span: 6, offset: 3 }}>
                 <div className="hero-static col-md-12 d-flex align-items-center bg-white">
                 <div className="p-3 w-100">
-                
-                    <div className="mb-3 text-center">
-                        <a className="link-fx font-w700 font-size-h1" href="index.html">
-                            <span className="text-dark">Dash</span><span className="text-primary">mix</span>
-                        </a>
-                    </div>
-                    <h2 className="text-center text-uppercase font-w700 font-size-lg text-muted">Forgot Password</h2> 
+                    <h4>Forgot Password</h4> 
                     <div className="row no-gutters justify-content-center">
                         <div className="col-sm-8 col-xl-12">
                                     <form className="js-validation-signin" >
@@ -60,9 +52,9 @@ function Resetpwd() {
                                             
                                         </div>
                                         <div className="form-group">
-                                        <button onClick ={resetPwd} type="submit"  className="btn btn-block btn-hero-lg btn-hero-primary">
+                                        <Button onClick ={resetPwd} type="submit"  className="btn btn-block wordle-btn">
                                                                 <i className="fa fa-fw fa-sign-in-alt mr-1"></i> Send
-                                                            </button>
+                                                            </Button>
                                         </div>
                                     </form>
                         </div>

@@ -43,13 +43,7 @@ function Resetpwdform() {
             <div className="row no-gutters justify-content-center bg-black-75">
         <div className="hero-static col-md-6 d-flex align-items-center bg-white">
             <div className="p-3 w-100">
-            
-                <div className="mb-3 text-center">
-                    <a className="link-fx font-w700 font-size-h1" href="index.html">
-                        <span className="text-dark">Dash</span><span className="text-primary">mix</span>
-                    </a>
-                </div>
-                <h5 className="text-center text-uppercase font-w700 font-size-sm text-muted">Reset Password</h5> 
+                <h4>Reset Password</h4> 
                 <div className="row no-gutters justify-content-center">
                     <div className="col-sm-8 col-xl-6">
                     <Form  className="js-validation-signup">
@@ -57,7 +51,7 @@ function Resetpwdform() {
                         <Form.Label>Password</Form.Label>
                         <Form.Control type="password" className="form-control form-control-lg form-control-alt" name="signup-password" value={password} onChange={(event) => { setPassword(event.target.value);}} placeholder='Enter the password'/>
                         </Form.Group>
-                        <Button className="btn btn-block btn-hero-lg btn-hero-success mt-4"  onClick ={resetPwd} ><i className="fa fa-fw fa-plus mr-1"></i> Update </Button>
+                        <Button className="btn btn-block btn-hero-lg btn-hero-success mt-4"  onClick ={resetPwd} > Update </Button>
                     </Form>
                     </div>
                 </div>

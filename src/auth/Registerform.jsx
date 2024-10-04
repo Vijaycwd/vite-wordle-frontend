@@ -103,7 +103,7 @@ function Registerform() {
                 <Col md={4}>
                     <img src={logo} alt="logo" className='d-block m-auto'></img>
                     <h5>Create New Account</h5>
-                    <Form className="js-validation-signup">
+                    <Form className="js-validation-signup" enctype="multipart/form-data">
                         <Form.Group>
                             <Form.Label>Name</Form.Label>
                             <Form.Control type="text" className="" value={username} onChange={(e) => { setUsername(e.target.value);}} placeholder='Enter the name'/>
