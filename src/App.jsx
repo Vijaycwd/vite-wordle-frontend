@@ -11,18 +11,19 @@ import NotFound from './pages/NotFound';
 import Statistics from './pages/Statistics';
 import Wordlestats from './components/Games/Wordle/Wordlestats';
 import UserProfile from './components/Games/Wordle/UserProfile';
+import Home from './pages/Home';
 
 function App() {
   return (
     <Layout>
       <Routes>
-        <Route  path="/" element={<Userlogin />} />
+        <Route  path="/" element={<Home/>} />
         <Route  path="/login" element={<Userlogin />} />
         <Route  path="/register" element={<Registerform />} />
         <Route  path="*" element={<NotFound/>} />
+        <Route  path='/wordle' element={<Statistics/>}/>
         <Route  path='/' element={<ProtectedRouter/>}>
           <Route  path='/dashboard' element={<Dashboard/>}/>
-          <Route  path='/wordle' element={<Statistics/>}/>
           <Route  path= '/wordlestats' element={<Wordlestats/>}/>
           <Route  path= '/edit-profile' element={<UserProfile/>}/>
         </Route>
