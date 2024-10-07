@@ -53,7 +53,7 @@ function UserProfile() {
             confirmpassword: confirmpassword,
             avatar: avatar
         };
-
+        console.log(userObject);
         // Perform validation
         const validationErrors = validation(userObject);
         setErrors(validationErrors);

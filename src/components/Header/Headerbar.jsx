@@ -32,10 +32,10 @@ const Headerbar = () => {
     navigate('/login');
   };
 
-  const editUser = (username, email, id, isEditing) => {
+  const editUser = (username, email, id, avatar, isEditing) => {
     setShow(false);
     navigate('/edit-profile', {
-      state: { username, email, id, isEditing }
+      state: { username, email, id, avatar, isEditing }
     });
   };
 
@@ -96,7 +96,7 @@ const Headerbar = () => {
                             <img src={`https://wordle-server-nta6.onrender.com/public/uploads/${userData.avatar}`} alt="User Avatar" className="img-fluid" />
                           </div>
                           <div>
-                            <p className='fs-4 m-0 cwd-edit-profile' onClick={() => editUser(userData.username, userData.email, userData._id, true)}>{userData.username}</p>
+                            <p className='fs-4 m-0 cwd-edit-profile' onClick={() => editUser(userData.username, userData.email, userData._id, userData.avatar, true)}>{userData.username}</p>
                           </div>
                           
                           <p>{userData.email}</p>
