@@ -103,13 +103,6 @@ function UserProfile() {
                             <Form.Control type="text" className="" value={username} onChange={(e) => { setUsername(e.target.value);}} placeholder='Enter the name'/>
                             {errors.username && <p className='form-validation-error'>{errors.username}</p>}
                         </Form.Group>
-                        
-                        <Form.Group>
-                            <Form.Label>Email</Form.Label>
-                            <Form.Control type="email"  value={email} onChange={(e) => { setEmail(e.target.value);}} placeholder='Enter the email'/>
-                            {errors.email && <p className='form-validation-error'>{errors.email}</p>}
-                        </Form.Group>
-
                         <Form.Group >
                             <Form.Label>Password</Form.Label>
                             <Form.Control type="password" className="" value={password} onChange={(e) => { setPassword(e.target.value);}} placeholder='Enter the password'/>
