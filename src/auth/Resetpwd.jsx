@@ -20,8 +20,8 @@ function Resetpwd() {
                 });
             }
             else{
-                toast.success("Login Successfully", {
-                    position: toast.POSITION.TOP_CENTER
+                toast.success('Login successfully!', {
+                    position: "top-center"
                 });
                 console.log(res.data);
             }
@@ -29,7 +29,7 @@ function Resetpwd() {
         .catch((err) => {
             console.log(err);
             toast.error("Invalid User Details", {
-                position: toast.POSITION.TOP_CENTER
+                position: "top-center"
             });
         })
     }

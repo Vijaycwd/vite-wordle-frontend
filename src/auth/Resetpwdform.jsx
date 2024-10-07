@@ -19,12 +19,12 @@ function Resetpwdform() {
             console.log(res.data);
             if(res.data === 'Email Not Exist'){
                 toast.error("Email Not Exist !", {
-                    position: toast.POSITION.TOP_CENTER
+                    position: "top-center"
                 });
             }
             else{
                 toast.success("Login Successfully", {
-                    position: toast.POSITION.TOP_CENTER
+                    position: "top-center"
                 });
                 console.log(res.data);
             }
@@ -32,7 +32,7 @@ function Resetpwdform() {
         .catch((err) => {
             console.log(err);
             toast.error("Invalid User Details", {
-                position: toast.POSITION.TOP_CENTER
+                position: "top-center"
             });
         })
     }
