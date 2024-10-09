@@ -8,6 +8,7 @@ function Home() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const userAuthData = USER_AUTH_DATA;
     const navigate = useNavigate();
+    
     const loginformClick = () => {
         navigate('/login');
     }
