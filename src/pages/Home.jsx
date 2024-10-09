@@ -22,10 +22,10 @@ function Home() {
                         <p className='text-center'>Soon we’ll be playing various games and creating groups and leaderboards.  But, for now we’re just playing Wordle and storing results.
                         </p>
                         <Link className="btn btn-primary btn-lg my-3" to="/wordle">Wordle</Link>
-                        <p className='text-center'>Please create your profile and then click the Wordle button and go from there!</p>
                         {!userAuthData || isEmptyObject ? (
                             <>
                                 <div>
+                                    <p className='text-center'>Please create your profile and then click the Wordle button and go from there!</p>
                                     <Link className="btn btn-primary btn-lg my-3" to="/register" style={{width:"60%"}}>Create Profile</Link>
                                     <Button className="btn btn-primary btn-lg mt-3" onClick={loginformClick} style={{width:"60%"}}>Login
                                         </Button>
