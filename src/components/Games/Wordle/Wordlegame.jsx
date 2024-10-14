@@ -1,11 +1,11 @@
-import React, { forwardRef } from 'react';
+import React from 'react';
 import { Row, Col, Button} from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import WordlePlayService from './WordlePlayService';
 
-const Wordlegame = forwardRef((props, ref) => {
+const Wordlegame = () => {
     const navigate = useNavigate();
 
     const handleWordlestate = async (event) => {
@@ -22,8 +22,7 @@ const Wordlegame = forwardRef((props, ref) => {
                 </Col>
                 <Col>
                     <div className="my-3">
-                        {/* Assign the ref to the Stats button */}
-                        <Button ref={ref} className="wordle-btn px-5" onClick={handleWordlestate}>
+                        <Button className="wordle-btn px-5" onClick={handleWordlestate}>
                             Stats
                         </Button>
                     </div>
@@ -31,6 +30,6 @@ const Wordlegame = forwardRef((props, ref) => {
             </Row>
         </>
     );
-});
+};
 
 export default Wordlegame;
