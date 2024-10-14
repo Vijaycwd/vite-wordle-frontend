@@ -18,14 +18,16 @@ function Home() {
         <>
             <Container className="login-section">
                 <Row className="align-content-center justify-content-center">
-                    <Col md={4} className='bg-white px-5 py-3 text-center'>
+                    <Col md={4} className='bg-white px-3 py-3 text-center'>
                         <p className='fs-4 text-center'>Welcome to <b>WordGAMLE!</b></p>
                         <p className='text-center'>Eventually we’ll add more games and will be creating groups and leaderboards.  But, for now we’re just playing Wordle, Connections and Phrazle and storing results.
                         </p>
-                        <Link className="btn btn-primary btn-lg my-3" to="/wordle">Wordle</Link>
-                        <Link className="btn btn-primary btn-lg my-3" to="/connections">Connections
-                        </Link>
-                        <Link className="btn btn-primary btn-lg my-3" to="/phrazle">Phrazle</Link>
+                        <div className="d-flex justify-content-around">
+                            <Link className="btn btn-primary btn-lg my-3" to="/wordle">Wordle</Link>
+                            <Link className="btn btn-primary btn-lg my-3" to="/connections">Connections
+                            </Link>
+                            <Link className="btn btn-primary btn-lg my-3" to="/phrazle">Phrazle</Link>
+                        </div>
                         {!userAuthData || isEmptyObject ? (
                             <>
                                 <div>
