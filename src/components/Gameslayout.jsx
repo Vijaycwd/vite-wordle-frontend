@@ -32,14 +32,14 @@ function Gameslayout() {
                     <li><strong>COPY:</strong> Click SHARE, then COPY to copy your Wordle result</li>
                     <li><strong>PASTE:</strong> Navigate back to WordGAMLE.com to paste your Wordle result</li>
                   </ol>
-                  <div className="d-flex row ">
-                    <div className="note">
+                  <Row className="d-flex justify-content-center">
+                    <Col md={8}>
                       <p className="message">*For anyone who has already  played and has the  Result copied, click the “Enter Result” button to enter today’s game result.</p>
-                    </div>
-                    <div className="enter-game">
-                    <Button>Enter Result</Button>
-                    </div>
-                  </div>
+                    </Col>
+                    <Col md={4}>
+                      <Button>Enter Result</Button>
+                    </Col>
+                  </Row>
                 </div>
               </Col>
             </Row>
