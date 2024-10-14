@@ -1,5 +1,5 @@
 import React from 'react';
-import { Col, Container, Row } from 'react-bootstrap'
+import { Col, Container, Row, Button } from 'react-bootstrap'
 import Wordlegamesection from './Games/Wordle/Wordlegamesection';
 
 function Gameslayout() {
@@ -32,6 +32,14 @@ function Gameslayout() {
                     <li><strong>COPY:</strong> Click SHARE, then COPY to copy your Wordle result</li>
                     <li><strong>PASTE:</strong> Navigate back to WordGAMLE.com to paste your Wordle result</li>
                   </ol>
+                  <div className="d-flex">
+                    <div className ="note">
+                      <p className="message">*For anyone who has already  played and has the  Result copied, click the “Enter Result” button to enter today’s game result.</p>
+                    </div>
+                    <div className="enter-game">
+                    <Button>test</Button>
+                    </div>
+                  </div>
                 </div>
               </Col>
             </Row>

@@ -14,6 +14,8 @@ import Resetpwdform from './auth/Resetpwdform';
 import Wordlestats from './components/Games/Wordle/Wordlestats';
 import UserProfile from './components/Games/Wordle/UserProfile';
 import Home from './pages/Home';
+import Connectionsgame from './components/Games/Connections/Connectionsgame';
+import Phrazlegame from './components/Games/Phrazle/Phrazlegame';
 
 
 function App() {
@@ -31,6 +33,8 @@ function App() {
           <Route  path='/dashboard' element={<Dashboard/>}/>
           <Route  path= '/wordlestats' element={<Wordlestats/>}/>
           <Route  path= '/edit-profile' element={<UserProfile/>}/>
+          <Route  path= '/connections' element={<Connectionsgame/>}/>
+          <Route  path= '/phrazle' element={<Phrazlegame/>}/>
         </Route>
       </Routes>
     </Layout>
