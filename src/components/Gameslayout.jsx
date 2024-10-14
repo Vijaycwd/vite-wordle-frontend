@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Col, Container, Row, Button } from 'react-bootstrap'
 import Wordlegamesection from './Games/Wordle/Wordlegamesection';
 
 function Gameslayout() {
   const userAuthData = JSON.parse(localStorage.getItem('auth'));
   const userData = userAuthData;
-    
+  const wordleGameButtonRef = useRef(null);
     // console.log('User Data State:', userData.username);
-
+  const triggerWordleGameButtonClick = () => {
+    if (wordleGameButtonRef.current) {
+      wordleGameButtonRef.current.click(); // Trigger the button click in Wordlegame
+    }
+  };
     return (
         <Container>
            <Row className="justify-content-center align-items-center">
@@ -21,7 +25,7 @@ function Gameslayout() {
                 </Col>
            </Row>
            <Row className="justify-content-center align-items-center">
-            <Wordlegamesection/>  
+            <Wordlegamesection buttonRef={wordleGameButtonRef} />
             </Row>
             <Row className="justify-content-center align-items-center">
               <Col md={6} className='py-5'>
@@ -37,7 +41,7 @@ function Gameslayout() {
                       <p className="message">*For anyone who has already  played and has the  Result copied, click the “Enter Result” button to enter today’s game result.</p>
                     </Col>
                     <Col md={4}>
-                      <Button>Enter Result</Button>
+                      <Button onClick={triggerWordleGameButtonClick}>Enter Result</Button>
                     </Col>
                   </Row>
                 </div>
