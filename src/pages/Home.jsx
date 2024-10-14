@@ -24,8 +24,7 @@ function Home() {
                         </p>
                         <div className="d-flex justify-content-around">
                             <Link className="btn btn-primary btn-lg my-3" to="/wordle">Wordle</Link>
-                            <Link className="btn btn-primary btn-lg my-3" to="/connections">Connections
-                            </Link>
+                            <Link className="btn btn-primary btn-lg my-3" to="/connections">Connections</Link>
                             <Link className="btn btn-primary btn-lg my-3" to="/phrazle">Phrazle</Link>
                         </div>
                         {!userAuthData || isEmptyObject ? (

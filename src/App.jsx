@@ -27,14 +27,14 @@ function App() {
         <Route  path="/register" element={<Registerform />} />
         <Route  path="*" element={<NotFound/>} />
         <Route  path='/wordle' element={<Statistics/>}/>
+        <Route  path= '/connections' element={<Connectionsgame/>}/>
+        <Route  path= '/phrazle' element={<Phrazlegame/>}/>
         <Route exact path="/reset-password" element={<Resetpwd />} />
         <Route exact path="/reset-password/:id/:token" element={<Resetpwdform />} />
         <Route  path='/' element={<ProtectedRouter/>}>
           <Route  path='/dashboard' element={<Dashboard/>}/>
           <Route  path= '/wordlestats' element={<Wordlestats/>}/>
           <Route  path= '/edit-profile' element={<UserProfile/>}/>
-          <Route  path= '/connections' element={<Connectionsgame/>}/>
-          <Route  path= '/phrazle' element={<Phrazlegame/>}/>
         </Route>
       </Routes>
     </Layout>
