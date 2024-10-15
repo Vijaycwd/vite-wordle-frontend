@@ -9,9 +9,10 @@ import LoginModal from './Games/Wordle/Modals/LoginModal';
 import WordleModal from './Games/Wordle/Modals/WordleScoreModal';
 
 function Gameslayout() {
-  const userData = JSON.parse(localStorage.getItem('auth'));
-  const loginUsername = userData.username; 
-  const loginUserEmail = userData.email; 
+  const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
+  const { username: loginUsername, email: loginUserEmail } = USER_AUTH_DATA;
+  console.log(USER_AUTH_DATA);
+  
 
   const [showForm, setShowForm] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
@@ -95,7 +96,7 @@ function Gameslayout() {
                       currentStreak: streak,
                       guessDistribution: updatedGuessDistribution,
                   };
-
+                  console.log(TotalGameObject);
                   await updateTotalGamesPlayed(TotalGameObject);
                   setScore('');
                   navigate('/wordlestats');
@@ -113,13 +114,13 @@ function Gameslayout() {
           toast.error('Failed to update total games played', { position: "top-center" });
       }
   };
-  console.log(userData);
+  console.log(USER_AUTH_DATA.username);
   return (
     <>
     <Container>
       <Row className="justify-content-center align-items-center">
         <Col className="text-center py-3">
-          {userData ? <h2>{"Welcome " + userData.username + "!"}</h2> : <h2>{"Welcome Guest!"}</h2>}
+          {USER_AUTH_DATA.username ? <h2>{"Welcome " + USER_AUTH_DATA.username + "!"}</h2> : <h2>{"Welcome Guest!"}</h2>}
         </Col>
       </Row>
       <Row className="justify-content-center align-items-center">
