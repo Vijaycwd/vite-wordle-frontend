@@ -7,7 +7,7 @@ import WordleModal from './WordleModal'; // Import Wordle modal
 import LoginModal from './LoginModal'; // Import Login modal
 
 function Gameslayout() {
-  const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
+  const userData = JSON.parse(localStorage.getItem('auth'));
   const loginuserEmail = USER_AUTH_DATA.email;
   const { username: loginUsername, email: loginUserEmail } = userData;
 
@@ -41,7 +41,6 @@ function Gameslayout() {
     event.preventDefault();
     // Your form submission logic
   };
-console.log('y'USER_AUTH_DATA);
   return (
     <Container>
       <Row className="justify-content-center align-items-center">
