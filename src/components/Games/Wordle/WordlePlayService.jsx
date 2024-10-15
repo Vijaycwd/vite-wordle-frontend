@@ -4,8 +4,8 @@ import Axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import LoginModal from './LoginModal';
-import WordleModal from './WordleModal';
+import LoginModal from './Modals/LoginModal';
+import WordleModal from './Modals/WordleScoreModal';
 
 function WordlePlayService({ updateStatsChart }) {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};

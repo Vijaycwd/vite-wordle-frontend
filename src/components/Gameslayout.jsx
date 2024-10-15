@@ -3,12 +3,13 @@ import { Col, Container, Row, Button } from 'react-bootstrap';
 import Wordlegamesection from './Games/Wordle/Wordlegamesection';
 import Axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import WordleModal from './WordleModal'; // Import Wordle modal
-import LoginModal from './LoginModal'; // Import Login modal
+import LoginModal from './Games/Wordle/Modals/LoginModal';
+import WordleModal from './Games/Wordle/Modals/WordleScoreModal';
 
 function Gameslayout() {
-  const userData = JSON.parse(localStorage.getItem('auth'));
-  const { username: loginUsername, email: loginUserEmail } = userData;
+  const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {}; // Fallback if auth is missing
+    const { username: loginUsername, email: loginUserEmail } = USER_AUTH_DATA;
+  // const { username: loginUsername, email: loginUserEmail } = userData;
 
   const [showForm, setShowForm] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
@@ -39,11 +40,12 @@ function Gameslayout() {
     event.preventDefault();
     // Your form submission logic
   };
+  console.log(USER_AUTH_DATA);
   return (
     <Container>
       <Row className="justify-content-center align-items-center">
         <Col className="text-center py-3">
-          {userData ? <h2>{"Welcome " + userData.username + "!"}</h2> : <h2>{"Welcome Guest!"}</h2>}
+          {USER_AUTH_DATA.length > 0 ? <h2>{"Welcome " + USER_AUTH_DATA.username + "!"}</h2> : <h2>{"Welcome Guest!"}</h2>}
         </Col>
       </Row>
       <Row className="justify-content-center align-items-center">
