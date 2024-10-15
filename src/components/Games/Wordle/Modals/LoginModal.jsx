@@ -24,5 +24,4 @@ const LoginModal = ({ showLoginPrompt, handleLoginPromptClose }) => {
     </Modal>
   );
 };
-
 export default LoginModal;

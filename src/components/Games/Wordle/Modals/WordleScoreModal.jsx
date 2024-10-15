@@ -35,5 +35,4 @@ const WordleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore
     </Modal>
   );
 };
-
 export default WordleScoreModal;

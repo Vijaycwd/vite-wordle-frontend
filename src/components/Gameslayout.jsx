@@ -8,14 +8,12 @@ import LoginModal from './LoginModal'; // Import Login modal
 
 function Gameslayout() {
   const userData = JSON.parse(localStorage.getItem('auth'));
-  const loginuserEmail = USER_AUTH_DATA.email;
   const { username: loginUsername, email: loginUserEmail } = userData;
 
   const [showForm, setShowForm] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [score, setScore] = useState('');
-  const [guessDistribution, setGuessDistribution] = useState([0, 0, 0, 0, 0, 0]); // Initialize with 6 guesses
-  const [gameIsWin, setGameIsWin] = useState(false);
+
 
   const navigate = useNavigate();
 
