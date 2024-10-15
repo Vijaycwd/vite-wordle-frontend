@@ -102,3 +102,6 @@ body{
   right: 28%;
   cursor: pointer;
 }
+.bottom-message, .bottom-btn{
+  font-size: 12px;
+}
