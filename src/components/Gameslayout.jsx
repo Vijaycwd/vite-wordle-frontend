@@ -10,8 +10,8 @@ import WordleModal from './Games/Wordle/Modals/WordleScoreModal';
 
 function Gameslayout() {
   const userData = JSON.parse(localStorage.getItem('auth'));
-  const loginUsername  = userData.email;
-
+  const loginUsername = userData.username; 
+  const loginUserEmail = userData.email; 
 
   const [showForm, setShowForm] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
