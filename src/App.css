@@ -105,9 +105,13 @@ body{
 .bottom-message, .bottom-btn{
   font-size: 12px;
 }
+.guess-item{
+  gap: 5px;
+}
 .guess-item-value{
   font-weight: bold;
   color: #ffffff;
   font-size: 12px;
   line-height: 18px;
+  height: 18px;
 }
