@@ -83,7 +83,8 @@ function WordlePlayService({ updateStatsChart }) {
                     const currentStats = await Axios.get(`https://wordle-server-nta6.onrender.com/wordle-game-stats/${loginUserEmail}`);
                     const currentStreak = currentStats.data.currentStreak || 0;
                     const streak = isWin ? currentStreak + 1 : 0;
-
+                    console.log(wordleScore);
+                    console.log(updatedGuessDistribution);
                     const TotalGameObject = {
                         username: loginUsername,
                         useremail: loginUserEmail,

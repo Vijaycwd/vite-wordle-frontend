@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import WordleScoreByDate from './WordleScoreByDate';
 import Wordlestatistics from './Wordlestatistics';
 import WordlePlayService from './WordlePlayService';
+import WordleGuessDistribution from './WordleGuessDistribution';
 
 function Wordlestatechart() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
@@ -111,6 +112,11 @@ function Wordlestatechart() {
                     <Row className='align-items-center justify-content-center'>
                         <Col md={4}>
                             <Wordlestatistics />
+                        </Col>
+                    </Row>
+                    <Row className='align-items-center justify-content-center'>
+                        <Col md={4}>
+                            <WordleGuessDistribution/>
                         </Col>
                     </Row>
                     <Row className='align-items-center justify-content-center'>

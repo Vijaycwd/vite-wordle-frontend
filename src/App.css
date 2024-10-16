@@ -41,7 +41,7 @@ body{
   float:right;
 }
 
-.statistics h2{
+.statistics h2, .guess-distribution h2{
   font-weight: 700;
   font-size: 14px;
 }
@@ -104,4 +104,10 @@ body{
 }
 .bottom-message, .bottom-btn{
   font-size: 12px;
+}
+.guess-item-value{
+  font-weight: bold;
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 18px;
 }
