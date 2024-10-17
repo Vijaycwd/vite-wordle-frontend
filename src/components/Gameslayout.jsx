@@ -31,12 +31,12 @@ function Gameslayout() {
       setShowLoginPrompt(false);
   };
 
-  const handleShow = (url) => {
+  const handleShow = async (event) => {
+    event.preventDefault();
       if (!loginUsername || !loginUserEmail) {
           setShowLoginPrompt(true);
           return;
       }
-      window.open(url, '_blank');
       setShowForm(true);
   };
 
@@ -140,7 +140,7 @@ function Gameslayout() {
                 <p className="bottom-message">*For anyone who has already played and has the result copied, click the “Enter Result” button to enter today’s game result.</p>
               </Col>
               <Col md={4} xs={4}>
-                <Button className="wordle-btn bottom-btn" onClick={() => handleShow('https://www.nytimes.com/games/wordle/index.html')}>
+                <Button className="wordle-btn bottom-btn" onClick={handleShow}>
                   Enter Result
                 </Button>
               </Col>
