@@ -14,7 +14,7 @@ import Resetpwdform from './auth/Resetpwdform';
 import Wordlestats from './components/Games/Wordle/Wordlestats';
 import UserProfile from './components/Games/Wordle/UserProfile';
 import Home from './pages/Home';
-import Connectionsgame from './components/Games/Connections/Connectionsgame';
+import Connectionsgame from './components/Games/Connections/GameLayout';
 import Phrazlegame from './components/Games/Phrazle/Phrazlegame';
 
 

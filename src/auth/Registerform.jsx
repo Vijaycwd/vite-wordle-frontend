@@ -87,7 +87,6 @@ function Registerform() {
                     totalWinGames: 0,
                     lastgameisWin: 0,
                     currentStreak: 0,
-                    handleHighlight: 0,
                 };
 
                 try {
