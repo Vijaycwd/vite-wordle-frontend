@@ -11,7 +11,7 @@ function WordleGuessDistribution() {
     if (loginuserEmail) {
         getGuessValue();
     }
-  }, [loginuserEmail]);
+  }, [loginuserEmail, wordleGuessData]);
 
   function getGuessValue() {
     Axios.get(`https://wordle-server-nta6.onrender.com/wordle-game-stats/${loginuserEmail}`)
@@ -25,7 +25,7 @@ function WordleGuessDistribution() {
             console.error("Error fetching data: ", error);
         });
   }
-
+console.log(wordleGuessData);
   return (
     <>
     <div>
