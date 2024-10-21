@@ -57,6 +57,7 @@ function WordleGuessDistribution() {
                   >
                     {guess}
                   </div>
+                  <span>({percentage}%)</span>
                 </div>
                 );
               })}
