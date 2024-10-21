@@ -16,6 +16,7 @@ function UserProfile() {
     const [password, setPassword] = useState(null);
     const [confirmpassword, setConfirmpassword] = useState(null);
     const [avatar, setAvatar] = useState();
+    const [previewUrl, setPreviewUrl] = useState('');
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
 
@@ -26,10 +27,20 @@ function UserProfile() {
         setAvatar(defaultFile);
     }, []);
 
-    const handleUpload = async (e) => {
+    const handleUpload = async (event) => {
 
-        setAvatar(e.target.files[0]);
+        const file = event.target.files[0];
+        setAvatar(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+        setPreviewUrl(reader.result); // Set the preview URL
+        };
+
+        if (file) {
+        reader.readAsDataURL(file); // Convert file to base64 URL
+        }
     }
+
     const validation = (userObject) => {
         const errors = {};
     
@@ -117,6 +128,12 @@ function UserProfile() {
                             <Form.Label>Profile Picture</Form.Label>
                             <Form.Control type="file" name="avatar" onChange={handleUpload}  />
                         </Form.Group>
+                        {previewUrl && (
+                            <div>
+                            <p>Image Preview:</p>
+                            <img src={previewUrl} alt="Profile Preview" style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
+                            </div>
+                        )}
                         <Button className="btn btn-block btn-hero-lg btn-hero-success mt-4"  onClick={(e) => updateUser(e)} ><i className="fa fa-fw fa-plus mr-1"></i> Update</Button>
                     </Form>
                 </Col>
