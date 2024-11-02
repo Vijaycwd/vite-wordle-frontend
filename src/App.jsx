@@ -11,11 +11,11 @@ import NotFound from './pages/NotFound';
 import Statistics from './pages/Statistics';
 import Resetpwd from './auth/Resetpwd';
 import Resetpwdform from './auth/Resetpwdform';
-import Wordlestats from './components/Games/Wordle/Wordlestats';
 import UserProfile from './components/Games/Wordle/UserProfile';
 import Home from './pages/Home';
 import Connectionsgame from './components/Games/Connections/GameLayout';
 import Phrazlegame from './components/Games/Phrazle/Phrazlegame';
+import Wordlestats from './components/Games/Wordle/Wordlestats';
 
 
 function App() {

@@ -5,14 +5,30 @@ import Logo from '../../Logo.png';
 import TitleLogo from '../../WordleTitleLogo.png';
 import { useNavigate } from "react-router-dom";
 import '@fortawesome/fontawesome-free/css/all.min.css'; 
+import axios from 'axios';
 
 const Headerbar = () => {
-  const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
-  const userData = USER_AUTH_DATA;
+  const USER_AUTH_DATA = JSON.parse(sessionStorage.getItem('auth'));
+  const userEmail = USER_AUTH_DATA?.email;
+  const [userData, setUserData] = useState({});
   const [show, setShow] = useState(false);
   const [target, setTarget] = useState(null);
   const ref = useRef(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (userEmail) {
+      axios.get('https://coralwebdesigns.com/college/wordgamle/user/get-user.php', {
+        params: { useremail: userEmail },
+      })
+      .then(response => {
+        setUserData(response.data.user);  // Assumes response has user details in `data`
+      })
+      .catch(error => {
+        console.error('Error fetching user data:', error);
+      });
+    }
+  }, [userEmail]);
 
   const handleClick = (event) => {
     setShow(!show);
@@ -22,7 +38,7 @@ const Headerbar = () => {
   const logout = async (event) => {
     event.preventDefault();
     setShow(false);
-    localStorage.clear();
+    sessionStorage.removeItem('auth');
     navigate('/');
   };
 
@@ -38,22 +54,7 @@ const Headerbar = () => {
       state: { username, email, id, avatar, isEditing }
     });
   };
-
-  // Close Popover when clicking outside
-  useEffect(() => {
-    const handleOutsideClick = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) {
-        setShow(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleOutsideClick);
-
-    return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
-    };
-  }, []);
-
+  console.log(userData.avatar);
   return (
     <Container>
       <Row className="justify-content-center align-items-center py-2">
@@ -87,21 +88,23 @@ const Headerbar = () => {
               <Popover id="popover-contained">
                 <Popover.Body>
                   <div className='text-center'>
-                    {!userData || Object.keys(userData).length <= 0 ? (
+                    {!USER_AUTH_DATA ? (
                       <Button onClick={login}>Login</Button>
                     ) : (
                       <>
                         <div>
-                          <div>
-                            <img src={`https://wordle-server-nta6.onrender.com/public/uploads/${userData.avatar}`} alt="User Avatar" className="img-fluid" />
-                          </div>
-                          <div>
-                            <p className='fs-4 m-0 cwd-edit-profile' onClick={() => editUser(userData.username, userData.email, userData._id, userData.avatar, true)}>{userData.username}</p>
-                          </div>
-                          
+                        <img 
+                          src={`https://coralwebdesigns.com/college/wordgamle/user/uploads/${userData.avatar}`} 
+                          alt="User Avatar" 
+                          width="30px"
+                          height="30px"
+                          className="img-fluid" 
+                          onError={(e) => e.target.src = 'https://coralwebdesigns.com/college/wordgamle/user/uploads/default_avatar.png'}
+                        />
+                          <p className='fs-4 m-0 cwd-edit-profile' onClick={() => editUser(userData.username, userData.email, userData.id, userData.avatar, true)}>{userData.username}</p>
                           <p>{userData.email}</p>
                           <div className="user-profile-button">
-                            <Button onClick={() => editUser(userData.username, userData.email, userData._id, true)}>Edit</Button>
+                            <Button onClick={() => editUser(userData.username, userData.email, userData.id, true)}>Edit</Button>
                             <Button onClick={logout}>Logout</Button>
                           </div>
                         </div>

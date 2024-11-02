@@ -6,23 +6,20 @@ import {Container, Row, Col, Button} from 'react-bootstrap';
 
 function Resetpwd() {
     const [email, setEmail] =useState();
+
     const resetPwd = async (e) => {
         e.preventDefault()
         setEmail('');
-        const userObject = {
-            email: email
-        }
-        Axios.post('https://wordle-server-nta6.onrender.com/use/reset-password', userObject)
+        Axios.post('https://coralwebdesigns.com/college/wordgamle/auth/reset-password.php', {
+            useremail: email
+        })        
         .then( res =>{
             if(res.data === 'Email Not Exist'){
                 toast.error("Email Not Exist !", {
-                    position: toast.POSITION.TOP_CENTER
+                    position: "top-center"
                 });
             }
             else{
-                toast.success('Login successfully!', {
-                    position: "top-center"
-                });
                 console.log(res.data);
             }
         })

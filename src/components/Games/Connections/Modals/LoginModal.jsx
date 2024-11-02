@@ -11,7 +11,7 @@ const LoginModal = ({ showLoginPrompt, handleLoginPromptClose }) => {
         <Modal.Title>Login Required</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>Please log in or create an account to play Connections and track your scores.</p>
+        <p>Please log in or create an account to play Wordle and track your scores.</p>
         <div className="d-flex justify-content-between">
           <Button variant="primary" onClick={() => navigate('/login')}>
             Login

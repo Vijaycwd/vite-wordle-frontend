@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, Button, Form, FloatingLabel } from 'react-bootstrap';
 
-const WordleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore, loginUsername }) => {
+const ConnectionsScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore, loginUsername }) => {
   return (
     <Modal show={showForm} onHide={handleFormClose}>
       <Modal.Header closeButton></Modal.Header>
@@ -35,4 +35,4 @@ const WordleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore
     </Modal>
   );
 };
-export default WordleScoreModal;
+export default ConnectionsScoreModal;

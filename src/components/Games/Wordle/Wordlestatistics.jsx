@@ -1,17 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Axios from 'axios';
 
 function Wordlestatistics() {
-    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
+    const USER_AUTH_DATA = JSON.parse(sessionStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA.email;
-    const [userEmail, setUserEmail] = useState(loginuserEmail);
     const [totalGame, setTotalGame] = useState('');
     const [totalWin, setTotalWin] = useState('');
     const [wordleStatsData, setwordleStatsData] = useState();
     const [currentStreak, setcurrentStreak] = useState();
     const [maxStreak, setmaxStreak] = useState();
-    
-    const [statChart, setStatChart] = useState(null);
 
     // useEffect(() => {
     //     getStatsValue();
@@ -21,13 +18,15 @@ function Wordlestatistics() {
         if (loginuserEmail) {
             getStatsValue();
         }
-      }, [loginuserEmail, wordleStatsData])
+      }, [loginuserEmail])
 
     function getStatsValue() {
        
-        Axios.get(`https://wordle-server-nta6.onrender.com/wordle-game-stats/${userEmail}`)
+        Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/get-statistics.php?useremail=${loginuserEmail}`)
             .then((response) => {
-                response.data.forEach((item) => {
+                // console.log(response.data.statistics);
+                const statistics = response.data.statistics;
+                statistics.forEach((item) => {
                     setwordleStatsData(item);
                     setTotalGame(item.totalGamesPlayed);
                     setTotalWin(item.totalWinGames);

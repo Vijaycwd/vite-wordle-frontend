@@ -1,53 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Axios from 'axios';
 import './WordleScores.css';
 import { Container, Row, Col } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
 import WordleScoreByDate from './WordleScoreByDate';
 import Wordlestatistics from './Wordlestatistics';
 import WordlePlayService from './WordlePlayService';
 import WordleGuessDistribution from './WordleGuessDistribution';
 
 function Wordlestatechart() {
-    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
+    const USER_AUTH_DATA = JSON.parse(sessionStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA.email;
 
     const [statschart, setStatsChart] = useState([]);
-    const [userEmail, setUserEmail] = useState(loginuserEmail);
     const [totalGame, setTotalGame] = useState('');
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-            getStatChart();
+        getStatChart();
     }, []);
 
     function getStatChart() {
-        const startOfDay = new Date();
-        startOfDay.setHours(0, 0, 0, 0);
-
-        const endOfDay = new Date();
-        endOfDay.setHours(23, 59, 59, 999);
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        console.log(timeZone);
-        Axios.get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}/?timeZone=${timeZone}`)
-            .then((response) => {
-                // console.log(response.data);
-                const scoreData = response.data
-                    .filter(item => {
-                        const itemDate = new Date(item.createdAt); // Change 'timestamp' to your actual date field name
-                        return itemDate >= startOfDay && itemDate <= endOfDay;
-                    });
-                const PlayedGame = response.data;
+        Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/get-score.php`, {
+            params: {
+                useremail: loginuserEmail,
+                timeZone: timeZone
+            }
+        })
+        .then((response) => {
+            console.log(response.data);
+            if (response.data.status === "success") {
+                const scoreData = response.data.wordlescore;
                 setLoading(false);
                 setStatsChart(scoreData);
-                setTotalGame(PlayedGame.length);
-            })
-            .catch((error) => {
-                console.error("Error fetching data: ", error);
+                setTotalGame(scoreData);
+            } else {
+                console.error("No scores found for today.");
                 setLoading(false);
-            });
+            }
+        })
+        .catch((error) => {
+            console.error("Error fetching data: ", error);
+            setLoading(false);
+        });
     }
-    
+
     // Function to slice the string into rows of a specified length
     function splitIntoRows(inputString, rowLength) {
         const rows = [];
@@ -70,7 +67,6 @@ function Wordlestatechart() {
                                 {loading ? (
                                     <div className='text-center my-4'>
                                         <p>Loading...</p>
-                                        {/* You can also add a spinner here if you prefer */}
                                     </div>
                                 ) : (
                                     statschart && Array.isArray(statschart) && statschart.length > 0 ? (
@@ -79,12 +75,7 @@ function Wordlestatechart() {
                                             const lettersAndNumbersRemoved = char.wordlescore.replace(/[a-zA-Z0-9,/\\]/g, "");
                                             const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
                                             const wordleScores = splitIntoRows(removespace, 5);
-                                            const guess = char.guessdistribution;
-                                            const totalWins = statschart.reduce((total, char) => {
-                                                const guess = char.guessdistribution;
-                                                return total + guess.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-                                            }, 0);
-                                            const createDate = char.createdAt;
+                                            const createDate = char.createdat; // Make sure this matches your database field name
                                             const date = new Date(createDate);
                                             const todayDate = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
                                             return (
@@ -116,12 +107,12 @@ function Wordlestatechart() {
                     </Row>
                     <Row className='align-items-center justify-content-center'>
                         <Col md={4}>
-                            <WordleGuessDistribution/>
+                            <WordleGuessDistribution />
                         </Col>
                     </Row>
                     <Row className='align-items-center justify-content-center'>
                         <Col md={4} className='text-align-center py-5'>
-                            <WordleScoreByDate/>
+                            <WordleScoreByDate />
                         </Col>
                     </Row>
                 </Col>

@@ -5,19 +5,18 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Link } from 'react-router-dom';
-import '@fortawesome/fontawesome-free/css/all.min.css';  // Make sure this is imported
+import '@fortawesome/fontawesome-free/css/all.min.css';
 import Logo from '../Logo.png';
 
 function Loginform() {
-    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
-    const userAuthData = USER_AUTH_DATA;
+    const userAuthData = JSON.parse(sessionStorage.getItem('auth')); // Change here
     const navigate = useNavigate();
     const [validated, setValidated] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showLoginForm, setShowLoginForm] = useState(false);
-
+    console.log(userAuthData);
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
@@ -35,14 +34,15 @@ function Loginform() {
             setEmail('');
             setPassword('');
             const userObject = { email, password };
-            Axios.post('https://wordle-server-nta6.onrender.com/use/login', userObject)
+            Axios.post('https://coralwebdesigns.com/college/wordgamle/auth/login.php', userObject)
                 .then(res => {
-                    localStorage.setItem('auth', JSON.stringify(res.data));
-                    navigate("/wordle");
-                    if (res.data === 'Email Not Exist') {
-                        toast.error("Email Not Exist !", { position: "top-center" });
-                    } else {
+    
+                    if (res.data.status === 'success') {
                         toast.success("Login Successfully", { position: "top-center" });
+                        sessionStorage.setItem('auth', JSON.stringify(res.data));
+                        navigate("/wordle");
+                    } else {
+                        toast.error("Invalid user email and password!", { position: "top-center" });
                     }
                 })
                 .catch(() => {
@@ -52,7 +52,7 @@ function Loginform() {
     };
 
     const isEmptyObject = userAuthData && Object.keys(userAuthData).length === 0;
-
+    
     return (
         <>
             <ToastContainer />
@@ -61,7 +61,6 @@ function Loginform() {
                     <Col md={4} className='bg-white px-5 py-3 text-center'>
                         {!userAuthData || isEmptyObject ? (
                                         <div>
-                                        
                                         <h4 className='my-4'>Login</h4>
                                         <Form noValidate validated={validated} onSubmit={handleSubmit}>
                                             <Row className="mb-3">

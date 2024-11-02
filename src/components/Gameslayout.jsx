@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
 import { Col, Container, Row, Button } from 'react-bootstrap';
 import Wordlegamesection from './Games/Wordle/Wordlegamesection';
 import Axios from 'axios';
@@ -9,18 +9,33 @@ import LoginModal from './Games/Wordle/Modals/LoginModal';
 import WordleModal from './Games/Wordle/Modals/WordleScoreModal';
 
 function Gameslayout() {
-  const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
-  const { username: loginUsername, email: loginUserEmail } = USER_AUTH_DATA;
-  console.log(USER_AUTH_DATA);
-  
 
+  const USER_AUTH_DATA = JSON.parse(sessionStorage.getItem('auth')) || {};
+  const { username, email } = USER_AUTH_DATA;
+  const loginUsername = username;
+  const loginUserEmail = email;
+  
   const [showForm, setShowForm] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [score, setScore] = useState('');
   const [guessDistribution, setGuessDistribution] = useState([0, 0, 0, 0, 0, 0]);
   const [gameIsWin, setGameIsWin] = useState(false);
-
+  const [userData, setUserData] = useState('');
   const navigate = useNavigate();
+  const userEmail = USER_AUTH_DATA.email;
+  useEffect(() => {
+    if (userEmail) {
+      Axios.get('https://coralwebdesigns.com/college/wordgamle/user/get-user.php', {
+        params: { useremail: userEmail },
+      })
+      .then(response => {
+        setUserData(response.data.user);  // Assumes response has user details in `data`
+      })
+      .catch(error => {
+        console.error('Error fetching user data:', error);
+      });
+    }
+  }, [userEmail]);
 
   const handleFormClose = () => {
       setShowForm(false);
@@ -78,16 +93,17 @@ function Gameslayout() {
           };
 
           try {
-              const res = await Axios.post('https://wordle-server-nta6.onrender.com/wordle/wordle-score', wordleObject);
-              if (res) {
+              const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/wordle/create-score.php', wordleObject);
+              // console.log(res.data.status);
+              if (res.data.status === 'success') {
                   if (typeof updateStatsChart === 'function') {
                       updateStatsChart();
                   }
-                  const currentStats = await Axios.get(`https://wordle-server-nta6.onrender.com/wordle-game-stats/${loginUserEmail}`);
+                  const currentStats = await Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/create-statistics.php/${loginUserEmail}`);
                   const currentStreak = currentStats.data.currentStreak || 0;
                   const streak = isWin ? currentStreak + 1 : 0;
-                  console.log(wordleScore);
-                  console.log(updatedGuessDistribution);
+                  // console.log(wordleScore);
+                  // console.log(updatedGuessDistribution);
                   const TotalGameObject = {
                       username: loginUsername,
                       useremail: loginUserEmail,
@@ -96,7 +112,7 @@ function Gameslayout() {
                       currentStreak: streak,
                       guessDistribution: updatedGuessDistribution,
                   };
-                  console.log(TotalGameObject);
+                  
                   await updateTotalGamesPlayed(TotalGameObject);
                   setScore('');
                   navigate('/wordlestats');
@@ -106,21 +122,23 @@ function Gameslayout() {
           }
       }
   };
+ 
 
   const updateTotalGamesPlayed = async (TotalGameObject) => {
+    // console.log(TotalGameObject);
       try {
-          await Axios.post('https://wordle-server-nta6.onrender.com/wordle-game-stats/update', TotalGameObject);
+          await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/wordle/update-statistics.php', TotalGameObject);
       } catch (err) {
           toast.error('Failed to update total games played', { position: "top-center" });
       }
   };
-  console.log(USER_AUTH_DATA.username);
+  // console.log(userData);
   return (
     <>
     <Container>
       <Row className="justify-content-center align-items-center">
         <Col className="text-center py-3">
-          {USER_AUTH_DATA.username ? <h2>{"Welcome " + USER_AUTH_DATA.username + "!"}</h2> : <h2>{"Welcome Guest!"}</h2>}
+          {userData.username ? <h2>{"Welcome " + userData.username + "!"}</h2> : <h2>{"Welcome Guest!"}</h2>}
         </Col>
       </Row>
       <Row className="justify-content-center align-items-center">

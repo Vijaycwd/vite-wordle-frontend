@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from 'react-router-dom';
 
 function UserProfile() {
-    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
+    const USER_AUTH_DATA = JSON.parse(sessionStorage.getItem('auth'));
     const location = useLocation();
     const [username, setUsername] = useState(location.state?.username || "");
     const [email, setEmail] = useState(location.state?.email || "");
@@ -58,10 +58,9 @@ function UserProfile() {
         e.preventDefault(); // Prevent default form submission behavior if needed
 
         const userObject = {
+            id: id,
             username: username,
             email: email,
-            password: password,
-            confirmpassword: confirmpassword,
             avatar: avatar
         };
         console.log(userObject);
@@ -70,32 +69,44 @@ function UserProfile() {
         setErrors(validationErrors);
 
         const HEADERS = { headers: { 'Content-Type': 'multipart/form-data' } };
-        if (Object.keys(validationErrors).length === 0) {
-            // No validation errors, proceed with the update
-            try {
-                const response = await Axios.put(`https://wordle-server-nta6.onrender.com/use/${id}`, userObject, HEADERS);
-                if (response) {
-                    // Update the localStorage with the new user data
-                    const updatedAuthData = { ...USER_AUTH_DATA, username: username, email: email, avatar: avatar };
-                    localStorage.setItem('auth', JSON.stringify(updatedAuthData));
-                    //console.log('User updated successfully');
-                    toast.success('Profile updated successfully!', {
-                        position: "top-center"
-                    });
-                    // Optionally, navigate the user to another page
-                    navigate('/wordle');
-                }
-            } catch (err) {
-                //console.error('Error updating user:', err.response.data.message);
-                toast.error(err.response.data.message, {
-                    position: "top-center"
-                });
-            }
-        } else {
-            // There are validation errors
-            //console.log('Validation errors:', validationErrors);
-            toast.error(validationErrors);
+        const response = await Axios.put(`https://coralwebdesigns.com/college/wordgamle/user/edit-user.php`, userObject, HEADERS);
+        if (response) {
+            // Update the localStorage with the new user data
+            const updatedAuthData = { ...USER_AUTH_DATA, username: username, email: email, avatar: avatar };
+            localStorage.setItem('auth', JSON.stringify(updatedAuthData));
+            //console.log('User updated successfully');
+            toast.success('Profile updated successfully!', {
+                position: "top-center"
+            });
+            // Optionally, navigate the user to another page
+            navigate('/wordle');
         }
+        // if (Object.keys(validationErrors).length === 0) {
+        //     // No validation errors, proceed with the update
+        //     try {
+        //         const response = await Axios.put(`https://coralwebdesigns.com/college/wordgamle/user/edit-user.php${id}`, userObject, HEADERS);
+        //         if (response) {
+        //             // Update the localStorage with the new user data
+        //             const updatedAuthData = { ...USER_AUTH_DATA, username: username, email: email, avatar: avatar };
+        //             localStorage.setItem('auth', JSON.stringify(updatedAuthData));
+        //             //console.log('User updated successfully');
+        //             toast.success('Profile updated successfully!', {
+        //                 position: "top-center"
+        //             });
+        //             // Optionally, navigate the user to another page
+        //             navigate('/wordle');
+        //         }
+        //     } catch (err) {
+        //         //console.error('Error updating user:', err.response.data.message);
+        //         toast.error(err.response.data.message, {
+        //             position: "top-center"
+        //         });
+        //     }
+        // } else {
+        //     // There are validation errors
+        //     //console.log('Validation errors:', validationErrors);
+        //     toast.error(validationErrors);
+        // }
     };
     
     

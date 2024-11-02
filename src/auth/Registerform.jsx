@@ -13,6 +13,12 @@ function Registerform() {
     const [avatar, setAvatar] = useState();
     const [previewUrl, setPreviewUrl] = useState('');
     const [errors, setErrors] = useState({});
+    const [touched, setTouched] = useState({
+        username: false,
+        email: false,
+        password: false,
+        confirmpassword: false,
+    });
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -22,6 +28,35 @@ function Registerform() {
         setAvatar(defaultFile);
     }, []);
 
+    const validateForm = () => {
+        const newErrors = {};
+        if (touched.username && !username) newErrors.username = 'Name is required.';
+        if (touched.email) {
+            if (!email) {
+                newErrors.email = 'Email is required.';
+            } else if (!/\S+@\S+\.\S+/.test(email)) {
+                newErrors.email = 'Email is invalid.';
+            }
+        }
+        if (touched.password) {
+            if (!password) {
+                newErrors.password = 'Password is required.';
+            } else if (password.length < 8) {
+                newErrors.password = 'Password must be at least 8 characters long.';
+            } else if (!/[a-zA-Z]/.test(password)) {
+                newErrors.password = 'Password must contain at least one alphabetic letter.';
+            }
+        }
+        if (touched.confirmpassword && password !== confirmpassword) {
+            newErrors.confirmpassword = 'Passwords do not match.';
+        }
+        setErrors(newErrors);
+    };
+
+    const handleBlur = (field) => {
+        setTouched(prev => ({ ...prev, [field]: true }));
+        validateForm();
+    };
     const handleUpload = async (event) => {
 
         const file = event.target.files[0];
@@ -37,8 +72,8 @@ function Registerform() {
     }
 
 
-    const signUp = async (e) => {
-        
+    const signUp = async (event) => {
+        event.preventDefault();
         const userObject = {
             username: username,
             email: email,
@@ -47,63 +82,44 @@ function Registerform() {
             avatar: avatar
         }
         console.log(userObject);
-        const validation =(userObject) =>{
-            const errors = {};
 
-            if(!userObject.username){   
-                errors.username = "Username Required";
-            }
-            if(!userObject.email){   
-                errors.email = "Email Required";
-            }
-            if(!userObject.password){   
-                errors.password = "Password Required";
-            }
-            if(!userObject.confirmpassword){   
-                errors.confirmpassword = "Password Required";
-            }
-            return errors;
-        }
-        
-
-        setErrors(validation(userObject));
         // console.log(userObject);
-        
-        
-
         const HEADERS = { headers: { 'Content-Type': 'multipart/form-data' } };
-        try {
-            const userRes = await Axios.post('https://wordle-server-nta6.onrender.com/use/create-user', userObject, HEADERS);
-            
-            if (userRes.data.message) {
-                toast.error('Error', { position: "top-center" });
-            } else {
-                toast.success('User Created!', { position: "top-center" });
+        
+        const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/user/create-user.php', userObject, HEADERS);
+        if (res.data.status === 'success') {
 
-                // Create the Wordle stats after the user is successfully created
-                const TotalGameObject = {
-                    username,
-                    useremail: email,
-                    totalWinGames: 0,
-                    lastgameisWin: 0,
-                    currentStreak: 0,
-                };
-
-                try {
-                    const statsRes = await Axios.post('https://wordle-server-nta6.onrender.com/wordle-game-stats/create-stats', TotalGameObject);
-                    if (statsRes.data) {
-                        console.log("Wordle stats created:", statsRes.data);
-                    }
-                } catch (err) {
-                    console.error('Error creating Wordle stats:', err);
-                    toast.error('Failed to create Wordle stats', { position: "top-center" });
-                }
-
-                navigate("/login");
+            const WordleStatistics = {
+                username,
+                useremail: email,
+                totalGamesPlayed:0,
+                totalWinGames: 0,
+                lastgameisWin: 0,
+                currentStreak: 0,
+                maxStreak: 0,
+                guessDistribution: [0,0,0,0,0,0],
+                handleHighlight: [0]
+            };
+            const wordleStats = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/wordle/create-statistics.php', WordleStatistics);
+            console.log(wordleStats);
+            const ConnectionStatistics = {
+                username,
+                useremail: email,
+                totalGamesPlayed:0,
+                totalWinGames: 0,
+                lastgameisWin: 0,
+                currentStreak: 0,
+                maxStreak: 0,
+                guessDistribution: [0,0,0,0,0,0],
+                handleHighlight: [0]
+            };
+            const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/connections/create-statistics.php', ConnectionStatistics);
+            toast.success(res.data.message, { position: "top-center" });
+            navigate('/login');
             }
-        } catch (err) {
-            toast.error(err.response?.data || "Error occurred", { position: "top-center" });
-        }    
+        else{
+            toast.error(res.data.message, { position: "top-center" });
+        }  
       }
   return (
     <>  
@@ -116,37 +132,71 @@ function Registerform() {
                     <Form className="js-validation-signup" enctype="multipart/form-data">
                         <Form.Group>
                             <Form.Label>Name</Form.Label>
-                            <Form.Control type="text" className="" value={username} onChange={(e) => { setUsername(e.target.value);}} placeholder='Enter the name'/>
+                            <Form.Control
+                                type="text"
+                                value={username}
+                                onChange={(e) => { setUsername(e.target.value); }}
+                                onBlur={() => handleBlur('username')}
+                                placeholder='Enter the name'
+                            />
                             {errors.username && <p className='form-validation-error'>{errors.username}</p>}
                         </Form.Group>
-                        
+
                         <Form.Group>
                             <Form.Label>Email</Form.Label>
-                            <Form.Control type="email"  value={email} onChange={(e) => { setEmail(e.target.value);}} placeholder='Enter the email'/>
+                            <Form.Control
+                                type="email"
+                                value={email}
+                                onChange={(e) => { setEmail(e.target.value); }}
+                                onBlur={() => handleBlur('email')}
+                                placeholder='Enter the email'
+                            />
                             {errors.email && <p className='form-validation-error'>{errors.email}</p>}
                         </Form.Group>
 
-                        <Form.Group >
+                        <Form.Group>
                             <Form.Label>Password</Form.Label>
-                            <Form.Control type="password" className="" value={password} onChange={(e) => { setPassword(e.target.value);}} placeholder='Enter the password'/>
+                            <Form.Control
+                                type="password"
+                                value={password}
+                                onChange={(e) => { setPassword(e.target.value); }}
+                                onBlur={() => handleBlur('password')}
+                                placeholder='Enter the password'
+                            />
                             {errors.password && <p className='form-validation-error'>{errors.password}</p>}
                         </Form.Group>
-                        <Form.Group >
+
+                        <Form.Group>
                             <Form.Label>Confirm Password</Form.Label>
-                            <Form.Control type="password" className="" value={confirmpassword} onChange={(e) => { setConfirmpassword(e.target.value);}} placeholder='Enter the conform password'/>
+                            <Form.Control
+                                type="password"
+                                value={confirmpassword}
+                                onChange={(e) => { setConfirmpassword(e.target.value); }}
+                                onBlur={() => handleBlur('confirmpassword')}
+                                placeholder='Enter the confirm password'
+                            />
                             {errors.confirmpassword && <p className='form-validation-error'>{errors.confirmpassword}</p>}
                         </Form.Group>
+
                         <Form.Group controlId="formFile" className="mb-3">
                             <Form.Label>Profile Picture</Form.Label>
-                            <Form.Control type="file" name="avatar" onChange={handleUpload}  />
+                            <Form.Control
+                                type="file"
+                                name="avatar"
+                                onChange={handleUpload}
+                            />
                         </Form.Group>
+
                         {previewUrl && (
                             <div>
-                            <p>Image Preview:</p>
-                            <img src={previewUrl} alt="Profile Preview" style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
+                                <p>Image Preview:</p>
+                                <img src={previewUrl} alt="Profile Preview" style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
                             </div>
                         )}
-                        <Button className="btn btn-block btn-hero-lg btn-hero-success mt-4"  onClick={() => signUp()} ><i className="fa fa-fw fa-plus mr-1"></i> Sign Up</Button>
+
+                        <Button className="btn btn-block btn-hero-lg btn-hero-success mt-4" onClick={signUp}>
+                            <i className="fa fa-fw fa-plus mr-1"></i> Sign Up
+                        </Button>
                     </Form>
                 </Col>
             </Row>

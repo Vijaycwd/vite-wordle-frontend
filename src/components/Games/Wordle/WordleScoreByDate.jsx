@@ -1,4 +1,4 @@
-import React, { useState, useRef, forwardRef, useEffect } from 'react';
+import React, { useState, forwardRef } from 'react';
 import axios from 'axios';
 import { Button, Alert } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
@@ -6,74 +6,66 @@ import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment-timezone';
 
 function WordleScoreByDate() {
-    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
+    const USER_AUTH_DATA = JSON.parse(sessionStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA.email;
-    const [userEmail] = useState(loginuserEmail);
     const [selectedDate, setSelectedDate] = useState(null);
     const [statsChart, setStatsChart] = useState([]);
     const [dataFetched, setDataFetched] = useState(false);
-    const [dataFetchedError, setFetchedError] = useState(true);
+    const [dataFetchedError, setFetchedError] = useState(false);
     const [startDate, setStartDate] = useState(new Date());
 
-    // Function to format the selected date in DD-MM-YYYY format
-    const formatDate = (date) => {
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}-${month}-${year}`;
-    };
+    // Function to format the selected date in YYYY-MM-DD format for backend
+    const formatDateForBackend = (date) => moment(date).format('YYYY-MM-DD');
 
     // Handle date selection
     const handleDateChange = (date) => {
-        const formattedDate = formatDate(date);
-        setSelectedDate(formattedDate);
         setStartDate(date);
+        const formattedDate = formatDateForBackend(date);
         fetchDataByDate(formattedDate);  // Trigger data fetching after date selection
     };
 
     const fetchDataByDate = (date) => {
-         // Replace with the logged-in user's email
         const timeZone = moment.tz.guess(); // Automatically get the user's local time zone
     
-        // Construct the date string in the format 'YYYY-MM-DD' to match the backend format
-        const formattedDate = moment(date, 'DD-MM-YYYY').format('DD-MM-YYYY');
-    
-        // Make the API request to the new endpoint with the date and timeZone as query parameters
-        axios
-            .get(`https://wordle-server-nta6.onrender.com/wordle/${userEmail}/date`, {
-                params: {
-                    date: formattedDate,
-                    timeZone: timeZone,
-                },
-            })
-            .then((response) => {
-                setStatsChart(response.data);
+        // Make the API request to the endpoint with date and timeZone as query parameters
+        axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/get-score.php`, {
+            params: {
+                useremail: loginuserEmail,
+                date: date,
+                timeZone: timeZone
+            }
+        })
+        .then((response) => {
+            if (response.data.status === "success") {
+                setStatsChart(response.data.wordlescore);
                 setDataFetched(true);
                 setFetchedError(false);
-            })
-            .catch((error) => {
-                // console.error('Error fetching data:', error);
-                setStatsChart([]); // Set statsChart to an empty array if no data is found or an error occurs
+            } else {
+                setStatsChart([]);
                 setDataFetched(true);
                 setFetchedError(true);
-            });
+            }
+        })
+        .catch((error) => {
+            setStatsChart([]);
+            setDataFetched(true);
+            setFetchedError(true);
+        });
     };
-    
-    
+
     // Function to slice the string into rows of a specified length
-    function splitIntoRows(inputString, rowLength) {
+    const splitIntoRows = (inputString, rowLength) => {
         const rows = [];
-        const charArray = Array.from(inputString); // Convert string to array of characters
+        const charArray = Array.from(inputString);
         for (let i = 0; i < charArray.length; i += rowLength) {
             rows.push(charArray.slice(i, i + rowLength).join(''));
         }
         return rows;
-    }
-    // Format createdAt to DD-MM-YYYY before displaying
-    const formatCreatedAt = (createdAt) => {
-        const date = new Date(createdAt);
-        return formatDate(date);  // Reuse the formatDate function to format createdAt
     };
+
+    // Format createdAt to display as DD-MM-YYYY
+    const formatCreatedAt = (createdat) => moment(createdat).format('DD-MM-YYYY');
+
     const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
         <Button className="example-custom-input wordle-btn px-5 btn btn-primary" onClick={onClick} ref={ref}>
             Go To Date
@@ -87,7 +79,7 @@ function WordleScoreByDate() {
                     selected={startDate}
                     onChange={handleDateChange}
                     customInput={<ExampleCustomInput />}
-                    dateFormat="DD-MM-YYYY"
+                    dateFormat="dd-MM-yyyy"
                     maxDate={new Date()}
                 />
             </div>
@@ -99,11 +91,11 @@ function WordleScoreByDate() {
                         const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
                         const wordleScores = splitIntoRows(removespace, 5);
                         return (
-                            <li key={item._id}>
+                            <li key={item.createdat}>
                                 <div className='text-center'>
                                     <p className='m-0'><strong>{item.username}</strong></p>
                                     <p className='m-1'>{cleanedScore}</p>
-                                    <p className='my-1'>{formatCreatedAt(item.createdAt)}</p>
+                                    <p className='my-1'>{formatCreatedAt(item.createdat)}</p>
                                     {wordleScores.map((row, rowIndex) => (
                                         <p className='m-1' key={rowIndex}>{row}</p>
                                     ))}

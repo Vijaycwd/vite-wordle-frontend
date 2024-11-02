@@ -2,7 +2,7 @@
 import { Navigate, Outlet } from 'react-router-dom';
 
 const ProtectedRoute = () => {
-    const token = localStorage.getItem("auth");
+    const token = JSON.parse(sessionStorage.getItem('auth'));
     const auth = token; // determine if authorized, from context or however you're doing it
 
     // If authorized, return an outlet that will render child elements

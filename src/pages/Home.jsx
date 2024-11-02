@@ -5,8 +5,7 @@ import { Link } from 'react-router-dom';
 import '@fortawesome/fontawesome-free/css/all.min.css';  // Make sure this is imported
 
 function Home() {
-    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
-    const userAuthData = USER_AUTH_DATA;
+    const userAuthData = JSON.parse(sessionStorage.getItem('auth')) || {};
     const navigate = useNavigate();
     
     const loginformClick = () => {
