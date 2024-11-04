@@ -6,7 +6,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment-timezone';
 
 function WordleScoreByDate() {
-    const USER_AUTH_DATA = JSON.parse(sessionStorage.getItem('auth'));
+    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA.email;
     const [selectedDate, setSelectedDate] = useState(null);
     const [statsChart, setStatsChart] = useState([]);

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Axios from 'axios';
 
 function Wordlestatistics() {
-    const USER_AUTH_DATA = JSON.parse(sessionStorage.getItem('auth'));
+    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA.email;
     const [totalGame, setTotalGame] = useState('');
     const [totalWin, setTotalWin] = useState('');

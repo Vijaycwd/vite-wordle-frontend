@@ -8,7 +8,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import axios from 'axios';
 
 const Headerbar = () => {
-  const USER_AUTH_DATA = JSON.parse(sessionStorage.getItem('auth'));
+  const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
   const userEmail = USER_AUTH_DATA?.email;
   const [userData, setUserData] = useState({});
   const [show, setShow] = useState(false);
@@ -38,7 +38,7 @@ const Headerbar = () => {
   const logout = async (event) => {
     event.preventDefault();
     setShow(false);
-    sessionStorage.removeItem('auth');
+    localStorage.removeItem('auth');
     navigate('/');
   };
 

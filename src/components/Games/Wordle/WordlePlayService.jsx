@@ -8,7 +8,7 @@ import LoginModal from './Modals/LoginModal';
 import WordleModal from './Modals/WordleScoreModal';
 
 function WordlePlayService({ updateStatsChart }) {
-    const USER_AUTH_DATA = JSON.parse(sessionStorage.getItem('auth')) || {};
+    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
     const { username: loginUsername, email: loginUserEmail } = USER_AUTH_DATA;
 
     const [showForm, setShowForm] = useState(false);

@@ -9,7 +9,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import Logo from '../Logo.png';
 
 function Loginform() {
-    const userAuthData = JSON.parse(sessionStorage.getItem('auth')); // Change here
+    const userAuthData = JSON.parse(localStorage.getItem('auth')); // Change here
     const navigate = useNavigate();
     const [validated, setValidated] = useState(false);
     const [email, setEmail] = useState('');
@@ -39,7 +39,7 @@ function Loginform() {
     
                     if (res.data.status === 'success') {
                         toast.success("Login Successfully", { position: "top-center" });
-                        sessionStorage.setItem('auth', JSON.stringify(res.data));
+                        localStorage.setItem('auth', JSON.stringify(res.data));
                         navigate("/wordle");
                     } else {
                         toast.error("Invalid user email and password!", { position: "top-center" });
