@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Axios from 'axios';
 
-function Connectionsstatistics() {
+function ConnectionsStatistics() {
 
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA.email;
@@ -89,4 +89,4 @@ function Connectionsstatistics() {
     );
 }
 
-export default Connectionsstatistics;
+export default ConnectionsStatistics;

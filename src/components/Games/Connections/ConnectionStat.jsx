@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Axios from 'axios';
 import './ConnectionsScores.css';
 import { Container, Row, Col } from 'react-bootstrap';
-import Connectionsstatistics from './connectionsstatistics';
+import Connectionsstatistics from './ConnectionsStatistics';
 import ConnectionPlayService from './ConnectionPlayService';
 import ConnectionsScoreByDate from './ConnectionsScoreByDate';
 
