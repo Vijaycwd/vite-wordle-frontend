@@ -16,6 +16,7 @@ import Home from './pages/Home';
 import Connectionsgame from './components/Games/Connections/GameLayout';
 import Phrazlegame from './components/Games/Phrazle/Phrazlegame';
 import Wordlestats from './components/Games/Wordle/Wordlestats';
+import ConnectionStat from './components/Games/Connections/ConnectionStat';
 
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
         <Route  path='/' element={<ProtectedRouter/>}>
           <Route  path='/dashboard' element={<Dashboard/>}/>
           <Route  path= '/wordlestats' element={<Wordlestats/>}/>
+          <Route  path= '/connectionstats' element={<ConnectionStat/>}/>
           <Route  path= '/edit-profile' element={<UserProfile/>}/>
         </Route>
       </Routes>

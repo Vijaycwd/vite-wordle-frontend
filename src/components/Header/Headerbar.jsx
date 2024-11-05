@@ -54,7 +54,7 @@ const Headerbar = () => {
       state: { username, email, id, avatar, isEditing }
     });
   };
-  console.log(userData.avatar);
+ 
   return (
     <Container>
       <Row className="justify-content-center align-items-center py-2">

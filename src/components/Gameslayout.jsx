@@ -99,7 +99,7 @@ function Gameslayout() {
                   if (typeof updateStatsChart === 'function') {
                       updateStatsChart();
                   }
-                  const currentStats = await Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/create-statistics.php/${loginUserEmail}`);
+                  // const currentStats = await Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/create-statistics.php/${loginUserEmail}`);
                   const currentStreak = currentStats.data.currentStreak || 0;
                   const streak = isWin ? currentStreak + 1 : 0;
                   // console.log(wordleScore);
@@ -115,10 +115,14 @@ function Gameslayout() {
                   
                   await updateTotalGamesPlayed(TotalGameObject);
                   setScore('');
+                  toast.success(res.data.message , { position: "top-center" });
                   navigate('/wordlestats');
               }
+              else{
+                toast.error(res.data.message , { position: "top-center" });
+              }
           } catch (err) {
-              toast.error(err.response?.data?.message || 'An unexpected error occurred.', { position: "top-center" });
+              toast.error(err.res?.data?.message || 'An unexpected error occurred.', { position: "top-center" });
           }
       }
   };

@@ -22,7 +22,7 @@ const Connectiongame = () => {
                 </Col>
                 <Col>
                     <div className="my-3">
-                        <Button className="wordle-btn px-5" onClick={handleWordlestate}>
+                        <Button className="connections-btn px-5" onClick={handleWordlestate}>
                             Stats
                         </Button>
                     </div>

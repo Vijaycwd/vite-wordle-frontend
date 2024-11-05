@@ -40,7 +40,7 @@ function Loginform() {
                     if (res.data.status === 'success') {
                         toast.success("Login Successfully", { position: "top-center" });
                         localStorage.setItem('auth', JSON.stringify(res.data));
-                        navigate("/wordle");
+                        navigate("/");
                     } else {
                         toast.error("Invalid user email and password!", { position: "top-center" });
                     }

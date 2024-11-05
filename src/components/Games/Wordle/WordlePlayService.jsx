@@ -39,6 +39,7 @@ function WordlePlayService({ updateStatsChart }) {
 
     const onSubmit = async (event) => {
         event.preventDefault();
+        setShowForm(false);
         if (typeof updateStatsChart === 'function') {
             updateStatsChart();
         }
@@ -98,9 +99,13 @@ function WordlePlayService({ updateStatsChart }) {
                     await updateTotalGamesPlayed(TotalGameObject);
                     setScore('');
                     navigate('/wordlestats');
+                    toast.success(res.data.message , { position: "top-center" });
+                }
+                else{
+                    toast.error(res.data.message , { position: "top-center" });
                 }
             } catch (err) {
-                toast.error(err.response?.data?.message || 'An unexpected error occurred.', { position: "top-center" });
+                toast.error(err.res?.data?.message || 'An unexpected error occurred.', { position: "top-center" });
             }
         }
     };
@@ -109,7 +114,7 @@ function WordlePlayService({ updateStatsChart }) {
     const updateTotalGamesPlayed = async (TotalGameObject) => {
       console.log(TotalGameObject);
         try {
-            await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/wordle/update-statistics.php', TotalGameObject);
+            const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/wordle/update-statistics.php', TotalGameObject);
         } catch (err) {
             toast.error('Failed to update total games played', { position: "top-center" });
         }

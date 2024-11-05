@@ -54,7 +54,9 @@ function WordleGuessDistribution() {
                       color: '#ffffff',
                     }}
                   >
-                    {guess}
+                    <div className=''>
+                      {guess}
+                    </div>
                   </div>
                   <span>({percentage}%)</span>
                 </div>
