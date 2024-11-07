@@ -5,6 +5,7 @@ import { Container, Row, Col } from 'react-bootstrap';
 import Connectionsstatistics from './ConnectionsStatistics';
 import ConnectionPlayService from './ConnectionPlayService';
 import ConnectionsScoreByDate from './ConnectionsScoreByDate';
+import ConnectionsGuessDistribution from './ConnectionsGuessDistribution';
 
 function ConnectionStat() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
@@ -26,13 +27,11 @@ function ConnectionStat() {
             params: { useremail: loginuserEmail, timeZone:timeZone }
         })
         .then((res) => {
-            console.log('Response data:', res.data); // Log the response data
             if (res.data.status === "success") {
                 const scoreData = res.data.connectionsscore;
                 setStatsChart(scoreData); // Update state with the score data
                 setLoading(false); // Set loading to false once data is fetched
             } else {
-                console.error("No scores found for today.");
                 setLoading(false);
             }
         })
@@ -99,6 +98,11 @@ function ConnectionStat() {
                     <Row className='align-items-center justify-content-center'>
                         <Col md={4}>
                             <Connectionsstatistics/>
+                        </Col>
+                    </Row>
+                    <Row className='align-items-center justify-content-center'>
+                        <Col md={4}>
+                            <ConnectionsGuessDistribution/>
                         </Col>
                     </Row>
                     <Row className='align-items-center justify-content-center'>

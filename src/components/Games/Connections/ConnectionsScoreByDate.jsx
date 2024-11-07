@@ -86,7 +86,7 @@ function ConnectionsScoreByDate() {
             <ul className='score-by-date p-2'>
                 {dataFetched && statsChart.length > 0 ? (
                     statsChart.map(item => {
-                        console.log(item);
+                        
                         const cleanedScore = item.connectionsscore.replace(/[🟨,🟩,🟦,🟪]/g, "");
                         const lettersAndNumbersRemoved = item.connectionsscore.replace(/[a-zA-Z0-9,#/\\]/g, "");
                         const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');

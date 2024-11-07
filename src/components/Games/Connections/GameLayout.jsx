@@ -15,7 +15,7 @@ function GamesLayout() {
   const [showForm, setShowForm] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [score, setScore] = useState('');
-  const [guessDistribution, setGuessDistribution] = useState([0, 0, 0, 0, 0, 0]);
+  const [guessDistribution, setGuessDistribution] = useState([0, 0, 0, 0]);
   const [gameIsWin, setGameIsWin] = useState(false);
   
   const [totalGamesPlayed, setTotalGamesPlayed] = useState(0);
@@ -44,85 +44,133 @@ function GamesLayout() {
     setShowForm(true);
   };
 
-  const determineWinStatus = (pastedScore) => {
-    // Example logic to determine if the game is won based on the pasted result
-    // Customize this logic as per your actual game outcome structure
-    const lines = pastedScore.split('\n');
-    return lines.some(line => line.includes('🟩🟩🟩🟩')); // Checks for a win pattern
+  const splitIntoRows = (inputString, rowLength) => {
+    const rows = [];
+    const charArray = Array.from(inputString);
+    for (let i = 0; i < charArray.length; i += rowLength) {
+        rows.push(charArray.slice(i, i + rowLength).join(''));
+    }
+    return rows;
   };
 
-  const onSubmit = async (event) => {
-    event.preventDefault();
-    if (typeof updateStatsChart === 'function') {
-      updateStatsChart();
+  const determineAttempts = (score) => {
+    const value = score.replace(/[a-zA-Z0-9,#/\\]/g, "");
+    const removespace = value.replace(/\s+/g, '');
+    const connectionsScore = splitIntoRows(removespace, 4);
+    let attempts = 0;
+  
+    // Loop through the rows and check for the specified winning pattern
+    for (let i = 0; i < connectionsScore.length; i++) {
+      const row = connectionsScore[i].trim();
+  
+      // Check if the row is one of the predefined complete patterns
+      if (row === '🟨🟨🟨🟨' || row === '🟩🟩🟩🟩' || row === '🟪🟪🟪🟪' || row === '🟦🟦🟦🟦') {
+        attempts = i + 1; // Set attempts to the row number (starting from 1)
+        break; // Stop once a complete group is found
+      }
     }
-    setShowForm(false);
-    const isWin = determineWinStatus(score);
-    setGameIsWin(isWin); // Update state for future use if needed
-    // console.log(isWin);
   
-    const currentTime = new Date().toISOString();
-    const createdAt = new Date().toISOString();
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // If no complete row is found, return total number of rows as attempts
+    return attempts || connectionsScore.length;
+  };
   
-    const scoreObject = {
-      username: loginUsername,
-      useremail: loginUserEmail,
-      connectionscore: score,
-      createdAt,
-      currentUserTime: currentTime,
-      lastgameisWin: isWin, // Use `isWin` directly here instead of `gameIsWin`
-      timeZone
-    };
-    console.log(scoreObject);
+    // Function to calculate and update the guess distribution for Connections game
   
-    try {
-      const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/connections/create-score.php', scoreObject);
-      console.log(res.data.status);
-      if (res.data.status === 'success') {
-        const newTotalGamesPlayed = (res.data.totalGamesPlayed || 0) + 1;
-        const newTotalWinGames = isWin ? (res.data.totalWinGames || 0) + 1 : (res.data.totalWinGames || 0);
-  
-        setTotalGamesPlayed(newTotalGamesPlayed);
-        setTotalWinGames(newTotalWinGames);
-  
-        const newCurrentStreak = isWin ? currentStreak + 1 : 0;
-        const newMaxStreak = Math.max(currentStreak + (isWin ? 1 : 0), maxStreak);
-  
-        setCurrentStreak(newCurrentStreak);
-        setMaxStreak(newMaxStreak);
-  
-        const TotalGameObject = {
-          username: loginUsername,
-          useremail: loginUserEmail,
-          totalWinGames: newTotalWinGames,
-          totalGamesPlayed: newTotalGamesPlayed,
-          lastgameisWin: isWin, // Use `isWin` directly here
-          currentStreak: newCurrentStreak,
-          maxStreak: newMaxStreak,
-          guessDistribution: guessDistribution
-        };
-
-        console.log(TotalGameObject);
-        await updateTotalGamesPlayed(TotalGameObject);
-        setScore('');
-        navigate('/connectionstats');
+    const onSubmit = async (event) => {
+      event.preventDefault();
+      if (typeof updateStatsChart === 'function') {
+        updateStatsChart();
       }
-      else{
-        toast.error(res.data.message, { position: "top-center" });
-      }
+      setShowForm(false);
+    
+      const attempts = determineAttempts(score); // Calculate the number of attempts to first win
+      const isWin = attempts > 0; // If attempts > 0, it means there's at least one winning row
+    
+      // Update guessDistribution if there's a win
+      let updatedDistribution = [...guessDistribution]; // Copy current distribution
       
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'An unexpected error occurred.', { position: "top-center" });
-    }
-  };
-  
-
+      if (isWin) {
+        console.log('You Win!');
+        console.log('Attempts:', attempts);
+    
+        if (attempts >= 1 && attempts <= 4) { // Ensure attempts is within range (1 to 4)
+          updatedDistribution[attempts - 1] += 1; // Increment the count at the correct index
+        }
+    
+        console.log('After update:', updatedDistribution);
+        setGuessDistribution(updatedDistribution);
+      }
+    
+      const currentTime = new Date().toISOString();
+      const createdAt = new Date().toISOString();
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    
+      // Use `updatedDistribution` here instead of `guessDistribution`
+      const scoreObject = {
+        username: loginUsername,
+        useremail: loginUserEmail,
+        connectionscore: score,
+        createdAt,
+        currentUserTime: currentTime,
+        lastgameisWin: isWin,
+        guessDistribution: updatedDistribution, // Updated value
+        handleHighlight: attempts,
+        timeZone,
+      };
+    
+      try {
+        const res = await Axios.post(
+          'https://coralwebdesigns.com/college/wordgamle/games/connections/create-score.php',
+          scoreObject
+        );
+        if (res.data.status === 'success') {
+          if (typeof updateStatsChart === 'function') {
+            updateStatsChart();
+          }
+    
+          const newTotalGamesPlayed = (res.data.totalGamesPlayed || 0) + 1;
+          const newTotalWinGames = isWin
+            ? (res.data.totalWinGames || 0) + 1
+            : res.data.totalWinGames || 0;
+    
+          setTotalGamesPlayed(newTotalGamesPlayed);
+          setTotalWinGames(newTotalWinGames);
+    
+          const newCurrentStreak = isWin ? currentStreak + 1 : 0;
+          const newMaxStreak = Math.max(currentStreak + (isWin ? 1 : 0), maxStreak);
+    
+          setCurrentStreak(newCurrentStreak);
+          setMaxStreak(newMaxStreak);
+    
+          const TotalGameObject = {
+            username: loginUsername,
+            useremail: loginUserEmail,
+            totalWinGames: newTotalWinGames,
+            totalGamesPlayed: newTotalGamesPlayed,
+            lastgameisWin: isWin,
+            currentStreak: newCurrentStreak,
+            maxStreak: newMaxStreak,
+            guessDistribution: updatedDistribution, // Use updated distribution here as well
+            handleHighlight:attempts
+          };
+    
+          await updateTotalGamesPlayed(TotalGameObject);
+          setScore('');
+          toast.success(res.data.message, { position: "top-center" });
+        } else {
+          toast.error(res.data.message, { position: "top-center" });
+        }
+      } catch (err) {
+        toast.error(err.response?.data?.message || 'An unexpected error occurred.', {
+          position: "top-center",
+        });
+      }
+    };
+    
   const updateTotalGamesPlayed = async (TotalGameObject) => {
     console.log(TotalGameObject);
     try {
       const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/connections/update-statistics.php', TotalGameObject);
-      console.log(res.data);
 
     } catch (err) {
       toast.error('Failed to update total games played', { position: "top-center" });
