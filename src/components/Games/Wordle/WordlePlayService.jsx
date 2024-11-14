@@ -40,7 +40,9 @@ function WordlePlayService({ updateStatsChart }) {
     const onSubmit = async (event) => {
         event.preventDefault();
         setShowForm(false);
-        updateStatsChart();  // Update Wordle scores
+        if (typeof updateStatsChart === 'function') {
+            updateStatsChart();
+        }
         setShowForm(false);
 
         const currentTime = new Date().toISOString();
@@ -76,7 +78,9 @@ function WordlePlayService({ updateStatsChart }) {
             try {
                 const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/wordle/create-score.php', wordleObject);
                 if (res.data.status === 'success') {
-                    updateStatsChart(); 
+                    if (typeof updateStatsChart === 'function') {
+                        updateStatsChart();
+                    }
                     const currentStats = await Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/create-statistics.php/${loginUserEmail}`);
                     const currentStreak = currentStats.data.currentStreak || 0;
                     const streak = isWin ? currentStreak + 1 : 0;
