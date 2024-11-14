@@ -156,6 +156,7 @@ function GamesLayout() {
     
           await updateTotalGamesPlayed(TotalGameObject);
           setScore('');
+          navigate('/connectionstats');
           toast.success(res.data.message, { position: "top-center" });
         } else {
           toast.error(res.data.message, { position: "top-center" });
