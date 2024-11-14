@@ -117,7 +117,7 @@ function Wordlestatechart() {
                                                         statistics.map((stat, index) => (
                                                             <div key={index}>
                                                             {/* Render statistics data */}
-                                                            <h5 className='text-center'>Game Score: {stat.handleHighlight ++}</h5> {/* Replace `someProperty` with the actual property name */}
+                                                            <h5 className='text-center'>Game Score: {Number(stat.handleHighlight) + 1}</h5> {/* Replace `someProperty` with the actual property name */}
                                                             </div>
                                                         ))
                                                         ) : (

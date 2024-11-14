@@ -107,11 +107,13 @@ function ConnectionStat() {
                                             const todayDate = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
                                             return (
                                                 <div key={index}>
+                                                    
                                                     {statistics && Array.isArray(statistics) && statistics.length > 0 ? (
                                                         statistics.map((stat, index) => (
+                                                            
                                                             <div key={index}>
                                                             {/* Render statistics data */}
-                                                            <h5 className='text-center'>Game Score: {stat.handleHighlight ++}</h5> {/* Replace `someProperty` with the actual property name */}
+                                                            <h5 className='text-center'>Game Score: {Number(stat.handleHighlight) + 1}</h5> {/* Replace `someProperty` with the actual property name */}
                                                             </div>
                                                         ))
                                                         ) : (
