@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import Axios from 'axios';
 
-function ConnectionsGuessDistribution() {
+function PhrazleGuessDistribution() {
 
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
   const loginuserEmail = USER_AUTH_DATA?.email;
-  const [connectionsGuessData, setconnectionsGuessData] = useState([]);
+  const [phrazleGuessData, setphrazleGuessData] = useState([]);
   const [highlightData, sethandlehighlightData] = useState([]);
 
   useEffect(() => {
@@ -15,7 +15,7 @@ function ConnectionsGuessDistribution() {
   }, [loginuserEmail]);
 
   function getGuessValue() {
-    Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/connections/get-guessdistribution.php?useremail=${loginuserEmail}`)
+    Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/get-guessdistribution.php?useremail=${loginuserEmail}`)
         .then((response) => {
           console.log(response.data.guessdistribution);
           const guessdistribution = response.data.guessdistribution;
@@ -23,7 +23,7 @@ function ConnectionsGuessDistribution() {
             const guessData = guessdistribution.map(item => ({
               guessDistribution: item.guessDistribution
             }));
-            setconnectionsGuessData(guessData);
+            setphrazleGuessData(guessData);
             const handleHighlights = guessdistribution.map(item => item.handleHighlight).flat();
             sethandlehighlightData(handleHighlights);   
         })
@@ -34,7 +34,7 @@ function ConnectionsGuessDistribution() {
 
   return (
     <div>
-      {connectionsGuessData.map((data, index) => {
+      {phrazleGuessData.map((data, index) => {
         const totalSum = data.guessDistribution.reduce((sum, guess) => sum + parseFloat(guess), 0);
         return (
           <div key={index} className='guess-distribution my-4'>
@@ -69,4 +69,4 @@ function ConnectionsGuessDistribution() {
   );
 }
 
-export default ConnectionsGuessDistribution;
+export default PhrazleGuessDistribution;

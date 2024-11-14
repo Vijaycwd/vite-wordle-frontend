@@ -1,42 +1,38 @@
 import { useState, useEffect } from 'react';
 import Axios from 'axios';
-import './WordleScores.css';
+import './PhrazleScores.css';
 import { Container, Row, Col } from 'react-bootstrap';
-import WordleScoreByDate from './WordleScoreByDate';
-import Wordlestatistics from './Wordlestatistics';
-import WordlePlayService from './WordlePlayService';
-import WordleGuessDistribution from './WordleGuessDistribution';
+import Phrazlestatistics from './PhrazleStatistics';
+import PhrazlePlayService from './PhrazlePlayService';
+import PhrazleScoreByDate from './PhrazleScoreByDate';
+import PhrazleGuessDistribution from './PhrazleGuessDistribution';
 
-function Wordlestatechart() {
+function Phrazletat() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
-    const loginuserEmail = USER_AUTH_DATA.email;
+    const loginuserEmail = USER_AUTH_DATA?.email; // Optional chaining to avoid errors
 
     const [statschart, setStatsChart] = useState([]);
     const [statistics, setStatistics] = useState([]);
-    const [totalGame, setTotalGame] = useState('');
     const [loading, setLoading] = useState(true);
-    const [gameScore, setGameScore] = useState();
+    const [GameScore, setGameScore] = useState();
 
     useEffect(() => {
-        // Reset state on component mount
-        setStatsChart([]); // Clear previous scores
-        setLoading(true);
-        getStatChart(); // Fetch scores
-    }, [loginuserEmail]); // Run effect when loginuserEmail changes
+        if (loginuserEmail) {
+            getStatChart();
+        }
+    }, [loginuserEmail]); // Ensure this depends on loginuserEmail
 
     function getStatChart() {
+
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/get-score.php`, {
-            params: {
-                useremail: loginuserEmail
-            }
+        Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/Phrazle/get-score.php`, {
+            params: { useremail: loginuserEmail, timeZone:timeZone }
         })
-        .then((response) => {
-            if (response.data.status === "success") {
-                const scoreData = response.data.wordlescore;
-                setLoading(false);
-                setStatsChart(scoreData); // Update the score chart with fetched data
-                setTotalGame(scoreData.length); // Assuming you want to store the total count of scores
+        .then((res) => {
+            if (res.data.status === "success") {
+                const scoreData = res.data.Phrazlescore;
+                setStatsChart(scoreData); // Update state with the score data
+                setLoading(false); // Set loading to false once data is fetched
             } else {
                 setLoading(false);
             }
@@ -48,35 +44,34 @@ function Wordlestatechart() {
     }
 
     useEffect(() => {
-        // Reset state on component mount
-        setStatistics([]); // Clear previous scores
-        setLoading(true);
-        getStatistics(); // Fetch scores
-    }, [loginuserEmail]); // Run effect when loginuserEmail changes
+        if (loginuserEmail) {
+            getDisscussion();
+        }
+    }, [loginuserEmail]); // Ensure this depends on loginuserEmail
 
-    function getStatistics() {
-        Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/get-statistics.php`, {
-            params: {
-                useremail: loginuserEmail
-            }
+    function getDisscussion() {
+
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/Phrazle/get-guessdistribution.php`, {
+            params: { useremail: loginuserEmail}
         })
-        .then((response) => {
-            if (response.data.status === "success") {
-                const statisticsData = response.data.statistics;
-                
-                console.log(response.data.statistics);
-                setLoading(false);
-                setStatistics(statisticsData); // Update the score chart with fetched data
-                setTotalGame(statisticsData.length); // Assuming you want to store the total count of scores
+        .then((res) => {
+            if (res.data.status === "success") {
+                console.log(res.data);
+                const scoreData = res.data.guessdistribution;
+                setStatistics(scoreData);
+                setLoading(false); // Set loading to false once data is fetched
             } else {
                 setLoading(false);
             }
         })
         .catch((error) => {
+            console.error("Error fetching data: ", error);
             setLoading(false);
         });
     }
 
+    
     // Function to slice the string into rows of a specified length
     function splitIntoRows(inputString, rowLength) {
         const rows = [];
@@ -86,6 +81,7 @@ function Wordlestatechart() {
         }
         return rows;
     }
+ console.log(statistics);
     return (
         <Container>
             <Row className='align-items-center justify-content-center'>
@@ -94,7 +90,6 @@ function Wordlestatechart() {
                         <Col md={4} className="m-auto p-3">
                             <div>
                                 <h4 className="my-2 font-weight-bold fs-4 text-center">Today's Result</h4>
-                                
                                 {loading ? (
                                     <div className='text-center my-4'>
                                         <p>Loading...</p>
@@ -102,13 +97,12 @@ function Wordlestatechart() {
                                 ) : (
                                     statschart && Array.isArray(statschart) && statschart.length > 0 ? (
                                         statschart.map((char, index) => {
-                                            const cleanedScore = char.wordlescore.replace(/[🟩🟨⬜]/g, "");
-                                            const scoreParts = cleanedScore.split(" ");
-                                            const attempts = scoreParts[2].split("/")[0];
-                                            const lettersAndNumbersRemoved = char.wordlescore.replace(/[a-zA-Z0-9,/\\]/g, "");
+                                            const cleanedScore = char.Phrazlescore.replace(/[🟨,🟩,🟦,🟪]/g, "");
+                                        
+                                            const lettersAndNumbersRemoved = char.Phrazlescore.replace(/[a-zA-Z0-9,#/\\]/g, "");
                                             const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
-                                            const wordleScores = splitIntoRows(removespace, 5);
-                                            const createDate = char.createdat; // Make sure this matches your database field name
+                                            const PhrazleScore = splitIntoRows(removespace, 4);
+                                            const createDate = char.createdat; // Ensure this matches your database field name
                                             const date = new Date(createDate);
                                             const todayDate = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
                                             return (
@@ -126,7 +120,7 @@ function Wordlestatechart() {
                                                     <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
                                                     <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
                                                     <pre className='text-center'>
-                                                        {wordleScores.map((row, rowIndex) => (
+                                                        {PhrazleScore.map((row, rowIndex) => (
                                                             <div key={rowIndex}>{row}</div>
                                                         ))}
                                                     </pre>
@@ -136,10 +130,7 @@ function Wordlestatechart() {
                                     ) : (
                                         <div className='text-center my-4'>
                                             <p>You have not played today.</p>
-                                            <WordlePlayService
-                                                updateStatsChart={getStatChart}
-                                               
-                                            />
+                                            <PhrazlePlayService updateStatsChart={getStatChart}/>
                                         </div>
                                     )
                                 )}
@@ -148,17 +139,17 @@ function Wordlestatechart() {
                     </Row>
                     <Row className='align-items-center justify-content-center'>
                         <Col md={4}>
-                            <Wordlestatistics/>
+                            <Phrazlestatistics/>
                         </Col>
                     </Row>
                     <Row className='align-items-center justify-content-center'>
                         <Col md={4}>
-                            <WordleGuessDistribution/>
+                            <PhrazleGuessDistribution/>
                         </Col>
                     </Row>
                     <Row className='align-items-center justify-content-center'>
                         <Col md={4} className='text-align-center py-5'>
-                            <WordleScoreByDate/>
+                            <PhrazleScoreByDate/>
                         </Col>
                     </Row>
                 </Col>
@@ -167,4 +158,4 @@ function Wordlestatechart() {
     );
 }
 
-export default Wordlestatechart;
+export default Phrazletat;

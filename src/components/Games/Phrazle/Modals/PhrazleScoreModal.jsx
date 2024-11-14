@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, FloatingLabel } from 'react-bootstrap';
 
-const WordleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore, loginUsername }) => {
+const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore, loginUsername }) => {
   const [isPasted, setIsPasted] = useState(false);
 
   // This function is triggered when a paste happens
@@ -58,4 +58,4 @@ const WordleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore
   );
 };
 
-export default WordleScoreModal;
+export default PhrazleScoreModal;

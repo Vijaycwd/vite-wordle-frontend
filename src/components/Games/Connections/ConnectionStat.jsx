@@ -12,7 +12,9 @@ function ConnectionStat() {
     const loginuserEmail = USER_AUTH_DATA?.email; // Optional chaining to avoid errors
 
     const [statschart, setStatsChart] = useState([]);
+    const [statistics, setStatistics] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [GameScore, setGameScore] = useState();
 
     useEffect(() => {
         if (loginuserEmail) {
@@ -41,6 +43,35 @@ function ConnectionStat() {
         });
     }
 
+    useEffect(() => {
+        if (loginuserEmail) {
+            getDisscussion();
+        }
+    }, [loginuserEmail]); // Ensure this depends on loginuserEmail
+
+    function getDisscussion() {
+
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/connections/get-guessdistribution.php`, {
+            params: { useremail: loginuserEmail}
+        })
+        .then((res) => {
+            if (res.data.status === "success") {
+                console.log(res.data);
+                const scoreData = res.data.guessdistribution;
+                setStatistics(scoreData);
+                setLoading(false); // Set loading to false once data is fetched
+            } else {
+                setLoading(false);
+            }
+        })
+        .catch((error) => {
+            console.error("Error fetching data: ", error);
+            setLoading(false);
+        });
+    }
+
+    
     // Function to slice the string into rows of a specified length
     function splitIntoRows(inputString, rowLength) {
         const rows = [];
@@ -50,7 +81,7 @@ function ConnectionStat() {
         }
         return rows;
     }
-
+ console.log(statistics);
     return (
         <Container>
             <Row className='align-items-center justify-content-center'>
@@ -67,6 +98,7 @@ function ConnectionStat() {
                                     statschart && Array.isArray(statschart) && statschart.length > 0 ? (
                                         statschart.map((char, index) => {
                                             const cleanedScore = char.connectionsscore.replace(/[🟨,🟩,🟦,🟪]/g, "");
+                                        
                                             const lettersAndNumbersRemoved = char.connectionsscore.replace(/[a-zA-Z0-9,#/\\]/g, "");
                                             const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
                                             const connectionsScore = splitIntoRows(removespace, 4);
@@ -75,6 +107,16 @@ function ConnectionStat() {
                                             const todayDate = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
                                             return (
                                                 <div key={index}>
+                                                    {statistics && Array.isArray(statistics) && statistics.length > 0 ? (
+                                                        statistics.map((stat, index) => (
+                                                            <div key={index}>
+                                                            {/* Render statistics data */}
+                                                            <h5 className='text-center'>Game Score: {stat.handleHighlight ++}</h5> {/* Replace `someProperty` with the actual property name */}
+                                                            </div>
+                                                        ))
+                                                        ) : (
+                                                        <p>No statistics available.</p>
+                                                        )}
                                                     <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
                                                     <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
                                                     <pre className='text-center'>
@@ -88,7 +130,7 @@ function ConnectionStat() {
                                     ) : (
                                         <div className='text-center my-4'>
                                             <p>You have not played today.</p>
-                                            <ConnectionPlayService updateStatsChart={getStatChart} />
+                                            <ConnectionPlayService updateStatsChart={getStatChart}/>
                                         </div>
                                     )
                                 )}

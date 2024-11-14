@@ -12,12 +12,11 @@ function WordleGuessDistribution() {
     if (loginuserEmail) {
         getGuessValue();
     }
-  }, [loginuserEmail]);
+  }, [wordleGuessData,loginuserEmail]);
 
   function getGuessValue() {
     Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/get-guessdistribution.php?useremail=${loginuserEmail}`)
         .then((response) => {
-          console.log(response.data.guessdistribution);
           const guessdistribution = response.data.guessdistribution;
 
             const guessData = guessdistribution.map(item => ({

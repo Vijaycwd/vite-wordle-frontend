@@ -37,24 +37,24 @@ const Headerbar = () => {
 
   const logout = async (event) => {
     event.preventDefault();
-    setShow(false);
+    setShow(!show);
     localStorage.removeItem('auth');
     navigate('/');
   };
 
   const login = async (event) => {
     event.preventDefault();
-    setShow(false);
+    setShow(!show);
     navigate('/login');
   };
 
   const editUser = (username, email, id, avatar, isEditing) => {
-    setShow(false);
+    setShow(!show);
     navigate('/edit-profile', {
       state: { username, email, id, avatar, isEditing }
     });
   };
- 
+
   return (
     <Container>
       <Row className="justify-content-center align-items-center py-2">
