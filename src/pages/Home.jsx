@@ -26,9 +26,9 @@ function Home() {
                             </Col>
                         </Row>
                         <Row className='py-4'>
-                            <Col className='py-2 px-0' md={4}><Link className="btn btn-primary btn-lg" to="/wordle">Wordle</Link></Col>
-                            <Col className='py-2 px-0' md={4}><Link className="btn btn-primary btn-lg" to="/connections">Connections</Link></Col>
-                            <Col className='py-2 px-0' md={4}><Link className="btn btn-primary btn-lg" to="/phrazle">Phrazle</Link></Col>
+                            <Col className='py-2 px-0' md={3}><Link className="btn btn-primary btn-lg" to="/wordle">Wordle</Link></Col>
+                            <Col className='py-2 px-0' md={6}><Link className="btn btn-primary btn-lg" to="/connections">Connections</Link></Col>
+                            <Col className='py-2 px-0' md={3}><Link className="btn btn-primary btn-lg" to="/phrazle">Phrazle</Link></Col>
                         </Row>
                         {!userAuthData || isEmptyObject ? (
                             <>
