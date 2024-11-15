@@ -22,20 +22,20 @@ function App() {
   return (
     <Layout>
       <Routes>
-        <Route  path="/" element={<Home/>} />
-        <Route  path="/login" element={<Userlogin />} />
-        <Route  path="/register" element={<Registerform />} />
-        <Route  path="*" element={<NotFound/>} />
-        <Route  path='/wordle' element={<Statistics/>}/>
-        <Route  path= '/connections' element={<Connectionsgame/>}/>
-        <Route  path= '/phrazle' element={<Phrazlegame/>}/>
+        <Route exact path="/" element={<Home/>} />
+        <Route exact path="/login" element={<Userlogin />} />
+        <Route exact path="/register" element={<Registerform />} />
+        <Route exact path="*" element={<NotFound/>} />
+        <Route exact path='/wordle' element={<Statistics/>}/>
+        <Route exact path= '/connections' element={<Connectionsgame/>}/>
+        <Route  exact path= '/phrazle' element={<Phrazlegame/>}/>
         <Route exact path="/reset-password" element={<Resetpwd />} />
         <Route exact path="/reset-password/:id/:token" element={<Resetpwdform />} />
         <Route  path='/' element={<ProtectedRouter/>}>
-          <Route  path= '/wordlestats' element={<Wordlestats/>}/>
-          <Route  path= '/connectionstats' element={<ConnectionStat/>}/>
-          <Route  path= '/phrazlestats' element={<PhrazleStat/>}/>
-          <Route  path= '/edit-profile' element={<UserProfile/>}/>
+          <Route exact path= '/wordlestats' element={<Wordlestats/>}/>
+          <Route exact path= '/connectionstats' element={<ConnectionStat/>}/>
+          <Route exact path= '/phrazlestats' element={<PhrazleStat/>}/>
+          <Route exact path= '/edit-profile' element={<UserProfile/>}/>
         </Route>
       </Routes>
     </Layout>

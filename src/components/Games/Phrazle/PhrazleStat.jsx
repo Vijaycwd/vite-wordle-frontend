@@ -20,17 +20,17 @@ function Phrazletat() {
         if (loginuserEmail) {
             getStatChart();
         }
-    }, [loginuserEmail]); // Ensure this depends on loginuserEmail
+    }, [statistics,loginuserEmail]); // Ensure this depends on loginuserEmail
 
     function getStatChart() {
 
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/Phrazle/get-score.php`, {
-            params: { useremail: loginuserEmail, timeZone:timeZone }
+        Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/get-score.php`, {
+            params: { useremail: loginuserEmail}
         })
         .then((res) => {
             if (res.data.status === "success") {
-                const scoreData = res.data.Phrazlescore;
+                const scoreData = res.data.phrazlescore;
                 setStatsChart(scoreData); // Update state with the score data
                 setLoading(false); // Set loading to false once data is fetched
             } else {
@@ -51,14 +51,14 @@ function Phrazletat() {
 
     function getDisscussion() {
 
-        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/Phrazle/get-guessdistribution.php`, {
+        Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/get-guessdistribution.php`, {
             params: { useremail: loginuserEmail}
         })
         .then((res) => {
             if (res.data.status === "success") {
                 console.log(res.data);
                 const scoreData = res.data.guessdistribution;
+                console.log(res.data);
                 setStatistics(scoreData);
                 setLoading(false); // Set loading to false once data is fetched
             } else {
@@ -70,24 +70,16 @@ function Phrazletat() {
             setLoading(false);
         });
     }
-
-    
-    // Function to slice the string into rows of a specified length
-    function splitIntoRows(inputString, rowLength) {
-        const rows = [];
-        const charArray = Array.from(inputString); // Convert string to array of characters
-        for (let i = 0; i < charArray.length; i += rowLength) {
-            rows.push(charArray.slice(i, i + rowLength).join(' '));
-        }
-        return rows;
+    function splitIntoRows(text) {
+        return text.split(/\r\s*\r/);
     }
- console.log(statistics);
+    console.log(statschart);
     return (
         <Container>
             <Row className='align-items-center justify-content-center'>
                 <Col md={12} className='border p-3 shadow rounded'>
                     <Row>
-                        <Col md={4} className="m-auto p-3">
+                        <Col md={6} className="m-auto p-3">
                             <div>
                                 <h4 className="my-2 font-weight-bold fs-4 text-center">Today's Result</h4>
                                 {loading ? (
@@ -97,33 +89,26 @@ function Phrazletat() {
                                 ) : (
                                     statschart && Array.isArray(statschart) && statschart.length > 0 ? (
                                         statschart.map((char, index) => {
-                                            const cleanedScore = char.Phrazlescore.replace(/[🟨,🟩,🟦,🟪]/g, "");
-                                        
-                                            const lettersAndNumbersRemoved = char.Phrazlescore.replace(/[a-zA-Z0-9,#/\\]/g, "");
-                                            const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
-                                            const PhrazleScore = splitIntoRows(removespace, 4);
+                                            const cleanedScore = char.phrazlescore.replace(/[🟨,🟩,🟦,🟪,⬜]/g, "");
+                                            const phrasle_score_text = cleanedScore.replace(/#phrazle|https:\/\/solitaired.com\/phrazle/g, '');
+                                            const lettersAndNumbersRemoved = char.phrazlescore.replace(/[a-zA-Z0-9,#:./\\]/g, "");
+                                            console.log(lettersAndNumbersRemoved);
+                                            const phrazleScore = splitIntoRows(lettersAndNumbersRemoved);
+                                            // const phrazleScore = splitIntoRows(removespace, 10);
                                             const createDate = char.createdat; // Ensure this matches your database field name
                                             const date = new Date(createDate);
                                             const todayDate = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
+                                            const gamleScore = char.gamlescore;
                                             return (
                                                 <div key={index}>
-                                                    {statistics && Array.isArray(statistics) && statistics.length > 0 ? (
-                                                        statistics.map((stat, index) => (
-                                                            <div key={index}>
-                                                            {/* Render statistics data */}
-                                                            <h5 className='text-center'>Game Score: {stat.handleHighlight ++}</h5> {/* Replace `someProperty` with the actual property name */}
-                                                            </div>
-                                                        ))
-                                                        ) : (
-                                                        <p>No statistics available.</p>
-                                                        )}
-                                                    <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
+                                                    <h5 className='text-center'>Game Score: {gamleScore}</h5>
+                                                    <div className={`phrazle-score-board-text my-3 fs-5 text-center`}>{phrasle_score_text}</div>
                                                     <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
-                                                    <pre className='text-center'>
-                                                        {PhrazleScore.map((row, rowIndex) => (
+                                                    <div className='text-center'>
+                                                        {phrazleScore.map((row, rowIndex) => (
                                                             <div key={rowIndex}>{row}</div>
                                                         ))}
-                                                    </pre>
+                                                    </div>
                                                 </div>
                                             );
                                         })
@@ -148,7 +133,7 @@ function Phrazletat() {
                         </Col>
                     </Row>
                     <Row className='align-items-center justify-content-center'>
-                        <Col md={4} className='text-align-center py-5'>
+                        <Col md={6} className='text-align-center py-5'>
                             <PhrazleScoreByDate/>
                         </Col>
                     </Row>

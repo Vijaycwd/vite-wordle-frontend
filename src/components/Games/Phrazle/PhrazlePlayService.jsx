@@ -64,7 +64,7 @@ const onSubmit = async (event) => {
     const guessesUsed = parseInt(match[1], 10);
     const totalGuesses = parseInt(match[2], 10);
     const isWin = guessesUsed <= totalGuesses;
-
+    console.group(guessesUsed);
     setGameIsWin(isWin);
 
     const updatedGuessDistribution = [...guessDistribution];
@@ -73,33 +73,23 @@ const onSubmit = async (event) => {
     }
     setGuessDistribution(updatedGuessDistribution);
 
-    // Process the Wordle score to check how many 🟩 symbols (correct guesses) are there
-    const isCorrectWord = (row) => {
-      return row.split('').every(char => char === '🟩'); // Check if all symbols in the row are 🟩
-    };
-
-    // Example: Split score into rows (adjust according to your format)
-    const rows = score.split('⬜').map(row => row.trim()); // Adjust for your row separation
-    const correctWordsCount = rows.filter(row => isCorrectWord(row)).length;
-
-    const wordleObject = {
+    const phrazleObject = {
       username: loginUsername,
       useremail: loginUserEmail,
       phrazlescore: score,
       isWin,
+      gamleScore:guessesUsed ? NaN : 0,
       createdAt,
       currentUserTime: currentTime,
       timeZone,
     };
-
     try {
-      const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/phrazle/create-score.php', wordleObject);
+      const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/phrazle/create-score.php', phrazleObject);
       console.log(res.data.status);
       if (res.data.status === 'success') {
         if (typeof updateStatsChart === 'function') {
           updateStatsChart();
         }
-
         // Fetch current statistics and update
         const currentStats = await Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/create-statistics.php/${loginUserEmail}`);
         const currentStreak = currentStats.data.currentStreak || 0;
@@ -112,11 +102,11 @@ const onSubmit = async (event) => {
           currentStreak: streak,
           guessDistribution: updatedGuessDistribution,
         };
-        
+        toast.success(res.data.message, { position: "top-center" });
         await updateTotalGamesPlayed(TotalGameObject);
         setScore('');
-        navigate('/wordlestats');
-        toast.success(res.data.message, { position: "top-center" });
+        navigate('/phrazlestats');
+       
       } else {
         toast.error(res.data.message, { position: "top-center" });
       }
@@ -124,6 +114,14 @@ const onSubmit = async (event) => {
       toast.error(err.res?.data?.message || 'An unexpected error occurred.', { position: "top-center" });
     }
   }
+};
+const updateTotalGamesPlayed = async (TotalGameObject) => {
+  // console.log(TotalGameObject);
+    try {
+        await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/phrazle/update-statistics.php', TotalGameObject);
+    } catch (err) {
+        toast.error('Failed to update total games played', { position: "top-center" });
+    }
 };
 
     return (

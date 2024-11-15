@@ -69,6 +69,7 @@ function Gameslayout() {
 
     const wordleScore = score.replace(/[🟩🟨⬜]/g, "");
     const match = wordleScore.match(/(\d+|X)\/(\d+)/);
+    console.log(match);
 
     if (match) {
         const guessesUsed = parseInt(match[1], 10);
@@ -88,11 +89,12 @@ function Gameslayout() {
             wordlescore: score,
             guessDistribution: updatedGuessDistribution,
             isWin,
+            gamleScore: guessesUsed,
             createdAt,
             currentUserTime: currentTime,
             timeZone
         };
-
+        console.log(wordleObject);
         try {
             const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/wordle/create-score.php', wordleObject);
             console.log(res.data.status);

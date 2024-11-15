@@ -44,39 +44,42 @@ function WordlePlayService({ updateStatsChart }) {
             updateStatsChart();
         }
         setShowForm(false);
-
+    
         const currentTime = new Date().toISOString();
         const createdAt = new Date().toISOString();
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
+    
         const wordleScore = score.replace(/[🟩🟨⬜]/g, "");
         const match = wordleScore.match(/(\d+|X)\/(\d+)/);
-
+        console.log(match);
+    
         if (match) {
             const guessesUsed = parseInt(match[1], 10);
             const totalGuesses = parseInt(match[2], 10);
             const isWin = guessesUsed <= totalGuesses;
-
+    
             setGameIsWin(isWin);
             const updatedGuessDistribution = [...guessDistribution];
             if (isWin && guessesUsed <= 6) {
                 updatedGuessDistribution[guessesUsed - 1] += 1;
             }
             setGuessDistribution(updatedGuessDistribution);
-
+    
             const wordleObject = {
                 username: loginUsername,
                 useremail: loginUserEmail,
                 wordlescore: score,
                 guessDistribution: updatedGuessDistribution,
                 isWin,
+                gamleScore: guessesUsed,
                 createdAt,
                 currentUserTime: currentTime,
                 timeZone
             };
-
+            console.log(wordleObject);
             try {
                 const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/wordle/create-score.php', wordleObject);
+                console.log(res.data.status);
                 if (res.data.status === 'success') {
                     if (typeof updateStatsChart === 'function') {
                         updateStatsChart();
@@ -84,7 +87,6 @@ function WordlePlayService({ updateStatsChart }) {
                     const currentStats = await Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/create-statistics.php/${loginUserEmail}`);
                     const currentStreak = currentStats.data.currentStreak || 0;
                     const streak = isWin ? currentStreak + 1 : 0;
-
                     const TotalGameObject = {
                         username: loginUsername,
                         useremail: loginUserEmail,
@@ -93,16 +95,17 @@ function WordlePlayService({ updateStatsChart }) {
                         currentStreak: streak,
                         guessDistribution: updatedGuessDistribution,
                     };
-
+                    
                     await updateTotalGamesPlayed(TotalGameObject);
                     setScore('');
                     navigate('/wordlestats');
-                    toast.success(res.data.message, { position: "top-center" });
-                } else {
-                    toast.error(res.data.message, { position: "top-center" });
+                    toast.success(res.data.message , { position: "top-center" });
+                }
+                else{
+                    toast.error(res.data.message , { position: "top-center" });
                 }
             } catch (err) {
-                toast.error(err.response?.data?.message || 'An unexpected error occurred.', { position: "top-center" });
+                toast.error(err.res?.data?.message || 'An unexpected error occurred.', { position: "top-center" });
             }
         }
     };

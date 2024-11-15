@@ -14,7 +14,7 @@ function ConnectionPlayService({ updateStatsChart }) {
   const [showForm, setShowForm] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [score, setScore] = useState('');
-  const [guessDistribution, setGuessDistribution] = useState([0, 0, 0, 0, 0, 0]);
+  const [guessDistribution, setGuessDistribution] = useState([0, 0, 0, 0]);
   const [gameIsWin, setGameIsWin] = useState(false);
   
   const [totalGamesPlayed, setTotalGamesPlayed] = useState(0);
@@ -88,26 +88,23 @@ const determineAttempts = (score) => {
     let updatedDistribution = [...guessDistribution]; // Copy current distribution
     
     if (isWin) {
-      console.log('You Win!');
-      console.log('Attempts:', attempts);
-  
       if (attempts >= 1 && attempts <= 4) { // Ensure attempts is within range (1 to 4)
         updatedDistribution[attempts - 1] += 1; // Increment the count at the correct index
       }
   
-      console.log('After update:', updatedDistribution);
       setGuessDistribution(updatedDistribution);
     }
   
     const currentTime = new Date().toISOString();
     const createdAt = new Date().toISOString();
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  
+    const gamleScoreValue = attempts - 1;
     // Use `updatedDistribution` here instead of `guessDistribution`
     const scoreObject = {
       username: loginUsername,
       useremail: loginUserEmail,
       connectionscore: score,
+      gamleScore: gamleScoreValue,
       createdAt,
       currentUserTime: currentTime,
       lastgameisWin: isWin,
@@ -115,7 +112,6 @@ const determineAttempts = (score) => {
       handleHighlight: attempts,
       timeZone,
     };
-  
     try {
       const res = await Axios.post(
         'https://coralwebdesigns.com/college/wordgamle/games/connections/create-score.php',
@@ -166,15 +162,15 @@ const determineAttempts = (score) => {
     }
   };
   
-
-  const updateTotalGamesPlayed = async (TotalGameObject) => {
-    try {
-      const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/connections/update-statistics.php', TotalGameObject);
-
-    } catch (err) {
-      toast.error('Failed to update total games played', { position: "top-center" });
-    }
-  };
+const updateTotalGamesPlayed = async (TotalGameObject) => {
+  console.log(TotalGameObject);
+  try {
+    const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/connections/update-statistics.php', TotalGameObject);
+    console.log(res);
+  } catch (err) {
+    toast.error('Failed to update total games played', { position: "top-center" });
+  }
+};
 
     return (
         <>

@@ -46,37 +46,6 @@ function Wordlestatechart() {
             setLoading(false);
         });
     }
-
-    useEffect(() => {
-        // Reset state on component mount
-        setStatistics([]); // Clear previous scores
-        setLoading(true);
-        getStatistics(); // Fetch scores
-    }, [loginuserEmail]); // Run effect when loginuserEmail changes
-
-    function getStatistics() {
-        Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/get-statistics.php`, {
-            params: {
-                useremail: loginuserEmail
-            }
-        })
-        .then((response) => {
-            if (response.data.status === "success") {
-                const statisticsData = response.data.statistics;
-                
-                console.log(response.data.statistics);
-                setLoading(false);
-                setStatistics(statisticsData); // Update the score chart with fetched data
-                setTotalGame(statisticsData.length); // Assuming you want to store the total count of scores
-            } else {
-                setLoading(false);
-            }
-        })
-        .catch((error) => {
-            setLoading(false);
-        });
-    }
-
     // Function to slice the string into rows of a specified length
     function splitIntoRows(inputString, rowLength) {
         const rows = [];
@@ -111,18 +80,10 @@ function Wordlestatechart() {
                                             const createDate = char.createdat; // Make sure this matches your database field name
                                             const date = new Date(createDate);
                                             const todayDate = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
+                                            const gamleScore = char.gamlescore;
                                             return (
                                                 <div key={index}>
-                                                    {statistics && Array.isArray(statistics) && statistics.length > 0 ? (
-                                                        statistics.map((stat, index) => (
-                                                            <div key={index}>
-                                                            {/* Render statistics data */}
-                                                            <h5 className='text-center'>Game Score: {Number(stat.handleHighlight) + 1}</h5> {/* Replace `someProperty` with the actual property name */}
-                                                            </div>
-                                                        ))
-                                                        ) : (
-                                                        <p>No statistics available.</p>
-                                                        )}
+                                                    <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
                                                     <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
                                                     <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
                                                     <pre className='text-center'>

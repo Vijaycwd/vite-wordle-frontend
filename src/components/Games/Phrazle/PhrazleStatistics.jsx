@@ -23,7 +23,7 @@ function ConnectionsStatistics() {
 
     function getStatsValue() {
        
-        Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/connections/get-statistics.php?useremail=${loginuserEmail}`)
+        Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/get-statistics.php?useremail=${loginuserEmail}`)
             .then((response) => {
                 const statistics = response.data.statistics;
                 statistics.forEach((item) => {

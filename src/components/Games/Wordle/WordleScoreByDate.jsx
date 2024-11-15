@@ -86,6 +86,7 @@ function WordleScoreByDate() {
             <ul className='score-by-date p-2'>
                 {dataFetched && statsChart.length > 0 ? (
                     statsChart.map(item => {
+                        const gamleScore = item.gamlescore;
                         const cleanedScore = item.wordlescore.replace(/[🟩🟨⬜]/g, "");
                         const lettersAndNumbersRemoved = item.wordlescore.replace(/[a-zA-Z0-9,/\\]/g, "");
                         const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
@@ -93,6 +94,7 @@ function WordleScoreByDate() {
                         return (
                             <li key={item.createdat}>
                                 <div className='text-center'>
+                                    <h6 className='text-center'>Gamle Score: {gamleScore}</h6>
                                     <p className='m-0'><strong>{item.username}</strong></p>
                                     <p className='m-1'>{cleanedScore}</p>
                                     <p className='my-1'>{formatCreatedAt(item.createdat)}</p>

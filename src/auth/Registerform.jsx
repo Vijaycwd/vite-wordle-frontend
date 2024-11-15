@@ -102,6 +102,7 @@ function Registerform() {
             };
             const wordleStats = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/wordle/create-statistics.php', WordleStatistics);
             console.log(wordleStats);
+
             const ConnectionStatistics = {
                 username,
                 useremail: email,
@@ -113,7 +114,22 @@ function Registerform() {
                 guessDistribution: [0,0,0,0,0,0],
                 handleHighlight: [0]
             };
-            const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/connections/create-statistics.php', ConnectionStatistics);
+            const connectionStats = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/connections/create-statistics.php', ConnectionStatistics);
+            console.log(connectionStats);
+
+            const PhrazleStatistics = {
+                username,
+                useremail: email,
+                totalGamesPlayed:0,
+                totalWinGames: 0,
+                lastgameisWin: 0,
+                currentStreak: 0,
+                maxStreak: 0,
+                guessDistribution: [0,0,0,0,0,0],
+                handleHighlight: [0]
+            };
+            const phrazleStats = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/phrazle/create-statistics.php', PhrazleStatistics);
+            console.log(phrazleStats);
             toast.success(res.data.message, { position: "top-center" });
             navigate('/login');
             }

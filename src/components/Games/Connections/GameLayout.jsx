@@ -90,26 +90,23 @@ function GamesLayout() {
       let updatedDistribution = [...guessDistribution]; // Copy current distribution
       
       if (isWin) {
-        console.log('You Win!');
-        console.log('Attempts:', attempts);
-    
         if (attempts >= 1 && attempts <= 4) { // Ensure attempts is within range (1 to 4)
           updatedDistribution[attempts - 1] += 1; // Increment the count at the correct index
         }
     
-        console.log('After update:', updatedDistribution);
         setGuessDistribution(updatedDistribution);
       }
     
       const currentTime = new Date().toISOString();
       const createdAt = new Date().toISOString();
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    
+      const gamleScoreValue = attempts - 1;
       // Use `updatedDistribution` here instead of `guessDistribution`
       const scoreObject = {
         username: loginUsername,
         useremail: loginUserEmail,
         connectionscore: score,
+        gamleScore: gamleScoreValue,
         createdAt,
         currentUserTime: currentTime,
         lastgameisWin: isWin,
@@ -117,7 +114,6 @@ function GamesLayout() {
         handleHighlight: attempts,
         timeZone,
       };
-    
       try {
         const res = await Axios.post(
           'https://coralwebdesigns.com/college/wordgamle/games/connections/create-score.php',
@@ -172,7 +168,7 @@ function GamesLayout() {
     console.log(TotalGameObject);
     try {
       const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/connections/update-statistics.php', TotalGameObject);
-
+      console.log(res);
     } catch (err) {
       toast.error('Failed to update total games played', { position: "top-center" });
     }

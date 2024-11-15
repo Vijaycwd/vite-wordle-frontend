@@ -8,9 +8,9 @@ import PhrazlePlayService from './PhrazlePlayService';
 const Phrazlegame = () => {
     const navigate = useNavigate();
 
-    const handleWordlestate = async (event) => {
+    const handleConnectionstate = async (event) => {
         event.preventDefault();
-        navigate('/Phrazlestats');
+        navigate('/phrazlestats');
     };
     
     return (
@@ -22,7 +22,7 @@ const Phrazlegame = () => {
                 </Col>
                 <Col>
                     <div className="my-3">
-                        <Button className="phrazle-btn px-5" onClick={handleWordlestate}>
+                        <Button className="phrazle-btn px-5" onClick={handleConnectionstate}>
                             Stats
                         </Button>
                     </div>
