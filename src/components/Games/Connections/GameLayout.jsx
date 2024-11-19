@@ -161,7 +161,7 @@ function GamesLayout() {
             currentStreak: newCurrentStreak,
             maxStreak: newMaxStreak,
             guessDistribution: updatedDistribution, // Use updated distribution here as well
-            handleHighlight:attempts
+            handleHighlight:mistakeCount
           };
     
           await updateTotalGamesPlayed(TotalGameObject);
