@@ -50,7 +50,7 @@ function PhrazleGuessDistribution() {
                     className="text-end px-2 guess-item-value"
                     style={{
                       width: `${percentage}%`,
-                      backgroundColor: isHighlighted ? '#B3A7FF' : '#787C7E',
+                      backgroundColor: isHighlighted ? '#218838' : '#787C7E',
                       color: '#ffffff',
                     }}
                   >
