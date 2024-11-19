@@ -19,7 +19,7 @@ function ConnectionStat() {
         if (loginuserEmail) {
             getStatChart();
         }
-    }, [loginuserEmail]); // Ensure this depends on loginuserEmail
+    }, [statistics,loginuserEmail]); // Ensure this depends on loginuserEmail
 
     function getStatChart() {
 
