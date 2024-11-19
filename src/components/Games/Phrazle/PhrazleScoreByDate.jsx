@@ -37,6 +37,7 @@ function PhrazleScoreByDate() {
         })
         .then((response) => {
             if (response.data.status === "success") {
+                console.log('phrasle Score',response.data);
                 setStatsChart(response.data.phrazlescore);
                 setDataFetched(true);
                 setFetchedError(false);
@@ -79,7 +80,7 @@ function PhrazleScoreByDate() {
             </div>
             <ul className='score-by-date p-2'>
                 {dataFetched && statsChart.length > 0 ? (
-                    statschart.map((char, index) => {
+                    statsChart.map((char, index) => {
                         const cleanedScore = char.phrazlescore.replace(/[🟨,🟩,🟦,🟪,⬜]/g, "");
                         const phrasle_score_text = cleanedScore.replace(/#phrazle|https:\/\/solitaired.com\/phrazle/g, '');
                         const lettersAndNumbersRemoved = char.phrazlescore.replace(/[a-zA-Z0-9,#:./\\]/g, "");

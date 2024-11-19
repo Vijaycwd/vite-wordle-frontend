@@ -98,20 +98,10 @@ function Phrazletat() {
                                             const createDate = char.createdat; // Ensure this matches your database field name
                                             const date = new Date(createDate);
                                             const todayDate = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
+                                            const gamleScore = char.gamlescore;
                                             return (
                                                 <div key={index}>
-                                                    {statistics.length > 0 ? (
-                                                        statistics.map((stat, index) => (
-                                                            stat.handleHighlight && stat.handleHighlight.length > 0 ? ( // Check if handleHighlight is a non-empty array
-                                                                <div key={index}>
-                                                                    {/* Render statistics data */}
-                                                                    <h5 className='text-center'>Game Score: {stat.handleHighlight}</h5>
-                                                                </div>
-                                                            ) : <h5 className='text-center'>Game Score: 0</h5>
-                                                        ))
-                                                    ) : (
-                                                        <h5 className='text-center'>Game Score: 0</h5>
-                                                    )}
+                                                    <h5 className='text-center'>Game Score: {gamleScore}</h5>
                                                     <div className={`phrazle-score-board-text my-3 fs-5 text-center`}>{phrasle_score_text}</div>
                                                     <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
                                             
