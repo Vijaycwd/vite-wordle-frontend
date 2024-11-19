@@ -20,7 +20,7 @@ function Phrazletat() {
         if (loginuserEmail) {
             getStatChart();
         }
-    }, [statistics,loginuserEmail]); // Ensure this depends on loginuserEmail
+    }, [loginuserEmail]); // Ensure this depends on loginuserEmail
 
     function getStatChart() {
 
@@ -73,7 +73,7 @@ function Phrazletat() {
     function splitIntoRows(text) {
         return text.split(/\r\s*\r/);
     }
-    console.log(statschart);
+ console.log(statistics);
     return (
         <Container>
             <Row className='align-items-center justify-content-center'>
@@ -98,17 +98,27 @@ function Phrazletat() {
                                             const createDate = char.createdat; // Ensure this matches your database field name
                                             const date = new Date(createDate);
                                             const todayDate = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
-                                            const gamleScore = char.gamlescore;
                                             return (
                                                 <div key={index}>
-                                                    <h5 className='text-center'>Game Score: {gamleScore}</h5>
+                                                    {statistics.length > 0 ? (
+                                                        statistics.map((stat, index) => (
+                                                            stat.handleHighlight && stat.handleHighlight.length > 0 ? ( // Check if handleHighlight is a non-empty array
+                                                                <div key={index}>
+                                                                    {/* Render statistics data */}
+                                                                    <h5 className='text-center'>Game Score: {stat.handleHighlight}</h5>
+                                                                </div>
+                                                            ) : <h5 className='text-center'>Game Score: 0</h5>
+                                                        ))
+                                                    ) : (
+                                                        <h5 className='text-center'>Game Score: 0</h5>
+                                                    )}
                                                     <div className={`phrazle-score-board-text my-3 fs-5 text-center`}>{phrasle_score_text}</div>
                                                     <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
-                                                    <div className='text-center'>
+                                            
                                                         {phrazleScore.map((row, rowIndex) => (
                                                             <div key={rowIndex}>{row}</div>
                                                         ))}
-                                                    </div>
+                                                    
                                                 </div>
                                             );
                                         })
@@ -133,7 +143,7 @@ function Phrazletat() {
                         </Col>
                     </Row>
                     <Row className='align-items-center justify-content-center'>
-                        <Col md={6} className='text-align-center py-5'>
+                        <Col md={4} className='text-align-center py-5'>
                             <PhrazleScoreByDate/>
                         </Col>
                     </Row>

@@ -15,7 +15,7 @@ function GamesLayout() {
   const [showForm, setShowForm] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [score, setScore] = useState('');
-  const [guessDistribution, setGuessDistribution] = useState([0, 0, 0, 0]);
+  const [guessDistribution, setGuessDistribution] = useState([0, 0, 0, 0, 0]);
   const [gameIsWin, setGameIsWin] = useState(false);
   
   const [totalGamesPlayed, setTotalGamesPlayed] = useState(0);
@@ -54,25 +54,36 @@ function GamesLayout() {
   };
 
   const determineAttempts = (score) => {
-    const value = score.replace(/[a-zA-Z0-9,#/\\]/g, "");
-    const removespace = value.replace(/\s+/g, '');
-    const connectionsScore = splitIntoRows(removespace, 4);
-    let attempts = 0;
-  
-    // Loop through the rows and check for the specified winning pattern
-    for (let i = 0; i < connectionsScore.length; i++) {
-      const row = connectionsScore[i].trim();
-  
-      // Check if the row is one of the predefined complete patterns
-      if (row === '🟨🟨🟨🟨' || row === '🟩🟩🟩🟩' || row === '🟪🟪🟪🟪' || row === '🟦🟦🟦🟦') {
-        attempts = i + 1; // Set attempts to the row number (starting from 1)
-        break; // Stop once a complete group is found
-      }
+  const value = score.replace(/[a-zA-Z0-9,#/\\]/g, "");
+  const removespace = value.replace(/\s+/g, "");
+  const connectionsScore = splitIntoRows(removespace, 4);
+  let attempts = 0;
+  let mistakeCount = 0;
+
+  // Loop through the rows and check for the specified winning pattern
+  for (let i = 0; i < connectionsScore.length; i++) {
+    const row = connectionsScore[i].trim();
+
+    // Check if the row is one of the predefined complete patterns
+    if (row === "🟨🟨🟨🟨" || row === "🟩🟩🟩🟩" || row === "🟪🟪🟪🟪" || row === "🟦🟦🟦🟦") {
+      attempts = i + 1; // Set attempts to the row number (starting from 1)
+    } else {
+      mistakeCount++; // Count rows that don't match
     }
-  
-    // If no complete row is found, return total number of rows as attempts
-    return attempts || connectionsScore.length;
+  }
+
+  return {
+    attempts: attempts || connectionsScore.length, // Use attempts if found, otherwise total rows
+    mistakeCount, // Total rows with mistakes
   };
+};
+
+// Calculate attempts and mistakeCount
+
+
+// Populate the scoreObject
+
+
   
     // Function to calculate and update the guess distribution for Connections game
   
@@ -82,16 +93,17 @@ function GamesLayout() {
         updateStatsChart();
       }
       setShowForm(false);
-    
-      const attempts = determineAttempts(score); // Calculate the number of attempts to first win
+      const { attempts, mistakeCount } = determineAttempts(score);
+      console.log('attempts',attempts);
+      // const attempts = determineAttempts(score); // Calculate the number of attempts to first win
       const isWin = attempts > 0; // If attempts > 0, it means there's at least one winning row
     
       // Update guessDistribution if there's a win
       let updatedDistribution = [...guessDistribution]; // Copy current distribution
       
       if (isWin) {
-        if (attempts >= 1 && attempts <= 4) { // Ensure attempts is within range (1 to 4)
-          updatedDistribution[attempts - 1] += 1; // Increment the count at the correct index
+        if (mistakeCount >= 0 && mistakeCount <= 4) { // Ensure attempts is within range (1 to 4)
+          updatedDistribution[mistakeCount] += 1; // Increment the count at the correct index
         }
     
         setGuessDistribution(updatedDistribution);
@@ -100,20 +112,22 @@ function GamesLayout() {
       const currentTime = new Date().toISOString();
       const createdAt = new Date().toISOString();
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const gamleScoreValue = attempts - 1;
+      // const gamleScoreValue = attempts - 1;
       // Use `updatedDistribution` here instead of `guessDistribution`
       const scoreObject = {
         username: loginUsername,
         useremail: loginUserEmail,
         connectionscore: score,
-        gamleScore: gamleScoreValue,
+        gamleScore: mistakeCount, // Use attempts here
         createdAt,
         currentUserTime: currentTime,
         lastgameisWin: isWin,
         guessDistribution: updatedDistribution, // Updated value
-        handleHighlight: attempts,
+        handleHighlight: mistakeCount, // Use mistakeCount here
         timeZone,
       };
+      
+      console.log(scoreObject);
       try {
         const res = await Axios.post(
           'https://coralwebdesigns.com/college/wordgamle/games/connections/create-score.php',

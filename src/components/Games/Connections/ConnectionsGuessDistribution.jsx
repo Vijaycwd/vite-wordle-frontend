@@ -38,14 +38,14 @@ function ConnectionsGuessDistribution() {
         const totalSum = data.guessDistribution.reduce((sum, guess) => sum + parseFloat(guess), 0);
         return (
           <div key={index} className='guess-distribution my-4'>
-            <h2 className='text-uppercase'>Guess Distribution</h2>
+            <h2 className='text-uppercase'>Mistake Distribution</h2>
             {data.guessDistribution.map((guess, i) => {
               const guessValue = parseFloat(guess);
               const percentage = totalSum > 0 ? Math.round((guessValue / totalSum) * 100) : 0;
               const isHighlighted = highlightData && highlightData.includes(i);
               return (
                 <div key={i} className='guess-item my-2 d-flex align-items-center'>
-                  <span>{i + 1}</span>
+                  <span>{i}</span>
                   <div
                     className="text-end px-2 guess-item-value"
                     style={{

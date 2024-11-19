@@ -79,7 +79,7 @@ function PhrazleScoreByDate() {
             </div>
             <ul className='score-by-date p-2'>
                 {dataFetched && statsChart.length > 0 ? (
-                    statsChart.map((char, index) => {
+                    statschart.map((char, index) => {
                         const cleanedScore = char.phrazlescore.replace(/[🟨,🟩,🟦,🟪,⬜]/g, "");
                         const phrasle_score_text = cleanedScore.replace(/#phrazle|https:\/\/solitaired.com\/phrazle/g, '');
                         const lettersAndNumbersRemoved = char.phrazlescore.replace(/[a-zA-Z0-9,#:./\\]/g, "");

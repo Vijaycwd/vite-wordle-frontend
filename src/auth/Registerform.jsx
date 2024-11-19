@@ -111,8 +111,8 @@ function Registerform() {
                 lastgameisWin: 0,
                 currentStreak: 0,
                 maxStreak: 0,
-                guessDistribution: [0,0,0,0,0,0],
-                handleHighlight: [0]
+                guessDistribution: [0,0,0,0,0],
+                handleHighlight: 0
             };
             const connectionStats = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/connections/create-statistics.php', ConnectionStatistics);
             console.log(connectionStats);
