@@ -78,7 +78,7 @@ const onSubmit = async (event) => {
       useremail: loginUserEmail,
       phrazlescore: score,
       isWin,
-      gamleScore:guessesUsed ? NaN : 0,
+      gamleScore:guessesUsed,
       createdAt,
       currentUserTime: currentTime,
       timeZone,
