@@ -20,7 +20,7 @@ function Resetpwd() {
                 });
             }
             else{
-                toast.error(res.data.message, {
+                toast.success(res.data.message, {
                     position: "top-center"
                 });
                 console.log(res.data);
