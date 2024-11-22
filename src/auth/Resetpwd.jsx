@@ -5,34 +5,37 @@ import Axios from "axios";
 import {Container, Row, Col, Button} from 'react-bootstrap';
 
 function Resetpwd() {
-    const [email, setEmail] =useState();
+    const [email, setEmail] = useState();
 
     const resetPwd = async (e) => {
-        e.preventDefault()
-        setEmail('');
-        Axios.post('https://coralwebdesigns.com/college/wordgamle/auth/reset-password.php', {
-            useremail: email
-        })        
-        .then( res =>{
-            if(res.data === 'Email Not Exist'){
-                toast.error("Email Not Exist !", {
+        e.preventDefault();
+        
+        try {
+            // Send the request
+            const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/auth/reset-password.php', {
+                useremail: email
+            });
+            
+            // Handle response
+            if (res.data.status === 'success') {
+                toast.success(res.data.message, {
                     position: "top-center"
                 });
             }
             else{
-                toast.success(res.data.message, {
+                toast.error(res.data.message, {
                     position: "top-center"
                 });
-                console.log(res.data);
-            }
-        })
-        .catch((err) => {
-            console.log(err);
+            } 
+        } catch (err) {
+            // Handle error
+            console.error(err);
             toast.error("Invalid User Details", {
                 position: "top-center"
             });
-        })
-    }
+        } 
+    };
+    
     return (
         <>
             <ToastContainer/>

@@ -161,7 +161,7 @@ return {
           guessDistribution: updatedDistribution, // Use updated distribution here as well
           handleHighlight:mistakeCount
         };
-  
+        toast.success(res.data.message, { position: "top-center" });
         await updateTotalGamesPlayed(TotalGameObject);
         setScore('');
         navigate('/connectionstats');

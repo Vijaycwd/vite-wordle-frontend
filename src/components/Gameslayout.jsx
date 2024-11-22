@@ -128,14 +128,13 @@ function Gameslayout() {
     }
 };
 
-  const updateTotalGamesPlayed = async (TotalGameObject) => {
-    // console.log(TotalGameObject);
-      try {
-          await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/wordle/update-statistics.php', TotalGameObject);
-      } catch (err) {
-          toast.error('Failed to update total games played', { position: "top-center" });
-      }
-  };
+const updateTotalGamesPlayed = async (TotalGameObject) => {
+    try {
+        await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/wordle/update-statistics.php', TotalGameObject);
+    } catch (err) {
+        toast.error('Failed to update total games played', { position: "top-center" });
+    }
+};
   // console.log(userData);
   return (
     <>

@@ -95,7 +95,7 @@ function WordlePlayService({ updateStatsChart }) {
                         currentStreak: streak,
                         guessDistribution: updatedGuessDistribution,
                     };
-                    
+                    toast.success(res.data.message, { position: "top-center" });
                     await updateTotalGamesPlayed(TotalGameObject);
                     setScore('');
                     navigate('/wordlestats');
