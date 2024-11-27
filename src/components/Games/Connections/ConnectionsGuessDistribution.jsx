@@ -17,19 +17,27 @@ function ConnectionsGuessDistribution() {
   function getGuessValue() {
     Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/connections/get-guessdistribution.php?useremail=${loginuserEmail}`)
         .then((response) => {
-          console.log(response.data.guessdistribution);
-          const guessdistribution = response.data.guessdistribution;
-
-            const guessData = guessdistribution.map(item => ({
-              guessDistribution: item.guessDistribution
-            }));
-            setconnectionsGuessData(guessData);
-            const handleHighlights = guessdistribution.map(item => item.handleHighlight).flat();
-            sethandlehighlightData(handleHighlights);   
-        })
-        .catch((error) => {
-            console.error("Error fetching data: ", error);
-        });
+        // console.log("Response Data:", response.data.guessdistribution);
+        const guessdistribution = response.data.guessdistribution;
+        setconnectionsGuessData(guessdistribution);
+        const today = new Date().toISOString().split('T')[0]; // Current date
+        // console.log("Today Date:", today);
+  
+        const handleHighlights = guessdistribution
+          .filter((item) => {
+            const formattedDate = item.updatedDate.split('T')[0];
+            // console.log("Item Date:", formattedDate, "Matches Today:", formattedDate === today);
+            return formattedDate === today; // Compare with today's date
+          })
+          .map((item) => item.handleHighlight)
+          .flat();
+  
+        // console.log("Highlight Data:", handleHighlights); // Log highlight data
+        sethandlehighlightData(handleHighlights);
+      })
+      .catch((error) => {
+        // console.error("Error fetching data:", error);
+      });
   };
 
   return (
