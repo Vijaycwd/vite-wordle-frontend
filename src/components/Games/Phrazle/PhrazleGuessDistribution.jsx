@@ -12,16 +12,16 @@ function PhrazleGuessDistribution() {
     if (loginuserEmail) {
         getGuessValue();
     }
-  }, [phrazleGuessData, loginuserEmail]);
+  }, [phrazleGuessData,loginuserEmail]);
 
   function getGuessValue() {
     Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/get-guessdistribution.php?useremail=${loginuserEmail}`)
     .then((response) => {
       console.log("Response Data:", response.data.guessdistribution);
       const guessdistribution = response.data.guessdistribution;
-      setconnectionsGuessData(guessdistribution);
+      setphrazleGuessData(guessdistribution);
       const today = new Date().toISOString().split('T')[0]; // Current date
-      // console.log("Today Date:", today);
+      console.log("Today Date:", today);
 
       const handleHighlights = guessdistribution
         .filter((item) => {

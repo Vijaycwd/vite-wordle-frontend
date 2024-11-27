@@ -18,7 +18,7 @@ function Wordlestatistics(updateStatistics) {
         if (loginuserEmail) {
             getStatsValue();
         }
-      }, [loginuserEmail])
+      }, [wordleStatsData,loginuserEmail])
 
     function getStatsValue() {
        

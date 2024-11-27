@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import Axios from 'axios';
 
-function ConnectionsStatistics() {
+function phrazleStatistics() {
 
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA.email;
     const [totalGame, setTotalGame] = useState('');
     const [totalWin, setTotalWin] = useState('');
-    const [connectionsStatsData, setconnectionsStatsData] = useState();
+    const [phrazleStatsData, setphrazleStatsData] = useState();
     const [currentStreak, setcurrentStreak] = useState();
     const [maxStreak, setmaxStreak] = useState();
 
@@ -19,7 +19,7 @@ function ConnectionsStatistics() {
         if (loginuserEmail) {
             getStatsValue();
         }
-      }, [connectionsStatsData,loginuserEmail])
+      }, [phrazleStatsData,loginuserEmail])
 
     function getStatsValue() {
        
@@ -27,7 +27,7 @@ function ConnectionsStatistics() {
             .then((response) => {
                 const statistics = response.data.statistics;
                 statistics.forEach((item) => {
-                    setconnectionsStatsData(item);
+                    setphrazleStatsData(item);
                     setTotalGame(item.totalGamesPlayed);
                     setTotalWin(item.totalWinGames);
                     setcurrentStreak(item.currentStreak);
@@ -46,7 +46,7 @@ function ConnectionsStatistics() {
     return (
         <div className="statistics">
             <h2 className='text-uppercase'>Statistics</h2>
-            {connectionsStatsData ? (
+            {phrazleStatsData ? (
                 <ul>
                     <li>
                         <div className='value'>
@@ -88,4 +88,4 @@ function ConnectionsStatistics() {
     );
 }
 
-export default ConnectionsStatistics;
+export default phrazleStatistics;

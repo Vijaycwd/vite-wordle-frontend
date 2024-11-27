@@ -56,9 +56,7 @@ function Phrazletat() {
         })
         .then((res) => {
             if (res.data.status === "success") {
-                console.log(res.data);
                 const scoreData = res.data.guessdistribution;
-                console.log(res.data);
                 setStatistics(scoreData);
                 setLoading(false); // Set loading to false once data is fetched
             } else {
@@ -73,7 +71,6 @@ function Phrazletat() {
     function splitIntoRows(text) {
         return text.split(/\r\s*\r/);
     }
- console.log(statistics);
     return (
         <Container>
             <Row className='align-items-center justify-content-center'>
@@ -92,7 +89,6 @@ function Phrazletat() {
                                             const cleanedScore = char.phrazlescore.replace(/[🟨,🟩,🟦,🟪,⬜]/g, "");
                                             const phrasle_score_text = cleanedScore.replace(/#phrazle|https:\/\/solitaired.com\/phrazle/g, '');
                                             const lettersAndNumbersRemoved = char.phrazlescore.replace(/[a-zA-Z0-9,#:./\\]/g, "");
-                                            console.log(lettersAndNumbersRemoved);
                                             const phrazleScore = splitIntoRows(lettersAndNumbersRemoved);
                                             // const phrazleScore = splitIntoRows(removespace, 10);
                                             const createDate = char.createdat; // Ensure this matches your database field name
