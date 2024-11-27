@@ -24,7 +24,6 @@ function GamesLayout() {
   const [maxStreak, setMaxStreak] = useState(0);
   
   const navigate = useNavigate();
-
   
   const handleFormClose = () => {
     setShowForm(false);
