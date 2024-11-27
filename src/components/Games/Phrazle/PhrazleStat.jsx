@@ -102,7 +102,7 @@ function Phrazletat() {
                                                     <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
                                                     <div className='phrazle-score m-auto text-center'>
                                                         {phrazleScore.map((row, rowIndex) => (
-                                                            <div key={rowIndex}>{row}</div>
+                                                            <div className="phrasle-row-score" key={rowIndex}>{row}</div>
                                                         ))}
                                                     </div>
                                                 </div>
