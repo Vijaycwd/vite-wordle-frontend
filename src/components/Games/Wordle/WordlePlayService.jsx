@@ -49,7 +49,7 @@ function WordlePlayService({ updateStatsChart }) {
         const createdAt = new Date().toISOString();
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     
-        const wordleScore = score.replace(/[🟩🟨⬜]/g, "");
+        const wordleScore = score.replace(/[🟩🟨⬜⬛]/g, "");
         const match = wordleScore.match(/(\d+|X)\/(\d+)/);
         console.log(match);
     

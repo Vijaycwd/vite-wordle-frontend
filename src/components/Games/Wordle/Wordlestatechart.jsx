@@ -71,7 +71,7 @@ function Wordlestatechart() {
                                 ) : (
                                     statschart && Array.isArray(statschart) && statschart.length > 0 ? (
                                         statschart.map((char, index) => {
-                                            const cleanedScore = char.wordlescore.replace(/[🟩🟨⬜]/g, "");
+                                            const cleanedScore = char.wordlescore.replace(/[🟩🟨⬜⬛]/g, "");
                                             const scoreParts = cleanedScore.split(" ");
                                             const attempts = scoreParts[2].split("/")[0];
                                             const lettersAndNumbersRemoved = char.wordlescore.replace(/[a-zA-Z0-9,/\\]/g, "");
