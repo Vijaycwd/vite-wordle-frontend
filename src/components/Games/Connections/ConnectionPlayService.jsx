@@ -123,6 +123,7 @@ return {
       guessDistribution: updatedDistribution, // Updated value
       handleHighlight: mistakeCount, // Use mistakeCount here
       timeZone,
+      
     };
     
     console.log(scoreObject);
@@ -159,9 +160,10 @@ return {
           currentStreak: newCurrentStreak,
           maxStreak: newMaxStreak,
           guessDistribution: updatedDistribution, // Use updated distribution here as well
-          handleHighlight:mistakeCount
+          handleHighlight:mistakeCount,
+          updatedDate: currentTime
         };
-        toast.success(res.data.message, { position: "top-center" });
+  
         await updateTotalGamesPlayed(TotalGameObject);
         setScore('');
         navigate('/connectionstats');

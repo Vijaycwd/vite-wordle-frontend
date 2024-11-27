@@ -21,12 +21,12 @@ function WordleGuessDistribution() {
         const guessdistribution = response.data.guessdistribution;
         setwordleGuessData(guessdistribution);
         const today = new Date().toISOString().split('T')[0]; // Current date
-        // console.log("Today Date:", today);
+        console.log("Today Date:", today);
   
         const handleHighlights = guessdistribution
           .filter((item) => {
             const formattedDate = item.updatedDate.split('T')[0];
-            // console.log("Item Date:", formattedDate, "Matches Today:", formattedDate === today);
+            console.log("Item Date:", formattedDate, "Matches Today:", formattedDate === today);
             return formattedDate === today; // Compare with today's date
           })
           .map((item) => item.handleHighlight)

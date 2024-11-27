@@ -85,10 +85,9 @@ function Registerform() {
 
         // console.log(userObject);
         const HEADERS = { headers: { 'Content-Type': 'multipart/form-data' } };
-        
+        const createdAt = new Date().toISOString();
         const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/user/create-user.php', userObject, HEADERS);
         if (res.data.status === 'success') {
-
             const WordleStatistics = {
                 username,
                 useremail: email,
@@ -98,7 +97,8 @@ function Registerform() {
                 currentStreak: 0,
                 maxStreak: 0,
                 guessDistribution: [0,0,0,0,0,0],
-                handleHighlight: [0]
+                handleHighlight: [0],
+                updatedDate: createdAt
             };
             const wordleStats = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/wordle/create-statistics.php', WordleStatistics);
             console.log(wordleStats);
@@ -112,7 +112,8 @@ function Registerform() {
                 currentStreak: 0,
                 maxStreak: 0,
                 guessDistribution: [0,0,0,0,0],
-                handleHighlight: 0
+                handleHighlight: 0,
+                updatedDate: createdAt
             };
             const connectionStats = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/connections/create-statistics.php', ConnectionStatistics);
             console.log(connectionStats);
@@ -126,7 +127,8 @@ function Registerform() {
                 currentStreak: 0,
                 maxStreak: 0,
                 guessDistribution: [0,0,0,0,0,0],
-                handleHighlight: [0]
+                handleHighlight: [0],
+                updatedDate: createdAt
             };
             const phrazleStats = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/phrazle/create-statistics.php', PhrazleStatistics);
             console.log(phrazleStats);

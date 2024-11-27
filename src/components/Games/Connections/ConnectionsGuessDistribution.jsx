@@ -12,12 +12,12 @@ function ConnectionsGuessDistribution() {
     if (loginuserEmail) {
         getGuessValue();
     }
-  }, [connectionsGuessData,loginuserEmail]);
+  }, [loginuserEmail]);
 
   function getGuessValue() {
     Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/connections/get-guessdistribution.php?useremail=${loginuserEmail}`)
         .then((response) => {
-        // console.log("Response Data:", response.data.guessdistribution);
+        console.log("Response Data:", response.data.guessdistribution);
         const guessdistribution = response.data.guessdistribution;
         setconnectionsGuessData(guessdistribution);
         const today = new Date().toISOString().split('T')[0]; // Current date
@@ -25,8 +25,9 @@ function ConnectionsGuessDistribution() {
   
         const handleHighlights = guessdistribution
           .filter((item) => {
+            console.log(item);
             const formattedDate = item.updatedDate.split('T')[0];
-            // console.log("Item Date:", formattedDate, "Matches Today:", formattedDate === today);
+            console.log("Item Date:", formattedDate, "Matches Today:", formattedDate === today);
             return formattedDate === today; // Compare with today's date
           })
           .map((item) => item.handleHighlight)

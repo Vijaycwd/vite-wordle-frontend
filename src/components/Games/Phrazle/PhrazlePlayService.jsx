@@ -101,6 +101,7 @@ const onSubmit = async (event) => {
           lastgameisWin: isWin,
           currentStreak: streak,
           guessDistribution: updatedGuessDistribution,
+          updatedDate: currentTime
         };
         toast.success(res.data.message, { position: "top-center" });
         await updateTotalGamesPlayed(TotalGameObject);

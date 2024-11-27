@@ -125,6 +125,7 @@ function GamesLayout() {
         guessDistribution: updatedDistribution, // Updated value
         handleHighlight: mistakeCount, // Use mistakeCount here
         timeZone,
+        
       };
       
       console.log(scoreObject);
@@ -161,7 +162,8 @@ function GamesLayout() {
             currentStreak: newCurrentStreak,
             maxStreak: newMaxStreak,
             guessDistribution: updatedDistribution, // Use updated distribution here as well
-            handleHighlight:mistakeCount
+            handleHighlight:mistakeCount,
+            updatedDate: currentTime
           };
     
           await updateTotalGamesPlayed(TotalGameObject);
