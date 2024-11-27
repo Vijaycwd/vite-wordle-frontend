@@ -112,6 +112,7 @@ function Gameslayout() {
                     lastgameisWin: isWin,
                     currentStreak: streak,
                     guessDistribution: updatedGuessDistribution,
+                    updatedDate: currentTime
                 };
                 
                 await updateTotalGamesPlayed(TotalGameObject);
