@@ -63,7 +63,7 @@ function PhrazleGuessDistribution() {
                       color: '#ffffff',
                     }}
                   >
-                    <div className=''>
+                    <div className='phrazle-row-score'>
                       {guess}
                     </div>
                   </div>
