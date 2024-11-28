@@ -71,7 +71,7 @@ function Registerform() {
         }
     }
 
-
+    const createdAt = new Date().toISOString();
     const signUp = async (event) => {
         event.preventDefault();
         const userObject = {
@@ -79,13 +79,13 @@ function Registerform() {
             email: email,
             password: password,
             confirmpassword: confirmpassword,
-            avatar: avatar
+            avatar: avatar,
+            createdAt
         }
         console.log(userObject);
 
         // console.log(userObject);
         const HEADERS = { headers: { 'Content-Type': 'multipart/form-data' } };
-        const createdAt = new Date().toISOString();
         const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/user/create-user.php', userObject, HEADERS);
         if (res.data.status === 'success') {
             const WordleStatistics = {
