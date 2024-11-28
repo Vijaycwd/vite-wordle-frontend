@@ -97,7 +97,7 @@ function Phrazletat() {
                                             const gamleScore = char.gamlescore;
                                             return (
                                                 <div key={index}>
-                                                    <h5 className='text-center'>Game Score: {gamleScore}</h5>
+                                                    <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
                                                     <div className={`phrazle-score-board-text my-3 fs-5 text-center`}>{phrasle_score_text}</div>
                                                     <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
                                                     <div className='phrazle-score m-auto text-center'>
