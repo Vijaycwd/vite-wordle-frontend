@@ -62,10 +62,32 @@ function Gameslayout() {
         updateStatsChart();
     }
     setShowForm(false);
-
-    const currentTime = new Date().toISOString();
-    const createdAt = new Date().toISOString();
+    
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    const localDate = new Date();
+
+    // Get current time in ISO format (without 'Z' for UTC)
+    const createdAt = localDate.toISOString().slice(0, -1);  // "2024-12-02T10:10:29.476"
+
+    // Get time zone offset in minutes
+    const offsetMinutes = localDate.getTimezoneOffset();  // Offset in minutes (positive for behind UTC, negative for ahead)
+    const offsetSign = offsetMinutes > 0 ? '-' : '+';  // Determine if it's ahead or behind UTC
+    const offsetHours = String(Math.abs(offsetMinutes) / 60).padStart(2, '0');  // Convert minutes to hours and format
+    const offsetMinutesStr = String(Math.abs(offsetMinutes) % 60).padStart(2, '0');  // Get the remaining minutes and format
+
+    // Format the offset in +05:30 or -05:30 format
+    const offsetFormatted = `${offsetSign}${offsetHours}:${offsetMinutesStr}`;
+
+    // Now adjust the time by adding the time zone offset (this does not affect UTC, it gives the correct local time)
+    const adjustedDate = new Date(localDate.getTime() - offsetMinutes * 60 * 1000); // Adjust time by the offset in milliseconds
+
+    // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
+    const adjustedCreatedAt = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
+
+    console.log(adjustedCreatedAt);  // Output: Local time in 24-hour format (without 'Z')
+
+
 
     const wordleScore = score.replace(/[🟩🟨⬜⬛]/g, "");
     const match = wordleScore.match(/(\d+|X)\/(\d+)/);
@@ -90,8 +112,8 @@ function Gameslayout() {
             guessDistribution: updatedGuessDistribution,
             isWin,
             gamleScore: guessesUsed,
-            createdAt,
-            currentUserTime: currentTime,
+            createdAt: adjustedCreatedAt,
+            currentUserTime: adjustedCreatedAt,
             timeZone
         };
         console.log(wordleObject);
@@ -112,7 +134,7 @@ function Gameslayout() {
                     lastgameisWin: isWin,
                     currentStreak: streak,
                     guessDistribution: updatedGuessDistribution,
-                    updatedDate: currentTime
+                    updatedDate: adjustedCreatedAt
                 };
                 
                 await updateTotalGamesPlayed(TotalGameObject);
