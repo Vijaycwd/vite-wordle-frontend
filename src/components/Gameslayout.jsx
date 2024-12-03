@@ -85,18 +85,18 @@ function Gameslayout() {
     // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
     const adjustedCreatedAt = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
 
-    console.log(adjustedCreatedAt);  // Output: Local time in 24-hour format (without 'Z')
+    // console.log(adjustedCreatedAt);  // Output: Local time in 24-hour format (without 'Z')
 
 
 
     const wordleScore = score.replace(/[🟩🟨⬜⬛]/g, "");
     const match = wordleScore.match(/(\d+|X)\/(\d+)/);
-    console.log(match);
+    // console.log(match);
 
     if (match) {
-        const guessesUsed = parseInt(match[1], 10);
+        let guessesUsed = match[1] === "X" ? 7 : parseInt(match[1], 10); // Assign 7 for failed attempts ("X")
         const totalGuesses = parseInt(match[2], 10);
-        const isWin = guessesUsed <= totalGuesses;
+        const isWin = match[1] !== "X" && guessesUsed <= totalGuesses;
 
         setGameIsWin(isWin);
         const updatedGuessDistribution = [...guessDistribution];
@@ -116,7 +116,7 @@ function Gameslayout() {
             currentUserTime: adjustedCreatedAt,
             timeZone
         };
-        console.log(wordleObject);
+        // console.log(wordleObject);
         try {
             const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/wordle/create-score.php', wordleObject);
             console.log(res.data.status);
@@ -136,7 +136,7 @@ function Gameslayout() {
                     guessDistribution: updatedGuessDistribution,
                     updatedDate: adjustedCreatedAt
                 };
-                
+                console.log(TotalGameObject);
                 await updateTotalGamesPlayed(TotalGameObject);
                 setScore('');
                 navigate('/wordlestats');

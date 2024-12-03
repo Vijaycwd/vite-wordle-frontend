@@ -81,9 +81,9 @@ const onSubmit = async (event) => {
   
 
   if (match) {
-    const guessesUsed = parseInt(match[1], 10);
+    let guessesUsed = match[1] === "X" ? 7 : parseInt(match[1], 10); // Assign 7 for failed attempts ("X")
     const totalGuesses = parseInt(match[2], 10);
-    const isWin = guessesUsed <= totalGuesses;
+    const isWin = match[1] !== "X" && guessesUsed <= totalGuesses;
     console.group(guessesUsed);
     setGameIsWin(isWin);
 

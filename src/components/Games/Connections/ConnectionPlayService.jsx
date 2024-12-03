@@ -52,28 +52,36 @@ const splitIntoRows = (inputString, rowLength) => {
 };
 
 const determineAttempts = (score) => {
-const value = score.replace(/[a-zA-Z0-9,#/\\]/g, "");
-const removespace = value.replace(/\s+/g, "");
-const connectionsScore = splitIntoRows(removespace, 4);
-let attempts = 0;
-let mistakeCount = 0;
+  const value = score.replace(/[a-zA-Z0-9,#/\\]/g, ""); // Remove non-icon characters
+  const removespace = value.replace(/\s+/g, ""); // Remove spaces
+  const connectionsScore = splitIntoRows(removespace, 4); // Split into rows of 4 icons
+  let attempts = 0;
+  let mistakeCount = 0;
+  let incorrectGroups = 0;  // Change correctGroups to incorrectGroups
 
-// Loop through the rows and check for the specified winning pattern
-for (let i = 0; i < connectionsScore.length; i++) {
-  const row = connectionsScore[i].trim();
+  // Define the complete patterns for a correct group
+  const winningPatterns = ["🟨🟨🟨🟨", "🟩🟩🟩🟩", "🟪🟪🟪🟪", "🟦🟦🟦🟦"];
 
-  // Check if the row is one of the predefined complete patterns
-  if (row === "🟨🟨🟨🟨" || row === "🟩🟩🟩🟩" || row === "🟪🟪🟪🟪" || row === "🟦🟦🟦🟦") {
-    attempts = i + 1; // Set attempts to the row number (starting from 1)
-  } else {
-    mistakeCount++; // Count rows that don't match
+  // Loop through the rows and check for correctness
+  for (let i = 0; i < connectionsScore.length; i++) {
+    const row = connectionsScore[i].trim();
+
+    if (winningPatterns.includes(row)) {
+      mistakeCount++; // Count incorrect rows
+    } else {
+      incorrectGroups++; // Count incorrect groupings
+    }
+    attempts = i + 1; // Set attempts to the current row number
   }
-}
 
-return {
-  attempts: attempts || connectionsScore.length, // Use attempts if found, otherwise total rows
-  mistakeCount, // Total rows with mistakes
-};
+  const isWin = incorrectGroups === 0; // Check if there are no incorrect groups
+
+  return {
+    attempts, // Total number of rows checked
+    mistakeCount, // Number of incorrect rows
+    incorrectGroups, // Number of incorrect groupings
+    isWin, // Whether the game is won (no incorrect groups)
+  };
 };
 
 // Calculate attempts and mistakeCount
@@ -135,7 +143,7 @@ return {
       username: loginUsername,
       useremail: loginUserEmail,
       connectionscore: score,
-      gamleScore: mistakeCount, // Use attempts here
+      gamleScore: incorrectGroups, // Use attempts here
       createdAt:adjustedCreatedAt,
       currentUserTime: adjustedCreatedAt,
       lastgameisWin: isWin,

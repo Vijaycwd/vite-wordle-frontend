@@ -12,7 +12,7 @@ function WordleGuessDistribution() {
     if (loginuserEmail) {
       getGuessValue();
     }
-  }, [wordleGuessData,loginuserEmail]);
+  }, [loginuserEmail]);
   
   function getGuessValue() {
     Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/get-guessdistribution.php?useremail=${loginuserEmail}`)
@@ -20,17 +20,22 @@ function WordleGuessDistribution() {
         // console.log("Response Data:", response.data.guessdistribution);
         const guessdistribution = response.data.guessdistribution;
         setwordleGuessData(guessdistribution);
-        const today = new Date().toISOString().split('T')[0]; // Current date
-        console.log("Today Date:", today);
-  
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const day = String(today.getDate()).padStart(2, '0');
+
+        const formattedToday = `${year}-${month}-${day}`;
+        // console.log("Formatted Today Date:", formattedToday);
+
         const handleHighlights = guessdistribution
-          .filter((item) => {
-            const formattedDate = item.updatedDate.split('T')[0];
-            console.log("Item Date:", formattedDate, "Matches Today:", formattedDate === today);
-            return formattedDate === today; // Compare with today's date
-          })
-          .map((item) => item.handleHighlight)
-          .flat();
+        .filter((item) => {
+          const formattedDate = item.updatedDate.split('T')[0];
+          // console.log("Item Date:", formattedDate, "Matches Today:", formattedDate === formattedToday);
+          return formattedDate === formattedToday; // Compare with today's formatted date
+        })
+        .map((item) => item.handleHighlight)
+        .flat();
   
         // console.log("Highlight Data:", handleHighlights); // Log highlight data
         sethandlehighlightData(handleHighlights);
