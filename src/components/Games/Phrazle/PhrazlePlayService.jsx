@@ -73,7 +73,6 @@ const onSubmit = async (event) => {
 
   console.log(adjustedCreatedAt);  // Output: Local time in 24-hour format (without 'Z')
 
-  
   // Process the Wordle score and match it against a valid format
   const phrazleScore = score.replace(/[🟩🟨⬜🟪]/g, "");
   const lettersAndNumbersRemoved = phrazleScore.replace(/[a-zA-Z0-9,#.:/\\]/g, "");
@@ -84,6 +83,7 @@ const onSubmit = async (event) => {
     let guessesUsed = match[1] === "X" ? 7 : parseInt(match[1], 10); // Assign 7 for failed attempts ("X")
     const totalGuesses = parseInt(match[2], 10);
     const isWin = match[1] !== "X" && guessesUsed <= totalGuesses;
+
     console.group(guessesUsed);
     setGameIsWin(isWin);
 

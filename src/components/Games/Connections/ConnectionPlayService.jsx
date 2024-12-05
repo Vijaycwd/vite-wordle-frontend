@@ -52,35 +52,27 @@ const splitIntoRows = (inputString, rowLength) => {
 };
 
 const determineAttempts = (score) => {
-  const value = score.replace(/[a-zA-Z0-9,#/\\]/g, ""); // Remove non-icon characters
-  const removespace = value.replace(/\s+/g, ""); // Remove spaces
-  const connectionsScore = splitIntoRows(removespace, 4); // Split into rows of 4 icons
+  const value = score.replace(/[a-zA-Z0-9,#/\\]/g, "");
+  const removespace = value.replace(/\s+/g, "");
+  const connectionsScore = splitIntoRows(removespace, 4);
   let attempts = 0;
   let mistakeCount = 0;
-  let incorrectGroups = 0;  // Change correctGroups to incorrectGroups
 
-  // Define the complete patterns for a correct group
-  const winningPatterns = ["🟨🟨🟨🟨", "🟩🟩🟩🟩", "🟪🟪🟪🟪", "🟦🟦🟦🟦"];
-
-  // Loop through the rows and check for correctness
+  // Loop through the rows and check for the specified winning pattern
   for (let i = 0; i < connectionsScore.length; i++) {
     const row = connectionsScore[i].trim();
 
-    if (winningPatterns.includes(row)) {
-      mistakeCount++; // Count incorrect rows
+    // Check if the row is one of the predefined complete patterns
+    if (row === "🟨🟨🟨🟨" || row === "🟩🟩🟩🟩" || row === "🟪🟪🟪🟪" || row === "🟦🟦🟦🟦") {
+      attempts = i + 1; // Set attempts to the row number (starting from 1)
     } else {
-      incorrectGroups++; // Count incorrect groupings
+      mistakeCount++; // Count rows that don't match
     }
-    attempts = i + 1; // Set attempts to the current row number
   }
 
-  const isWin = incorrectGroups === 0; // Check if there are no incorrect groups
-
   return {
-    attempts, // Total number of rows checked
-    mistakeCount, // Number of incorrect rows
-    incorrectGroups, // Number of incorrect groupings
-    isWin, // Whether the game is won (no incorrect groups)
+    attempts: attempts || connectionsScore.length, // Use attempts if found, otherwise total rows
+    mistakeCount, // Total rows with mistakes
   };
 };
 
@@ -90,32 +82,32 @@ const determineAttempts = (score) => {
 // Populate the scoreObject
 
 
-
-  // Function to calculate and update the guess distribution for Connections game
-
-  const onSubmit = async (event) => {
-    event.preventDefault();
-    if (typeof updateStatsChart === 'function') {
-      updateStatsChart();
-    }
-    setShowForm(false);
-    const { attempts, mistakeCount } = determineAttempts(score);
-    console.log('attempts',attempts);
-    // const attempts = determineAttempts(score); // Calculate the number of attempts to first win
-    const isWin = attempts > 0; // If attempts > 0, it means there's at least one winning row
   
-    // Update guessDistribution if there's a win
-    let updatedDistribution = [...guessDistribution]; // Copy current distribution
-    
-    if (isWin) {
-      if (mistakeCount >= 0 && mistakeCount <= 4) { // Ensure attempts is within range (1 to 4)
-        updatedDistribution[mistakeCount] += 1; // Increment the count at the correct index
+    // Function to calculate and update the guess distribution for Connections game
+  
+    const onSubmit = async (event) => {
+      event.preventDefault();
+      if (typeof updateStatsChart === 'function') {
+        updateStatsChart();
       }
-  
-      setGuessDistribution(updatedDistribution);
-    }
-  
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      setShowForm(false);
+      const { attempts, mistakeCount } = determineAttempts(score);
+      console.log('attempts',attempts);
+      // const attempts = determineAttempts(score); // Calculate the number of attempts to first win
+      const isWin = attempts > 0; // If attempts > 0, it means there's at least one winning row
+    
+      // Update guessDistribution if there's a win
+      let updatedDistribution = [...guessDistribution]; // Copy current distribution
+      
+      if (isWin) {
+        if (mistakeCount >= 0 && mistakeCount <= 4) { // Ensure attempts is within range (1 to 4)
+          updatedDistribution[mistakeCount] += 1; // Increment the count at the correct index
+        }
+    
+        setGuessDistribution(updatedDistribution);
+      }
+    
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const localDate = new Date();
 
       // Get current time in ISO format (without 'Z' for UTC)
@@ -137,83 +129,83 @@ const determineAttempts = (score) => {
       const adjustedCreatedAt = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
 
       console.log(adjustedCreatedAt);  // Output: Local time in 24-hour format (without 'Z')
-    // const gamleScoreValue = attempts - 1;
-    // Use `updatedDistribution` here instead of `guessDistribution`
-    const scoreObject = {
-      username: loginUsername,
-      useremail: loginUserEmail,
-      connectionscore: score,
-      gamleScore: incorrectGroups, // Use attempts here
-      createdAt:adjustedCreatedAt,
-      currentUserTime: adjustedCreatedAt,
-      lastgameisWin: isWin,
-      guessDistribution: updatedDistribution, // Updated value
-      handleHighlight: mistakeCount, // Use mistakeCount here
-      timeZone,
+        // const gamleScoreValue = attempts - 1;
+        // Use `updatedDistribution` here instead of `guessDistribution`
+      const scoreObject = {
+        username: loginUsername,
+        useremail: loginUserEmail,
+        connectionscore: score,
+        gamleScore: mistakeCount, // Use attempts here
+        createdAt:adjustedCreatedAt,
+        currentUserTime: adjustedCreatedAt,
+        lastgameisWin: isWin,
+        guessDistribution: updatedDistribution, // Updated value
+        handleHighlight: mistakeCount, // Use mistakeCount here
+        timeZone,
+        
+      };
       
+      console.log(scoreObject);
+      try {
+        const res = await Axios.post(
+          'https://coralwebdesigns.com/college/wordgamle/games/connections/create-score.php',
+          scoreObject
+        );
+        if (res.data.status === 'success') {
+          if (typeof updateStatsChart === 'function') {
+            updateStatsChart();
+          }
+    
+          const newTotalGamesPlayed = (res.data.totalGamesPlayed || 0) + 1;
+          const newTotalWinGames = isWin
+            ? (res.data.totalWinGames || 0) + 1
+            : res.data.totalWinGames || 0;
+    
+          setTotalGamesPlayed(newTotalGamesPlayed);
+          setTotalWinGames(newTotalWinGames);
+    
+          const newCurrentStreak = isWin ? currentStreak + 1 : 0;
+          const newMaxStreak = Math.max(currentStreak + (isWin ? 1 : 0), maxStreak);
+    
+          setCurrentStreak(newCurrentStreak);
+          setMaxStreak(newMaxStreak);
+    
+          const TotalGameObject = {
+            username: loginUsername,
+            useremail: loginUserEmail,
+            totalWinGames: newTotalWinGames,
+            totalGamesPlayed: newTotalGamesPlayed,
+            lastgameisWin: isWin,
+            currentStreak: newCurrentStreak,
+            maxStreak: newMaxStreak,
+            guessDistribution: updatedDistribution, // Use updated distribution here as well
+            handleHighlight:mistakeCount,
+            updatedDate: adjustedCreatedAt
+          };
+    
+          await updateTotalGamesPlayed(TotalGameObject);
+          setScore('');
+          navigate('/connectionstats');
+          toast.success(res.data.message, { position: "top-center" });
+        } else {
+          toast.error(res.data.message, { position: "top-center" });
+        }
+      } catch (err) {
+        toast.error(err.response?.data?.message || 'An unexpected error occurred.', {
+          position: "top-center",
+        });
+      }
     };
     
-    console.log(scoreObject);
+  const updateTotalGamesPlayed = async (TotalGameObject) => {
+    console.log(TotalGameObject);
     try {
-      const res = await Axios.post(
-        'https://coralwebdesigns.com/college/wordgamle/games/connections/create-score.php',
-        scoreObject
-      );
-      if (res.data.status === 'success') {
-        if (typeof updateStatsChart === 'function') {
-          updateStatsChart();
-        }
-  
-        const newTotalGamesPlayed = (res.data.totalGamesPlayed || 0) + 1;
-        const newTotalWinGames = isWin
-          ? (res.data.totalWinGames || 0) + 1
-          : res.data.totalWinGames || 0;
-  
-        setTotalGamesPlayed(newTotalGamesPlayed);
-        setTotalWinGames(newTotalWinGames);
-  
-        const newCurrentStreak = isWin ? currentStreak + 1 : 0;
-        const newMaxStreak = Math.max(currentStreak + (isWin ? 1 : 0), maxStreak);
-  
-        setCurrentStreak(newCurrentStreak);
-        setMaxStreak(newMaxStreak);
-  
-        const TotalGameObject = {
-          username: loginUsername,
-          useremail: loginUserEmail,
-          totalWinGames: newTotalWinGames,
-          totalGamesPlayed: newTotalGamesPlayed,
-          lastgameisWin: isWin,
-          currentStreak: newCurrentStreak,
-          maxStreak: newMaxStreak,
-          guessDistribution: updatedDistribution, // Use updated distribution here as well
-          handleHighlight:mistakeCount,
-          updatedDate: adjustedCreatedAt
-        };
-  
-        await updateTotalGamesPlayed(TotalGameObject);
-        setScore('');
-        navigate('/connectionstats');
-        toast.success(res.data.message, { position: "top-center" });
-      } else {
-        toast.error(res.data.message, { position: "top-center" });
-      }
+      const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/connections/update-statistics.php', TotalGameObject);
+      console.log(res);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'An unexpected error occurred.', {
-        position: "top-center",
-      });
+      toast.error('Failed to update total games played', { position: "top-center" });
     }
   };
-  
-const updateTotalGamesPlayed = async (TotalGameObject) => {
-  console.log(TotalGameObject);
-  try {
-    const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/connections/update-statistics.php', TotalGameObject);
-    console.log(res);
-  } catch (err) {
-    toast.error('Failed to update total games played', { position: "top-center" });
-  }
-};
     return (
         <>
             <div className="my-3">

@@ -15,10 +15,11 @@ function PhrazleScoreByDate() {
     const [startDate, setStartDate] = useState(new Date());
 
     // Function to format the selected date in YYYY-MM-DD format for backend
-    const formatDateForBackend = (date) => moment(date).format('YYYY-MM-DD');
+    const formatDateForBackend = (date) => moment(date).format('YYYY-MM-DD hh:mm A');
 
     // Handle date selection
     const handleDateChange = (date) => {
+        
         setStartDate(date);
         const formattedDate = formatDateForBackend(date);
         fetchDataByDate(formattedDate);  // Trigger data fetching after date selection
@@ -26,18 +27,26 @@ function PhrazleScoreByDate() {
 
     const fetchDataByDate = (date) => {
         const timeZone = moment.tz.guess(); // Automatically get the user's local time zone
+        const originalDate = moment.tz(date, "YYYY-MM-DD hh:mm A", timeZone);
+        const formattedDate = originalDate.format("YYYY-MM-DDTHH:mm:ss");
+        console.log(formattedDate);
     
-        // Make the API request to the endpoint with date and timeZone as query parameters
-        axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/get-score.php`, {
+        // Determine if it's morning or afternoon
+        const currentTime = moment().tz(timeZone);
+        const period = currentTime.hours() < 12 ? 'morning' : 'afternoon';
+    
+        // Make the API request to the endpoint with date, timeZone, and period as query parameters
+        axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/get-score-by-date.php`, {
             params: {
                 useremail: loginuserEmail,
-                date: date,
-                timeZone: timeZone
+                date: formattedDate,
+                timeZone: timeZone,
+                period: period // Add period to the query params
             }
         })
         .then((response) => {
             if (response.data.status === "success") {
-                console.log('phrasle Score',response.data);
+                console.log('phrazle Score', response.data);
                 setStatsChart(response.data.phrazlescore);
                 setDataFetched(true);
                 setFetchedError(false);
@@ -53,6 +62,7 @@ function PhrazleScoreByDate() {
             setFetchedError(true);
         });
     };
+    
 
     // Function to slice the string into rows of a specified length
     function splitIntoRows(text) {
@@ -70,13 +80,18 @@ function PhrazleScoreByDate() {
     return (
         <>
             <div className='text-center'>
-                <DatePicker
-                    selected={startDate}
-                    onChange={handleDateChange}
-                    customInput={<ExampleCustomInput />}
-                    dateFormat="dd-MM-yyyy"
-                    maxDate={new Date()}
-                />
+            <DatePicker
+                selected={startDate}
+                onChange={handleDateChange}
+                customInput={<ExampleCustomInput />}
+                dateFormat="dd-MM-yyyy"
+                timeFormat="hh:mm aa" // Use 12-hour format with AM/PM
+                timeIntervals={720} // Set the interval of the time picker
+                maxDate={new Date()}
+                showTimeSelect // Show time selection
+                timeCaption="AM/PM"
+            />
+
             </div>
             <ul className='score-by-date p-2'>
                 {dataFetched && statsChart.length > 0 ? (
