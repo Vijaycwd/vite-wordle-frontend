@@ -19,7 +19,7 @@ function ConnectionsStatistics() {
         if (loginuserEmail) {
             getStatsValue();
         }
-      }, [connectionsStatsData,loginuserEmail])
+      }, [loginuserEmail])
 
     function getStatsValue() {
        

@@ -12,7 +12,7 @@ function ConnectionsGuessDistribution() {
     if (loginuserEmail) {
         getGuessValue();
     }
-  }, [connectionsGuessData,loginuserEmail]);
+  }, [loginuserEmail]);
 
   function getGuessValue() {
     Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/connections/get-guessdistribution.php?useremail=${loginuserEmail}`)
