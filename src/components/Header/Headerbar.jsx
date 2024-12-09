@@ -35,21 +35,39 @@ const Headerbar = () => {
     setTarget(event.target);
   };
 
+  const handleOutsideClick = (event) => {
+    if (ref.current && !ref.current.contains(event.target)) {
+      setShow(false);
+    }
+  };
+
+  useEffect(() => {
+    if (show) {
+      document.addEventListener('mousedown', handleOutsideClick);
+    } else {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [show]);
+
   const logout = async (event) => {
     event.preventDefault();
-    setShow(!show);
+    setShow(false);
     localStorage.removeItem('auth');
     navigate('/');
   };
 
   const login = async (event) => {
     event.preventDefault();
-    setShow(!show);
+    setShow(false);
     navigate('/login');
   };
 
   const editUser = (username, email, id, avatar, isEditing) => {
-    setShow(!show);
+    setShow(false);
     navigate('/edit-profile', {
       state: { username, email, id, avatar, isEditing }
     });
@@ -93,14 +111,14 @@ const Headerbar = () => {
                     ) : (
                       <>
                         <div>
-                        <img 
-                          src={`https://coralwebdesigns.com/college/wordgamle/user/uploads/${userData.avatar}`} 
-                          alt="User Avatar" 
-                          width="30px"
-                          height="30px"
-                          className="img-fluid" 
-                          onError={(e) => e.target.src = 'https://coralwebdesigns.com/college/wordgamle/user/uploads/default_avatar.png'}
-                        />
+                          <img 
+                            src={`https://coralwebdesigns.com/college/wordgamle/user/uploads/${userData.avatar}`} 
+                            alt="User Avatar" 
+                            width="30px"
+                            height="30px"
+                            className="img-fluid" 
+                            onError={(e) => e.target.src = 'https://coralwebdesigns.com/college/wordgamle/user/uploads/default_avatar.png'}
+                          />
                           <p className='fs-4 m-0 cwd-edit-profile' onClick={() => editUser(userData.username, userData.email, userData.id, userData.avatar, true)}>{userData.username}</p>
                           <p>{userData.email}</p>
                           <div className="user-profile-button">
