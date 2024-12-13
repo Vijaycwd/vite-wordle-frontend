@@ -87,7 +87,7 @@ function WordleScoreByDate() {
                 {dataFetched && statsChart.length > 0 ? (
                     statsChart.map(item => {
                         const gamleScore = item.gamlescore;
-                        const cleanedScore = item.wordlescore.replace(/[🟩🟨⬜]/g, "");
+                        const cleanedScore = item.wordlescore.replace(/[🟩🟨⬜⬛]/g, "");
                         const lettersAndNumbersRemoved = item.wordlescore.replace(/[a-zA-Z0-9,/\\]/g, "");
                         const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
                         const wordleScores = splitIntoRows(removespace, 5);

@@ -124,6 +124,7 @@ function GamesLayout() {
             guessDistribution: updatedGuessDistribution,
             updatedDate: adjustedCreatedAt
           };
+          console.log(TotalGameObject);
           toast.success(res.data.message, { position: "top-center" });
           await updateTotalGamesPlayed(TotalGameObject);
           setScore('');
