@@ -28,10 +28,12 @@ function Wordlestatechart() {
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/get-score.php`, {
             params: {
-                useremail: loginuserEmail
+                useremail: loginuserEmail,
+                timeZone
             }
         })
         .then((response) => {
+            console.log(response);
             if (response.data.status === "success") {
                 const scoreData = response.data.wordlescore;
                 setLoading(false);

@@ -26,7 +26,7 @@ function Phrazletat() {
 
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/get-score.php`, {
-            params: { useremail: loginuserEmail}
+            params: { useremail: loginuserEmail, timeZone}
         })
         .then((res) => {
             if (res.data.status === "success") {
