@@ -30,7 +30,7 @@ function ConnectionsGuessDistribution() {
 
       const handleHighlights = guessdistribution
       .filter((item) => {
-        const formattedDate = item.updatedDate.split(' ')[0];
+        const formattedDate = item.updatedDate.split('T')[0];
         // console.log("Item Date:", formattedDate, "Matches Today:", formattedDate === formattedToday);
         return formattedDate === formattedToday; // Compare with today's formatted date
       })
