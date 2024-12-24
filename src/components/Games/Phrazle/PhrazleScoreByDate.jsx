@@ -111,11 +111,11 @@ function PhrazleScoreByDate() {
                                 <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
                                 <div className={`phrazle-score-board-text my-3 fs-5 text-center`}>{phrasle_score_text}</div>
                                 <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
-                                <div className='text-center'>
+                                <pre className='text-center'>
                                     {phrazleScore.map((row, rowIndex) => (
                                         <div className="phrasle-row-score" key={rowIndex}>{row}</div>
                                     ))}
-                                </div>
+                                </pre>
                             </div>
                         );
                     })
