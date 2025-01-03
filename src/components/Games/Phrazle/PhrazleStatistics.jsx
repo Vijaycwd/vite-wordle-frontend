@@ -19,7 +19,7 @@ function phrazleStatistics() {
         if (loginuserEmail) {
             getStatsValue();
         }
-      }, [loginuserEmail])
+      }, [phrazleStatsData,loginuserEmail])
 
     function getStatsValue() {
        
