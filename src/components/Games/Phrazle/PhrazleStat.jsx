@@ -7,7 +7,7 @@ import PhrazlePlayService from './PhrazlePlayService';
 import PhrazleScoreByDate from './PhrazleScoreByDate';
 import PhrazleGuessDistribution from './PhrazleGuessDistribution';
 
-function Phrazletat() {
+function PhrazleStat() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA?.email; // Optional chaining to avoid errors
 
@@ -25,8 +25,17 @@ function Phrazletat() {
     function getStatChart() {
 
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const localDate = new Date();
+        // Get time zone offset in minutes
+        const offsetMinutes = localDate.getTimezoneOffset();  // Offset in minutes (positive for behind UTC, negative for ahead)
+
+        // Now adjust the time by adding the time zone offset (this does not affect UTC, it gives the correct local time)
+        const adjustedDate = new Date(localDate.getTime() - offsetMinutes * 60 * 1000); // Adjust time by the offset in milliseconds
+    
+        // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
+        const todayDate = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
         Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/get-score.php`, {
-            params: { useremail: loginuserEmail, timeZone}
+            params: { useremail: loginuserEmail, timeZone, today: todayDate}
         })
         .then((res) => {
             if (res.data.status === "success") {
@@ -71,6 +80,7 @@ function Phrazletat() {
     function splitIntoRows(text) {
         return text.split(/\r\s*\r/);
     }
+    console.log(statschart);
     return (
         <Container>
             <Row className='align-items-center justify-content-center'>
@@ -86,6 +96,7 @@ function Phrazletat() {
                                 ) : (
                                     statschart && Array.isArray(statschart) && statschart.length > 0 ? (
                                         statschart.map((char, index) => {
+                                            console.log(char);
                                             const cleanedScore = char.phrazlescore.replace(/[🟨,🟩,🟦,🟪,⬜]/g, "");
                                             const phrasle_score_text = cleanedScore.replace(/#phrazle|https:\/\/solitaired.com\/phrazle/g, '');
                                             const lettersAndNumbersRemoved = char.phrazlescore.replace(/[a-zA-Z0-9,#:./\\]/g, "");
@@ -139,4 +150,4 @@ function Phrazletat() {
     );
 }
 
-export default Phrazletat;
+export default PhrazleStat;

@@ -31,7 +31,7 @@ function ConnectionsScoreByDate() {
         axios.get(`https://coralwebdesigns.com/college/wordgamle/games/connections/get-score.php`, {
             params: {
                 useremail: loginuserEmail,
-                date: date,
+                today: date,
                 timeZone: timeZone
             }
         })

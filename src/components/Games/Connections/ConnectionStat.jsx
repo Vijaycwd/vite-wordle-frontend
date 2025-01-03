@@ -24,8 +24,18 @@ function ConnectionStat() {
     function getStatChart() {
 
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const localDate = new Date();
+        // Get time zone offset in minutes
+        const offsetMinutes = localDate.getTimezoneOffset();  // Offset in minutes (positive for behind UTC, negative for ahead)
+
+        // Now adjust the time by adding the time zone offset (this does not affect UTC, it gives the correct local time)
+        const adjustedDate = new Date(localDate.getTime() - offsetMinutes * 60 * 1000); // Adjust time by the offset in milliseconds
+    
+        // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
+        const todayDate = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
+        
         Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/connections/get-score.php`, {
-            params: { useremail: loginuserEmail, timeZone:timeZone }
+            params: { useremail: loginuserEmail, timeZone:timeZone, today: todayDate }
         })
         .then((res) => {
             if (res.data.status === "success") {
@@ -67,14 +77,15 @@ function ConnectionStat() {
                                 ) : (
                                     statschart && Array.isArray(statschart) && statschart.length > 0 ? (
                                         statschart.map((char, index) => {
-                                            const cleanedScore = char.connectionsscore.replace(/[🟨,🟩,🟦,🟪,⬜]/g, "");
+                                            console.log(char);
+                                            const cleanedScore = char.connectionsscore.replace(/[🟨,🟩,🟦,🟪]/g, "");
                                             const lettersAndNumbersRemoved = char.connectionsscore.replace(/[a-zA-Z0-9,#:/\\]/g, "");
                                             const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
                                             const connectionsScore = splitIntoRows(removespace, 4);
                                             const createDate = char.createdat; // Ensure this matches your database field name
                                             const date = new Date(createDate);
                                             const todayDate = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
-                                            console.log(statistics);
+                                            
                                             const gamleScore = char.gamlescore;
                                             return (
                                                 

@@ -39,7 +39,7 @@ function PhrazleScoreByDate() {
         axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/get-score-by-date.php`, {
             params: {
                 useremail: loginuserEmail,
-                date: formattedDate,
+                today: formattedDate,
                 timeZone: timeZone,
                 period: period // Add period to the query params
             }

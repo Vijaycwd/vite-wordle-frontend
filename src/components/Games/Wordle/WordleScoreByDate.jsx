@@ -31,7 +31,7 @@ function WordleScoreByDate() {
         axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/get-score.php`, {
             params: {
                 useremail: loginuserEmail,
-                date: date,
+                today: date,
                 timeZone: timeZone
             }
         })

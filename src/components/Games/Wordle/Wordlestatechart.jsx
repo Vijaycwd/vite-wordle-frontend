@@ -26,14 +26,25 @@ function Wordlestatechart() {
 
     function getStatChart() {
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const localDate = new Date();
+        // Get time zone offset in minutes
+        const offsetMinutes = localDate.getTimezoneOffset();  // Offset in minutes (positive for behind UTC, negative for ahead)
+
+        // Now adjust the time by adding the time zone offset (this does not affect UTC, it gives the correct local time)
+        const adjustedDate = new Date(localDate.getTime() - offsetMinutes * 60 * 1000); // Adjust time by the offset in milliseconds
+    
+        // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
+        const todayDate = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
+
         Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/get-score.php`, {
             params: {
                 useremail: loginuserEmail,
-                timeZone
+                timeZone,
+                today: todayDate
             }
         })
         .then((response) => {
-            console.log(response);
+            console.log("Wordle Score",response);
             if (response.data.status === "success") {
                 const scoreData = response.data.wordlescore;
                 setLoading(false);

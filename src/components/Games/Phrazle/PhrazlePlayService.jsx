@@ -96,7 +96,7 @@ const onSubmit = async (event) => {
     console.log(phrazleObject);
     try {
       const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/phrazle/create-score.php', phrazleObject);
-      console.log(res.data);
+      
       if (res.data.status === 'success') {
         if (typeof updateStatsChart === 'function') {
           updateStatsChart();
