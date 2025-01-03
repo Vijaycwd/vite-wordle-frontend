@@ -12,7 +12,7 @@ function WordleGuessDistribution() {
     if (loginuserEmail) {
       getGuessValue();
     }
-  }, [wordleGuessData,loginuserEmail]);
+  }, [loginuserEmail]);
   
   function getGuessValue() {
     Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/get-guessdistribution.php?useremail=${loginuserEmail}`)
@@ -56,7 +56,7 @@ function WordleGuessDistribution() {
               const guessValue = parseFloat(guess);
               const percentage = totalSum > 0 ? Math.round((guessValue / totalSum) * 100) : 0;
               const isHighlighted = highlightData.includes(i); // Check if index is highlighted
-              console.log(`Guess ${i + 1} - Highlighted: ${isHighlighted}`);
+              // console.log(`Guess ${i + 1} - Highlighted: ${isHighlighted}`);
               return (
                 <div key={i} className="guess-item my-2 d-flex align-items-center">
                   <span>{i + 1}</span>

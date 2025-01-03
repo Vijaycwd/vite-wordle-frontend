@@ -89,9 +89,9 @@ function GamesLayout() {
       updateStatsChart();
     }
     setShowForm(false);
-
+  
     const { isWin, mistakeCount } = determineAttempts(score);
-
+  
     let updatedDistribution = [...guessDistribution];
     if (isWin) {
       if (mistakeCount >= 0 && mistakeCount < updatedDistribution.length) {
@@ -100,9 +100,19 @@ function GamesLayout() {
       setGuessDistribution(updatedDistribution);
     }
   
+    // Get time zone offset in minutes
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const localDate = new Date();
-    const adjustedCreatedAt = localDate.toISOString().slice(0, -1);
+    const offsetMinutes = localDate.getTimezoneOffset();  // Offset in minutes (positive for behind UTC, negative for ahead)
+  
+    // Now adjust the time by adding the time zone offset (this does not affect UTC, it gives the correct local time)
+    const adjustedDate = new Date(localDate.getTime() - offsetMinutes * 60 * 1000); // Adjust time by the offset in milliseconds
+  
+    // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
+    const adjustedCreatedAt = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
+  
+    console.log(adjustedCreatedAt);  // Output: Local time in 24-hour format (without 'Z')
+  
   
     const scoreObject = {
       username: loginUsername,
@@ -116,7 +126,7 @@ function GamesLayout() {
       handleHighlight: mistakeCount,
       timeZone,
     };
-  
+   console.log(scoreObject);
     try {
       const res = await Axios.post(
         "https://coralwebdesigns.com/college/wordgamle/games/connections/create-score.php",

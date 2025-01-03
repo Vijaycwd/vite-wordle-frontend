@@ -12,7 +12,7 @@ function PhrazleGuessDistribution() {
     if (loginuserEmail) {
         getGuessValue();
     }
-  }, [phrazleGuessData,loginuserEmail]);
+  }, [loginuserEmail]);
 
   function getGuessValue() {
     Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/get-guessdistribution.php?useremail=${loginuserEmail}`)

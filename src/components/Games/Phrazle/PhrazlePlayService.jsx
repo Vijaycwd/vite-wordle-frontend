@@ -50,20 +50,10 @@ const onSubmit = async (event) => {
     updateStatsChart();
   }
 
+  // Get time zone offset in minutes
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const localDate = new Date();
-
-  // Get current time in ISO format (without 'Z' for UTC)
-  const createdAt = localDate.toISOString().slice(0, -1);  // "2024-12-02T10:10:29.476"
-
-  // Get time zone offset in minutes
   const offsetMinutes = localDate.getTimezoneOffset();  // Offset in minutes (positive for behind UTC, negative for ahead)
-  const offsetSign = offsetMinutes > 0 ? '-' : '+';  // Determine if it's ahead or behind UTC
-  const offsetHours = String(Math.abs(offsetMinutes) / 60).padStart(2, '0');  // Convert minutes to hours and format
-  const offsetMinutesStr = String(Math.abs(offsetMinutes) % 60).padStart(2, '0');  // Get the remaining minutes and format
-
-  // Format the offset in +05:30 or -05:30 format
-  const offsetFormatted = `${offsetSign}${offsetHours}:${offsetMinutesStr}`;
 
   // Now adjust the time by adding the time zone offset (this does not affect UTC, it gives the correct local time)
   const adjustedDate = new Date(localDate.getTime() - offsetMinutes * 60 * 1000); // Adjust time by the offset in milliseconds
@@ -103,9 +93,10 @@ const onSubmit = async (event) => {
       currentUserTime: adjustedCreatedAt,
       timeZone,
     };
+    console.log(phrazleObject);
     try {
       const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/phrazle/create-score.php', phrazleObject);
-      console.log(res.data.status);
+      console.log(res.data);
       if (res.data.status === 'success') {
         if (typeof updateStatsChart === 'function') {
           updateStatsChart();
