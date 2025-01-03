@@ -64,7 +64,7 @@ function WordleScoreByDate() {
     };
 
     // Format createdAt to display as DD-MM-YYYY
-    const formatCreatedAt = (createdat) => moment(createdat).format('DD-MM-YYYY');
+    const formatCreatedAt = (createdat) => moment(createdat).format('DD-MMM-YYYY');
 
     const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
         <Button className="example-custom-input wordle-btn px-5 btn btn-primary" onClick={onClick} ref={ref}>

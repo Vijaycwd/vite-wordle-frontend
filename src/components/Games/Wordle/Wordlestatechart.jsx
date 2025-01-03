@@ -92,7 +92,8 @@ function Wordlestatechart() {
                                             const wordleScores = splitIntoRows(removespace, 5);
                                             const createDate = char.createdat; // Make sure this matches your database field name
                                             const date = new Date(createDate);
-                                            const todayDate = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
+                                            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                            const todayDate = `${String(date.getDate()).padStart(2, '0')}-${months[date.getMonth()]}-${date.getFullYear()}`;
                                             const gamleScore = char.gamlescore;
                                             return (
                                                 <div key={index}>
