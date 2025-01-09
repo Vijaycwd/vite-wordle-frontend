@@ -88,7 +88,7 @@ function PhrazleStat() {
          // Further clean each row to remove excessive spaces
          return rows.map(row => row.replace(/\s+/g, ' ').trim());
     }
-    console.log(statschart);
+    // console.log(statschart);
     return (
         <Container>
             <Row className='align-items-center justify-content-center'>

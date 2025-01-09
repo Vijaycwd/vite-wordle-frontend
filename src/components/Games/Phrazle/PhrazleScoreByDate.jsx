@@ -63,7 +63,6 @@ function PhrazleScoreByDate() {
         });
     };
     
-
     // Function to slice the string into rows of a specified length
     function splitIntoRows(text) {
         // return text.split(/\r\s*\r/);
