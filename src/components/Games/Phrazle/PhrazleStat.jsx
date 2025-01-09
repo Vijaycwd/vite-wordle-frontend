@@ -78,7 +78,15 @@ function PhrazleStat() {
         });
     }
     function splitIntoRows(text) {
-        return text.split(/\r\s*\r/);
+        // return text.split(/\r\s*\r/);
+         // Remove unnecessary characters and trim spaces
+        const cleanedData = text.trim();
+    
+         // Split the data by double line breaks or single line breaks
+        const rows = cleanedData.split(/\n+/); 
+         
+         // Further clean each row to remove excessive spaces
+         return rows.map(row => row.replace(/\s+/g, ' ').trim());
     }
     console.log(statschart);
     return (
