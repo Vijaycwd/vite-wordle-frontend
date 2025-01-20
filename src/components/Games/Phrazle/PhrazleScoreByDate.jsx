@@ -29,7 +29,7 @@ function PhrazleScoreByDate() {
         const timeZone = moment.tz.guess(); // Automatically get the user's local time zone
         const originalDate = moment.tz(date, "YYYY-MM-DD hh:mm A", timeZone);
         const formattedDate = originalDate.format("YYYY-MM-DDTHH:mm:ss");
-        console.log(formattedDate);
+        
     
         // Determine if it's morning or afternoon
         const currentTime = moment().tz(timeZone);
@@ -106,7 +106,7 @@ function PhrazleScoreByDate() {
                         const cleanedScore = char.phrazlescore.replace(/[🟨,🟩,🟦,🟪,⬜]/g, "");
                         const phrasle_score_text = cleanedScore.replace(/#phrazle|https:\/\/solitaired.com\/phrazle/g, '');
                         const lettersAndNumbersRemoved = char.phrazlescore.replace(/[a-zA-Z0-9,#:./\\]/g, "");
-                        console.log(lettersAndNumbersRemoved);
+                        
                         const phrazleScore = splitIntoRows(lettersAndNumbersRemoved);
                         // const phrazleScore = splitIntoRows(removespace, 10);
                         const createDate = char.createdat; // Ensure this matches your database field name
@@ -120,11 +120,41 @@ function PhrazleScoreByDate() {
                                 <div className={`phrazle-score-board-text my-3 fs-5 text-center`}>{phrasle_score_text}</div>
                                 <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
                                 <div className='text-center'>
-                                    {phrazleScore.map((row, rowIndex) => (
-                                        <div className="phrasle-row-score" key={rowIndex}>{row}</div>
-                                    ))}
-                                </div>
+                                {/* {phrazleScore.map((row, rowIndex) => {
+                                    console.log(row);  // Log the current row to the console
+                                    return (
+                                        <div className="phrasle-row-score" key={rowIndex}>
+                                            {row}
+                                        </div>
+                                    );
+                                })} */}
+                                
+                               
+                                {phrazleScore.map((row, rowIndex) => {
+                                    // If the row is empty, skip rendering it
+                                    if (!row.trim()) return null;
+
+                                    // Split the row into individual symbols
+                                    const symbols = row.split(' '); // Split by empty string to get individual symbols
+
+                                    return (
+                                        <div className="phrasle-row-score" key={rowIndex}>
+                                            {symbols.map((part, partIndex) => (
+                                                <div className="row" key={partIndex}>
+                                                    {/* Split each part into individual symbols */}
+                                                    {part.split(' ').map((symbol, symbolIndex) => (
+                                                        <div className="items" key={symbolIndex}>
+                                                            {symbol}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    );
+                                })}
                             </div>
+                        </div>
+                           
                         );
                     })
                 ) : (

@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, FloatingLabel } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 
 const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore, loginUsername }) => {
   const [isPasted, setIsPasted] = useState(false);
 
+  // Function to validate Wordle score
+  const validateScore = (data) => {
+    return data.includes('Phrazle');
+  }
   // This function is triggered when a paste happens
   const handlePaste = (event) => {
-    if (!isPasted) {
+    const pastedData = event.clipboardData.getData('Text');
+    if (validateScore(pastedData)) {
       setIsPasted(true); // Mark that the data has been pasted
-      const pastedData = event.clipboardData.getData('Text');
       setScore(pastedData); // Set the pasted value to the score
-      event.preventDefault(); // Prevent the default paste action
+    } else {
+      toast.error('This Not Phrazle Score!', { position: 'top-center' });
     }
+    event.preventDefault(); // Prevent the default paste action
   };
 
   // Prevent changes to the pasted data
