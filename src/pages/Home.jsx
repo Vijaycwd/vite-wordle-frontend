@@ -7,7 +7,11 @@ import '@fortawesome/fontawesome-free/css/all.min.css';  // Make sure this is im
 function Home() {
     const userAuthData = JSON.parse(localStorage.getItem('auth')) || {};
     const navigate = useNavigate();
-    
+        
+    const handleNavigation = (link) => {
+        navigate(`/${link}`);
+    };
+        
     const loginformClick = () => {
         navigate('/login');
     }
@@ -17,7 +21,7 @@ function Home() {
         <>
             <Container className="login-section">
                 <Row className="align-content-center justify-content-center">
-                    <Col md={4} className='bg-white px-3 py-3 text-center'>
+                    <Col md={6} className='bg-white px-3 py-3 text-center'>
                         <Row>
                             <Col>
                             <p className='fs-4 text-center'>Welcome to <b>WordGAMLE!</b></p>
@@ -25,10 +29,28 @@ function Home() {
                             </p>
                             </Col>
                         </Row>
-                        <Row className='py-4'>
-                            <Col className='py-2 px-0' md={3}><Link className="btn btn-primary btn-lg" to="/wordle">Wordle</Link></Col>
-                            <Col className='py-2 px-0' md={6}><Link className="btn btn-primary btn-lg" to="/connections">Connections</Link></Col>
-                            <Col className='py-2 px-0' md={3}><Link className="btn btn-primary btn-lg" to="/phrazle">Phrazle</Link></Col>
+                        <Row>
+                            <Col className="text-center py-3">
+                                <div className="my-3">
+                                    <Button className="btn btn-primary btn-lg" onClick={() => handleNavigation('wordle')}>
+                                        Wordle
+                                    </Button>
+                                </div>
+                            </Col>
+                            <Col className="text-center py-3">
+                                <div className="my-3">
+                                    <Button className="btn btn-primary btn-lg" onClick={() => handleNavigation('connections')}>
+                                        Connections
+                                    </Button>
+                                </div>
+                            </Col>
+                            <Col className="text-center py-3">
+                                <div className="my-3">
+                                    <Button className="btn btn-primary btn-lg" onClick={() => handleNavigation('phrazle')}>
+                                        Phrazle
+                                    </Button>
+                                </div>
+                            </Col>
                         </Row>
                         {!userAuthData || isEmptyObject ? (
                             <>

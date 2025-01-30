@@ -17,6 +17,8 @@ import Phrazlegame from './components/Games/Phrazle/GameLayout';
 import Wordlestats from './components/Games/Wordle/Wordlestats';
 import ConnectionStat from './components/Games/Connections/ConnectionStat';
 import PhrazleStat from './components/Games/Phrazle/PhrazleStat';
+import GamesStat from './components/Games/GamesStat';
+import Groups from './pages/Groups';
 
 function App() {
   return (
@@ -32,6 +34,8 @@ function App() {
         <Route exact path="/reset-password" element={<Resetpwd />} />
         <Route exact path="/reset-password/:id/:token" element={<Resetpwdform />} />
         <Route  path='/' element={<ProtectedRouter/>}>
+          <Route exact path= '/groups' element={<Groups/>}/>
+          <Route exact path= '/gamesstat' element={<GamesStat/>}/>
           <Route exact path= '/wordlestats' element={<Wordlestats/>}/>
           <Route exact path= '/connectionstats' element={<ConnectionStat/>}/>
           <Route exact path= '/phrazlestats' element={<PhrazleStat/>}/>
