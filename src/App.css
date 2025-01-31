@@ -123,4 +123,8 @@ body{
   gap: 10px;
   justify-content: center;
 }
-
+.notification-panel{
+  position: absolute;
+  top: 10%;
+  right: 20px;
+}

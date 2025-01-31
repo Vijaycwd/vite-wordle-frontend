@@ -19,6 +19,8 @@ import ConnectionStat from './components/Games/Connections/ConnectionStat';
 import PhrazleStat from './components/Games/Phrazle/PhrazleStat';
 import GamesStat from './components/Games/GamesStat';
 import Groups from './pages/Groups';
+import Grouppage from './pages/Grouppage';
+import Groupstat from './pages/Groupstat';
 
 function App() {
   return (
@@ -35,6 +37,8 @@ function App() {
         <Route exact path="/reset-password/:id/:token" element={<Resetpwdform />} />
         <Route  path='/' element={<ProtectedRouter/>}>
           <Route exact path= '/groups' element={<Groups/>}/>
+          <Route path="/group/:groupName" element={<Grouppage/>}/>
+          <Route path="/group/:groupName-stat" element={<Groupstat/>}/>
           <Route exact path= '/gamesstat' element={<GamesStat/>}/>
           <Route exact path= '/wordlestats' element={<Wordlestats/>}/>
           <Route exact path= '/connectionstats' element={<ConnectionStat/>}/>
