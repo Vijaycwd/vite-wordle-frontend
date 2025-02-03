@@ -85,12 +85,6 @@ const Headerbar = () => {
 
   return (
     <Container>
-      {/* Notification Bar */}
-      <NotificationBar 
-        message={notificationMessage} 
-        showNotification={showNotification} 
-      />
-
       <Row className="justify-content-center align-items-center py-2">
         <Col xs={3}>
           <Link to="/">
@@ -156,20 +150,6 @@ const Headerbar = () => {
               </Popover>
             </Overlay>
           </div>
-          {/* Notification Icon */}
-          <Link onClick={handleNotificationClick}>
-            <svg xmlns="http://www.w3.org/2000/svg" className="m-2 bi bi-bell-fill" width="25" height="25" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M8 0a3 3 0 0 1 3 3c0 1.652-.695 3.308-1.858 4.5H10a5 5 0 0 1 5 5v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-2a5 5 0 0 1 5-5h.858C5.695 6.308 5 4.652 5 3a3 3 0 0 1 3-3z" />
-            </svg>
-          </Link>
-          {/* Notification Panel */}
-          {showNotificationPanel && (
-            <div className="notification-panel">
-              <Toast>
-                <Toast.Body>{notificationMessage}</Toast.Body>
-              </Toast>
-            </div>
-          )}
         </Col>
       </Row>
     </Container>
