@@ -4,22 +4,43 @@ import { toast } from 'react-toastify';
 
 const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore, loginUsername }) => {
   const [isPasted, setIsPasted] = useState(false);
-
-  // Function to validate Wordle score
-  const validateScore = (data) => {
-    return data.includes('Phrazle');
-  }
-  // This function is triggered when a paste happens
-  const handlePaste = (event) => {
-    const pastedData = event.clipboardData.getData('Text');
-    if (validateScore(pastedData)) {
-      setIsPasted(true); // Mark that the data has been pasted
-      setScore(pastedData); // Set the pasted value to the score
-    } else {
-      toast.error('This Not Phrazle Score!', { position: 'top-center' });
-    }
-    event.preventDefault(); // Prevent the default paste action
-  };
+   const [gameNumber, setGameNumber] = useState(null);
+    
+    // Function to calculate today's Wordle game number
+    const calculateGameNumber = () => {
+      const phrazleStartDate = new Date('2023-01-31'); // phrazle's start date
+      const today = new Date();
+      // Calculate the difference in milliseconds
+      const diffInMs = today - phrazleStartDate;
+  
+      // Convert milliseconds to days (1 day = 24 hours * 60 minutes * 60 seconds * 1000 milliseconds)
+      const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+  
+      // Today's Wordle number is the difference in days + 1 (since the first game is number 1)
+      return diffInDays + 1;
+    };
+  
+    // Set the game number when the component mounts
+    useEffect(() => {
+      setGameNumber(calculateGameNumber());
+    }, []);
+  
+    const handlePaste = (event) => {
+        const pastedData = event.clipboardData.getData('Text');
+        const phrazleTextExists = pastedData.includes('Phrazle');
+        const gamenumberExists = pastedData.includes(gameNumber.toLocaleString());
+    
+        if (!phrazleTextExists) {
+          toast.error('This is not a Phrazle game!', { position: 'top-center' });
+        } else if (!gamenumberExists) {
+          toast.error('This is not today\'s game result!', { position: 'top-center' });
+        } else {
+          setIsPasted(true); // Mark that the data has been pasted
+          setScore(pastedData); // Set the pasted value to the score
+        }
+    
+        event.preventDefault(); // Prevent the default paste action
+      };
 
   // Prevent changes to the pasted data
   const handleChange = (event) => {

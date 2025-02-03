@@ -1,24 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, FloatingLabel } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
 const WordleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore, loginUsername }) => {
   const [isPasted, setIsPasted] = useState(false);
+  const [gameNumber, setGameNumber] = useState(null);
+
+  // Function to calculate today's Wordle game number
+  const calculateGameNumber = () => {
+    const wordleStartDate = new Date('2021-06-20'); // Wordle's start date
+    const today = new Date();
+    // Calculate the difference in milliseconds
+    const diffInMs = today - wordleStartDate;
+
+    // Convert milliseconds to days (1 day = 24 hours * 60 minutes * 60 seconds * 1000 milliseconds)
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+    // Today's Wordle number is the difference in days + 1 (since the first game is number 1)
+    return diffInDays + 1;
+  };
+
+  // Set the game number when the component mounts
+  useEffect(() => {
+    setGameNumber(calculateGameNumber());
+  }, []);
 
   // Function to validate Wordle score
-  const validateScore = (data) => {
-    return data.includes('Wordle');
-  };
+  // const validateScore = (data) => {
+  //   const wordleExists = data.includes('Wordle'); // Check if 'Wordle' is present
+  //   const numberExists = gameNumber.toLocaleString();
+  //   return wordleExists && numberExists;
+  // };
 
   // This function is triggered when a paste happens
   const handlePaste = (event) => {
     const pastedData = event.clipboardData.getData('Text');
-    if (validateScore(pastedData)) {
+    const wordleTextExists = pastedData.includes('Wordle');
+    const gamenumberExists = pastedData.includes(gameNumber.toLocaleString());
+    console.log(gameNumber.toLocaleString());
+    const todaysGameNumber = calculateGameNumber();
+
+    if (!wordleTextExists) {
+      toast.error('This is not a Wordle game!', { position: 'top-center' });
+    } else if (!gamenumberExists) {
+      toast.error('This is not today\'s game result!', { position: 'top-center' });
+    } else {
       setIsPasted(true); // Mark that the data has been pasted
       setScore(pastedData); // Set the pasted value to the score
-    } else {
-      toast.error('This Not Wordle Score!', { position: 'top-center' });
     }
+
     event.preventDefault(); // Prevent the default paste action
   };
 
@@ -34,6 +64,7 @@ const WordleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore
   return (
     <Modal show={showForm} onHide={handleFormClose}>
       <Modal.Header closeButton></Modal.Header>
+      
       <Modal.Body>
         <Form onSubmit={onSubmit}>
           <Form.Group className="mb-3" controlId="formBasicName">
