@@ -15,6 +15,43 @@ function PhrazleStat() {
     const [statistics, setStatistics] = useState([]);
     const [loading, setLoading] = useState(true);
     const [GameScore, setGameScore] = useState();
+    const [timeRemaining, setTimeRemaining] = useState(null); // State for timer
+    const [timerEnded, setTimerEnded] = useState(false);
+
+
+    useEffect(() => {
+        // Update the timer every second
+        const intervalId = setInterval(() => {
+            updateTimer();
+        }, 1000);
+
+        // Clear interval on component unmount
+        return () => clearInterval(intervalId);
+    }, []);
+
+    // Function to calculate the time remaining until 12 PM
+    function updateTimer() {
+        const now = new Date();
+        const nextGameTime = new Date();
+        nextGameTime.setHours(12, 0, 0, 0); // Set the next game time to 12 PM today
+    
+        if (now.getTime() > nextGameTime.getTime()) {
+            nextGameTime.setDate(nextGameTime.getDate() + 1); // Set to 12 PM the next day
+        }
+    
+        const timeDiff = nextGameTime - now; // Difference in milliseconds
+        const hours = Math.floor(timeDiff / (1000 * 60 * 60)); // Get hours
+        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60)); // Get minutes
+        const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000); // Get seconds
+    
+        setTimeRemaining({ hours, minutes, seconds });
+    
+        // Check if the timer has ended
+        if (timeDiff <= 0) {
+            setTimerEnded(true);
+        }
+    }
+    
 
     useEffect(() => {
         if (loginuserEmail) {
@@ -116,7 +153,7 @@ function PhrazleStat() {
                                             const todayDate = `${String(date.getDate()).padStart(2, '0')}-${months[date.getMonth()]}-${date.getFullYear()}`;
                                             const gamleScore = char.gamlescore;
                                             return (
-                                                <div key={index}>
+                                                <div className="text-center" key={index}>
                                                     <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
                                                     <div className={`phrazle-score-board-text my-3 fs-5 text-center`}>{phrasle_score_text}</div>
                                                     <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
@@ -144,7 +181,10 @@ function PhrazleStat() {
                                                         );
                                                     })}
                                                     </div>
-
+                                                    <h6>Next Game Begins in: {timeRemaining && `${timeRemaining.hours}h ${timeRemaining.minutes}m ${timeRemaining.seconds}s`}</h6>
+                                                    {timerEnded && (
+                                                        <PhrazlePlayService updateStatsChart={getStatChart}/>
+                                                    )}
                                                 </div>
                                             );
                                         })
