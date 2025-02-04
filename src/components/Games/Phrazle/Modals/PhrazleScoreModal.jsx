@@ -7,22 +7,32 @@ const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScor
    const [gameNumber, setGameNumber] = useState(null);
     
     // Function to calculate today's Wordle game number
-    const calculateGameNumber = () => {
-      const phrazleStartDate = new Date('2023-01-31'); // phrazle's start date
-      const today = new Date();
-      // Calculate the difference in milliseconds
-      const diffInMs = today - phrazleStartDate;
-  
-      // Convert milliseconds to days (1 day = 24 hours * 60 minutes * 60 seconds * 1000 milliseconds)
-      const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-  
-      // Today's Wordle number is the difference in days + 1 (since the first game is number 1)
-      return diffInDays + 1;
-    };
-  
-    // Set the game number when the component mounts
     useEffect(() => {
-      setGameNumber(calculateGameNumber());
+      const calculateGameNumber = () => {
+        // First Phrazle game date (assumed: August 1, 2022, 12 PM UTC)
+        const firstGameDate = new Date(Date.UTC(2022, 12, 27, 12, 0, 0)); // Month is zero-based (7 = August)
+  
+        // Get current UTC time
+        const nowUTC = new Date();
+        // Calculate days since the first game
+        const diffInDays = Math.floor((nowUTC - firstGameDate) / (1000 * 60 * 60 * 24));
+  
+        // Determine game number based on 12 PM UTC reset
+        const currentUTCHour = nowUTC.getUTCHours();
+        const currentGameNumber = currentUTCHour < 12 ? diffInDays : diffInDays + 1;
+  
+        setGameNumber(currentGameNumber);
+      };
+  
+      // Initial calculation
+      calculateGameNumber();
+  
+      // Check every minute to update after 12 PM UTC
+      const interval = setInterval(() => {
+        calculateGameNumber();
+      }, 1000); // Runs every 60 seconds
+  
+      return () => clearInterval(interval); // Cleanup on unmount
     }, []);
   
     const handlePaste = (event) => {
@@ -55,6 +65,7 @@ const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScor
     <Modal show={showForm} onHide={handleFormClose}>
       <Modal.Header closeButton></Modal.Header>
       <Modal.Body>
+        {gameNumber}
         <Form onSubmit={onSubmit}>
           <Form.Group className="mb-3" controlId="formBasicName">
             <Form.Label>Name</Form.Label>
