@@ -65,7 +65,6 @@ const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScor
     <Modal show={showForm} onHide={handleFormClose}>
       <Modal.Header closeButton></Modal.Header>
       <Modal.Body>
-        {gameNumber}
         <Form onSubmit={onSubmit}>
           <Form.Group className="mb-3" controlId="formBasicName">
             <Form.Label>Name</Form.Label>
