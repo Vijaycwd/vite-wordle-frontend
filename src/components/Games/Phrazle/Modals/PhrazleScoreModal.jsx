@@ -4,25 +4,36 @@ import { toast } from 'react-toastify';
 
 const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore, loginUsername }) => {
   const [isPasted, setIsPasted] = useState(false);
-   const [gameNumber, setGameNumber] = useState(null);
+  const [gameNumber, setGameNumber] = useState();
     
-   const firstGameDate = new Date(Date.UTC(2022, 12, 27, 11, 59, 59)); // Wordle's start date
+  const calculateGameNumber = () => {
+    // Corrected First Game Date: August 1, 2022, 12 PM UTC
+    const firstGameDate = new Date(Date.UTC(2022, 12, 27, 12, 0, 0)); // Aug 1, 2022, 12:00 PM UTC
 
-   const calculateGameNumber = () => {
-       const today = new Date();
-       const diffInDays = Math.floor((today - firstGameDate) / (1000 * 60 * 60 * 24));
-       console.log(diffInDays);
-       const currentUTCHour = today.getHours();
-       console.log(currentUTCHour);
-       const currentGameNumber = currentUTCHour < 12 ? diffInDays : diffInDays + 1;
-       setGameNumber(currentGameNumber);
-       return diffInDays + 1;
-     };
-   
-     // Set the game number when the component mounts
-     useEffect(() => {
-       setGameNumber(calculateGameNumber());
-     }, [gameNumber]);
+    // Get current UTC time
+    const nowUTC = new Date();
+
+    // Calculate difference in full days from the first game date
+    const diffInDays = Math.floor((nowUTC - firstGameDate) / (1000 * 60 * 60 * 24));
+
+    // Get the current UTC hour
+    const currentUTCHour = nowUTC.getUTCHours();
+    console.log("Now UTC Time:", nowUTC);
+    console.log("Current UTC Hour:", currentUTCHour);
+    
+    // Game number logic: If before 12 PM UTC, it uses `diffInDays`. If after 12 PM UTC, add 1.
+    const currentGameNumber = currentUTCHour < 12 ? diffInDays : diffInDays + 1;
+
+    console.log("Calculated Game Number:", currentGameNumber);
+
+    return currentGameNumber;
+};
+
+// Set the game number on component mount
+useEffect(() => {
+    setGameNumber(calculateGameNumber());
+}, []);
+
     const handlePaste = (event) => {
         const pastedData = event.clipboardData.getData('Text');
         const phrazleTextExists = pastedData.includes('Phrazle');
@@ -53,7 +64,7 @@ const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScor
     <Modal show={showForm} onHide={handleFormClose}>
       <Modal.Header closeButton></Modal.Header>
       <Modal.Body>
-        
+        {gameNumber}
         <Form onSubmit={onSubmit}>
           <Form.Group className="mb-3" controlId="formBasicName">
             <Form.Label>Name</Form.Label>
