@@ -181,10 +181,11 @@ function PhrazleStat() {
                                                         );
                                                     })}
                                                     </div>
-                                                    <h6>Next Game Begins in: {timeRemaining && `${timeRemaining.hours}h ${timeRemaining.minutes}m ${timeRemaining.seconds}s`}</h6>
+                                                    <PhrazlePlayService updateStatsChart={getStatChart}/>
+                                                    {/* <h6>Next Game Begins in: {timeRemaining && `${timeRemaining.hours}h ${timeRemaining.minutes}m ${timeRemaining.seconds}s`}</h6>
                                                     {timerEnded && (
                                                         <PhrazlePlayService updateStatsChart={getStatChart}/>
-                                                    )}
+                                                    )} */}
                                                 </div>
                                             );
                                         })
