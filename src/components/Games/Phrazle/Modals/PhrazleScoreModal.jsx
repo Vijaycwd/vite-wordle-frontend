@@ -5,34 +5,46 @@ import { toast } from 'react-toastify';
 const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore, loginUsername }) => {
   const [isPasted, setIsPasted] = useState(false);
   const [gameNumber, setGameNumber] = useState();
-    
+
   const calculateGameNumber = () => {
-    // Corrected First Game Date: August 1, 2022, 12 PM UTC
-    const firstGameDate = new Date(Date.UTC(2022, 12, 27, 12, 0, 0)); // Aug 1, 2022, 12:00 PM UTC
+    // Corrected Start Date: January 1, 2024, 12:00 PM (Local Time)
+    const firstGameDate = new Date(2024, 1, 1, 12, 0, 0); 
 
-    // Get current UTC time
-    const nowUTC = new Date();
+    // Get current local time
+    const now = new Date();
 
-    // Calculate difference in full days from the first game date
-    const diffInDays = Math.floor((nowUTC - firstGameDate) / (1000 * 60 * 60 * 24));
+    // Calculate the difference in milliseconds
+    const diffInMs = now - firstGameDate;
 
-    // Get the current UTC hour
-    const currentUTCHour = nowUTC.getUTCHours();
-    console.log("Now UTC Time:", nowUTC);
-    console.log("Current UTC Hour:", currentUTCHour);
-    
-    // Game number logic: If before 12 PM UTC, it uses `diffInDays`. If after 12 PM UTC, add 1.
-    const currentGameNumber = currentUTCHour < 12 ? diffInDays : diffInDays + 1;
+    // Convert difference into 12-hour periods
+    const diffIn12HourPeriods = Math.floor(diffInMs / (1000 * 60 * 60 * 12));
 
-    console.log("Calculated Game Number:", currentGameNumber);
+    // Game number starts at 1
+    const currentGameNumber = diffIn12HourPeriods;
+
+    // console.log("Now Local Time:", now.toString());
+    // console.log("Next Update At:", now.getHours() < 12 ? "12 PM" : "12 AM");
+    // console.log("Calculated Game Number:", currentGameNumber);
 
     return currentGameNumber;
 };
 
-// Set the game number on component mount
+// Set the game number on component mount & ensure updates
 useEffect(() => {
     setGameNumber(calculateGameNumber());
+
+    // Check every minute and update at exactly 12 AM & 12 PM (Local Time)
+    const interval = setInterval(() => {
+        const now = new Date();
+        if ((now.getHours() === 0 && now.getMinutes() === 0) || 
+            (now.getHours() === 12 && now.getMinutes() === 0)) {
+            setGameNumber(calculateGameNumber());
+        }
+    }, 60 * 1000); // Check every minute
+
+    return () => clearInterval(interval);
 }, []);
+
 
     const handlePaste = (event) => {
         const pastedData = event.clipboardData.getData('Text');
@@ -64,7 +76,7 @@ useEffect(() => {
     <Modal show={showForm} onHide={handleFormClose}>
       <Modal.Header closeButton></Modal.Header>
       <Modal.Body>
-        
+        {gameNumber}
         <Form onSubmit={onSubmit}>
           <Form.Group className="mb-3" controlId="formBasicName">
             <Form.Label>Name</Form.Label>
