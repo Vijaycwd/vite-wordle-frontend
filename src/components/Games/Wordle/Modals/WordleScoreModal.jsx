@@ -7,23 +7,58 @@ const WordleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore
   const [gameNumber, setGameNumber] = useState(null);
 
   // Function to calculate today's Wordle game number
+  // const calculateGameNumber = () => {
+  //   const wordleStartDate = new Date('2021-06-20'); // Wordle's start date
+  //   const today = new Date();
+  //   console.log(today);
+  //   // Calculate the difference in milliseconds
+  //   const diffInMs = today - wordleStartDate;
+
+  //   // Convert milliseconds to days (1 day = 24 hours * 60 minutes * 60 seconds * 1000 milliseconds)
+  //   const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+  //   // Today's Wordle number is the difference in days + 1 (since the first game is number 1)
+  //   return diffInDays + 1;
+  // };
+
   const calculateGameNumber = () => {
-    const wordleStartDate = new Date('2021-06-20'); // Wordle's start date
-    const today = new Date();
-    // Calculate the difference in milliseconds
-    const diffInMs = today - wordleStartDate;
-
-    // Convert milliseconds to days (1 day = 24 hours * 60 minutes * 60 seconds * 1000 milliseconds)
-    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-
-    // Today's Wordle number is the difference in days + 1 (since the first game is number 1)
-    return diffInDays + 1;
+      // Corrected Start Date: January 1, 2024, 12:00 PM (Local Time)
+      const firstGameDate = new Date(2021, 5, 19, 0, 0, 0); 
+  
+      // Get current local time
+      const now = new Date();
+      console.log(now);
+      // Calculate the difference in milliseconds
+      const diffInMs = now - firstGameDate;
+  
+      // Convert difference into 12-hour periods
+      const diffIn12HourPeriods = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+  
+      // Game number starts at 1
+      const currentGameNumber = diffIn12HourPeriods;
+  
+      // console.log("Now Local Time:", now.toString());
+      // console.log("Next Update At:", now.getHours() < 12 ? "12 PM" : "12 AM");
+      // console.log("Calculated Game Number:", currentGameNumber);
+  
+      return currentGameNumber;
   };
-
-  // Set the game number when the component mounts
+  
+  // Set the game number on component mount & ensure updates
   useEffect(() => {
-    setGameNumber(calculateGameNumber());
+      setGameNumber(calculateGameNumber());
+  
+      // Check every minute and update at exactly 12 AM & 12 PM (Local Time)
+      const interval = setInterval(() => {
+          const now = new Date();
+          if (now.getHours() === 0 && now.getMinutes() === 0) {
+              setGameNumber(calculateGameNumber());
+          }
+      }, 60 * 1000); // Check every minute
+  
+      return () => clearInterval(interval);
   }, []);
+  
 
   // Function to validate Wordle score
   // const validateScore = (data) => {
@@ -64,7 +99,6 @@ const WordleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore
   return (
     <Modal show={showForm} onHide={handleFormClose}>
       <Modal.Header closeButton></Modal.Header>
-      
       <Modal.Body>
         <Form onSubmit={onSubmit}>
           <Form.Group className="mb-3" controlId="formBasicName">
