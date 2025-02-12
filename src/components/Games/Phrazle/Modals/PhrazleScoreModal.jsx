@@ -74,7 +74,9 @@ useEffect(() => {
 
   return (
     <Modal show={showForm} onHide={handleFormClose}>
-      <Modal.Header closeButton></Modal.Header>
+      <Modal.Header closeButton>
+      <p>Game No: {gameNumber}</p>
+      </Modal.Header>
       <Modal.Body>
         <Form onSubmit={onSubmit}>
           <Form.Group className="mb-3" controlId="formBasicName">
