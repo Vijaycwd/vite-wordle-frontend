@@ -99,7 +99,7 @@ const WordleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore
   return (
     <Modal show={showForm} onHide={handleFormClose}>
       <Modal.Header closeButton>
-      <p>Game No: {gameNumber}</p>
+        <p>Game No: {gameNumber}</p>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={onSubmit}>

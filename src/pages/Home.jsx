@@ -11,7 +11,7 @@ function Home() {
     // Password Protection State
     const [password, setPassword] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const correctPassword = "kandamo82"; // Change this
+    const correctPassword = "Casa"; // Change this
 
     // Check if the user already entered the password
     useEffect(() => {
@@ -47,7 +47,10 @@ function Home() {
                     <Row>
                         <Col>
                             <p className='fs-4 text-center'>Welcome to <b>WordGAMLE!</b></p>
-                            <p className='text-center'>Eventually we’ll add more games and will be creating groups and leaderboards. But, for now we’re just playing Wordle, Connections, and Phrazle and storing results.</p>
+                            <p className='text-center'>Welcome to this beta-est of  BETA phases of WordGAMLE!</p>
+                            <p className='text-center'>Start with our first three games and Play, Share and Compare! </p>
+                            <p className='text-center'>Click on each game to see how to store your results in WordGAMLE. (if you haven’t tried Phrazle, it’s a real fan fav!) </p>
+                            <p className='text-center'>Create your groups here by clicking the Group button up top. Then, store results in the site and see your group’s daily Leaderboard for each game you opt into… with more fun to come over time!</p>
                         </Col>
                     </Row>
                     <Row>
@@ -63,7 +66,7 @@ function Home() {
                     </Row>
                     {!userAuthData || isEmptyObject ? (
                         <div>
-                            <p className='text-center'>Please create your profile and then click the Wordle button and go from there!</p>
+                            <p className='text-center'>Please create your profile and then click the game buttons and go from there!</p>
                             <Link className="btn btn-primary btn-lg my-3" to="/register" style={{ width: "60%" }}>Create Profile</Link>
                             <Button className="btn btn-primary btn-lg mt-3" onClick={loginformClick} style={{ width: "60%" }}>Login</Button>
                         </div>

@@ -209,7 +209,7 @@ function GamesLayout() {
               <ol>
                 <li><strong>PLAY:</strong> Play Connections</li>
                 <li><strong>COPY:</strong> Click SHARE, then COPY to copy your Connections result</li>
-                <li><strong>PASTE:</strong> Navigate back to Connections.com to paste your Connections result</li>
+                <li><strong>PASTE:</strong> Navigate back to WordGAMLE.com to paste your Connections result</li>
               </ol>
               <Row className="d-flex justify-content-between align-items-center">
                 <Col md={8} xs={8}>

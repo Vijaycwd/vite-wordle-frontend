@@ -52,6 +52,15 @@ function Home() {
                                 </div>
                             </Col>
                         </Row>
+                        <Row>
+                            <Col className="text-center py-3">
+                                <div className="my-3">
+                                    <Button className="btn btn-primary btn-lg" onClick={() => handleNavigation('groups')}>
+                                        Groups
+                                    </Button>
+                                </div>
+                            </Col>
+                        </Row>
                         {!userAuthData || isEmptyObject ? (
                             <>
                                 <div>

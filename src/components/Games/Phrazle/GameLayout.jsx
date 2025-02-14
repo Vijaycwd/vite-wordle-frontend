@@ -162,10 +162,11 @@ function GamesLayout() {
             <div>
               <p>Click the “Play” button to go to the Phrazles website and play. Then:</p>
               <ol>
-                <li><strong>PLAY:</strong> Play Phrazles</li>
+                <li><strong>PLAY:</strong> Play Phrazle</li>
                 <li><strong>COPY:</strong> Click SHARE, then COPY to copy your Phrazles result</li>
-                <li><strong>PASTE:</strong> Navigate back to Phrazles.com to paste your Phrazles result</li>
+                <li><strong>PASTE:</strong> Navigate back to WordGAMLE.com to paste your Phrazle result</li>
               </ol>
+              <p>Note that Phrazle resets twice / day – at Noon and Midnight.</p>
               <Row className="d-flex justify-content-between align-items-center">
                 <Col md={8} xs={8}>
                   <p className="bottom-message">*For anyone who has already played and has the result copied, click the “Enter Result” button to enter today’s game result.</p>

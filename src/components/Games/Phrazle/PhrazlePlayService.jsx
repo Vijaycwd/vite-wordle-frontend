@@ -21,7 +21,7 @@ function PhrazlePlayService({ updateStatsChart }) {
   const [totalWinGames, setTotalWinGames] = useState(0);
   const [currentStreak, setCurrentStreak] = useState(0);
   const [maxStreak, setMaxStreak] = useState(0);
-  
+
   const navigate = useNavigate();
 
   const handleFormClose = () => {

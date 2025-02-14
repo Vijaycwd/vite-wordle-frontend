@@ -68,7 +68,6 @@ const AddMembers = ({ showForm, handleFormClose, onSubmit }) => {
   };
 
   const filteredUsers = users.filter(user => String(user.id) !== String(selectedCaptain)); // Convert to string to ensure type matching
-  console.log('selected User', users);
   return (
     <Modal show={showForm} onHide={handleFormClose}>
       <Modal.Header closeButton>

@@ -70,6 +70,10 @@ function Groups() {
         }
     };
 
+    const formatString = (str) => {
+        return str.toLowerCase().replace(/\s+/g, '-');
+      };
+
     return (
         <>
             <ToastContainer />
@@ -84,7 +88,7 @@ function Groups() {
                                         variant="outline-primary" 
                                         style={{ width: '30%', margin: "10px" }} 
                                         key={index}
-                                        onClick={() => navigate(`/group/${group.name}`)} // Navigate to group page
+                                        onClick={() => navigate(`/group/${group.id}/${formatString(group.name)}`)} // Navigate to group page
                                     >
                                         {group.name}
                                     </Button>

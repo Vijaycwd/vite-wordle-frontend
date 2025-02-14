@@ -37,7 +37,7 @@ function App() {
         <Route exact path="/reset-password/:id/:token" element={<Resetpwdform />} />
         <Route  path='/' element={<ProtectedRouter/>}>
           <Route exact path= '/groups' element={<Groups/>}/>
-          <Route path="/group/:groupName" element={<Grouppage/>}/>
+          <Route path="/group/:id/:groupName" element={<Grouppage/>}/>
           <Route path="/group/:groupName-stat" element={<Groupstat/>}/>
           <Route exact path= '/gamesstat' element={<GamesStat/>}/>
           <Route exact path= '/wordlestats' element={<Wordlestats/>}/>
