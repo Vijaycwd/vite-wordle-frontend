@@ -47,7 +47,7 @@ const AddMembers = ({ showForm, handleFormClose, onSubmit }) => {
       group_id: selectedGroup,
       group_name: selectedGroupName, 
       captain_id: selectedCaptain,
-      members: selectedMembers.map(member => member.value), // Convert to array of IDs
+      members: selectedMembers.map(member => member.value),
     };
   
     try {
@@ -57,17 +57,42 @@ const AddMembers = ({ showForm, handleFormClose, onSubmit }) => {
         handleFormClose(); // Close modal
         setSelectedGroup('');
         setSelectedCaptain('');
-        setSelectedMembers('');
+        setSelectedMembers([]);
       } else {
         toast.error(res.data.message, { position: "top-center" });
-
       }
     } catch (error) {
-      toast.error(err.res?.data?.message || 'An unexpected error occurred.', { position: "top-center" });
+      toast.error(error.response?.data?.message || 'An unexpected error occurred.', { position: "top-center" });
     }
   };
 
-  const filteredUsers = users.filter(user => String(user.id) !== String(selectedCaptain)); // Convert to string to ensure type matching
+  const handleSendInvitation = async () => {
+    if (!selectedGroup || selectedMembers.length === 0) {
+        toast.error("Please select a group and at least one member.");
+        return;
+    }
+
+    try {
+        const invitations = selectedMembers.map(member => ({
+            group_id: selectedGroup,
+            group_name: groups.find(group => String(group.id) === String(selectedGroup))?.name || "Unknown Group",
+            invited_user_id: member.value,
+            invited_user_name: member.label,
+        }));
+
+        await Promise.all(invitations.map(invite => 
+            Axios.post("https://coralwebdesigns.com/college/wordgamle/groups/send-invite.php", invite)
+        ));
+
+        toast.success("Invitations sent successfully!");
+        handleFormClose();
+    } catch (error) {
+        toast.error("Failed to send invitations.");
+    }
+  };
+
+  const filteredUsers = users.filter(user => String(user.id) !== String(selectedCaptain));
+
   return (
     <Modal show={showForm} onHide={handleFormClose}>
       <Modal.Header closeButton>
@@ -75,7 +100,6 @@ const AddMembers = ({ showForm, handleFormClose, onSubmit }) => {
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
-          {/* Select Group */}
           <Form.Group className="mb-3">
             <Form.Label>Choose Group</Form.Label>
             <Form.Select value={selectedGroup} onChange={(e) => setSelectedGroup(e.target.value)} required>
@@ -86,7 +110,6 @@ const AddMembers = ({ showForm, handleFormClose, onSubmit }) => {
             </Form.Select>
           </Form.Group>
 
-          {/* Select Captain */}
           <Form.Group className="mb-3">
             <Form.Label>Nominate Captain</Form.Label>
             <Form.Select value={selectedCaptain} onChange={(e) => setSelectedCaptain(e.target.value)} required>
@@ -97,24 +120,27 @@ const AddMembers = ({ showForm, handleFormClose, onSubmit }) => {
             </Form.Select>
           </Form.Group>
 
-          {/* Select Members with Searchable Multi-Select */}
           <Form.Group className="mb-3">
             <Form.Label>Invite Group Members</Form.Label>
             <Select
               isMulti
-              options={filteredUsers.map(user => ({ value: user.id, label: user.username }))} // Filtered users
+              options={filteredUsers.map(user => ({ value: user.id, label: user.username }))}
               value={selectedMembers}
               onChange={setSelectedMembers}
               placeholder="Search and select members..."
             />
           </Form.Group>
 
-          <Button variant="primary" type="submit">
+          {/* <Button variant="primary" type="submit">
             Add Members
+          </Button> */}
+          <Button variant="success" onClick={handleSendInvitation}>
+            Send Invitations
           </Button>
         </Form>
       </Modal.Body>
       <Modal.Footer>
+        
         <Button variant="secondary" onClick={handleFormClose}>
           Close
         </Button>

@@ -47,21 +47,24 @@ function Home() {
                     <Row>
                         <Col>
                             <p className='fs-4 text-center'>Welcome to <b>WordGAMLE!</b></p>
-                            <p className='text-center'>Welcome to this beta-est of  BETA phases of WordGAMLE!</p>
-                            <p className='text-center'>Start with our first three games and Play, Share and Compare! </p>
-                            <p className='text-center'>Click on each game to see how to store your results in WordGAMLE. (if you haven’t tried Phrazle, it’s a real fan fav!) </p>
-                            <p className='text-center'>Create your groups here by clicking the Group button up top. Then, store results in the site and see your group’s daily Leaderboard for each game you opt into… with more fun to come over time!</p>
+                            <p className='text-center'>Welcome to the very first beta version of WordGAMLE! Click on each game to see how to store your results in the site.</p>
                         </Col>
                     </Row>
                     <Row>
-                        <Col className="text-center py-3">
+                        <Col className="text-center py-1" md={4} s={12}>
                             <Button className="btn btn-primary btn-lg" onClick={() => handleNavigation('wordle')}>Wordle</Button>
                         </Col>
-                        <Col className="text-center py-3">
+                        <Col className="text-center py-1" md={4} s={12}>
                             <Button className="btn btn-primary btn-lg" onClick={() => handleNavigation('connections')}>Connections</Button>
                         </Col>
-                        <Col className="text-center py-3">
+                        <Col className="text-center py-1" md={4} s={12}>
                             <Button className="btn btn-primary btn-lg" onClick={() => handleNavigation('phrazle')}>Phrazle</Button>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col className="py-3">
+                            <p className='text-center'>Invite friends to the site and then create your group(s) by clicking the Group button up top.</p>
+                            <p className='text-center'>Then, when you store results here each day, you’ll see your group’s daily Leaderboards… with more fun to come over time!</p>
                         </Col>
                     </Row>
                     {!userAuthData || isEmptyObject ? (

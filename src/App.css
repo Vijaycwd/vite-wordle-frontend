@@ -128,3 +128,26 @@ body{
   top: 10%;
   right: 20px;
 }
+.dropdown-menu.show.dropdown-menu-end {
+  width: 300px;
+}
+#group-invites{
+  background-color:#00BF63;
+  font-size: 20px;
+  padding: 0px 10px;
+  color: #ffffff;
+}
+.dropdown-toggle::after{
+  font-size: 18px;
+}
+span.notification-count.badge.bg-danger {
+  position: absolute;
+  border-radius: 50%;
+  top: -3px;
+  right: -5px;
+  width: 18px;
+  height: 18px;
+  text-align: center;
+  padding: 2px;
+  font-size: 14px;
+}

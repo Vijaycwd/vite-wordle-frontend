@@ -72,7 +72,7 @@ function Groups() {
 
     const formatString = (str) => {
         return str.toLowerCase().replace(/\s+/g, '-');
-      };
+    };
 
     return (
         <>

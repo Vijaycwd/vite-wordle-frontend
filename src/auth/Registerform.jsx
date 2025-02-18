@@ -6,7 +6,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import logo from '../Logo.png'
 import { useNavigate } from "react-router-dom";
 function Registerform() {
-    const [username, setUsername] = useState();
+    const [name, setName] = useState('');
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState();
     const [password, setPassword] = useState();
     const [confirmpassword, setConfirmpassword] = useState();
@@ -14,6 +15,7 @@ function Registerform() {
     const [previewUrl, setPreviewUrl] = useState('');
     const [errors, setErrors] = useState({});
     const [touched, setTouched] = useState({
+        name: false,
         username: false,
         email: false,
         password: false,
@@ -30,7 +32,8 @@ function Registerform() {
 
     const validateForm = () => {
         const newErrors = {};
-        if (touched.username && !username) newErrors.username = 'Name is required.';
+        if (touched.name && !name) newErrors.name = 'Name is required.';
+        if (touched.username && !username) newErrors.username = 'Username is required.';
         if (touched.email) {
             if (!email) {
                 newErrors.email = 'Email is required.';
@@ -75,6 +78,7 @@ function Registerform() {
     const signUp = async (event) => {
         event.preventDefault();
         const userObject = {
+            name: name,
             username: username,
             email: email,
             password: password,
@@ -152,10 +156,22 @@ function Registerform() {
                             <Form.Label>Name</Form.Label>
                             <Form.Control
                                 type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                onBlur={() => handleBlur('name')}
+                                placeholder='Enter your name'
+                            />
+                            {errors.name && <p className='form-validation-error'>{errors.name}</p>}
+                        </Form.Group>
+
+                        <Form.Group>
+                            <Form.Label>Username</Form.Label>
+                            <Form.Control
+                                type="text"
                                 value={username}
-                                onChange={(e) => { setUsername(e.target.value); }}
+                                onChange={(e) => setUsername(e.target.value)}
                                 onBlur={() => handleBlur('username')}
-                                placeholder='Enter the name'
+                                placeholder='Enter your username'
                             />
                             {errors.username && <p className='form-validation-error'>{errors.username}</p>}
                         </Form.Group>
@@ -165,9 +181,9 @@ function Registerform() {
                             <Form.Control
                                 type="email"
                                 value={email}
-                                onChange={(e) => { setEmail(e.target.value); }}
+                                onChange={(e) => setEmail(e.target.value)}
                                 onBlur={() => handleBlur('email')}
-                                placeholder='Enter the email'
+                                placeholder='Enter your email'
                             />
                             {errors.email && <p className='form-validation-error'>{errors.email}</p>}
                         </Form.Group>
@@ -177,9 +193,9 @@ function Registerform() {
                             <Form.Control
                                 type="password"
                                 value={password}
-                                onChange={(e) => { setPassword(e.target.value); }}
+                                onChange={(e) => setPassword(e.target.value)}
                                 onBlur={() => handleBlur('password')}
-                                placeholder='Enter the password'
+                                placeholder='Enter your password'
                             />
                             {errors.password && <p className='form-validation-error'>{errors.password}</p>}
                         </Form.Group>
@@ -189,9 +205,9 @@ function Registerform() {
                             <Form.Control
                                 type="password"
                                 value={confirmpassword}
-                                onChange={(e) => { setConfirmpassword(e.target.value); }}
+                                onChange={(e) => setConfirmpassword(e.target.value)}
                                 onBlur={() => handleBlur('confirmpassword')}
-                                placeholder='Enter the confirm password'
+                                placeholder='Confirm your password'
                             />
                             {errors.confirmpassword && <p className='form-validation-error'>{errors.confirmpassword}</p>}
                         </Form.Group>

@@ -8,7 +8,6 @@ import { ToastContainer, toast } from 'react-toastify';
 function GroupPage() {
     const { id } = useParams();
     const [group, setGroup] = useState(null);
-    const [loading, setLoading] = useState(true);
     const [showMemberForm, setShowMemberForm] = useState(false);
 
     useEffect(() => {
@@ -18,12 +17,12 @@ function GroupPage() {
                 if (res.data.status === "success" && res.data.groups.length > 0) {
                     setGroup(res.data.groups[0]);
                 } else {
+                    setGroup(null);
                     toast.error("Group not found.");
                 }
             } catch (err) {
+                setGroup(null);
                 toast.error("Failed to load group details.");
-            } finally {
-                setLoading(false);
             }
         };
 
@@ -33,30 +32,32 @@ function GroupPage() {
     const handleMemberFormClose = () => setShowMemberForm(false);
     const handleShowMemberForm = () => setShowMemberForm(true);
 
-    if (loading) return <p>Loading group details...</p>;
-    if (!group) return <p>Group not found.</p>;
-
-    return (
-        <Container className="text-center">
-            <ToastContainer />
-            <Row>
-                <Col>
-                    <h4>Group: {group.name}</h4>
-                    <p>Group ID: {group.id}</p>
-                </Col>
-            </Row>
-            <Button className="wordle-btn px-5 mt-3" onClick={handleShowMemberForm}>
-                Add Group Members
-            </Button>
-
-            {/* Add Members Modal */}
-            <AddMembers
-                showForm={showMemberForm}
-                handleFormClose={handleMemberFormClose}
-                groupName={group.name}
-            />
-        </Container>
-    );
+    if(group){
+        return (
+            <Container className="text-center">
+                <ToastContainer />
+                <Row>
+                    <Col>
+                        <h4>Group: {group.name}</h4>
+                        <p>Group ID: {group.id}</p>
+                    </Col>
+                </Row>
+                <Button className="wordle-btn px-5 mt-3" onClick={handleShowMemberForm}>
+                    Add Group Members
+                </Button>
+    
+                {/* Add Members Modal */}
+                <AddMembers
+                    showForm={showMemberForm}
+                    handleFormClose={handleMemberFormClose}
+                    groupName={group.name}
+                />
+               
+            </Container>
+            
+        );
+    }
+    
 }
 
 export default GroupPage;

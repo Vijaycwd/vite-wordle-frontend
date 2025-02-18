@@ -21,6 +21,7 @@ import GamesStat from './components/Games/GamesStat';
 import Groups from './pages/Groups';
 import Grouppage from './pages/Grouppage';
 import Groupstat from './pages/Groupstat';
+import GroupInvites from './pages/GroupInvites';
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
         <Route exact path="/reset-password/:id/:token" element={<Resetpwdform />} />
         <Route  path='/' element={<ProtectedRouter/>}>
           <Route exact path= '/groups' element={<Groups/>}/>
+          <Route exact path = '/group-invites' element = {<GroupInvites/>}/>
           <Route path="/group/:id/:groupName" element={<Grouppage/>}/>
           <Route path="/group/:groupName-stat" element={<Groupstat/>}/>
           <Route exact path= '/gamesstat' element={<GamesStat/>}/>

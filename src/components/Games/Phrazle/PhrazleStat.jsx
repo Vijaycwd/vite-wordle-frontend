@@ -101,61 +101,66 @@ function PhrazleStat() {
                                     </div>
                                 ) : (
                                     statschart && Array.isArray(statschart) && statschart.length > 0 ? (
-                                        statschart.map((char, index) => {
-                                            console.log(char);
+                                        (() => {
+                                            const amData = statschart.filter((char) => new Date(char.createdat).getHours() < 12);
+                                            const pmData = statschart.filter((char) => new Date(char.createdat).getHours() >= 12);
 
-                                            const amData = statschart.filter((char) => {
-                                                const date = new Date(char.createdat);
-                                                return date.getHours() < 12; // AM data
-                                            });
-                                        
-                                            const pmData = statschart.filter((char) => {
-                                                const date = new Date(char.createdat);
-                                                return date.getHours() >= 12; // PM data
-                                            });
-                                            
-                                            const cleanedScore = char.phrazlescore.replace(/[🟨,🟩,🟦,🟪,⬜]/g, "");
-                                            const phrasle_score_text = cleanedScore.replace(/#phrazle|https:\/\/solitaired.com\/phrazle/g, '');
-                                            const lettersAndNumbersRemoved = char.phrazlescore.replace(/[a-zA-Z0-9,#:./\\]/g, "");
-                                            const phrazleScore = splitIntoRows(lettersAndNumbersRemoved);
-                                            // const phrazleScore = splitIntoRows(removespace, 10);
-                                            const createDate = char.createdat; // Ensure this matches your database field name
-                                            const date = new Date(createDate);
-                                            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                                            const todayDate = `${String(date.getDate()).padStart(2, '0')}-${months[date.getMonth()]}-${date.getFullYear()}`;
-                                            const gamleScore = char.gamlescore;
-                                            return (
-                                                <div className="text-center" key={index}>
-                                                    <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
-                                                    <div className={`phrazle-score-board-text my-3 fs-5 text-center`}>{phrasle_score_text}</div>
-                                                    <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
-                                                    <div className="phrazle-score m-auto text-center">
-                                                    {phrazleScore.map((row, rowIndex) => {
-                                                        // If the row is empty, skip rendering it
-                                                        if (!row.trim()) return null;
+                                            const renderStats = (data, label) => (
+                                                <div key={label}>
+                                                    <h4 className="text-center my-3">{label} Data</h4>
+                                                    {data.length > 0 ? (
+                                                        data.map((char, index) => {
+                                                            const cleanedScore = char.phrazlescore.replace(/[🟨,🟩,🟦,🟪,⬜]/g, "");
+                                                            const phrazle_score_text = cleanedScore.replace(/#phrazle|https:\/\/solitaired.com\/phrazle/g, '');
+                                                            const lettersAndNumbersRemoved = char.phrazlescore.replace(/[a-zA-Z0-9,#:./\\]/g, "");
+                                                            const phrazleScore = splitIntoRows(lettersAndNumbersRemoved);
 
-                                                        // Split the row into individual symbols
-                                                        const symbols = row.split(' '); // Split by empty string to get individual symbols
+                                                            const date = new Date(char.createdat);
+                                                            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                                            const todayDate = `${String(date.getDate()).padStart(2, '0')}-${months[date.getMonth()]}-${date.getFullYear()}`;
+                                                            const gamleScore = char.gamlescore;
 
-                                                        return (
-                                                            <div className="phrasle-row-score" key={rowIndex}>
-                                                                {symbols.map((part, partIndex) => (
-                                                                    <div className="row" key={partIndex}>
-                                                                        {/* Split each part into individual symbols */}
-                                                                        {part.split(' ').map((symbol, symbolIndex) => (
-                                                                            <div className="items" key={symbolIndex}>
-                                                                                {symbol}
-                                                                            </div>
+                                                            return (
+                                                                <div className="text-center pb-2" key={index}>
+                                                                    <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
+                                                                    <div className={`phrazle-score-board-text my-3 fs-5 text-center`}>{phrazle_score_text}</div>
+                                                                    <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
+                                                                    <div className="phrazle-score m-auto text-center">
+                                                                        {phrazleScore.map((row, rowIndex) => (
+                                                                            row.trim() && (
+                                                                                <div className="phrasle-row-score" key={rowIndex}>
+                                                                                    {row.split(' ').map((part, partIndex) => (
+                                                                                        <div className="row" key={partIndex}>
+                                                                                            {part.split(' ').map((symbol, symbolIndex) => (
+                                                                                                <div className="items" key={symbolIndex}>
+                                                                                                    {symbol}
+                                                                                                </div>
+                                                                                            ))}
+                                                                                        </div>
+                                                                                    ))}
+                                                                                </div>
+                                                                            )
                                                                         ))}
                                                                     </div>
-                                                                ))}
-                                                            </div>
-                                                        );
-                                                    })}
-                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })
+                                                    ) : (
+                                                        <div className='text-center'>
+                                                            <p>You have not played phrazle {label} game today.</p>
+                                                            <PhrazlePlayService updateStatsChart={getStatChart}/>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             );
-                                        })
+
+                                            return (
+                                                <>
+                                                    {renderStats(amData, "AM")}
+                                                    {renderStats(pmData, "PM")}
+                                                </>
+                                            );
+                                        })()
                                     ) : (
                                         <div className='text-center my-4'>
                                             <p>You have not played today.</p>
@@ -163,6 +168,7 @@ function PhrazleStat() {
                                         </div>
                                     )
                                 )}
+
                             </div>
                         </Col>
                     </Row>
