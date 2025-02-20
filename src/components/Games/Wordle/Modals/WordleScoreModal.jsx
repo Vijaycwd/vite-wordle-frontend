@@ -22,24 +22,31 @@ const WordleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore
   // };
 
   const calculateGameNumber = () => {
-    const firstGameDateUTC = Date.UTC(2021, 5, 19, 23, 59, 59); // Ensure UTC
+    // Corrected Start Date: June 19, 2021, 11:59:59 PM (Local Time)
+    const firstGameDate = new Date(2021, 5, 19, 23, 59, 59);
 
-    // Get current time in UTC
-    const nowUTC = new Date().getTime(); 
+    // Get current local time
+    const now = new Date();
 
-    // Calculate difference in days
-    const diffInDays = Math.floor((nowUTC - firstGameDateUTC) / (1000 * 60 * 60 * 24));
+    // Calculate the difference in full days
+    const diffInDays = Math.floor((now - firstGameDate) / (24 * 60 * 60 * 1000));
 
-    return diffInDays + 1; // Game number starts at 1
+    // Game number starts at 1
+    const currentGameNumber = diffInDays; // +1 to start from 1 instead of 0
+
+    // console.log("Now Local Time:", now.toString());
+    // console.log("Calculated Game Number:", currentGameNumber);
+
+    return currentGameNumber;
 };
 
 useEffect(() => {
     setGameNumber(calculateGameNumber());
 
-    // Check every minute and update at exactly 12 AM UTC
+    // Set an interval to check every minute and update at exactly 12 AM (midnight)
     const interval = setInterval(() => {
         const now = new Date();
-        if (now.getUTCHours() === 0 && now.getUTCMinutes() === 0) {
+        if (now.getHours() === 0 && now.getMinutes() === 0) {
             setGameNumber(calculateGameNumber());
         }
     }, 60 * 1000); // Check every minute

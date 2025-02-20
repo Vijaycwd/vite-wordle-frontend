@@ -7,30 +7,37 @@ const ConnectionsScoreModal = ({ showForm, handleFormClose, onSubmit, score, set
   const [gameNumber, setGameNumber] = useState(null);
   
   const calculateGameNumber = () => {
-      const firstGameDateUTC = Date.UTC(2023, 5, 11, 23, 59, 59); // Ensure UTC
-  
-      // Get current time in UTC
-      const nowUTC = new Date().getTime(); 
-  
-      // Calculate difference in days
-      const diffInDays = Math.floor((nowUTC - firstGameDateUTC) / (1000 * 60 * 60 * 24));
-  
-      return diffInDays + 1; // Game number starts at 1
-  };
-  
-  useEffect(() => {
-      setGameNumber(calculateGameNumber());
-  
-      // Check every minute and update at exactly 12 AM UTC
-      const interval = setInterval(() => {
-          const now = new Date();
-          if (now.getUTCHours() === 0 && now.getUTCMinutes() === 0) {
-              setGameNumber(calculateGameNumber());
-          }
-      }, 60 * 1000); // Check every minute
-  
-      return () => clearInterval(interval);
-  }, []);
+    // Corrected Start Date: June 19, 2021, 11:59:59 PM (Local Time)
+    const firstGameDate = new Date(2023, 5, 11, 23, 59, 59);
+
+    // Get current local time
+    const now = new Date();
+
+    // Calculate the difference in full days
+    const diffInDays = Math.floor((now - firstGameDate) / (24 * 60 * 60 * 1000));
+
+    // Game number starts at 1
+    const currentGameNumber = diffInDays; // +1 to start from 1 instead of 0
+
+    // console.log("Now Local Time:", now.toString());
+    // console.log("Calculated Game Number:", currentGameNumber);
+
+    return currentGameNumber;
+};
+
+useEffect(() => {
+    setGameNumber(calculateGameNumber());
+
+    // Set an interval to check every minute and update at exactly 12 AM (midnight)
+    const interval = setInterval(() => {
+        const now = new Date();
+        if (now.getHours() === 0 && now.getMinutes() === 0) {
+            setGameNumber(calculateGameNumber());
+        }
+    }, 60 * 1000); // Check every minute
+
+    return () => clearInterval(interval);
+}, []);
 
   const handlePaste = (event) => {
       const pastedData = event.clipboardData.getData('Text');
