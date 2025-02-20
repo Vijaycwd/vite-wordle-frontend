@@ -23,7 +23,7 @@ const WordleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore
 
   const calculateGameNumber = () => {
     // Corrected Start Date: June 19, 2021, 11:59:59 PM (Local Time)
-    const firstGameDate = new Date(2021, 5, 19, 23, 59, 59);
+    const firstGameDate = new Date(2021, 5, 19, 0, 0, 0);
 
     // Get current local time
     const now = new Date();
