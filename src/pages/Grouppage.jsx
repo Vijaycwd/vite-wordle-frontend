@@ -4,18 +4,25 @@ import { useParams } from 'react-router-dom';
 import Axios from 'axios';
 import AddMembers from '../constant/Models/AddMembers';
 import { ToastContainer, toast } from 'react-toastify';
+import MemberGameButtons from './MemberGameButtons';
 
 function GroupPage() {
     const { id } = useParams();
+    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
+    const { id: userId } = USER_AUTH_DATA;
+
     const [group, setGroup] = useState(null);
     const [showMemberForm, setShowMemberForm] = useState(false);
+    const [isCaptain, setIsCaptain] = useState(false);
 
     useEffect(() => {
         const fetchGroupDetails = async () => {
             try {
                 const res = await Axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-groups.php?id=${id}`);
                 if (res.data.status === "success" && res.data.groups.length > 0) {
-                    setGroup(res.data.groups[0]);
+                    const fetchedGroup = res.data.groups[0];
+                    setGroup(fetchedGroup);
+                    setIsCaptain(fetchedGroup.captain_id === userId);
                 } else {
                     setGroup(null);
                     toast.error("Group not found.");
@@ -27,37 +34,37 @@ function GroupPage() {
         };
 
         fetchGroupDetails();
-    }, [id]);
+    }, [id, userId]);
 
-    const handleMemberFormClose = () => setShowMemberForm(false);
-    const handleShowMemberForm = () => setShowMemberForm(true);
+    if (!group) return null;
 
-    if(group){
-        return (
-            <Container className="text-center">
-                <ToastContainer />
-                <Row>
-                    <Col>
-                        <h4>Group: {group.name}</h4>
-                        <p>Group ID: {group.id}</p>
-                    </Col>
-                </Row>
-                <Button className="wordle-btn px-5 mt-3" onClick={handleShowMemberForm}>
+    return (
+        <Container className="text-center">
+            <ToastContainer />
+            <Row>
+                <Col>
+                    <h4>Group: {group.name}</h4>
+                    <p>Group ID: {group.id}</p>
+                </Col>
+            </Row>
+
+            {isCaptain ? (
+                <Button className="wordle-btn px-5 mt-3" onClick={() => setShowMemberForm(true)}>
                     Add Group Members
                 </Button>
-    
-                {/* Add Members Modal */}
-                <AddMembers
-                    showForm={showMemberForm}
-                    handleFormClose={handleMemberFormClose}
-                    groupName={group.name}
-                />
-               
-            </Container>
-            
-        );
-    }
-    
+            ) : (
+                <MemberGameButtons/>
+            )}
+
+
+            <AddMembers
+                showForm={showMemberForm}
+                handleFormClose={() => setShowMemberForm(false)}
+                groupName={group.name}
+                groupId={group.id}
+            />
+        </Container>
+    );
 }
 
 export default GroupPage;

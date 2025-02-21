@@ -16,11 +16,8 @@ const GroupInvites = () => {
   
   const fetchGroupInvites = async () => {
     try {
-      const response = await axios.get('https://coralwebdesigns.com/college/wordgamle/groups/get-invites.php',{
-        params: {
-            user_id: userId
-        }
-    });
+      const response = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-invites.php?user_id=${userId}`);
+
     //console.log(response.data);
       setInvites(response.data.invitations);
     } catch (error) {
@@ -28,9 +25,12 @@ const GroupInvites = () => {
     }
   };
 
-  const handleAcceptInvite = async (inviteId) => {
+  const handleAcceptInvite = async (inviteId, groupId) => {
     try {
-      await axios.post('https://coralwebdesigns.com/college/wordgamle/groups/accept-invite.php', { inviteId });
+      await axios.post('https://coralwebdesigns.com/college/wordgamle/groups/accept-invite.php', { 
+        inviteId, 
+        groupId 
+      });
       setInvites(invites.filter(invite => invite.id !== inviteId));
     } catch (error) {
       console.error('Error accepting invite:', error);
@@ -67,7 +67,7 @@ const GroupInvites = () => {
             {invites.map(invite => (
               <ListGroup.Item key={invite.id} className="   ">
                 <p>The {invite.group_name} group invited you. </p>
-                <Button size="sm" variant="success" onClick={() => handleAcceptInvite(invite.id)}>Accept</Button>{' '}
+                <Button size="sm" variant="success" onClick={() => handleAcceptInvite(invite.id, invite.group_id)}>Accept</Button>{' '}
                 <Button size="sm" variant="danger" onClick={() => handleDeclineInvite(invite.id)}>Decline</Button>
               </ListGroup.Item>
               

@@ -5,13 +5,13 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Select from "react-select";
 
-const AddMembers = ({ showForm, handleFormClose, onSubmit }) => {
+const AddMembers = ({ showForm, handleFormClose, groupName, groupId, onSubmit }) => {
   const [groups, setGroups] = useState([]);
   const [users, setUsers] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState("");
   const [selectedCaptain, setSelectedCaptain] = useState("");
   const [selectedMembers, setSelectedMembers] = useState([]);
-
+  const userAuthData = JSON.parse(localStorage.getItem('auth')) || {};
   // Fetch Groups and Users from DB
   useEffect(() => {
     const fetchGroups = async () => {
@@ -67,15 +67,15 @@ const AddMembers = ({ showForm, handleFormClose, onSubmit }) => {
   };
 
   const handleSendInvitation = async () => {
-    if (!selectedGroup || selectedMembers.length === 0) {
+    if (selectedMembers.length === 0) {
         toast.error("Please select a group and at least one member.");
         return;
     }
 
     try {
         const invitations = selectedMembers.map(member => ({
-            group_id: selectedGroup,
-            group_name: groups.find(group => String(group.id) === String(selectedGroup))?.name || "Unknown Group",
+            group_id: groupId,
+            group_name: groupName,
             invited_user_id: member.value,
             invited_user_name: member.label,
         }));
@@ -91,34 +91,28 @@ const AddMembers = ({ showForm, handleFormClose, onSubmit }) => {
     }
   };
 
-  const filteredUsers = users.filter(user => String(user.id) !== String(selectedCaptain));
+  const loggedInUserId = userAuthData.id; // Replace with actual logged-in user ID
+  const loggedInUsername = userAuthData.username;
+
+  const filteredUsers = users.filter(
+    (user) => String(user.id) !== String(selectedCaptain) && String(user.id) !== String(loggedInUserId)
+  );
+
 
   return (
     <Modal show={showForm} onHide={handleFormClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Add Members to Group</Modal.Title>
+        <Modal.Title>Add Members</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
-            <Form.Label>Choose Group</Form.Label>
-            <Form.Select value={selectedGroup} onChange={(e) => setSelectedGroup(e.target.value)} required>
-              <option value="">Choose a group</option>
-              {groups.map((group) => (
-                <option key={group.id} value={group.id}>{group.name}</option>
-              ))}
-            </Form.Select>
+            <Form.Label>Group</Form.Label>
+            <Form.Control type="text" key={groupId} value={groupName} />
           </Form.Group>
-
           <Form.Group className="mb-3">
-            <Form.Label>Nominate Captain</Form.Label>
-            <Select
-              isSearchable={true}
-              options={users.map(user => ({ value: user.id, label: user.username }))}
-              value={users.find(user => user.id === selectedCaptain) ? { value: selectedCaptain, label: users.find(user => user.id === selectedCaptain)?.username } : null}
-              onChange={(selected) => setSelectedCaptain(selected?.value || "")}
-              placeholder="Search and select a captain..."
-            />
+            <Form.Label>Captain</Form.Label>
+            <Form.Control type="text" value={loggedInUsername} />
           </Form.Group>
 
           <Form.Group className="mb-3">
