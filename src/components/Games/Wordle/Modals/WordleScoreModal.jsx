@@ -20,22 +20,25 @@ const WordleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore
   //   // Today's Wordle number is the difference in days + 1 (since the first game is number 1)
   //   return diffInDays + 1;
   // };
-
   const calculateGameNumber = () => {
-    // Corrected Start Date: June 19, 2021, 11:59:59 PM (Local Time)
-    const firstGameDate = new Date(2021, 5, 19, 0, 0, 0);
+    // Start Date: June 19, 2021, 12:00 AM (Midnight Local Time)
+    const firstGameDate = new Date(2021, 5, 19); // Ensures local midnight
 
     // Get current local time
     const now = new Date();
 
-    // Calculate the difference in full days
-    const diffInDays = Math.floor((now - firstGameDate) / (24 * 60 * 60 * 1000));
+    // Convert both dates to local YYYY-MM-DD only (ignoring time)
+    const firstDateOnly = new Date(firstGameDate.getFullYear(), firstGameDate.getMonth(), firstGameDate.getDate());
+    const nowDateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    // Calculate difference in full days
+    const diffInDays = Math.floor((nowDateOnly - firstDateOnly) / (24 * 60 * 60 * 1000));
 
     // Game number starts at 1
-    const currentGameNumber = diffInDays; // +1 to start from 1 instead of 0
+    const currentGameNumber = diffInDays;
 
-    // console.log("Now Local Time:", now.toString());
-    // console.log("Calculated Game Number:", currentGameNumber);
+    console.log("Now Local Time:", now.toString());
+    console.log("Calculated Game Number:", currentGameNumber);
 
     return currentGameNumber;
 };
@@ -43,7 +46,7 @@ const WordleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore
 useEffect(() => {
     setGameNumber(calculateGameNumber());
 
-    // Set an interval to check every minute and update at exactly 12 AM (midnight)
+    // Check every minute and update exactly at 12:00 AM (Midnight)
     const interval = setInterval(() => {
         const now = new Date();
         if (now.getHours() === 0 && now.getMinutes() === 0) {
@@ -53,7 +56,7 @@ useEffect(() => {
 
     return () => clearInterval(interval);
 }, []);
-  
+
 
   // Function to validate Wordle score
   // const validateScore = (data) => {

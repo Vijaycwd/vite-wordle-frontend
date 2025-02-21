@@ -112,12 +112,13 @@ const AddMembers = ({ showForm, handleFormClose, onSubmit }) => {
 
           <Form.Group className="mb-3">
             <Form.Label>Nominate Captain</Form.Label>
-            <Form.Select value={selectedCaptain} onChange={(e) => setSelectedCaptain(e.target.value)} required>
-              <option value="">Choose a captain</option>
-              {users.map((user) => (
-                <option key={user.id} value={user.id}>{user.username}</option>
-              ))}
-            </Form.Select>
+            <Select
+              isSearchable={true}
+              options={users.map(user => ({ value: user.id, label: user.username }))}
+              value={users.find(user => user.id === selectedCaptain) ? { value: selectedCaptain, label: users.find(user => user.id === selectedCaptain)?.username } : null}
+              onChange={(selected) => setSelectedCaptain(selected?.value || "")}
+              placeholder="Search and select a captain..."
+            />
           </Form.Group>
 
           <Form.Group className="mb-3">

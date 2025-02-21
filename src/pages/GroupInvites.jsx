@@ -9,7 +9,6 @@ const GroupInvites = () => {
   const [invites, setInvites] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
-console.log(userAuthData);
   useEffect(() => {
     fetchGroupInvites();
   }, []);

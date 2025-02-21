@@ -9,7 +9,7 @@ import AddMembers from '../constant/Models/AddMembers';
 
 function Groups() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
-    const { username: loginUsername, email: loginUserEmail } = USER_AUTH_DATA;
+    const {id:id, username: loginUsername, email: loginUserEmail } = USER_AUTH_DATA;
 
     const [groups, setGroups] = useState([]);
     const [showCreateForm, setShowCreateForm] = useState(false); // For GroupModal
@@ -20,7 +20,15 @@ function Groups() {
     useEffect(() => {
         const fetchGroups = async () => {
             try {
-                const res = await Axios.get("https://coralwebdesigns.com/college/wordgamle/groups/get-groups.php");
+                const res = await Axios.post(
+                    "https://coralwebdesigns.com/college/wordgamle/groups/get-groups.php",
+                    { 
+                        user_id: id
+                    }
+                );
+                // const res = await Axios.get("https://coralwebdesigns.com/college/wordgamle/groups/get-groups.php",{
+                //     user_id: id
+                // });
                 setGroups(res.data.groups || []);
             } catch (err) {
                 toast.error("Failed to load groups.", { position: "top-center" });
@@ -61,7 +69,10 @@ function Groups() {
         try {
             const res = await Axios.post(
                 "https://coralwebdesigns.com/college/wordgamle/groups/create-group.php",
-                { name: groupname }
+                { 
+                    name: groupname,
+                    captain_id: id
+                }
             );
             toast.success(res.data.message, { position: "top-center" });
             setGroups([...groups, { name: groupname }]);
