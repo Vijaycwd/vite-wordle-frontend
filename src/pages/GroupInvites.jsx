@@ -45,6 +45,7 @@ const GroupInvites = () => {
       console.error('Error declining invite:', error);
     }
   };
+  console.log('invites',invites);
   return (
     <Dropdown show={showDropdown} onToggle={() => setShowDropdown(!showDropdown)}>
       <Dropdown.Toggle variant="light" id="group-invites">
@@ -67,6 +68,8 @@ const GroupInvites = () => {
             {invites.map(invite => (
               <ListGroup.Item key={invite.id} className="   ">
                 <p>The {invite.group_name} group invited you. </p>
+                <p><strong>Group Name:</strong> {invite.group_name}</p>
+                <p><strong>Group Captain:</strong> {invite.captain_name}</p>
                 <Button size="sm" variant="success" onClick={() => handleAcceptInvite(invite.id, invite.group_id)}>Accept</Button>{' '}
                 <Button size="sm" variant="danger" onClick={() => handleDeclineInvite(invite.id)}>Decline</Button>
               </ListGroup.Item>

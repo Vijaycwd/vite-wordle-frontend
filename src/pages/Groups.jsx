@@ -35,8 +35,8 @@ function Groups() {
 
                 // Fetch groups where user is a member
                 const resMember = await Axios.post(
-                    "https://coralwebdesigns.com/college/wordgamle/groups/get-member-groups.php",
-                    { user_id: userId } // New API for groups where user is a member
+                    "https://coralwebdesigns.com/college/wordgamle/groups/get-groups.php",
+                    { member_id: userId } // New API for groups where user is a member
                 );
                 setMemberGroups(resMember.data.groups || []);
             } catch (err) {

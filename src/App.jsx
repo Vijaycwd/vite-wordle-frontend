@@ -22,6 +22,7 @@ import Groups from './pages/Groups';
 import Grouppage from './pages/Grouppage';
 import Groupstat from './pages/Groupstat';
 import GroupInvites from './pages/GroupInvites';
+import GroupInfo from './pages/GroupInfo';
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
           <Route exact path = '/group-invites' element = {<GroupInvites/>}/>
           <Route path="/group/:id/:groupName" element={<Grouppage/>}/>
           <Route path="/group/:groupName-stat" element={<Groupstat/>}/>
+          <Route path="/group-info/:id" element={<GroupInfo/>} />
           <Route exact path= '/gamesstat' element={<GamesStat/>}/>
           <Route exact path= '/wordlestats' element={<Wordlestats/>}/>
           <Route exact path= '/connectionstats' element={<ConnectionStat/>}/>

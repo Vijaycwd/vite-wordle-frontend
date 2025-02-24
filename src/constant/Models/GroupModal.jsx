@@ -27,7 +27,7 @@ const GroupModal = ({ showForm, handleFormClose, onSubmit, groupname, setGroupna
             />
           </Form.Group>
 
-          <Form.Group className="mb-3">
+          {/* <Form.Group className="mb-3">
             <Form.Label>Select Game(s)</Form.Label>
             <Form.Check 
               type="checkbox" 
@@ -50,7 +50,7 @@ const GroupModal = ({ showForm, handleFormClose, onSubmit, groupname, setGroupna
               onChange={handleCheckboxChange}
               checked={selectedGames.includes("Phrazle")}
             />
-          </Form.Group>
+          </Form.Group> */}
 
           <Button variant="primary" type="submit">
             Create

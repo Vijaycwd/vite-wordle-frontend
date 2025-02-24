@@ -86,13 +86,13 @@ const Headerbar = () => {
 
   return (
     <Container>
-      <Row className="align-items-center py-2">
-        <Col md={3} xs={6}>
+      <Row className="align-items-center py-2 justify-content-end ">
+        <Col md={2} xs={3}>
           <Link to="/">
             <img className='img-fluid' src={Logo} alt="logo" />
           </Link>
         </Col>
-        <Col md={9} xs={6} className='d-flex justify-content-end align-items-center gap-4'>
+        <Col md={10} xs={9} className='d-flex justify-content-end align-items-center gap-2'>
           <Link to="/" className='btn btn-primary'>
             Games
           </Link>

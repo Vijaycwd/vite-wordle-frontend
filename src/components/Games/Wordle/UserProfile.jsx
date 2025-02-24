@@ -10,9 +10,10 @@ import { useLocation } from 'react-router-dom';
 function UserProfile() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const location = useLocation();
-    const [username, setUsername] = useState(location.state?.username || "");
-    const [email, setEmail] = useState(location.state?.email || "");
-    const id = location.state?.id;
+    const [name, setName] = useState(USER_AUTH_DATA?.name || "");
+    const [username, setUsername] = useState(USER_AUTH_DATA?.username || "");
+    const [email, setEmail] = useState(USER_AUTH_DATA?.email || "");
+    const id = USER_AUTH_DATA?.id;
     const [password, setPassword] = useState(null);
     const [confirmpassword, setConfirmpassword] = useState(null);
     const [avatar, setAvatar] = useState();
@@ -59,6 +60,7 @@ function UserProfile() {
 
         const userObject = {
             id: id,
+            name:name,
             username: username,
             email: email,
             avatar: avatar
@@ -72,7 +74,7 @@ function UserProfile() {
         const response = await Axios.put(`https://coralwebdesigns.com/college/wordgamle/user/edit-user.php`, userObject, HEADERS);
         if (response) {
             // Update the localStorage with the new user data
-            const updatedAuthData = { ...USER_AUTH_DATA, username: username, email: email, avatar: avatar };
+            const updatedAuthData = { ...USER_AUTH_DATA, name: name, username: username, email: email, avatar: avatar };
             localStorage.setItem('auth', JSON.stringify(updatedAuthData));
             //console.log('User updated successfully');
             toast.success('Profile updated successfully!', {
@@ -122,6 +124,11 @@ function UserProfile() {
                     <Form className="js-validation-signup">
                         <Form.Group>
                             <Form.Label>Name</Form.Label>
+                            <Form.Control type="text" className="" value={name} onChange={(e) => { setName(e.target.value);}} placeholder='Enter the name'/>
+                            {errors.name && <p className='form-validation-error'>{errors.name}</p>}
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Username</Form.Label>
                             <Form.Control type="text" className="" value={username} onChange={(e) => { setUsername(e.target.value);}} placeholder='Enter the name'/>
                             {errors.username && <p className='form-validation-error'>{errors.username}</p>}
                         </Form.Group>

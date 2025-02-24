@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Axios from 'axios';
 import AddMembers from '../constant/Models/AddMembers';
 import { ToastContainer, toast } from 'react-toastify';
-import MemberGameButtons from './MemberGameButtons';
+import MemberGameSelections from './MemberGameSelections';
 
 function GroupPage() {
     const { id } = useParams();
+    const navigate = useNavigate();
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
     const { id: userId } = USER_AUTH_DATA;
 
@@ -36,6 +37,10 @@ function GroupPage() {
         fetchGroupDetails();
     }, [id, userId]);
 
+    const goToGroupInfo = () => {
+        navigate(`/group-info/${id}`);
+    };
+
     if (!group) return null;
 
     return (
@@ -49,13 +54,27 @@ function GroupPage() {
             </Row>
 
             {isCaptain ? (
-                <Button className="wordle-btn px-5 mt-3" onClick={() => setShowMemberForm(true)}>
-                    Add Group Members
-                </Button>
+                <>
+               
+                    <Row>
+                        <Col>
+                            <Button className="wordle-btn px-5 mt-3" onClick={goToGroupInfo}>
+                                Group Info
+                            </Button>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <Button className="wordle-btn px-5 mt-3" onClick={() => setShowMemberForm(true)}>
+                                Add Group Members
+                            </Button>
+                        </Col>
+                    </Row>
+                </>
+                
             ) : (
-                <MemberGameButtons/>
+                <MemberGameSelections />
             )}
-
 
             <AddMembers
                 showForm={showMemberForm}
