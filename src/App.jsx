@@ -20,9 +20,11 @@ import PhrazleStat from './components/Games/Phrazle/PhrazleStat';
 import GamesStat from './components/Games/GamesStat';
 import Groups from './pages/Groups';
 import Grouppage from './pages/Grouppage';
-import Groupstat from './pages/Groupstat';
 import GroupInvites from './pages/GroupInvites';
 import GroupInfo from './pages/GroupInfo';
+import GroupStats from './pages/GroupStats';
+import GroupStatsPage from './pages/GroupStatsPage';
+
 
 function App() {
   return (
@@ -34,15 +36,17 @@ function App() {
         <Route exact path="*" element={<NotFound/>} />
         <Route exact path='/wordle' element={<Statistics/>}/>
         <Route exact path= '/connections' element={<Connectionsgame/>}/>
-        <Route  exact path= '/phrazle' element={<Phrazlegame/>}/>
+        <Route exact path= '/phrazle' element={<Phrazlegame/>}/>
         <Route exact path="/reset-password" element={<Resetpwd />} />
         <Route exact path="/reset-password/:id/:token" element={<Resetpwdform />} />
         <Route  path='/' element={<ProtectedRouter/>}>
           <Route exact path= '/groups' element={<Groups/>}/>
           <Route exact path = '/group-invites' element = {<GroupInvites/>}/>
+          <Route exact path="/group/:id/:groupName" element={<Grouppage/>}/>
+          <Route exact path="/group-info/:id" element={<GroupInfo/>} />
+          <Route path="/group/:id/:groupName/stats" element={<GroupStats/>}/>
           <Route path="/group/:id/:groupName" element={<Grouppage/>}/>
-          <Route path="/group/:groupName-stat" element={<Groupstat/>}/>
-          <Route path="/group-info/:id" element={<GroupInfo/>} />
+          <Route exact path="/group/:id/:groupName/stats/:game" element={<GroupStatsPage/>} />
           <Route exact path= '/gamesstat' element={<GamesStat/>}/>
           <Route exact path= '/wordlestats' element={<Wordlestats/>}/>
           <Route exact path= '/connectionstats' element={<ConnectionStat/>}/>

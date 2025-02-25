@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, ListGroup, Table } from 'react-bootstrap';
-import { useParams, useNavigate } from 'react-router-dom';
+import { Container, Row, Col, Button } from 'react-bootstrap';
+import { useParams } from 'react-router-dom';
 import Axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
+import { FaCheck } from "react-icons/fa6";
+import { IoClose } from "react-icons/io5";
+import { useNavigate } from 'react-router-dom';
 
 function GroupInfo() {
     const { id } = useParams();
     const navigate = useNavigate();
     const [group, setGroup] = useState(null);
-    const [captain, setCaptain] = useState(null);
+    const [captainid, setCaptainId] = useState(null);
     const [members, setMembers] = useState([]);
 
     useEffect(() => {
@@ -17,11 +20,10 @@ function GroupInfo() {
                 const res = await Axios.post(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-members.php`, { group_id: id });
                 if (res.data.status === "success") {
                     setGroup(res.data.group);
-                    setCaptain(res.data.captain_name);
+                    setCaptainId(res.data.captain_id); // Store captain's ID
                     setMembers(res.data.members);
                 } else {
                     toast.error("Group not found.");
-                    
                 }
             } catch (err) {
                 toast.error("Failed to load group info.");
@@ -29,9 +31,11 @@ function GroupInfo() {
         };
 
         fetchGroupInfo();
-    }, [id, navigate]);
-    console.log('captain',captain);
+    }, [id]);
+
+    
     if (!group) return null;
+   
     return (
         <Container>
             <ToastContainer />
@@ -39,15 +43,17 @@ function GroupInfo() {
                 <Col md={6} className="border p-3 shadow rounded">
                     <h3 className='text-center'>{group.name} Group Members</h3>
                     {members.map((member) => (
-                        <Row className='mt-5'>
+                        <Row key={member.member_id} className='mt-5'>
                             <Col className="text-start">
-                                <h5>{member.username}</h5>
+                                <h5>
+                                    {member.username} {member.member_id === captainid && <strong>*</strong>}
+                                </h5>
                             </Col>
-                            <Col  className="text-start">
+                            <Col className="text-start">
                                 <ul style={{ listStyleType: "none", padding: 0 }}>
-                                    {["Wordle", "Connections", "Phrasle"].map((game) => (
+                                    {["Wordle", "Connections", "Phrazle"].map((game) => (
                                         <li key={game}>
-                                            <h5>{game}: {member.selected_games.includes(game) ? "✅" : "❌"}</h5>
+                                            <h5>{game}: {member.selected_games.includes(game) ? <FaCheck /> : <IoClose />}</h5>
                                         </li>
                                     ))}
                                 </ul>
@@ -55,10 +61,9 @@ function GroupInfo() {
                         </Row>
                     ))}
                     <p><strong>*Captain</strong></p>
+                    <Button className="btn btn-primary my-4" onClick={() => navigate(`/group/${group.id}/${group.name.toLowerCase().replace(/\s+/g, '-')}/stats`)}>Group Stats</Button>
                 </Col>
-
             </Row>
-            
         </Container>
     );
 }

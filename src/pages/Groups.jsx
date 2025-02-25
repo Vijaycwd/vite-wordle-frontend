@@ -20,10 +20,7 @@ function Groups() {
 
     useEffect(() => {
         const fetchGroups = async () => {
-            if (!userId) {
-                toast.error("User ID not found. Please log in.", { position: "top-center" });
-                return;
-            }
+
 
             try {
                 // Fetch groups created by the user

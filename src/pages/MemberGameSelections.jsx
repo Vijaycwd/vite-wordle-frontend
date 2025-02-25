@@ -42,17 +42,32 @@ function MemberGameSelections() {
             toast.error("Invalid user or group.");
             return;
         }
-
+    
+        // Fetch latest selected games before making the request
+        try {
+            const res = await Axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-members.php?groupId=${groupId}`);
+            if (res.data.status === "success") {
+                const existingGames = res.data.selectedGames || [];
+    
+                // Check if selectedGames is different before sending
+                if (JSON.stringify(existingGames.sort()) === JSON.stringify(selectedGames.sort())) {
+                    toast.info("No changes detected.");
+                    return;
+                }
+            }
+        } catch (err) {
+            console.error("Error fetching current game selections:", err);
+        }
+    
         try {
             const res = await Axios.post("https://coralwebdesigns.com/college/wordgamle/groups/update-games.php", {
                 userId,
                 groupId,
                 selectedGames
             });
-
+    
             if (res.data.status === "success") {
                 toast.success("Game preferences updated!");
-                fetchGroupMembers(); // Refresh group members list
             } else {
                 toast.error("Failed to update preferences.");
             }
@@ -60,7 +75,7 @@ function MemberGameSelections() {
             toast.error("Error updating game preferences.");
         }
     };
-
+    
     return (
         <Container>
             <ToastContainer />
@@ -87,26 +102,6 @@ function MemberGameSelections() {
                         <Button className="mt-3" onClick={saveSelectedGames}>
                             Save Preferences
                         </Button>
-                    </div>
-                </Col>
-            </Row>
-
-            {/* Show Group Members and Their Selected Games */}
-            <Row className="justify-content-center pt-4">
-                <Col md={8}>
-                    <div className="border p-3 shadow rounded mt-4">
-                        <h5>Group Members & Selected Games</h5>
-                        {groupMembers.length > 0 ? (
-                            <ul className="list-group">
-                                {groupMembers.map((member) => (
-                                    <li key={member.id} className="list-group-item">
-                                        <strong>{member.name}</strong>: {member.selectedGames.length > 0 ? member.selectedGames.join(", ") : "No games selected"}
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p>No members found.</p>
-                        )}
                     </div>
                 </Col>
             </Row>

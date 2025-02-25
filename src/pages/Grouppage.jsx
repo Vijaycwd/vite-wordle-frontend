@@ -52,17 +52,15 @@ function GroupPage() {
                     <p>Group ID: {group.id}</p>
                 </Col>
             </Row>
-
+            <Row>
+                <Col>
+                    <Button className="wordle-btn px-5 mt-3" onClick={goToGroupInfo}>
+                        Group Info
+                    </Button>
+                </Col>
+            </Row>
             {isCaptain ? (
                 <>
-               
-                    <Row>
-                        <Col>
-                            <Button className="wordle-btn px-5 mt-3" onClick={goToGroupInfo}>
-                                Group Info
-                            </Button>
-                        </Col>
-                    </Row>
                     <Row>
                         <Col>
                             <Button className="wordle-btn px-5 mt-3" onClick={() => setShowMemberForm(true)}>
