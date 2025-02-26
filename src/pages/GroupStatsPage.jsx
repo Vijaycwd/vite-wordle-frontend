@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
-import GroupStatsWordle from './GroupStats/GroupStatsWordle';
+import GroupLeaderboardScores from './GroupLeaderboard/GroupLeaderboardScores';
 
 function GroupStatsPage() {
   const { groupName, game } = useParams(); // Extract groupName and game from URL
@@ -18,7 +18,7 @@ function GroupStatsPage() {
 
 
           {/* Render content based on selected game */}
-          {game === "wordle" && <GroupStatsWordle/>}
+          {game === "wordle" && <GroupLeaderboardScores/>}
           {game === "connections" && <p>Connections statistics go here.</p>}
           {game === "phrazle" && <p>Phrazle statistics go here.</p>}
         </Col>

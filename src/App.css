@@ -151,3 +151,13 @@ span.notification-count.badge.bg-danger {
   padding: 2px;
   font-size: 14px;
 }
+.leaderboard .progress{
+  height: 25px !important;
+  background-color: transparent;
+  border-radius: 0px;
+}
+.wordle-progressbar .progress-bar
+{
+  background-color: #a0c35a!important;
+  
+}
