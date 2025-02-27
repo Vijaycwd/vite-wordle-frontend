@@ -111,7 +111,7 @@ function UserProfile() {
         // }
     };
     
-    
+    console.log(USER_AUTH_DATA);
   return (
     <>  
         

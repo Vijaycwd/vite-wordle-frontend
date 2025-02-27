@@ -38,19 +38,23 @@ function GroupStats() {
 console.log(games);
   return (
     <Container>
-      <Row>
-        <Col className="text-center mt-4">
+      <Row className="justify-content-center">
+        <Col md={6} className="text-center mt-4">
           <h2 className='text-capitalize pb-2'>{formattedGroupName}</h2>
           <h3 className='pb-4'>Group Stats</h3>
+          <Row>
           {selectedGames.map((game, index) => (
+            <Col className="text-center mt-4">
             <Button 
               key={index} 
-              className="m-2" 
+              className="btn-lg btn-block w-100" 
               onClick={() => navigate(`/group/${id}/${groupName}/stats/${game.toLowerCase()}`)}
             >
               {game}
             </Button>
+            </Col>
           ))}
+          </Row>
         </Col>
       </Row>
     </Container>

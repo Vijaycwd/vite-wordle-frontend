@@ -148,10 +148,10 @@ const Headerbar = () => {
                       className="img-fluid" 
                       onError={(e) => e.target.src = 'https://coralwebdesigns.com/college/wordgamle/user/uploads/default_avatar.png'}
                     />
-                    <p className='fs-4 m-0 cwd-edit-profile' onClick={() => editUser(userData.username, userData.email, userData.id, userData.avatar, true)}>{userData.username}</p>
+                    <p className='fs-4 m-0 cwd-edit-profile' onClick={() => editUser(userData.name, userData.username, userData.email, userData.id, userData.avatar, true)}>{userData.username}</p>
                     <p>{userData.email}</p>
                     <div className="user-profile-button">
-                      <Button onClick={() => editUser(userData.username, userData.email, userData.id, true)}>Edit</Button>
+                      <Button onClick={() => editUser(userData.name, userData.username, userData.email, userData.id, true)}>Edit</Button>
                       <Button onClick={logout}>Logout</Button>
                     </div>
                   </div>

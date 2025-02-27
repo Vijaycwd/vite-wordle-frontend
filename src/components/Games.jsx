@@ -78,7 +78,7 @@ const Games = () => {
             {showwordlebtn && (
               <Col md={4}>
                 <div className="mb-2">
-                  <Button  className="wordle-btn" size="lg" onClick={() => handleShow('WORDLE')}>
+                  <Button  className="w-100 wordle-btn" size="lg" onClick={() => handleShow('WORDLE')}>
                     WORDLE
                   </Button>
                 </div>
@@ -89,7 +89,7 @@ const Games = () => {
             {showconnbtn && (
               <Col>
                 <div className="mb-2">
-                  <Button className="connections-btn" size="lg" onClick={() => handleShow('CONNECTIONS')}>
+                  <Button className="w-100  connections-btn" size="lg" onClick={() => handleShow('CONNECTIONS')}>
                     CONNECTIONS
                   </Button>
                 </div>
@@ -100,7 +100,7 @@ const Games = () => {
             {showphrazlebtn && (
               <Col>
                 <div className="mb-2">
-                  <Button  className="phrazle-btn" size="lg" onClick={() => handleShow('PHRAZLE')}>
+                  <Button  className="w-100  phrazle-btn" size="lg" onClick={() => handleShow('PHRAZLE')}>
                     PHRAZLE
                   </Button>
                 </div>

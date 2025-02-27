@@ -52,13 +52,13 @@ function Home() {
                     </Row>
                     <Row>
                         <Col className="text-center py-1" md={4} s={12}>
-                            <Button className="btn btn-primary btn-lg" onClick={() => handleNavigation('wordle')}>Wordle</Button>
+                            <Button className="btn-lg w-100" onClick={() => handleNavigation('wordle')}>Wordle</Button>
                         </Col>
                         <Col className="text-center py-1" md={4} s={12}>
-                            <Button className="btn btn-primary btn-lg" onClick={() => handleNavigation('connections')}>Connections</Button>
+                            <Button className="btn-lg w-100" onClick={() => handleNavigation('connections')}>Connections</Button>
                         </Col>
                         <Col className="text-center py-1" md={4} s={12}>
-                            <Button className="btn btn-primary btn-lg" onClick={() => handleNavigation('phrazle')}>Phrazle</Button>
+                            <Button className="btn-lg w-100" onClick={() => handleNavigation('phrazle')}>Phrazle</Button>
                         </Col>
                     </Row>
                     <Row>
@@ -71,7 +71,7 @@ function Home() {
                         <div>
                             <p className='text-center'>Please create your profile and then click the game buttons and go from there!</p>
                             <Link className="btn btn-primary btn-lg my-3" to="/register" style={{ width: "60%" }}>Create Profile</Link>
-                            <Button className="btn btn-primary btn-lg mt-3" onClick={loginformClick} style={{ width: "60%" }}>Login</Button>
+                            <Button className="btn-lg mt-3" onClick={loginformClick} style={{ width: "60%" }}>Login</Button>
                         </div>
                     ) : (
                         <div></div>
