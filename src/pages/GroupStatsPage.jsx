@@ -16,11 +16,7 @@ function GroupStatsPage() {
           <h3 className='text-capitalize py-3'>{game} Stats</h3>
           {/* <h3 className='text-capitalize py-3'>{game.charAt(0).toUpperCase() + game.slice(1)} Stats</h3> */}
 
-
-          {/* Render content based on selected game */}
-          {game === "wordle" && <GroupLeaderboardScores/>}
-          {game === "connections" && <p>Connections statistics go here.</p>}
-          {game === "phrazle" && <p>Phrazle statistics go here.</p>}
+          <GroupLeaderboardScores/>
         </Col>
       </Row>
     </Container>
