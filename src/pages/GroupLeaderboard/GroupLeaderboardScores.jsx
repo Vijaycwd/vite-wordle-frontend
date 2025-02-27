@@ -55,8 +55,10 @@ function GroupLeaderboardScores() {
                1; // Default to 1 if unknown
     };
 
-    // Aggregate all scores and calculate total possible scores
+   // Aggregate all scores and calculate total possible scores
     const aggregatedAllScores = allLeaderboard.reduce((acc, data) => {
+        if (Number(data.gamlescore) === 7) return acc; // Exclude rows where gamlescore is 7
+
         if (!acc[data.username]) {
             acc[data.username] = { 
                 username: data.username,
@@ -85,70 +87,83 @@ function GroupLeaderboardScores() {
         gamenames: [...user.gamenames].join(", ") 
     }));
 
+
     return (
         <div>
             {loading && <p>Loading scores...</p>}
             {error && <p className="text-danger">{error}</p>}
+            <h4>Today's Leaderboard</h4>
 
-            {/* Today's Leaderboard */}
-            {!loading && !error && todayLeaderboard.length > 0 && (
+            {!loading && !error && (
                 <Row className="justify-content-center leaderboard">
                     <Col md={4}>
-                        <h4>Today's Leaderboard</h4>
-                        <h5 className="pb-3">Low Score</h5>
-                        
-                        {todayLeaderboard
-                            .slice()
-                            .sort((a, b) => a.gamlescore - b.gamlescore)
-                            .map((data, index) => {
-                                const totalScore = getTotalScore(data.gamename);
-                                return (
-                                    <Row key={index} className="justify-content-center align-items-center py-1">
-                                        <Col md={8} xs={8}>
-                                            <ProgressBar 
-                                                now={(data.gamlescore / totalScore) * 100} 
-                                                className={`${data.gamename}-progressbar`}
-                                            />
-                                        </Col>
-                                        <Col md={4} xs={4}>
-                                            {data.username} ({`${data.gamlescore}/${totalScore}`})
-                                        </Col>
-                                    </Row>
-                                );
-                            })}
+                        {todayLeaderboard.length > 0 ? (
+                            <>
+                                <h5 className="pb-3">Low Score</h5>
+                                {todayLeaderboard
+                                    .slice()
+                                    .sort((a, b) => a.gamlescore - b.gamlescore)
+                                    .map((data, index) => {
+                                        const totalScore = getTotalScore(data.gamename);
+                                        return (
+                                            <Row key={index} className="justify-content-center align-items-center py-1">
+                                                <Col md={8} xs={8}>
+                                                    <ProgressBar 
+                                                        now={(data.gamlescore / totalScore) * 100} 
+                                                        className={`${data.gamename}-progressbar`}
+                                                    />
+                                                </Col>
+                                                <Col md={4} xs={4}>
+                                                    {data.username} ({`${data.gamlescore}/${totalScore}`})
+                                                </Col>
+                                            </Row>
+                                        );
+                                    })}
+                            </>
+                        ) : (
+                            <p className="text-center">No scores found today.</p>
+                        )}
                     </Col>
                 </Row>
             )}
 
+
             {/* Cumulative Leaderboard */}
-            {!loading && !error && allLeaderboardArray.length > 0 && (
+            {!loading && !error && (
                 <Row className="justify-content-center leaderboard mt-4">
                     <Col md={4}>
                         <h4>Cumulative Leaderboard</h4>
-                        
-                        {allLeaderboardArray
-                            .slice()
-                            .sort((a, b) => b.gamlescore - a.gamlescore) // Sort by highest score
-                            .map((data, index) => {
-                                console.log(data.gamenames)
-                                return (
-                                    <Row key={index} className="justify-content-center align-items-center py-1">
-                                        <Col md={8} xs={8}>
-                                            <ProgressBar 
-                                                now={(data.gamlescore / data.totalScore) * 100} 
-                                                className={`${data.gamenames}-progressbar`}
-                                            />
-                                        </Col>
-                                        <Col md={4} xs={4}>
-                                            {data.username} ({data.gamlescore}/{data.totalScore}) <br />
-                                            {/* Games Played: {data.totalGames} */}
-                                        </Col>
-                                    </Row>
-                                );
-                            })}
+                        {allLeaderboardArray.length > 0 ? (
+                            <>
+                                <h5 className="pb-3">Low Score</h5>
+                                {allLeaderboardArray
+                                    .slice()
+                                    .sort((a, b) => b.gamlescore - a.gamlescore) // Sort by highest score
+                                    .map((data, index) => {
+                                        console.log(data.gamenames);
+                                        return (
+                                            <Row key={index} className="justify-content-center align-items-center py-1">
+                                                <Col md={8} xs={8}>
+                                                    <ProgressBar 
+                                                        now={(data.gamlescore / data.totalScore) * 100} 
+                                                        className={`${data.gamenames}-progressbar`}
+                                                    />
+                                                </Col>
+                                                <Col md={4} xs={4}>
+                                                    {data.username} ({data.gamlescore}/{data.totalScore}) <br />
+                                                    {/* Games Played: {data.totalGames} */}
+                                                </Col>
+                                            </Row>
+                                        );
+                                    })}
+                            </>
+                        ) : (
+                            <p className="text-center">No cumulative scores available.</p>
+                        )}
                     </Col>
                 </Row>
             )}
+
         </div>
     );
 }
