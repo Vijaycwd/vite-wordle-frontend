@@ -109,8 +109,8 @@ function GroupLeaderboardScores() {
                                             <Row key={index} className="justify-content-center align-items-center py-1">
                                                 <Col md={8} xs={8}>
                                                     <ProgressBar 
-                                                        now={(data.gamlescore / totalScore) * 100} 
-                                                        className={`${data.gamename}-progressbar`}
+                                                    now={totalScore > 0 ? (1 - data.gamlescore / totalScore) * 100 : 0} 
+                                                    className={`${data.gamename}-progressbar`}
                                                     />
                                                 </Col>
                                                 <Col md={4} xs={4}>

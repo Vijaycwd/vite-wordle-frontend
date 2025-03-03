@@ -35,7 +35,7 @@ function GroupInfo() {
 
     
     if (!group) return null;
-   
+    console.log('Members',members);
     return (
         <Container>
             <ToastContainer />

@@ -9,10 +9,9 @@ function WordleGuessDistribution() {
   const [highlightData, sethandlehighlightData] = useState([]);
 
   useEffect(() => {
-    if (loginuserEmail) {
-      getGuessValue();
-    }
-  }, [wordleGuessData,loginuserEmail]);
+    const interval = setInterval(getGuessValue, 3000); // Fetch every 2 seconds
+      return () => clearInterval(interval); // Cleanup on unmount
+      }, []);
   
   function getGuessValue() {
     Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/get-guessdistribution.php?useremail=${loginuserEmail}`)

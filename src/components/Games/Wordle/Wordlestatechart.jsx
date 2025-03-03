@@ -21,8 +21,11 @@ function Wordlestatechart() {
         // Reset state on component mount
         setStatsChart([]); // Clear previous scores
         setLoading(true);
-        getStatChart(); // Fetch scores
-    }, [loginuserEmail]); // Run effect when loginuserEmail changes
+        const interval = setInterval(getStatChart, 5000); // Fetch every 2 seconds
+
+            return () => clearInterval(interval); // Cleanup on unmount
+            }, []);
+     // Run effect when loginuserEmail changes
 
     function getStatChart() {
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
