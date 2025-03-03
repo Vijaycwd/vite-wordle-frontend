@@ -12,7 +12,7 @@ function Loginform() {
     const userAuthData = JSON.parse(localStorage.getItem('auth')); // Change here
     const navigate = useNavigate();
     const [validated, setValidated] = useState(false);
-    const [email, setEmail] = useState('');
+    const [emailOrUsername, setEmailOrUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showLoginForm, setShowLoginForm] = useState(false);
@@ -31,18 +31,17 @@ function Loginform() {
         if (form.checkValidity() === false) {
             setValidated(true);
         } else {
-            setEmail('');
+            setEmailOrUsername('');
             setPassword('');
-            const userObject = { email, password };
+            const userObject = { email: emailOrUsername, password }; // Use a single field for both email and username
             Axios.post('https://coralwebdesigns.com/college/wordgamle/auth/login.php', userObject)
                 .then(res => {
-    
                     if (res.data.status === 'success') {
                         toast.success("Login Successfully", { position: "top-center" });
                         localStorage.setItem('auth', JSON.stringify(res.data));
                         navigate("/");
                     } else {
-                        toast.error("Invalid user email and password!", { position: "top-center" });
+                        toast.error("Invalid username/email or password!", { position: "top-center" });
                     }
                 })
                 .catch(() => {
@@ -67,14 +66,14 @@ function Loginform() {
                                                 <Col>
                                                     <Form.Group controlId="login-email">
                                                         <InputGroup hasValidation>
-                                                            <Form.Control
-                                                                type="email"
-                                                                placeholder="Email"
-                                                                required
-                                                                onChange={(e) => setEmail(e.target.value)}
-                                                                value={email}
-                                                                name="login-email"
-                                                            />
+                                                        <Form.Control
+                                                            type="text"
+                                                            placeholder="Email or Username"
+                                                            required
+                                                            onChange={(e) => setEmailOrUsername(e.target.value)}
+                                                            value={emailOrUsername}
+                                                            name="login-identifier"
+                                                        />
                                                             <Form.Control.Feedback type="invalid">
                                                                 Please enter an email.
                                                             </Form.Control.Feedback>

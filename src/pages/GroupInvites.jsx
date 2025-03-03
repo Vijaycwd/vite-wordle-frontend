@@ -10,29 +10,29 @@ const GroupInvites = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
 
-  useEffect(() => {
-  fetchGroupInvites(); // Initial fetch
-
-  const interval = setInterval(fetchGroupInvites, 5000); // Fetch every 2 seconds
-
-  return () => clearInterval(interval); // Cleanup on unmount
-}, []);
-
-const fetchGroupInvites = async () => {
-  try {
-    const response = await axios.get(
-      `https://coralwebdesigns.com/college/wordgamle/groups/get-invites.php?user_id=${userId}`
-    );
-    
-    // Only update state if the invites are different
-    if (JSON.stringify(response.data.invitations) !== JSON.stringify(invites)) {
-      setInvites(response.data.invitations);
+  const fetchGroupInvites = async () => {
+    try {
+      const response = await axios.get(
+        `https://coralwebdesigns.com/college/wordgamle/groups/get-invites.php?user_id=${userId}`
+      );
+  
+      // Only update state if the invites are different
+      if (JSON.stringify(response.data.invitations) !== JSON.stringify(invites)) {
+        setInvites(response.data.invitations);
+      }
+    } catch (error) {
+      console.error("Error fetching invites:", error);
     }
-  } catch (error) {
-    console.error("Error fetching invites:", error);
-  }
-};
-
+  };
+  
+  useEffect(() => {
+    fetchGroupInvites(); // Initial fetch
+  
+    const interval = setInterval(fetchGroupInvites, 5000); // Fetch every 5 seconds
+  
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, []);
+  
 const handleAcceptInvite = async (inviteId, groupId) => {
   try {
     await axios.post("https://coralwebdesigns.com/college/wordgamle/groups/accept-invite.php", {
