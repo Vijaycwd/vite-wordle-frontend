@@ -66,6 +66,8 @@ const AddMembers = ({ showForm, handleFormClose, groupName, groupId, onSubmit })
     }
   };
 
+  const frontendBaseUrl = window.location.origin;
+
   const handleSendInvitation = async () => {
     if (selectedMembers.length === 0) {
         toast.error("Please select a group and at least one member.");
@@ -78,6 +80,7 @@ const AddMembers = ({ showForm, handleFormClose, groupName, groupId, onSubmit })
             group_name: groupName,
             invited_user_id: member.value,
             invited_user_name: member.label,
+            frontendBaseUrl
         }));
 
         await Promise.all(invitations.map(invite => 

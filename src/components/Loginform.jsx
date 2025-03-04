@@ -117,7 +117,7 @@ function Loginform() {
                             <div>
                                 <h2 className='my-2'>{"Welcome "+userAuthData.username+"!"}</h2>
                                 <p className='my-3'>You are successfully logged in.</p>
-                                <Link className="btn btn-primary btn-lg my-3" to="/wordlestats" style={{width:"60%"}}>Your Stats</Link>
+                                <Link className="btn btn-primary btn-lg my-3" to="/" style={{width:"60%"}}>Home</Link>
                             </div>
                         )}
                     </Col>
