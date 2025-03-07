@@ -11,6 +11,7 @@ const AddMembers = ({ showForm, handleFormClose, groupName, groupId, onSubmit })
   const [selectedGroup, setSelectedGroup] = useState("");
   const [selectedCaptain, setSelectedCaptain] = useState("");
   const [selectedMembers, setSelectedMembers] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
   const userAuthData = JSON.parse(localStorage.getItem('auth')) || {};
   // Fetch Groups and Users from DB
   useEffect(() => {
@@ -122,12 +123,19 @@ const AddMembers = ({ showForm, handleFormClose, groupName, groupId, onSubmit })
             <Form.Label>Invite Group Members</Form.Label>
             <Select
               isMulti
-              options={filteredUsers.map(user => ({ value: user.id, label: user.username }))}
+              options={filteredUsers
+                .filter(user => searchInput.length >= 3) // Show results only when input is 3+ chars
+                .map(user => ({ value: user.id, label: user.username }))}
               value={selectedMembers}
               onChange={setSelectedMembers}
-              placeholder="Search and select members..."
+              onInputChange={(input) => setSearchInput(input)} // Track user input
+              placeholder="Type at least 3 characters to search..."
+              noOptionsMessage={() => 
+                searchInput.length < 3 ? "Type at least 3 letters..." : "No users found"
+              }
             />
           </Form.Group>
+
 
           {/* <Button variant="primary" type="submit">
             Add Members

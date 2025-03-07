@@ -33,15 +33,15 @@ function PhrazleScoreByDate() {
     
         // Determine if it's morning or afternoon
         const currentTime = moment().tz(timeZone);
-        const period = currentTime.hours() < 12 ? 'morning' : 'afternoon';
+        // const period = currentTime.hours() < 12 ? 'morning' : 'afternoon';
     
         // Make the API request to the endpoint with date, timeZone, and period as query parameters
-        axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/get-score-by-date.php`, {
+        axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/get-score-by-date-only.php`, {
             params: {
                 useremail: loginuserEmail,
                 today: formattedDate,
-                timeZone: timeZone,
-                period: period // Add period to the query params
+                timeZone: timeZone
+                // period: period // Add period to the query params
             }
         })
         .then((response) => {
@@ -95,7 +95,7 @@ function PhrazleScoreByDate() {
                 timeFormat="hh:mm aa" // Use 12-hour format with AM/PM
                 timeIntervals={720} // Set the interval of the time picker
                 maxDate={new Date()}
-                showTimeSelect // Show time selection
+                // showTimeSelect // Show time selection
                 timeCaption="AM/PM"
             />
 

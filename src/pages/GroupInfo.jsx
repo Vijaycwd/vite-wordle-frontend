@@ -48,6 +48,22 @@ function GroupInfo() {
                                 <h5>
                                     {member.username} {member.member_id === captainid && <strong>*</strong>}
                                 </h5>
+                                {member.avatar ? (
+                                    <img 
+                                        src={`https://coralwebdesigns.com/college/wordgamle/user/uploads/${member.avatar}`} 
+                                        alt="Profile" 
+                                        className="rounded-circle mb-3" 
+                                        style={{ width: '50px', height: '50px', objectFit: 'cover' }} 
+                                    />
+                                ) : (
+                                    <img 
+                                        src={`https://coralwebdesigns.com/college/wordgamle/user/uploads/default_avatar.png`} 
+                                        alt="Default Profile" 
+                                        className="rounded-circle mb-3" 
+                                        style={{ width: '50px', height: '50px', objectFit: 'cover' }} 
+                                    />
+                                )}
+
                             </Col>
                             <Col className="text-start">
                                 <ul style={{ listStyleType: "none", padding: 0 }}>

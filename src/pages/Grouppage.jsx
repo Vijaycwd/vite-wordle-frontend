@@ -49,12 +49,12 @@ function GroupPage() {
             <Row>
                 <Col>
                     <h4>Group: {group.name}</h4>
-                    <p>Group ID: {group.id}</p>
+                    {/* <p>Group ID: {group.id}</p> */}
                 </Col>
             </Row>
             <Row>
                 <Col>
-                    <Button className="wordle-btn px-5 mt-3" onClick={goToGroupInfo}>
+                    <Button className="px-5 mt-3" onClick={goToGroupInfo}>
                         Group Info
                     </Button>
                 </Col>
@@ -63,7 +63,7 @@ function GroupPage() {
                 <>
                     <Row>
                         <Col>
-                            <Button className="wordle-btn px-5 mt-3" onClick={() => setShowMemberForm(true)}>
+                            <Button className="px-5 mt-3" onClick={() => setShowMemberForm(true)}>
                                 Add Group Members
                             </Button>
                         </Col>
@@ -73,7 +73,7 @@ function GroupPage() {
             ) : (
                 <MemberGameSelections />
             )}
-
+            <Button className="px-5 mt-3" onClick={() => navigate(`/group/${group.id}/${group.name.toLowerCase().replace(/\s+/g, '-')}/stats`)}>Group Stats</Button>
             <AddMembers
                 showForm={showMemberForm}
                 handleFormClose={() => setShowMemberForm(false)}

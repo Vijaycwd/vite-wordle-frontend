@@ -133,12 +133,12 @@ body{
 }
 #group-invites{
   background-color:#00BF63;
-  font-size: 20px;
-  padding: 0px 10px;
+  font-size: 12px;
+  padding: 5px;
   color: #ffffff;
 }
 .dropdown-toggle::after{
-  font-size: 18px;
+  font-size: 15px;
 }
 span.notification-count.badge.bg-danger {
   position: absolute;
@@ -170,4 +170,11 @@ span.notification-count.badge.bg-danger {
 {
   background-color: #218838!important;
   
+}
+.fas{
+  font-size: 15px;
+}
+.header-section .game-btn {
+  font-size: 15px;
+  padding: 5px;
 }

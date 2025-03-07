@@ -25,7 +25,7 @@ function Registerform() {
 
     useEffect(() => {
         // Simulate a default file (e.g., from an initial value or previous upload)
-        const defaultFile = new File([""], "defaultAvatar.png", { type: "image/png" });
+        const defaultFile = new File([""], "default_avatar.png", { type: "image/png" });
         // Set the default file to state
         setAvatar(defaultFile);
     }, []);

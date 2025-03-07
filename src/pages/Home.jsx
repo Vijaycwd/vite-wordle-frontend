@@ -33,6 +33,9 @@ function Home() {
     const handleNavigation = (link) => {
         navigate(`/${link}`);
     };
+    const groupClick = (link) => {
+        navigate('/groups');
+    };
     
     const loginformClick = () => {
         navigate('/login');
@@ -52,19 +55,20 @@ function Home() {
                     </Row>
                     <Row>
                         <Col className="text-center py-1" md={4} s={12}>
-                            <Button className="btn-lg w-100" onClick={() => handleNavigation('wordle')}>Wordle</Button>
+                            <Button className="btn-lg" onClick={() => handleNavigation('wordle')}>Wordle</Button>
                         </Col>
                         <Col className="text-center py-1" md={4} s={12}>
-                            <Button className="btn-lg w-100" onClick={() => handleNavigation('connections')}>Connections</Button>
+                            <Button className="btn-lg" onClick={() => handleNavigation('connections')}>Connections</Button>
                         </Col>
                         <Col className="text-center py-1" md={4} s={12}>
-                            <Button className="btn-lg w-100" onClick={() => handleNavigation('phrazle')}>Phrazle</Button>
+                            <Button className="btn-lg" onClick={() => handleNavigation('phrazle')}>Phrazle</Button>
                         </Col>
                     </Row>
                     <Row>
                         <Col className="py-3">
                             <p className='text-center'>Invite friends to the site and then create your group(s) by clicking the Group button up top.</p>
                             <p className='text-center'>Then, when you store results here each day, you’ll see your group’s daily Leaderboards… with more fun to come over time!</p>
+                            <Button className="btn-lg mt-3" onClick={groupClick} style={{ width: "60%" }}>Group Stats</Button>
                         </Col>
                     </Row>
                     {!userAuthData || isEmptyObject ? (
