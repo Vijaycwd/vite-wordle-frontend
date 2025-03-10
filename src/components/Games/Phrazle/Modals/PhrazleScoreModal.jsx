@@ -7,43 +7,34 @@ const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScor
   const [gameNumber, setGameNumber] = useState();
 
   const calculateGameNumber = () => {
-    // Corrected Start Date: January 1, 2024, 12:00 PM (Local Time)
+    // Corrected Start Date: January 1, 2024, 12:00 PM Local Time
     const firstGameDate = new Date(2024, 1, 1, 12, 0, 0); 
 
     // Get current local time
     const now = new Date();
-
-    // Calculate the difference in milliseconds
-    const diffInMs = now - firstGameDate;
+    // Adjust for DST shifts by using timestamps
+    const diffInMs = now.getTime() - firstGameDate.getTime();
 
     // Convert difference into 12-hour periods
     const diffIn12HourPeriods = Math.floor(diffInMs / (1000 * 60 * 60 * 12));
 
-    // Game number starts at 1
-    const currentGameNumber = diffIn12HourPeriods;
-
-    // console.log("Now Local Time:", now.toString());
-    // console.log("Next Update At:", now.getHours() < 12 ? "12 PM" : "12 AM");
-    // console.log("Calculated Game Number:", currentGameNumber);
-
-    return currentGameNumber;
+    return diffIn12HourPeriods; // Game numbers start from 1
 };
 
-// Set the game number on component mount & ensure updates
 useEffect(() => {
     setGameNumber(calculateGameNumber());
 
-    // Check every minute and update at exactly 12 AM & 12 PM (Local Time)
     const interval = setInterval(() => {
         const now = new Date();
         if ((now.getHours() === 0 && now.getMinutes() === 0) || 
             (now.getHours() === 12 && now.getMinutes() === 0)) {
             setGameNumber(calculateGameNumber());
         }
-    }, 60 * 1000); // Check every minute
+    }, 60 * 1000);
 
     return () => clearInterval(interval);
 }, []);
+
 
 
     const handlePaste = (event) => {

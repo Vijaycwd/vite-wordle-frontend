@@ -94,7 +94,7 @@ function MemberGameSelections() {
                                         onChange={() => handleGameSelection(game)}
                                     />
                                     <label className="form-check-label" htmlFor={`game-${game}`}>
-                                        {game}
+                                         {game} 
                                     </label>
                                 </div>
                             ))}

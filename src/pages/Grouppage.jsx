@@ -5,6 +5,7 @@ import Axios from 'axios';
 import AddMembers from '../constant/Models/AddMembers';
 import { ToastContainer, toast } from 'react-toastify';
 import MemberGameSelections from './MemberGameSelections';
+import SelectScoringMethod from './SelectScoringMethod';
 
 function GroupPage() {
     const { id } = useParams();
@@ -59,21 +60,22 @@ function GroupPage() {
                     </Button>
                 </Col>
             </Row>
-            {isCaptain ? (
-                <>
-                    <Row>
-                        <Col>
-                            <Button className="px-5 mt-3" onClick={() => setShowMemberForm(true)}>
-                                Add Group Members
-                            </Button>
-                        </Col>
-                    </Row>
-                </>
-                
-            ) : (
-                <MemberGameSelections />
+            {isCaptain && (
+                <Row>
+                    <Col>
+                        <Button className="px-5 mt-3" onClick={() => setShowMemberForm(true)}>
+                            Add Group Members
+                        </Button>
+                    </Col>
+                </Row>
+
             )}
             <Button className="px-5 mt-3" onClick={() => navigate(`/group/${group.id}/${group.name.toLowerCase().replace(/\s+/g, '-')}/stats`)}>Group Stats</Button>
+            <MemberGameSelections />
+            {isCaptain && (
+                <SelectScoringMethod/>
+                
+            )}
             <AddMembers
                 showForm={showMemberForm}
                 handleFormClose={() => setShowMemberForm(false)}

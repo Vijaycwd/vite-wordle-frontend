@@ -57,7 +57,6 @@ function GroupLeaderboardScores() {
 
    // Aggregate all scores and calculate total possible scores
     const aggregatedAllScores = allLeaderboard.reduce((acc, data) => {
-        console.log('User DAta',data);
         if (Number(data.gamlescore) === 7) return acc; // Exclude rows where gamlescore is 7
 
         if (!acc[data.username]) {
@@ -95,7 +94,7 @@ function GroupLeaderboardScores() {
         <div>
             {loading && <p>Loading scores...</p>}
             {error && <p className="text-danger">{error}</p>}
-            <h4>Today's Leaderboard</h4>
+            <h4 className="py-3 text-center">Today's Leaderboard</h4>
 
             {!loading && !error && (
                 <Row className="justify-content-center leaderboard">
@@ -152,7 +151,7 @@ function GroupLeaderboardScores() {
 
                                                     {/* Score */}
                                                     <Col xs={2} className="text-center fw-bold">
-                                                        ({data.gamlescore})
+                                                        {data.gamlescore}
                                                     </Col>
                                                 </Row>
                                             );
@@ -210,7 +209,7 @@ function GroupLeaderboardScores() {
                                                         />
                                                     </Col>
                                                     <Col xs={3} className="text-center fw-bold">
-                                                        ({data.gamlescore})
+                                                        {data.gamlescore}
                                                     </Col>
                                                 </Row>
                                             </Col>

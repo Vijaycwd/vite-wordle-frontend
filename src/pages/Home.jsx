@@ -68,7 +68,6 @@ function Home() {
                         <Col className="py-3">
                             <p className='text-center'>Invite friends to the site and then create your group(s) by clicking the Group button up top.</p>
                             <p className='text-center'>Then, when you store results here each day, you’ll see your group’s daily Leaderboards… with more fun to come over time!</p>
-                            <Button className="btn-lg mt-3" onClick={groupClick} style={{ width: "60%" }}>Group Stats</Button>
                         </Col>
                     </Row>
                     {!userAuthData || isEmptyObject ? (

@@ -13,6 +13,7 @@ function GroupInfo() {
     const [group, setGroup] = useState(null);
     const [captainid, setCaptainId] = useState(null);
     const [members, setMembers] = useState([]);
+    const [scoringmethod, setScoringMethod] = useState([]);
 
     useEffect(() => {
         const fetchGroupInfo = async () => {
@@ -33,9 +34,27 @@ function GroupInfo() {
         fetchGroupInfo();
     }, [id]);
 
+    useEffect(() => {
+        const fetchScoringMethod = async () => {
+            try {
+                const res = await Axios.post(`https://coralwebdesigns.com/college/wordgamle/groups/get-groups.php`, { group_id: id });
+                if (res.data.status === "success") {
+                    setScoringMethod(res.data.groups);
+                    
+                } else {
+                    toast.error("Scoring Method not found.");
+                }
+            } catch (err) {
+                toast.error("Failed to load group info.");
+            }
+        };
+
+        fetchScoringMethod();
+    }, [id]);
+
     
     if (!group) return null;
-    console.log('Members',members);
+    
     return (
         <Container>
             <ToastContainer />
@@ -76,10 +95,24 @@ function GroupInfo() {
                             </Col>
                         </Row>
                     ))}
+
+                    {/* Display Scoring Methods */}
+                    {scoringmethod && scoringmethod.length > 0 && (
+                        <div className="my-3">
+                            <h5>Scoring Methods</h5>
+                            <p>{scoringmethod
+                                .map(method => method.scoring_method)
+                                .filter(Boolean) // Remove empty, null, or undefined values
+                                .join(", ")}</p>
+                        </div>
+                    )}
+
+
                     <p><strong>*Captain</strong></p>
                     <Button className="btn btn-primary my-4" onClick={() => navigate(`/group/${group.id}/${group.name.toLowerCase().replace(/\s+/g, '-')}/stats`)}>Group Stats</Button>
                 </Col>
             </Row>
+            
         </Container>
     );
 }

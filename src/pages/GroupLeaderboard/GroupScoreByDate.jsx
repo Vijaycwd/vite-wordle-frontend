@@ -74,6 +74,7 @@ const aggregatedAllScores = allLeaderboard.reduce((acc, data) => {
     if (!acc[data.username]) {
         acc[data.username] = { 
             username: data.username,
+            avatar: data.avatar,
             gamlescore: 0,
             totalGames: 0,
             totalScore: 0, // Sum of possible scores
@@ -111,42 +112,59 @@ const allLeaderboardArray = Object.values(aggregatedAllScores).map(user => ({
                 />
             </div>
             <Row className="justify-content-center leaderboard mt-4">
-                <Col md={4} className="text-center">
+                <Col md={5} className="text-center">
                 {dataFetched ? (
                     allLeaderboardArray.length > 0 ? (
                                 <>
                                 <h4 className="py-3">Cumulative Leaderboard</h4>
-                                {allLeaderboardArray
-                                    .slice()
-                                    .sort((a, b) => b.gamlescore - a.gamlescore)
-                                    .map((data, index) => {
-                                        const totalScore = getTotalScore(data.gamename);
-                                        
-                                        return (
-                                            
-                                            <Row key={index} className="justify-content-center align-items-center py-1">
-                                                <p className='my-1 py-3'><strong>{formatCreatedAt(data.createdat)}</strong></p>
-                                                <Col md={8} xs={8}>
-                                                   <ProgressBar 
-                                                    now={
-                                                        totalScore > 0 
-                                                        ? data.gamename === "connections"
-                                                            ? (1 - data.gamlescore / totalScore) * 100  // 0 is best for Connections
-                                                            : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100  // 1 is best, 6 is worst for Wordle
-                                                        : 0
-                                                    } 
-                                                    className={`${data.gamename}-progressbar`}
-                                                    />
-                                                </Col>
-                                                <Col md={4} xs={4}>
-                                                    {/* {data.username} ({data.gamlescore}/{data.totalScore}) */}
-                                                    {data.username} ({data.gamlescore})
-                                                </Col>
-                                            </Row>
-                                        );
-                                
-
-                                    })}
+                                {allLeaderboardArray.length > 0 ? (
+                                    <>
+                                        {allLeaderboardArray
+                                            .slice()
+                                            .sort((a, b) => a.gamlescore - b.gamlescore) // Sort by highest score
+                                            .map((data, index) => (
+                                                <Row 
+                                                    key={index} 
+                                                    className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
+                                                >
+                                                    {/* Rank and Avatar */}
+                                                    <Col xs={3} className="d-flex align-items-center gap-2">
+                                                        
+                                                        <img 
+                                                            src={data.avatar ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}` : "https://via.placeholder.com/50"} 
+                                                            alt="Avatar" 
+                                                            className="rounded-circle border" 
+                                                            style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
+                                                        />
+                                                    </Col>
+        
+                                                    {/* Username */}
+                                                    <Col xs={4} className="text-start fw-semibold">
+                                                        {data.username}
+                                                    </Col>
+        
+                                                    {/* Score & Progress */}
+                                                    <Col xs={5}>
+                                                        <Row className="align-items-center">
+                                                            <Col xs={9}>
+                                                                <ProgressBar 
+                                                                    now={(1 - data.gamlescore / data.totalScore) * 100} 
+                                                                    className={`${data.gamenames}-progressbar`} 
+                                                                    variant="success"
+                                                                    style={{ height: '8px' }}
+                                                                />
+                                                            </Col>
+                                                            <Col xs={3} className="text-center fw-bold">
+                                                                {data.gamlescore}
+                                                            </Col>
+                                                        </Row>
+                                                    </Col>
+                                                </Row>
+                                            ))}
+                                    </>
+                                ) : (
+                                    <p className="text-center">No cumulative scores available.</p>
+                                )}
                             </>
                     ) : (
                         <Alert key='danger' variant='danger' className='p-1 text-center'>
