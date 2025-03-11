@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import { FaCheck } from "react-icons/fa6";
 import { IoClose } from "react-icons/io5";
-import { useNavigate } from 'react-router-dom';
+import GroupModal from '../constant/Models/GroupModal';
 
 function GroupInfo() {
     const { id } = useParams();
@@ -13,48 +13,84 @@ function GroupInfo() {
     const [group, setGroup] = useState(null);
     const [captainid, setCaptainId] = useState(null);
     const [members, setMembers] = useState([]);
-    const [scoringmethod, setScoringMethod] = useState([]);
+    const [scoringMethod, setScoringMethod] = useState([]);
+    const [showModal, setShowModal] = useState(false);  // Modal state
+    const [groupname, setGroupname] = useState('');
+
+    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
+    const userId = USER_AUTH_DATA?.id;
 
     useEffect(() => {
-        const fetchGroupInfo = async () => {
-            try {
-                const res = await Axios.post(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-members.php`, { group_id: id });
-                if (res.data.status === "success") {
-                    setGroup(res.data.group);
-                    setCaptainId(res.data.captain_id); // Store captain's ID
-                    setMembers(res.data.members);
-                } else {
-                    toast.error("Group not found.");
-                }
-            } catch (err) {
-                toast.error("Failed to load group info.");
-            }
-        };
-
         fetchGroupInfo();
     }, [id]);
+
+    const fetchGroupInfo = async () => {
+        try {
+            const res = await Axios.post(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-members.php`, { group_id: id });
+            if (res.data.status === "success") {
+                setGroup(res.data.group);
+                setCaptainId(res.data.captain_id);
+                setMembers(res.data.members);
+            } else {
+                toast.error("Group not found.");
+            }
+        } catch (err) {
+            toast.error("Failed to load group info.");
+        }
+    };
 
     useEffect(() => {
         const fetchScoringMethod = async () => {
             try {
-                const res = await Axios.post(`https://coralwebdesigns.com/college/wordgamle/groups/get-groups.php`, { group_id: id });
+                const res = await Axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-scoring-method.php`, {
+                    params: { user_id: userId, group_id: id }
+                });
+
                 if (res.data.status === "success") {
-                    setScoringMethod(res.data.groups);
-                    
+                    setScoringMethod(res.data.scoring_method || "");
                 } else {
                     toast.error("Scoring Method not found.");
                 }
             } catch (err) {
-                toast.error("Failed to load group info.");
+                toast.error("Failed to load scoring method.");
             }
         };
 
-        fetchScoringMethod();
-    }, [id]);
+        if (id && userId) {  
+            fetchScoringMethod();
+        }
+    }, [id, userId]); 
+
+    const handleDeleteGroup = async () => {
+        if (!window.confirm("Are you sure you want to delete this group?")) return;
+
+        try {
+            const res = await Axios.post(`https://coralwebdesigns.com/college/wordgamle/groups/delete-group.php`, { group_id: id });
+            if (res.data.status === "success") {
+                toast.success("Group deleted successfully.");
+                navigate('/groups');
+            } else {
+                toast.error("Failed to delete group.");
+            }
+        } catch (err) {
+            toast.error("Error deleting group.");
+        }
+    };
+
+    const handleUpdateGroup = async () => {
+        
+    };
 
     
+
+    const handleShowModal = () => setShowModal(true);
+    const handleCloseModal = (updated) => {
+        setShowModal(false);
+        if (updated) fetchGroupInfo();
+    };
+
     if (!group) return null;
-    
+
     return (
         <Container>
             <ToastContainer />
@@ -67,22 +103,12 @@ function GroupInfo() {
                                 <h5>
                                     {member.username} {member.member_id === captainid && <strong>*</strong>}
                                 </h5>
-                                {member.avatar ? (
-                                    <img 
-                                        src={`https://coralwebdesigns.com/college/wordgamle/user/uploads/${member.avatar}`} 
-                                        alt="Profile" 
-                                        className="rounded-circle mb-3" 
-                                        style={{ width: '50px', height: '50px', objectFit: 'cover' }} 
-                                    />
-                                ) : (
-                                    <img 
-                                        src={`https://coralwebdesigns.com/college/wordgamle/user/uploads/default_avatar.png`} 
-                                        alt="Default Profile" 
-                                        className="rounded-circle mb-3" 
-                                        style={{ width: '50px', height: '50px', objectFit: 'cover' }} 
-                                    />
-                                )}
-
+                                <img 
+                                    src={`https://coralwebdesigns.com/college/wordgamle/user/uploads/${member.avatar || 'default_avatar.png'}`} 
+                                    alt="Profile" 
+                                    className="rounded-circle mb-3" 
+                                    style={{ width: '50px', height: '50px', objectFit: 'cover' }} 
+                                />
                             </Col>
                             <Col className="text-start">
                                 <ul style={{ listStyleType: "none", padding: 0 }}>
@@ -95,24 +121,29 @@ function GroupInfo() {
                             </Col>
                         </Row>
                     ))}
-
-                    {/* Display Scoring Methods */}
-                    {scoringmethod && scoringmethod.length > 0 && (
-                        <div className="my-3">
-                            <h5>Scoring Methods</h5>
-                            <p>{scoringmethod
-                                .map(method => method.scoring_method)
-                                .filter(Boolean) // Remove empty, null, or undefined values
-                                .join(", ")}</p>
-                        </div>
-                    )}
-
-
-                    <p><strong>*Captain</strong></p>
-                    <Button className="btn btn-primary my-4" onClick={() => navigate(`/group/${group.id}/${group.name.toLowerCase().replace(/\s+/g, '-')}/stats`)}>Group Stats</Button>
+                    <div className='scoring-method my-4'>
+                        <h4>Scoring Method</h4>
+                        <h5>{scoringMethod}</h5>
+                    </div>
+                    <div>
+                        <p><strong>*Captain</strong></p>
+                        <Button className="btn btn-primary my-4" onClick={() => navigate(`/group/${group.id}/${group.name.toLowerCase().replace(/\s+/g, '-')}/stats`)}>Group Stats</Button>
+                        <Button className="btn btn-warning my-2 mx-2" onClick={handleShowModal}>Edit Group</Button>
+                        <Button className="btn btn-danger my-2" onClick={handleDeleteGroup}>Delete Group</Button>
+                    </div>
                 </Col>
             </Row>
-            
+
+            {/* Group Edit Modal */}
+            <GroupModal 
+                showForm={showModal} 
+                handleFormClose={handleCloseModal} 
+                groupname={group?.name || ''} 
+                setGroupname={setGroupname}
+                group={group} 
+                editMode={true} // This tells the modal to show "Update"
+                onSubmit={handleUpdateGroup} 
+            />
         </Container>
     );
 }

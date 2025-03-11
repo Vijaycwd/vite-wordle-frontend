@@ -36,20 +36,34 @@ function GroupStats() {
   }, [id, userId]);
 
   useEffect(() => {
-    axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-selected-games.php?user_id=${userId}`)
-      .then(response => {
-        let userGames = response.data.selected_games;
+    const fetchSelectedGames = async () => {
+        try {
+          const res = await axios.get("https://coralwebdesigns.com/college/wordgamle/groups/get-selected-games.php", {
+              params: { user_id: userId, group_id: id }
+          });
+            let userGames = res.data.selected_games;
 
-        // Convert comma-separated string to an array
-        if (typeof userGames === 'string') {
-          userGames = userGames.split(',').map(game => game.trim());
+            if (typeof userGames === "string") {
+                userGames = userGames.split(",").map(game => game.trim()); // Convert string to array
+            }
+
+            if (Array.isArray(userGames)) {
+                setSelectedGames(userGames);
+            } else {
+                console.error("Invalid data format for selected games:", userGames);
+                setSelectedGames([]); // Ensure state remains an array
+            }
+        } catch (error) {
+            console.error("Error fetching selected games:", error);
+            setSelectedGames([]);
         }
+    };
 
-        console.log("Selected Games:", userGames); // Debugging
-        setSelectedGames(userGames || []);
-      })
-      .catch(error => console.error("Error fetching selected games:", error));
-  }, [userId]);
+    if (userId) {
+        fetchSelectedGames();
+    }
+}, [userId]);
+
 
   // List of available games
   const games = [
@@ -62,7 +76,7 @@ function GroupStats() {
     <Container>
       <Row className="justify-content-center">
         <Col md={6} className="text-center mt-4">
-        <h2 className='text-capitalize pb-2'>{group?.name || ""}</h2>
+          <h2 className='text-capitalize pb-2'>{group?.name || ""}</h2>
           <h3 className='pb-4'>Group Stats</h3>
           <Row>
           {selectedGames.map((game, index) => (

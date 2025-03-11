@@ -131,7 +131,7 @@ function Groups() {
                 </Row>
 
                 {/* Group Creation Modal */}
-                <GroupModal
+                {/* <GroupModal
                     showForm={showCreateForm}
                     handleFormClose={handleCreateFormClose}
                     onSubmit={onSubmitCreateGroup}
@@ -140,6 +140,17 @@ function Groups() {
                     selectedGames={selectedGames}
                     setSelectedGames={setSelectedGames}
                     loginUsername={loginUsername}
+                /> */}
+                <GroupModal 
+                    showForm={showCreateForm} 
+                    handleFormClose={handleCreateFormClose} 
+                    groupname={groupname} 
+                    setGroupname={setGroupname} 
+                    selectedGames={selectedGames} 
+                    setSelectedGames={setSelectedGames} 
+                    loginUsername={loginUsername} 
+                    editMode={false} // This tells the modal to show "Create"
+                    onSubmit={onSubmitCreateGroup} 
                 />
             </Container>
         </>

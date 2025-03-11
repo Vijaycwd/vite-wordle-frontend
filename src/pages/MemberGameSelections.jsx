@@ -1,33 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Form, Button } from 'react-bootstrap';
-import Axios from 'axios';
-import { useParams } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useState, useEffect } from "react";
+import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import Axios from "axios";
+import { useParams } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function MemberGameSelections() {
     const { id: groupId } = useParams(); // Get group ID from URL
     const [selectedGames, setSelectedGames] = useState([]);
-    const [groupMembers, setGroupMembers] = useState([]); // Store group members and their selected games
-
-    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
+    const [Games, setGames] = useState([]); // Store selected games from backend
+    const USER_AUTH_DATA = JSON.parse(localStorage.getItem("auth"));
     const userId = USER_AUTH_DATA?.id;
 
-    // Fetch user’s selected games
     useEffect(() => {
         const fetchSelectedGames = async () => {
+            if (!groupId || !userId) return;
             try {
-                const res = await Axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-members.php?groupId=${groupId}`);
+                const res = await Axios.get("https://coralwebdesigns.com/college/wordgamle/groups/get-selected-games.php", {
+                    params: { user_id: userId, group_id: groupId }
+                });
+    
                 if (res.data.status === "success") {
-                    setSelectedGames(res.data.selectedGames || []);
+                    let fetchedGames = res.data.selected_games;
+    
+                    if (typeof fetchedGames === "string") {
+                        fetchedGames = fetchedGames.split(",").map(game => game.trim()); // Convert string to array
+                    }
+    
+                    if (Array.isArray(fetchedGames)) {
+                        setGames(fetchedGames);
+                        setSelectedGames(fetchedGames); // Update checkboxes
+                    } else {
+                        console.error("Invalid data format for selected games:", fetchedGames);
+                    }
+                } else {
+                    toast.error("Scoring method not found.");
                 }
             } catch (err) {
-                console.error("Error fetching selected games:", err);
+                toast.error("Failed to load group info.");
             }
         };
-
-        if (userId && groupId) fetchSelectedGames();
-    }, [userId, groupId]);
+    
+        fetchSelectedGames();
+    }, [groupId, userId]);
+    
 
     const handleGameSelection = (game) => {
         setSelectedGames((prevGames) =>
@@ -42,30 +58,14 @@ function MemberGameSelections() {
             toast.error("Invalid user or group.");
             return;
         }
-    
-        // Fetch latest selected games before making the request
-        try {
-            const res = await Axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-members.php?groupId=${groupId}`);
-            if (res.data.status === "success") {
-                const existingGames = res.data.selectedGames || [];
-    
-                // Check if selectedGames is different before sending
-                if (JSON.stringify(existingGames.sort()) === JSON.stringify(selectedGames.sort())) {
-                    toast.info("No changes detected.");
-                    return;
-                }
-            }
-        } catch (err) {
-            console.error("Error fetching current game selections:", err);
-        }
-    
+
         try {
             const res = await Axios.post("https://coralwebdesigns.com/college/wordgamle/groups/update-games.php", {
                 userId,
                 groupId,
                 selectedGames
             });
-    
+
             if (res.data.status === "success") {
                 toast.success("Game preferences updated!");
             } else {
@@ -75,7 +75,10 @@ function MemberGameSelections() {
             toast.error("Error updating game preferences.");
         }
     };
-    
+
+    console.log("Fetched Games:", Games);
+    console.log("Selected Games:", selectedGames);
+
     return (
         <Container>
             <ToastContainer />
@@ -94,7 +97,7 @@ function MemberGameSelections() {
                                         onChange={() => handleGameSelection(game)}
                                     />
                                     <label className="form-check-label" htmlFor={`game-${game}`}>
-                                         {game} 
+                                        {game}
                                     </label>
                                 </div>
                             ))}

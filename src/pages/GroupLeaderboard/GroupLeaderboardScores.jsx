@@ -119,7 +119,7 @@ function GroupLeaderboardScores() {
                                             const progressValue =
                                                 totalScore > 0
                                                     ? data.gamename === "connections"
-                                                        ? (1 - data.gamlescore / totalScore) * 100
+                                                        ? (data.gamlescore / totalScore) * 100
                                                         : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
                                                     : 0;
 
@@ -172,7 +172,7 @@ function GroupLeaderboardScores() {
                                     const progressValue =
                                         totalScore > 0
                                             ? data.gamename === "connections"
-                                                ? (1 - data.gamlescore / totalScore) * 100
+                                                ? (data.gamlescore / totalScore) * 100
                                                 : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
                                             : 0;
 
@@ -263,7 +263,7 @@ function GroupLeaderboardScores() {
                                                 <Row className="align-items-center">
                                                     <Col xs={9}>
                                                         <ProgressBar 
-                                                            now={(1 - data.gamlescore / data.totalScore) * 100} 
+                                                            now={(data.gamlescore / data.totalScore) * 100} 
                                                             className={`${data.gamenames}-progressbar`} 
                                                             variant="success"
                                                             style={{ height: '8px' }}

@@ -11,6 +11,14 @@ body{
   background-color: #00BF63 !important;
   border-color: #00BF63!important;
 }
+.btn-warning{
+  background-color: #ffc107 !important;
+  border-color: #ffc107!important;
+}
+.btn-danger{
+  background-color: #dc3545 !important;
+  border-color: #dc3545!important;
+}
 .wordle-btn{
   background-color: #a0c35a!important;
   border-color: #a0c35a!important;
