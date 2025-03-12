@@ -1,4 +1,4 @@
-import React, { useState, forwardRef } from 'react';
+import React, { useEffect, useState, forwardRef } from 'react';
 import { useParams } from "react-router-dom";
 import axios from 'axios';
 import { Button, Alert, Row, Col, ProgressBar } from 'react-bootstrap';
@@ -12,6 +12,35 @@ function GroupScoreByDate() {
     const [dataFetched, setDataFetched] = useState(false);
     const [startDate, setStartDate] = useState(new Date());
     const [dataFetchedError, setFetchedError] = useState(false);
+    const [scoringmethod, setScoringMethod] = useState("");
+    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
+    const userId = USER_AUTH_DATA?.id;
+
+    useEffect(() => {
+        const fetchScoringMethod = async () => {
+            try {
+                const res = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-scoring-method.php`, {
+                    params: { user_id: userId, group_id: id }
+                });
+
+                console.log("Fetched Scoring Method:", res.data.scoring_method);
+
+                if (res.data.status === "success") {
+                    setScoringMethod(res.data.scoring_method || ""); // Default to empty string
+                } else {
+                    toast.error("Scoring Method not found.");
+                }
+            } catch (err) {
+                toast.error("Failed to load group info.");
+            }
+        };
+
+        if (id && userId) {  
+            fetchScoringMethod();
+        }
+    }, [id, userId]); 
+
+
 
     // Function to format date for backend
     const formatDateForBackend = (date) => moment(date).format('YYYY-MM-DD');
@@ -115,21 +144,29 @@ const allLeaderboardArray = Object.values(aggregatedAllScores).map(user => ({
                 <Col md={5} className="text-center">
                 {dataFetched ? (
                     allLeaderboardArray.length > 0 ? (
+                        <>
+                            <h4 className="py-3 text-center">Cumulative Leaderboard</h4>
+                            {allLeaderboardArray.length > 0 ? (
                                 <>
-                                <h4 className="py-3">Cumulative Leaderboard</h4>
-                                {allLeaderboardArray.length > 0 ? (
-                                    <>
-                                        {allLeaderboardArray
-                                            .slice()
-                                            .sort((a, b) => a.gamlescore - b.gamlescore) // Sort by highest score
-                                            .map((data, index) => (
+                                    {allLeaderboardArray
+                                        .slice()
+                                        .sort((a, b) => a.gamlescore - b.gamlescore) // Sorting by lowest score first
+                                        .map((data, index, arr) => {
+                                            // Determine isWinner based on scoring method
+                                            let isWinner = false;
+                                            if (scoringmethod === "Golf") {
+                                                isWinner = data.gamlescore === Math.min(...arr.map(item => item.gamlescore));
+                                            } else {
+                                                isWinner = data.gamlescore === Math.max(...arr.map(item => item.gamlescore));
+                                            }
+
+                                            return (
                                                 <Row 
                                                     key={index} 
-                                                    className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
+                                                    className={`justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm`}
                                                 >
                                                     {/* Rank and Avatar */}
                                                     <Col xs={3} className="d-flex align-items-center gap-2">
-                                                        
                                                         <img 
                                                             src={data.avatar ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}` : "https://via.placeholder.com/50"} 
                                                             alt="Avatar" 
@@ -137,41 +174,52 @@ const allLeaderboardArray = Object.values(aggregatedAllScores).map(user => ({
                                                             style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
                                                         />
                                                     </Col>
-        
+
                                                     {/* Username */}
                                                     <Col xs={4} className="text-start fw-semibold">
                                                         {data.username}
                                                     </Col>
-        
+
                                                     {/* Score & Progress */}
                                                     <Col xs={5}>
                                                         <Row className="align-items-center">
-                                                            <Col xs={9}>
+                                                            <Col xs={8}>
                                                                 <ProgressBar 
-                                                                    now={(1 - data.gamlescore / data.totalScore) * 100} 
+                                                                    now={(data.gamlescore / data.totalScore) * 100} 
                                                                     className={`${data.gamenames}-progressbar`} 
                                                                     variant="success"
                                                                     style={{ height: '8px' }}
                                                                 />
                                                             </Col>
-                                                            <Col xs={3} className="text-center fw-bold">
-                                                                {data.gamlescore}
+                                                            <Col xs={4} className="text-center fw-bold">
+                                                                {scoringmethod === "Golf" ? (
+                                                                        <> {data.gamlescore} {isWinner && "🏆"} </>
+                                                                    ) : scoringmethod === "World Cup" ? (
+                                                                        <> {isWinner ? 3 : 0} {isWinner && "🏆"} </>
+                                                                    ) : scoringmethod === "Pesce" ? (
+                                                                        <> {isWinner ? 1 : 0} {isWinner && "🏆"} </>
+                                                                    ) : (
+                                                                        <> {data.gamlescore} {isWinner && "🏆"} </>
+                                                                    )}
                                                             </Col>
                                                         </Row>
                                                     </Col>
                                                 </Row>
-                                            ))}
-                                    </>
-                                ) : (
-                                    <p className="text-center">No cumulative scores available.</p>
-                                )}
-                            </>
+                                            );
+                                        })}
+                                </>
+                            ) : (
+                                <p className="text-center">No cumulative scores available.</p>
+                            )}
+                        </>
                     ) : (
-                        <Alert key='danger' variant='danger' className='p-1 text-center'>
+                        <Alert key="danger" variant="danger" className="p-1 text-center">
                             No cumulative scores available for the selected date.
                         </Alert>
                     )
                 ) : null}
+
+
                 </Col>
             </Row>
         </>

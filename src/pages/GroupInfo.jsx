@@ -77,16 +77,44 @@ function GroupInfo() {
         }
     };
 
-    const handleUpdateGroup = async () => {
-        
+    const handleUpdateGroup = async (event) => {
+        event.preventDefault();
+        try {
+            const res = await Axios.post(`https://coralwebdesigns.com/college/wordgamle/groups/update-group.php`, { 
+                group_id: id,
+                captainid,
+                groupname
+            });
+    
+            if (res.data.status === "success") {
+                toast.success("Group updated successfully.");
+                setShowModal(false);
+    
+                // Update group name in state without reloading
+                setGroup((prevGroup) => ({
+                    ...prevGroup,
+                    name: groupname
+                }));
+            } else {
+                toast.error("Failed to update group.");
+            }
+        } catch (err) {
+            toast.error("Error updating group.");
+        }
     };
+    
+    
 
     
 
-    const handleShowModal = () => setShowModal(true);
+    const handleShowModal = () => {
+        setGroupname(group?.name || ""); // Ensure existing name is set before opening modal
+        setShowModal(true);
+    };
+
     const handleCloseModal = (updated) => {
         setShowModal(false);
-        if (updated) fetchGroupInfo();
+        // if (updated) fetchGroupInfo();
     };
 
     if (!group) return null;
@@ -138,12 +166,13 @@ function GroupInfo() {
             <GroupModal 
                 showForm={showModal} 
                 handleFormClose={handleCloseModal} 
-                groupname={group?.name || ''} 
-                setGroupname={setGroupname}
+                groupname={groupname}  // Ensure this is a state variable
+                setGroupname={setGroupname} // Pass setter function
                 group={group} 
-                editMode={true} // This tells the modal to show "Update"
+                editMode={true} 
                 onSubmit={handleUpdateGroup} 
             />
+
         </Container>
     );
 }

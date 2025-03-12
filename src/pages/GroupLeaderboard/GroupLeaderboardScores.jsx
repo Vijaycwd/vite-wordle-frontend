@@ -5,16 +5,46 @@ import { Row, Col, ProgressBar } from "react-bootstrap";
 
 function GroupLeaderboardScores() {
     const { id, groupName, game } = useParams();
+
     const [todayLeaderboard, setTodayLeaderboard] = useState([]);
     const [allLeaderboard, setAllLeaderboard] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [scoringmethod, setScoringMethod] = useState("");
+    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
+    const userId = USER_AUTH_DATA?.id;
 
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const localDate = new Date();
     const offsetMinutes = localDate.getTimezoneOffset();
     const adjustedDate = new Date(localDate.getTime() - offsetMinutes * 60 * 1000);
     const todayDate = adjustedDate.toISOString().slice(0, 10); // Format: YYYY-MM-DD
+
+
+    useEffect(() => {
+        const fetchScoringMethod = async () => {
+            try {
+                const res = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-scoring-method.php`, {
+                    params: { user_id: userId, group_id: id }
+                });
+
+                console.log("Fetched Scoring Method:", res.data.scoring_method);
+
+                if (res.data.status === "success") {
+                    setScoringMethod(res.data.scoring_method || ""); // Default to empty string
+                } else {
+                    toast.error("Scoring Method not found.");
+                }
+            } catch (err) {
+                toast.error("Failed to load group info.");
+            }
+        };
+
+        if (id && userId) {  
+            fetchScoringMethod();
+        }
+    }, [id, userId]); 
+    
 
     useEffect(() => {
         const fetchGroupStats = async () => {
@@ -49,15 +79,15 @@ function GroupLeaderboardScores() {
     // Function to get the max possible score for a game
     const getTotalScore = (gameName) => {
         const cleanedName = gameName ? gameName.trim().toLowerCase() : "";
-        return cleanedName === "wordle" ? 7 :
+        return cleanedName === "wordle" ? 6 :
                cleanedName === "connections" ? 4 :
-               cleanedName === "phrazle" ? 7 :
+               cleanedName === "phrazle" ? 6 :
                1; // Default to 1 if unknown
     };
 
    // Aggregate all scores and calculate total possible scores
     const aggregatedAllScores = allLeaderboard.reduce((acc, data) => {
-        if (Number(data.gamlescore) === 7) return acc; // Exclude rows where gamlescore is 7
+        if (Number(data.gamlescore) === 6) return acc; // Exclude rows where gamlescore is 7
 
         if (!acc[data.username]) {
             acc[data.username] = { 
@@ -88,14 +118,15 @@ function GroupLeaderboardScores() {
         gamenames: [...user.gamenames].join(", ") 
     }));
 
-    console.log("Today Leaderboard Data:", todayLeaderboard);
+    console.log("todayLeaderboard:", todayLeaderboard);
 
     return (
         <div>
             {loading && <p>Loading scores...</p>}
             {error && <p className="text-danger">{error}</p>}
             <h4 className="py-3 text-center">Today's Leaderboard</h4>
-
+            <h6 className="py-3">Scoring Method: {scoringmethod}</h6>
+            
             {!loading && !error && (
                 <Row className="justify-content-center leaderboard">
                     <Col md={4}>
@@ -163,59 +194,126 @@ function GroupLeaderboardScores() {
                             })}
 
                             {/* Render non-Phrazle games */}
-                            {todayLeaderboard
-                                .filter((data) => data.gamename !== "phrazle")
-                                .slice()
-                                .sort((a, b) => a.gamlescore - b.gamlescore)
-                                .map((data, index) => {
-                                    const totalScore = getTotalScore(data.gamename);
-                                    const progressValue =
-                                        totalScore > 0
-                                            ? data.gamename === "connections"
-                                                ? (data.gamlescore / totalScore) * 100
-                                                : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
-                                            : 0;
+                            {!loading && !error && todayLeaderboard.length > 0 && (() => {
+                                // Filter out "phrazle" and find the lowest score
+                                const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename !== "phrazle");
+                                if (filteredLeaderboard.length === 0) return null;
 
-                                    return (
-                                        <Row 
-                                            key={index} 
-                                            className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
-                                        >
-                                            {/* Rank + Avatar */}
-                                            <Col xs={3} className="d-flex align-items-center gap-2">
-                                                
-                                                <img 
-                                                    src={data.avatar ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}` : "https://via.placeholder.com/50"} 
-                                                    alt="Avatar" 
-                                                    className="rounded-circle border" 
-                                                    style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
-                                                />
-                                            </Col>
+                                const minScore = Math.min(...filteredLeaderboard.map(data => Number(data.gamlescore)));
 
-                                            {/* Username */}
-                                            <Col xs={4} className="text-start fw-semibold">
-                                                {data.username}
-                                            </Col>
+                                // Find all winners with the lowest score
+                                const winners = filteredLeaderboard.filter(data => Number(data.gamlescore) === minScore);
 
-                                            {/* Score & Progress */}
-                                            <Col xs={5}>
-                                                <Row className="align-items-center">
-                                                    <Col xs={9}>
-                                                        <ProgressBar 
-                                                            now={progressValue} 
-                                                            className={`${data.gamename}-progressbar`} 
-                                                            variant="info"
-                                                            style={{ height: '8px' }}
-                                                        />
-                                                    </Col>
-                                                    <Col xs={3} className="text-center fw-bold">
-                                                        {data.gamlescore}
-                                                    </Col>
-                                                </Row>
-                                            </Col>
-                                        </Row>
-                                    );
-                                })}
+                                return (
+                                    <>
+                                        {/* Winner Announcement */}
+                                        {/* {winners.length > 0 && (
+                                            <h4 className="text-center text-success py-3">
+                                                🏆 WinnerWinner: {winners.map(w => w.username).join(", ")} 🏆
+                                            </h4>
+                                        )} */}
+
+                                        {/* Main Leaderboard */}
+                                        {filteredLeaderboard
+                                            .slice()
+                                            .sort((a, b) => a.gamlescore - b.gamlescore)
+                                            .map((data, index) => {
+                                                const totalScore = getTotalScore(data.gamename);
+                                                const progressValue =
+                                                    totalScore > 0
+                                                        ? data.gamename === "connections"
+                                                            ? (data.gamlescore / totalScore) * 100
+                                                            : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
+                                                        : 0;
+
+                                                const isWinner = Number(data.gamlescore) === minScore; // Check if this score is the lowest
+
+                                                return (
+                                                    <Row 
+                                                        key={index} 
+                                                        className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
+                                                    >
+                                                        {/* Rank + Avatar */}
+                                                        <Col xs={3} className="d-flex align-items-center gap-2">
+                                                            <img 
+                                                                src={data.avatar ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}` : "https://via.placeholder.com/50"} 
+                                                                alt="Avatar" 
+                                                                className="rounded-circle border" 
+                                                                style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
+                                                            />
+                                                        </Col>
+
+                                                        {/* Username */}
+                                                        <Col xs={4} className="text-start fw-semibold">
+                                                            {data.username}
+                                                        </Col>
+
+                                                        {/* Score & Progress */}
+                                                        <Col xs={5}>
+                                                            <Row className="align-items-center">
+                                                                <Col xs={7}>
+                                                                    {/* <ProgressBar 
+                                                                        now={progressValue} 
+                                                                        className={`${data.gamename}-progressbar`} 
+                                                                        variant="info"
+                                                                        style={{ height: '8px' }}
+                                                                    /> */}
+
+                                                                    {scoringmethod === "Golf" ? (
+                                                                        <> 
+                                                                            <ProgressBar 
+                                                                            className={`${data.gamename}-progressbar`} 
+                                                                            variant="success" 
+                                                                            now={data.gamlescore} 
+                                                                            max={totalScore} 
+                                                                            style={{ height: '8px' }}
+                                                                        />
+                                                                        </>
+                                                                    ) : scoringmethod === "World Cup" ? (
+                                                                        <> 
+                                                                            <ProgressBar 
+                                                                            className={`${data.gamename}-progressbar`} 
+                                                                            variant="success" 
+                                                                            now={isWinner ? 3 : 0} 
+                                                                            max={totalScore} 
+                                                                            style={{ height: '8px' }}
+                                                                            />
+                                                                         </>
+                                                                    ) : scoringmethod === "Pesce" ? (
+                                                                        <> 
+                                                                            <ProgressBar 
+                                                                            className={`${data.gamename}-progressbar`} 
+                                                                            variant="success" 
+                                                                            now={isWinner ? 1 : 0} 
+                                                                            max={totalScore} 
+                                                                            style={{ height: '8px' }}
+                                                                            />
+                                                                        </>
+                                                                    ) : (
+                                                                        <> {data.gamlescore} </>
+                                                                    )}
+                                                                </Col>
+                                                                <Col xs={5} className="text-center d-flex fw-bold">
+                                                                    {scoringmethod === "Golf" ? (
+                                                                        <> {data.gamlescore} {isWinner && "🏆"} </>
+                                                                    ) : scoringmethod === "World Cup" ? (
+                                                                        <> {isWinner ? 3 : 0} {isWinner && "🏆"} </>
+                                                                    ) : scoringmethod === "Pesce" ? (
+                                                                        <> {isWinner ? 1 : 0} {isWinner && "🏆"} </>
+                                                                    ) : (
+                                                                        <> {data.gamlescore} {isWinner && "🏆"} </>
+                                                                    )}
+                                                                </Col>
+                                                            </Row>
+                                                        </Col>
+                                                    </Row>
+                                                );
+                                            })}
+                                    </>
+                                );
+                            })()}
+
+
 
                         </>
                     ) : (

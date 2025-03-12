@@ -1,41 +1,34 @@
-import React, { useState } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import React from "react";
+import { Modal, Button, Form } from "react-bootstrap";
 
-const GroupModal = ({ showForm, handleFormClose, onSubmit, groupname, setGroupname, selectedGames, editMode, setSelectedGames }) => {
-  
-  const handleCheckboxChange = (event) => {
-    const { value, checked } = event.target;
-    if (checked) {
-      setSelectedGames([...selectedGames, value]);
-    } else {
-      setSelectedGames(selectedGames.filter((game) => game !== value));
-    }
-  };
-
+const GroupModal = ({ showForm, handleFormClose, onSubmit, groupname, setGroupname, editMode }) => {
   return (
-    <Modal show={showForm} onHide={handleFormClose}>
+    <Modal show={showForm} onHide={handleFormClose} backdrop="static" keyboard={false}>
       <Modal.Header closeButton>
-          <Modal.Title>{editMode ? "Update Group" : "Create Group"}</Modal.Title>
+        <Modal.Title>{editMode ? "Update Group" : "Create Group"}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-          <Form onSubmit={onSubmit}>
-              <Form.Group>
-                  <Form.Label>Group Name</Form.Label>
-                  <Form.Control 
-                      type="text" 
-                      value={groupname} 
-                      onChange={(e) => setGroupname(e.target.value)} 
-                  />
-              </Form.Group>
-              <Modal.Footer>
-                  <Button variant="secondary" onClick={handleFormClose}>Close</Button>
-                  <Button variant="primary" type="submit">
-                      {editMode ? "Update" : "Create"}
-                  </Button>
-              </Modal.Footer>
-          </Form>
+        <Form onSubmit={onSubmit}>
+          <Form.Group>
+            <Form.Label>Group Name</Form.Label>
+            <Form.Control
+              type="text"
+              value={groupname}
+              onChange={(e) => setGroupname(e.target.value)}
+              autoFocus
+            />
+          </Form.Group>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleFormClose}>
+              Close
+            </Button>
+            <Button variant="primary" type="submit">
+              {editMode ? "Update" : "Create"}
+            </Button>
+          </Modal.Footer>
+        </Form>
       </Modal.Body>
-  </Modal>
+    </Modal>
   );
 };
 
