@@ -201,15 +201,18 @@ function GroupLeaderboardScores() {
 
                                 const minScore = Math.min(...filteredLeaderboard.map(data => Number(data.gamlescore)));
 
-                                // Find all winners with the lowest score
+                                // Find all players with the lowest score
                                 const winners = filteredLeaderboard.filter(data => Number(data.gamlescore) === minScore);
+
+                                // Select only one winner (based on first occurrence)
+                                const singleWinner = winners.length > 0 ? winners[0] : null;
 
                                 return (
                                     <>
                                         {/* Winner Announcement */}
-                                        {/* {winners.length > 0 && (
+                                        {/* {singleWinner && (
                                             <h4 className="text-center text-success py-3">
-                                                🏆 WinnerWinner: {winners.map(w => w.username).join(", ")} 🏆
+                                                🏆 Winner: {singleWinner.username} 🏆
                                             </h4>
                                         )} */}
 
@@ -226,7 +229,7 @@ function GroupLeaderboardScores() {
                                                             : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
                                                         : 0;
 
-                                                const isWinner = Number(data.gamlescore) === minScore; // Check if this score is the lowest
+                                                const isWinner = singleWinner && data.username === singleWinner.username;
 
                                                 return (
                                                     <Row 
@@ -252,41 +255,34 @@ function GroupLeaderboardScores() {
                                                         <Col xs={5}>
                                                             <Row className="align-items-center">
                                                                 <Col xs={7}>
-                                                                    {/* <ProgressBar 
-                                                                        now={progressValue} 
-                                                                        className={`${data.gamename}-progressbar`} 
-                                                                        variant="info"
-                                                                        style={{ height: '8px' }}
-                                                                    /> */}
-
                                                                     {scoringmethod === "Golf" ? (
                                                                         <> 
                                                                             <ProgressBar 
-                                                                            className={`${data.gamename}-progressbar`} 
-                                                                            variant="success" 
-                                                                            now={data.gamlescore} 
-                                                                            max={totalScore} 
-                                                                            style={{ height: '8px' }}
-                                                                        />
+                                                                                className={`${data.gamename}-progressbar`} 
+                                                                                variant="success" 
+                                                                                now={data.gamlescore} 
+                                                                                max={totalScore} 
+                                                                                style={{ height: '8px' }}
+                                                                            />
                                                                         </>
                                                                     ) : scoringmethod === "World Cup" ? (
                                                                         <> 
                                                                             <ProgressBar 
-                                                                            className={`${data.gamename}-progressbar`} 
-                                                                            variant="success" 
-                                                                            now={isWinner ? 3 : 0} 
-                                                                            max={totalScore} 
-                                                                            style={{ height: '8px' }}
+                                                                                className={`${data.gamename}-progressbar`} 
+                                                                                variant="success" 
+                                                                                now={isWinner ? 3 : 0} 
+                                                                                max={totalScore} 
+                                                                                style={{ height: '8px' }}
                                                                             />
-                                                                         </>
+                                                                        </>
                                                                     ) : scoringmethod === "Pesce" ? (
                                                                         <> 
                                                                             <ProgressBar 
-                                                                            className={`${data.gamename}-progressbar`} 
-                                                                            variant="success" 
-                                                                            now={isWinner ? 1 : 0} 
-                                                                            max={totalScore} 
-                                                                            style={{ height: '8px' }}
+                                                                                className={`${data.gamename}-progressbar`} 
+                                                                                variant="success" 
+                                                                                now={isWinner ? 1 : 0} 
+                                                                                max={totalScore} 
+                                                                                style={{ height: '8px' }}
                                                                             />
                                                                         </>
                                                                     ) : (
@@ -312,6 +308,7 @@ function GroupLeaderboardScores() {
                                     </>
                                 );
                             })()}
+
 
 
 
