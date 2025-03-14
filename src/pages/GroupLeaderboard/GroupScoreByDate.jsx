@@ -153,57 +153,99 @@ const handleCloseModal = () => {
                             return timePeriod === "AM" ? gameTime < 12 : gameTime >= 12;
                         });
 
+                        if (filteredPhrazle.length === 0) return null; // Skip rendering if no data for this time period
+
+                        const minScore = Math.min(...filteredPhrazle.map((data) => Number(data.gamlescore)));
+                        const winners = filteredPhrazle.filter(data => Number(data.gamlescore) === minScore);
+
                         return (
-                            filteredPhrazle.length > 0 && (
-                                <div key={timePeriod}>
-                                    <h5 className="text-center">{`Phrazle ${timePeriod}`}</h5>
-                                    {filteredPhrazle.map((data, index) => {
-                                    const totalScore = getTotalScore(data.gamename);
-                                    const progressValue =
-                                        totalScore > 0
-                                            ? data.gamename === "connections"
-                                                ? (data.gamlescore / totalScore) * 100
-                                                : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
-                                            : 0;
+                            <div key={timePeriod}>
+                                <h5 className="text-center">{`Phrazle ${timePeriod}`}</h5>
 
-                                    return (
-                                        <Row 
-                                            key={index} 
-                                            className="justify-content-between align-items-center py-2 px-3 mb-2 bg-light rounded shadow-sm"
-                                        >
-                                            {/* Avatar + Username */}
-                                            <Col xs={5} className="d-flex align-items-center gap-2">
-                                                <img 
-                                                    src={data.avatar ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}` : "https://via.placeholder.com/50"} 
-                                                    alt="Avatar" 
-                                                    className="rounded-circle border" 
-                                                    style={{ width: '40px', height: '40px', objectFit: 'cover' }} 
-                                                />
-                                                <span className="fw-semibold">{data.username}</span>
-                                            </Col>
+                                {filteredPhrazle
+                                    .slice()
+                                    .sort((a, b) => a.gamlescore - b.gamlescore)
+                                    .map((data, index) => {
+                                        const totalScore = getTotalScore(data.gamename);
+                                        
+                                        const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
+                                        const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
 
-                                            {/* Progress Bar */}
-                                            <Col xs={5}>
-                                                <ProgressBar 
-                                                    now={progressValue} 
-                                                    className={`${data.gamename}-progressbar`} 
-                                                    variant="success"
-                                                    style={{ height: '8px' }}
-                                                />
-                                            </Col>
+                                        // Assign points based on scoring method
+                                        const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
+                                        const pesceScore = isSharedWinner ? 1 : 0; // Pesce: all lowest get 1
+                                        return (
+                                            <Row 
+                                                key={index} 
+                                                className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
+                                            >
+                                                {/* Avatar */}
+                                                <Col xs={3} className="d-flex align-items-center gap-2">
+                                                    <img 
+                                                        src={data.avatar ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}` : "https://via.placeholder.com/50"} 
+                                                        alt="Avatar" 
+                                                        className="rounded-circle border" 
+                                                        style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
+                                                    />
+                                                </Col>
 
-                                            {/* Score */}
-                                            <Col xs={2} className="text-center fw-bold">
-                                                {data.gamlescore}
-                                            </Col>
-                                        </Row>
-                                    );
-                                })}
+                                                {/* Username */}
+                                                <Col xs={4} className="text-start fw-semibold">
+                                                    {data.username}
+                                                </Col>
 
-                                </div>
-                            )
+                                                {/* Score & Progress */}
+                                                <Col xs={5}>
+                                                    <Row className="align-items-center">
+                                                        <Col xs={7}>
+                                                            <ProgressBar 
+                                                                className={`${data.gamename}-progressbar`} 
+                                                                variant="success" 
+                                                                now={
+                                                                    scoringmethod === "Golf"
+                                                                        ? data.gamlescore
+                                                                        : scoringmethod === "World Cup"
+                                                                        ? worldCupScore
+                                                                        : scoringmethod === "Pesce"
+                                                                        ? pesceScore
+                                                                        : data.gamlescore
+                                                                } 
+                                                                max={totalScore} 
+                                                                style={{ height: '8px' }}
+                                                            />
+                                                        </Col>
+                                                        <Col xs={5} className="text-center d-flex fw-bold">
+                                                            {scoringmethod === "Golf" ? (
+                                                                <> 
+                                                                <span onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)} style={{ cursor: "pointer" }}>
+                                                                    {data.gamlescore} {isSingleWinner && "🏆"} 
+                                                                </span>
+                                                                </>
+                                                            ) : scoringmethod === "World Cup" ? (
+                                                                <>
+                                                                <span onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)} style={{ cursor: "pointer" }}>
+                                                                    {worldCupScore} {isSingleWinner && "🏆"} 
+                                                                </span>
+                                                                </>
+                                                            ) : scoringmethod === "Pesce" ? (
+                                                                <> 
+                                                                <span onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)} style={{ cursor: "pointer" }}>
+                                                                    {pesceScore} {isSingleWinner && "🏆"} 
+                                                                </span>
+                                                                </>
+                                                            ) : (
+                                                                <> {data.gamlescore} {isSingleWinner && "🏆"} </>
+                                                            )}
+                                                        </Col>
+                                                    </Row>
+                                                </Col>
+                                            </Row>
+                                        );
+                                    })}
+                            </div>
                         );
                     })}
+                    
 
                     {/* Render non-Phrazle games */}
                     {todayLeaderboard.length > 0 && (() => {
@@ -216,19 +258,8 @@ const handleCloseModal = () => {
                         // Find all players with the lowest score
                         const winners = filteredLeaderboard.filter(data => Number(data.gamlescore) === minScore);
 
-                        // Select only one winner (based on first occurrence)
-                        const singleWinner = winners.length > 0 ? winners[0] : null;
-
                         return (
                             <>
-                                {/* Winner Announcement */}
-                                {/* {singleWinner && (
-                                    <h4 className="text-center text-success py-3">
-                                        🏆 Winner: {singleWinner.username} 🏆
-                                    </h4>
-                                )} */}
-
-                                {/* Main Leaderboard */}
                                 {filteredLeaderboard
                                     .slice()
                                     .sort((a, b) => a.gamlescore - b.gamlescore)
@@ -241,7 +272,13 @@ const handleCloseModal = () => {
                                                     : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
                                                 : 0;
 
-                                        const isWinner = singleWinner && data.username === singleWinner.username;
+                                        // Check if the user is a winner
+                                        const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
+                                        const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
+
+                                        // Assign points based on scoring method
+                                        const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
+                                        const pesceScore = isSharedWinner ? 1 : 0; // Pesce: all lowest get 1
 
                                         return (
                                             <Row 
@@ -267,57 +304,43 @@ const handleCloseModal = () => {
                                                 <Col xs={5}>
                                                     <Row className="align-items-center">
                                                         <Col xs={7}>
-                                                            {scoringmethod === "Golf" ? (
-                                                                <> 
-                                                                    <ProgressBar 
-                                                                        className={`${data.gamename}-progressbar`} 
-                                                                        variant="success" 
-                                                                        now={data.gamlescore} 
-                                                                        max={totalScore} 
-                                                                        style={{ height: '8px' }}
-                                                                    />
-                                                                </>
-                                                            ) : scoringmethod === "World Cup" ? (
-                                                                <> 
-                                                                    <ProgressBar 
-                                                                        className={`${data.gamename}-progressbar`} 
-                                                                        variant="success" 
-                                                                        now={isWinner ? 3 : 0} 
-                                                                        max={totalScore} 
-                                                                        style={{ height: '8px' }}
-                                                                    />
-                                                                </>
-                                                            ) : scoringmethod === "Pesce" ? (
-                                                                <> 
-                                                                    <ProgressBar 
-                                                                        className={`${data.gamename}-progressbar`} 
-                                                                        variant="success" 
-                                                                        now={isWinner ? 1 : 0} 
-                                                                        max={totalScore} 
-                                                                        style={{ height: '8px' }}
-                                                                    />
-                                                                </>
-                                                            ) : (
-                                                                <> {data.gamlescore}</>
-                                                            )}
+                                                            <ProgressBar 
+                                                                className={`${data.gamename}-progressbar`} 
+                                                                variant="success" 
+                                                                now={
+                                                                    scoringmethod === "Golf"
+                                                                        ? data.gamlescore
+                                                                        : scoringmethod === "World Cup"
+                                                                        ? worldCupScore
+                                                                        : scoringmethod === "Pesce"
+                                                                        ? pesceScore
+                                                                        : data.gamlescore
+                                                                } 
+                                                                max={totalScore} 
+                                                                style={{ height: '8px' }}
+                                                            />
                                                         </Col>
                                                         <Col xs={5} className="text-center d-flex fw-bold">
                                                             {scoringmethod === "Golf" ? (
+                                                                <> 
                                                                 <span onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)} style={{ cursor: "pointer" }}>
-                                                                    {data.gamlescore} {isWinner && "🏆"}
+                                                                    {data.gamlescore} {isSingleWinner && "🏆"} 
                                                                 </span>
+                                                                </>
                                                             ) : scoringmethod === "World Cup" ? (
+                                                                <>
                                                                 <span onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)} style={{ cursor: "pointer" }}>
-                                                                    {isWinner ? 3 : 0} {isWinner && "🏆"}
+                                                                    {worldCupScore} {isSingleWinner && "🏆"} 
                                                                 </span>
+                                                                </>
                                                             ) : scoringmethod === "Pesce" ? (
+                                                                <> 
                                                                 <span onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)} style={{ cursor: "pointer" }}>
-                                                                    {isWinner ? 1 : 0} {isWinner && "🏆"}
+                                                                    {pesceScore} {isSingleWinner && "🏆"} 
                                                                 </span>
+                                                                </>
                                                             ) : (
-                                                                <span onClick={() => showDayResult(data.createdat, data.useremail)} style={{ cursor: "pointer" }}>
-                                                                    {data.gamlescore} {isWinner && "🏆"}
-                                                                </span>
+                                                                <> {data.gamlescore} {isSingleWinner && "🏆"} </>
                                                             )}
                                                         </Col>
                                                     </Row>

@@ -10,6 +10,11 @@ function GetGroupScore({ showForm, handleFormClose, dayResults, game }) {
         }
         return rows;
     }
+    function phrazlesplitIntoRows(text) {
+        const cleanedData = text.trim();
+        const rows = cleanedData.split(/\n+/);
+        return rows.map(row => row.replace(/\s+/g, ' ').trim());
+    }
 
     return (
         <Modal show={showForm} onHide={handleFormClose}>
@@ -22,12 +27,13 @@ function GetGroupScore({ showForm, handleFormClose, dayResults, game }) {
                         let cleanedScore = "";
                         let wordleScores = [];
                         let connectionsScore = [];
+                        let phrazleScore = [];
                         let gameScore = ""; // Declare before use
 
                         if (game === "wordle") {
                             cleanedScore = char.wordlescore?.replace(/[🟩🟨⬜⬛]/g, "") || "";
                             const lettersAndNumbersRemoved = char.wordlescore?.replace(/[a-zA-Z0-9,/\\]/g, "") || "";
-                            gameScore = char.gamescore; // Fixed variable name
+                            gameScore = char.gamlescore; // Fixed variable name
                             wordleScores = splitIntoRows(lettersAndNumbersRemoved.replace(/\s+/g, ''), 5);
                         } else if (game === "connections") {
                             cleanedScore = char.connectionsscore.replace(/[🟨🟩🟦🟪]/g, "");
@@ -37,7 +43,11 @@ function GetGroupScore({ showForm, handleFormClose, dayResults, game }) {
                             ; // Fixed variable name
                             console.log(char);
                         } else if (game === "phrazle") {
-                            cleanedScore = char.phrazlescore || "No phrazle data";
+                            const phrazle_score_text = char.phrazlescore.replace(/[🟨🟩🟦🟪⬜]/g, "");
+                            cleanedScore = phrazle_score_text.replace(/#phrazle|https:\/\/solitaired.com\/phrazle/g, '');
+                            const lettersAndNumbersRemoved = char.phrazlescore.replace(/[a-zA-Z0-9,#:./\\]/g, "");
+                            phrazleScore = phrazlesplitIntoRows(lettersAndNumbersRemoved); 
+                            gameScore = char.gamlescore;
                         }
 
                         const createDate = char.createdat;
@@ -64,7 +74,13 @@ function GetGroupScore({ showForm, handleFormClose, dayResults, game }) {
                                         ))}
                                     </pre>    
                                 )}
-                                {game === "phrazle" && <p className="text-center">Phrazle Result: {cleanedScore}</p>}
+                                {game === "phrazle" && (
+                                    <pre className='text-center'>
+                                        {phrazleScore.map((row, rowIndex) => (
+                                            <div key={rowIndex}>{row}</div>
+                                        ))}
+                                    </pre>    
+                                )}
                             </div>
                         );
                     })
