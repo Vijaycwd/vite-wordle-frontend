@@ -85,36 +85,41 @@ function GroupLeaderboardScores() {
                1; // Default to 1 if unknown
     };
 
-    const calculateCumulativeLeaderboard = (allLeaderboard) => {
-        const leaderboardMap = new Map();
-    
-        allLeaderboard.forEach(player => {
-            if (!leaderboardMap.has(player.useremail)) {
-                leaderboardMap.set(player.useremail, { 
-                    ...player, 
-                    totalGamesPlayed: 0, 
-                    totalWinGames: 0, 
-                    maxStreak: 0 
-                });
-            }
-    
-            const existing = leaderboardMap.get(player.useremail);
-            leaderboardMap.set(player.useremail, {
-                ...existing,
-                totalGamesPlayed: existing.totalGamesPlayed + player.totalGamesPlayed,
-                totalWinGames: existing.totalWinGames + player.totalWinGames,
-                maxStreak: Math.max(existing.maxStreak, player.maxStreak),
-            });
-        });
-    
-        return Array.from(leaderboardMap.values());
-    };
-    
-    // Call the function
-    const cumulativeLeaderboard = calculateCumulativeLeaderboard(allLeaderboard);
+   // Aggregate all scores and calculate total possible scores
+    const aggregatedAllScores = allLeaderboard.reduce((acc, data) => {
+        if (Number(data.gamlescore) === 6) return acc; // Exclude rows where gamlescore is 7
 
-    
-    console.log('cumulativeLeaderboard',cumulativeLeaderboard);
+        if (!acc[data.username]) {
+            acc[data.username] = { 
+                username: data.username,
+                avatar: data.avatar,
+                gamlescore: 0,
+                totalGames: 0,
+                totalScore: 0, // Sum of possible scores
+                gamenames: new Set()
+            };
+        }
+
+        // Get the correct score multiplier
+        const gameMultiplier = getTotalScore(data.gamename);
+
+        // Aggregate scores
+        acc[data.username].gamlescore += Number(data.gamlescore);
+        acc[data.username].totalGames += 1;
+        acc[data.username].totalScore += gameMultiplier; // Sum up total possible score
+        acc[data.username].gamenames.add(data.gamename);
+
+        return acc;
+    }, {});
+
+    // Convert object to an array for rendering
+    const allLeaderboardArray = Object.values(aggregatedAllScores).map(user => ({
+        ...user,
+        gamenames: [...user.gamenames].join(", ") 
+    }));
+
+    console.log("todayLeaderboard:", todayLeaderboard);
+
     return (
         <div>
             {loading && <p>Loading scores...</p>}
@@ -143,13 +148,12 @@ function GroupLeaderboardScores() {
                             return (
                                 <div key={timePeriod}>
                                     <h5 className="text-center">{`Phrazle ${timePeriod}`}</h5>
-                                    
+
                                     {filteredPhrazle
                                         .slice()
                                         .sort((a, b) => a.gamlescore - b.gamlescore)
                                         .map((data, index) => {
                                             const totalScore = getTotalScore(data.gamename);
-                                            console.log("data",data);
                                             const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
                                             const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
 
@@ -329,19 +333,19 @@ function GroupLeaderboardScores() {
                 <Row className="justify-content-center leaderboard mt-4">
                     <Col md={6} lg={5}>
                         <h4 className="py-3 text-center">Cumulative Leaderboard</h4>
-                        {cumulativeLeaderboard.length > 0 ? (
+                        {allLeaderboardArray.length > 0 ? (
                             <>
-                                {cumulativeLeaderboard
+                                {allLeaderboardArray
                                     .slice()
-                                    .sort((a, b) => b.totalScore - a.totalScore) // Fix sorting by total cumulative score
+                                    .sort((a, b) => a.gamlescore - b.gamlescore) // Sort by highest score
                                     .map((data, index) => (
-                                        
                                         <Row 
                                             key={index} 
                                             className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
                                         >
                                             {/* Rank and Avatar */}
                                             <Col xs={3} className="d-flex align-items-center gap-2">
+                                                
                                                 <img 
                                                     src={data.avatar ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}` : "https://via.placeholder.com/50"} 
                                                     alt="Avatar" 
@@ -349,27 +353,25 @@ function GroupLeaderboardScores() {
                                                     style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
                                                 />
                                             </Col>
-                
+
                                             {/* Username */}
                                             <Col xs={4} className="text-start fw-semibold">
-                                                {data.username}{console.log(data)}
+                                                {data.username}
                                             </Col>
-                
+
                                             {/* Score & Progress */}
                                             <Col xs={5}>
                                                 <Row className="align-items-center">
                                                     <Col xs={9}>
-                                                    
                                                         <ProgressBar 
-                                                            className={`${data.gamename}-progressbar`} 
-                                                            now={Math.round((data.totalWinGames / data.totalGamesPlayed) * 100)} // Fix progress calculation
+                                                            now={(data.gamlescore / data.totalScore) * 100} 
+                                                            className={`${data.gamenames}-progressbar`} 
                                                             variant="success"
                                                             style={{ height: '8px' }}
                                                         />
-                                                        
                                                     </Col>
                                                     <Col xs={3} className="text-center fw-bold">
-                                                        {data.totalWinGames} {/* Fix total games count */}
+                                                    {data.gamlescore}
                                                     </Col>
                                                 </Row>
                                             </Col>
@@ -381,7 +383,6 @@ function GroupLeaderboardScores() {
                         )}
                     </Col>
                 </Row>
-            
             )}
 
 

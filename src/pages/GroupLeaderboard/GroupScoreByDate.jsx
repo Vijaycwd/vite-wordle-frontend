@@ -124,7 +124,7 @@ const showDayResult = (date, useremail, game) => {
         console.error(`API Error for ${game}:`, error);
     });
 };
-
+console.log('dayResults',dayResults);
 
 const handleCloseModal = () => {
     setShowModal(false);
