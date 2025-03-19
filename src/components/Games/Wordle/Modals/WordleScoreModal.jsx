@@ -6,20 +6,6 @@ const WordleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore
   const [isPasted, setIsPasted] = useState(false);
   const [gameNumber, setGameNumber] = useState(null);
 
-  // Function to calculate today's Wordle game number
-  // const calculateGameNumber = () => {
-  //   const wordleStartDate = new Date('2021-06-20'); // Wordle's start date
-  //   const today = new Date();
-  //   console.log(today);
-  //   // Calculate the difference in milliseconds
-  //   const diffInMs = today - wordleStartDate;
-
-  //   // Convert milliseconds to days (1 day = 24 hours * 60 minutes * 60 seconds * 1000 milliseconds)
-  //   const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-
-  //   // Today's Wordle number is the difference in days + 1 (since the first game is number 1)
-  //   return diffInDays + 1;
-  // };
   const calculateGameNumber = () => {
     // Start Date: June 19, 2021, 12:00 AM (Midnight Local Time)
     const firstGameDate = new Date(2021, 5, 19); // Ensures local midnight

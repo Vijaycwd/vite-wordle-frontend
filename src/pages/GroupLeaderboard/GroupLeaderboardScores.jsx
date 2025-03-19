@@ -7,7 +7,7 @@ function GroupLeaderboardScores() {
     const { id, groupName, game } = useParams();
 
     const [todayLeaderboard, setTodayLeaderboard] = useState([]);
-    const [allLeaderboard, setAllLeaderboard] = useState([]);
+    const [cumulativeScore, setCumulativeScore] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [scoringmethod, setScoringMethod] = useState("");
@@ -53,20 +53,18 @@ function GroupLeaderboardScores() {
             try {
                 setLoading(true);
 
+                console.log("Fetching today's scores with params:", { id, groupName, game, timeZone, today: todayDate });
+
                 // Fetch Today's Scores
                 const todayResponse = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-score.php`, {
                     params: { groupId: id, groupName, game, timeZone, today: todayDate }
                 });
 
-                // Fetch All Scores (without date filter)
-                const allResponse = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-score.php`, {
-                    params: { groupId: id, groupName, game, timeZone }
-                });
+                console.log("Today's Scores Response:", todayResponse.data);
 
                 setTodayLeaderboard(todayResponse.data.data || []);
-                setAllLeaderboard(allResponse.data.data || []);
             } catch (error) {
-                console.error("Error fetching group stats:", error);
+                console.error("Error fetching group stats:", error.response ? error.response.data : error.message);
                 setError("Failed to load scores. Please try again.");
             } finally {
                 setLoading(false);
@@ -74,7 +72,37 @@ function GroupLeaderboardScores() {
         };
 
         fetchGroupStats();
+    }, [id, groupName, game, todayDate]);
+
+    useEffect(() => {
+        const fetchCumulativeScore = async () => {
+            if (!id || !game) return;
+
+            try {
+                setLoading(true);
+
+                console.log("Fetching cumulative scores with params:", { id, groupName, game, timeZone });
+
+                // Fetch Cumulative Scores
+                const cumulativeResponse = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-cumulative-score.php`, {
+                    params: { groupId: id, groupName, game, timeZone }
+                });
+
+                console.log("Cumulative Scores Response:", cumulativeResponse.data);
+
+                setCumulativeScore(cumulativeResponse.data.data || []);
+            } catch (error) {
+                console.error("Error fetching cumulative stats:", error.response ? error.response.data : error.message);
+                setError("Failed to load scores. Please try again.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCumulativeScore();
     }, [id, groupName, game]);
+
+    
 
     // Function to get the max possible score for a game
     const getTotalScore = (gameName) => {
@@ -85,40 +113,7 @@ function GroupLeaderboardScores() {
                1; // Default to 1 if unknown
     };
 
-   // Aggregate all scores and calculate total possible scores
-    const aggregatedAllScores = allLeaderboard.reduce((acc, data) => {
-        if (Number(data.gamlescore) === 6) return acc; // Exclude rows where gamlescore is 7
 
-        if (!acc[data.username]) {
-            acc[data.username] = { 
-                username: data.username,
-                avatar: data.avatar,
-                gamlescore: 0,
-                totalGames: 0,
-                totalScore: 0, // Sum of possible scores
-                gamenames: new Set()
-            };
-        }
-
-        // Get the correct score multiplier
-        const gameMultiplier = getTotalScore(data.gamename);
-
-        // Aggregate scores
-        acc[data.username].gamlescore += Number(data.gamlescore);
-        acc[data.username].totalGames += 1;
-        acc[data.username].totalScore += gameMultiplier; // Sum up total possible score
-        acc[data.username].gamenames.add(data.gamename);
-
-        return acc;
-    }, {});
-
-    // Convert object to an array for rendering
-    const allLeaderboardArray = Object.values(aggregatedAllScores).map(user => ({
-        ...user,
-        gamenames: [...user.gamenames].join(", ") 
-    }));
-
-    console.log("todayLeaderboard:", todayLeaderboard);
 
     return (
         <div>
@@ -313,77 +308,17 @@ function GroupLeaderboardScores() {
                                     </>
                                 );
                             })()}
-
-
-
-
-
                         </>
                     ) : (
                         <p className="text-center">No scores found today.</p>
                     )}
-
                     </Col>
                 </Row>
             )}
 
 
             {/* Cumulative Leaderboard */}
-            {!loading && !error && (
-                <Row className="justify-content-center leaderboard mt-4">
-                    <Col md={6} lg={5}>
-                        <h4 className="py-3 text-center">Cumulative Leaderboard</h4>
-                        {allLeaderboardArray.length > 0 ? (
-                            <>
-                                {allLeaderboardArray
-                                    .slice()
-                                    .sort((a, b) => a.gamlescore - b.gamlescore) // Sort by highest score
-                                    .map((data, index) => (
-                                        <Row 
-                                            key={index} 
-                                            className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
-                                        >
-                                            {/* Rank and Avatar */}
-                                            <Col xs={3} className="d-flex align-items-center gap-2">
-                                                
-                                                <img 
-                                                    src={data.avatar ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}` : "https://via.placeholder.com/50"} 
-                                                    alt="Avatar" 
-                                                    className="rounded-circle border" 
-                                                    style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
-                                                />
-                                            </Col>
-
-                                            {/* Username */}
-                                            <Col xs={4} className="text-start fw-semibold">
-                                                {data.username}
-                                            </Col>
-
-                                            {/* Score & Progress */}
-                                            <Col xs={5}>
-                                                <Row className="align-items-center">
-                                                    <Col xs={9}>
-                                                        <ProgressBar 
-                                                            now={(data.gamlescore / data.totalScore) * 100} 
-                                                            className={`${data.gamenames}-progressbar`} 
-                                                            variant="success"
-                                                            style={{ height: '8px' }}
-                                                        />
-                                                    </Col>
-                                                    <Col xs={3} className="text-center fw-bold">
-                                                    {data.gamlescore}
-                                                    </Col>
-                                                </Row>
-                                            </Col>
-                                        </Row>
-                                    ))}
-                            </>
-                        ) : (
-                            <p className="text-center">No cumulative scores available.</p>
-                        )}
-                    </Col>
-                </Row>
-            )}
+           
 
 
         </div>

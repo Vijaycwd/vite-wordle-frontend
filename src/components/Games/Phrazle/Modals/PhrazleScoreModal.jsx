@@ -6,19 +6,26 @@ const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScor
   const [isPasted, setIsPasted] = useState(false);
   const [gameNumber, setGameNumber] = useState();
 
-  const calculateGameNumber = () => {
-    // Corrected Start Date: January 1, 2024, 12:00 PM Local Time
-    const firstGameDate = new Date(2024, 1, 1, 12, 0, 0); 
+  const isDST = (date = new Date()) => {
+    const janOffset = new Date(date.getFullYear(), 0, 1).getTimezoneOffset();
+    const julOffset = new Date(date.getFullYear(), 6, 1).getTimezoneOffset();
+    return date.getTimezoneOffset() < Math.max(janOffset, julOffset);
+};
 
-    // Get current local time
+const calculateGameNumber = () => {
+    // Start Date: January 1, 2024, 12:00 PM Local Time
+    const firstGameDate = new Date(2024, 0, 1, 12, 0, 0); // Month is 0-based (Jan = 0)
+
     const now = new Date();
-    // Adjust for DST shifts by using timestamps
+
+    // Adjust for DST shifts
+    const dstAdjustment = isDST(now) !== isDST(firstGameDate) ? 1 : 0;
+
+    // Difference in 12-hour periods
     const diffInMs = now.getTime() - firstGameDate.getTime();
+    const diffIn12HourPeriods = Math.floor(diffInMs / (1000 * 60 * 60 * 12)) + dstAdjustment;
 
-    // Convert difference into 12-hour periods
-    const diffIn12HourPeriods = Math.floor(diffInMs / (1000 * 60 * 60 * 12));
-
-    return diffIn12HourPeriods; // Game numbers start from 1
+    return diffIn12HourPeriods;
 };
 
 useEffect(() => {
@@ -35,8 +42,32 @@ useEffect(() => {
     return () => clearInterval(interval);
 }, []);
 
+const getTimeZoneInfo = () => {
+    const date = new Date();
+    return {
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        offsetMinutes: date.getTimezoneOffset(),
+        dstActive: isDST(date),
+    };
+};
 
+console.log(getTimeZoneInfo());
+console.log("Today's Game Number:", calculateGameNumber());
 
+// const isDST = (date = new Date()) => {
+//   const janOffset = new Date(date.getFullYear(), 0, 1).getTimezoneOffset();
+//   const julOffset = new Date(date.getFullYear(), 6, 1).getTimezoneOffset();
+//   return date.getTimezoneOffset() < Math.max(janOffset, julOffset);
+// };
+
+// const getTimeZoneInfo = () => {
+//   const date = new Date();
+//   return {
+//       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+//       offsetMinutes: date.getTimezoneOffset(),
+//       dstActive: isDST(date),
+//   };
+// };
     const handlePaste = (event) => {
         const pastedData = event.clipboardData.getData('Text');
         const phrazleTextExists = pastedData.includes('Phrazle');
