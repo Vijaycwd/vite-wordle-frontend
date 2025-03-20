@@ -173,7 +173,7 @@ const handleCloseModal = () => {
 
                                         // Assign points based on scoring method
                                         const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
-                                        const pesceScore = isSharedWinner ? 1 : 0; // Pesce: all lowest get 1
+                                        const pesceScore = isSingleWinner ? 1 : isSharedWinner ? 1 : 0;
                                         return (
                                             <Row 
                                                 key={index} 
@@ -278,7 +278,8 @@ const handleCloseModal = () => {
 
                                         // Assign points based on scoring method
                                         const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
-                                        const pesceScore = isSharedWinner ? 1 : 0; // Pesce: all lowest get 1
+                                        // const pesceScore = isSharedWinner ? 1 : 0; // Pesce: all lowest get 1
+                                        const pesceScore = isSingleWinner ? 1 : isSharedWinner ? 1 : 0;
 
                                         return (
                                             <Row 
