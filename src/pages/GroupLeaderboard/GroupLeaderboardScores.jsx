@@ -53,8 +53,6 @@ function GroupLeaderboardScores() {
             try {
                 setLoading(true);
 
-                console.log("Fetching today's scores with params:", { id, groupName, game, timeZone, today: todayDate });
-
                 // Fetch Today's Scores
                 const todayResponse = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-score.php`, {
                     params: { groupId: id, groupName, game, timeZone, today: todayDate }
@@ -65,7 +63,6 @@ function GroupLeaderboardScores() {
                 setTodayLeaderboard(todayResponse.data.data || []);
             } catch (error) {
                 console.error("Error fetching group stats:", error.response ? error.response.data : error.message);
-                setError("Failed to load scores. Please try again.");
             } finally {
                 setLoading(false);
             }
@@ -81,8 +78,6 @@ function GroupLeaderboardScores() {
             try {
                 setLoading(true);
 
-                console.log("Fetching cumulative scores with params:", { id, groupName, game, timeZone });
-
                 // Fetch Cumulative Scores
                 const cumulativeResponse = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-cumulative-score.php`, {
                     params: { groupId: id, groupName, game, timeZone }
@@ -93,7 +88,6 @@ function GroupLeaderboardScores() {
                 setCumulativeScore(cumulativeResponse.data.data || []);
             } catch (error) {
                 console.error("Error fetching cumulative stats:", error.response ? error.response.data : error.message);
-                setError("Failed to load scores. Please try again.");
             } finally {
                 setLoading(false);
             }
@@ -119,8 +113,10 @@ function GroupLeaderboardScores() {
         <div>
             {loading && <p>Loading scores...</p>}
             {error && <p className="text-danger">{error}</p>}
-            <h4 className="py-3 text-center">Today's Leaderboard</h4>
+
             <h6 className="py-3">Scoring Method: {scoringmethod}</h6>
+            
+            <h4 className="py-3 text-center">Today's Leaderboard</h4>
             
             {!loading && !error && (
                 <Row className="justify-content-center leaderboard">
@@ -318,8 +314,79 @@ function GroupLeaderboardScores() {
 
 
             {/* Cumulative Leaderboard */}
-           
+            <Row className="justify-content-center leaderboard mt-4">
+                <Col md={6} lg={5}>
+                    <h4 className="py-3 text-center">Cumulative Leaderboard</h4>
+            {cumulativeScore.length > 0 && (() => {
+                // Filter out "phrazle" and find the lowest score
+                // const filteredLeaderboard = cumulativeScore.filter((data) => data.gamename !== "phrazle");
+                // if (filteredLeaderboard.length === 0) return null;
 
+                const minScore = Math.min(...cumulativeScore.map(data => Number(data.gamlescore)));
+
+                // Find all players with the lowest score
+                const winners = cumulativeScore.filter(data => Number(data.gamlescore) === minScore);
+
+                return (
+                    <>
+                        {cumulativeScore
+                            .slice()
+                            .sort((a, b) => a.gamlescore - b.gamlescore)
+                            .map((data, index) => {
+                                const totalScore = getTotalScore(data.gamename);
+                                // Check if the user is a winner
+                                const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
+                                const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
+
+                                // Assign points based on scoring method
+                                const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
+                                const pesceScore = isSharedWinner ? 1 : 0; // Pesce: all lowest get 1
+
+                                return (
+                                    <Row 
+                                        key={index} 
+                                        className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
+                                    >
+                                        {/* Rank + Avatar */}
+                                        <Col xs={3} className="d-flex align-items-center gap-2">
+                                            <img 
+                                                src={data.avatar ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}` : "https://via.placeholder.com/50"} 
+                                                alt="Avatar" 
+                                                className="rounded-circle border" 
+                                                style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
+                                            />
+                                        </Col>
+
+                                        {/* Username */}
+                                        <Col xs={4} className="text-start fw-semibold">
+                                            {data.username}
+                                        </Col>
+
+                                        {/* Score & Progress */}
+                                        <Col xs={5}>
+                                            <Row className="align-items-center">
+                                                <Col xs={9}>
+
+                                                    <ProgressBar 
+                                                        now={Math.round((data.totalWinGames / data.totalGamesPlayed) * 100)} 
+                                                        className={`${data.gamename}-progressbar`} 
+                                                        variant="success"
+                                                        style={{ height: '8px' }}
+                                                    />
+                                                </Col>
+                                                <Col xs={3} className="text-center fw-bold">
+                                                    {data.totalWinGames}
+                                                </Col>
+                                            </Row>
+                                        </Col>
+                                    </Row>
+                                );
+                            })}
+                    </>
+                );
+            })()}
+            </Col>
+            </Row>
 
         </div>
     );

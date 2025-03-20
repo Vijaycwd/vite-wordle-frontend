@@ -14,13 +14,13 @@ const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScor
 
 const calculateGameNumber = () => {
     // Start Date: January 1, 2024, 12:00 PM Local Time
-    const firstGameDate = new Date(2024, 0, 1, 12, 0, 0); // Month is 0-based (Jan = 0)
+    const firstGameDate = new Date(2024, 1, 1, 12, 0, 0); // Month is 0-based (Jan = 0)
 
     const now = new Date();
 
     // Adjust for DST shifts
     const dstAdjustment = isDST(now) !== isDST(firstGameDate) ? 1 : 0;
-
+    
     // Difference in 12-hour periods
     const diffInMs = now.getTime() - firstGameDate.getTime();
     const diffIn12HourPeriods = Math.floor(diffInMs / (1000 * 60 * 60 * 12)) + dstAdjustment;
