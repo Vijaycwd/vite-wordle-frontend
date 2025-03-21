@@ -67,7 +67,24 @@ const handleDeclineInvite = async (inviteId) => {
   }
 };
 
-  console.log('invites',invites);
+const fetchGroupMessages = async () => {
+  try {
+    const response = await axios.get(
+      `https://coralwebdesigns.com/college/wordgamle/groups/get-group-messages.php?user_id=${userId}`
+    );
+    console.log(response.data);
+  } catch (error) {
+    console.error("Error fetching group messages:", error);
+  }
+};
+
+
+useEffect(() => {
+  fetchGroupMessages(); // Initial fetch
+  const interval = setInterval(fetchGroupMessages, 5000); // Fetch every 5s
+
+  return () => clearInterval(interval);
+}, []);
   return (
     <Dropdown show={showDropdown} onToggle={() => setShowDropdown(!showDropdown)}>
       <Dropdown.Toggle variant="light" id="group-invites">
@@ -76,7 +93,7 @@ const handleDeclineInvite = async (inviteId) => {
       </Dropdown.Toggle>
 
       <Dropdown.Menu ref={dropdownRef} align="end">
-        <Dropdown.Header>Group Invitations</Dropdown.Header>
+        <Dropdown.Header>Group Messages</Dropdown.Header>
         {invites.length > 0 ? (
             <>
         

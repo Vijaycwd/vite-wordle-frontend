@@ -1,7 +1,7 @@
 import React from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Button, Form, Spinner  } from "react-bootstrap";
 
-const GroupModal = ({ showForm, handleFormClose, onSubmit, groupname, setGroupname, editMode }) => {
+const GroupModal = ({ showForm, handleFormClose, onSubmit, groupname, setGroupname, editMode, loading }) => {
   return (
     <Modal show={showForm} onHide={handleFormClose} backdrop="static" keyboard={false}>
       <Modal.Header closeButton>
@@ -22,9 +22,16 @@ const GroupModal = ({ showForm, handleFormClose, onSubmit, groupname, setGroupna
             <Button variant="secondary" onClick={handleFormClose}>
               Close
             </Button>
-            <Button variant="primary" type="submit">
-              {editMode ? "Update" : "Create"}
+            <Button variant="primary" type="submit" disabled={loading}>
+              {loading ? (
+                <>
+                  <Spinner animation="border" size="sm" /> Updating...
+                </>
+              ) : (
+                editMode ? "Update" : "Create"
+              )}
             </Button>
+
           </Modal.Footer>
         </Form>
       </Modal.Body>

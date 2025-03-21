@@ -16,6 +16,7 @@ function GroupInfo() {
     const [scoringMethod, setScoringMethod] = useState([]);
     const [showModal, setShowModal] = useState(false);  // Modal state
     const [groupname, setGroupname] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const userId = USER_AUTH_DATA?.id;
@@ -67,7 +68,7 @@ function GroupInfo() {
         try {
             const res = await Axios.post(`https://coralwebdesigns.com/college/wordgamle/groups/delete-group.php`, { group_id: id });
             if (res.data.status === "success") {
-                toast.success("Group deleted successfully.");
+                toast.success(res.data.message);
                 navigate('/groups');
             } else {
                 toast.error("Failed to delete group.");
@@ -79,15 +80,23 @@ function GroupInfo() {
 
     const handleUpdateGroup = async (event) => {
         event.preventDefault();
+        setLoading(true);
+    
+        const localDate = new Date();
+        const offsetMinutes = localDate.getTimezoneOffset();
+        const adjustedDate = new Date(localDate.getTime() - offsetMinutes * 60 * 1000); 
+        const created_at = adjustedDate.toISOString().slice(0, 19); // Correct format for MySQL DATETIME
+    
         try {
             const res = await Axios.post(`https://coralwebdesigns.com/college/wordgamle/groups/update-group.php`, { 
                 group_id: id,
                 captainid,
-                groupname
+                groupname,
+                created_at // Ensure the key matches the backend field
             });
     
             if (res.data.status === "success") {
-                toast.success("Group updated successfully.");
+                toast.success(res.data.message);
                 setShowModal(false);
     
                 // Update group name in state without reloading
@@ -96,15 +105,15 @@ function GroupInfo() {
                     name: groupname
                 }));
             } else {
-                toast.error("Failed to update group.");
+                toast.error(res.data.message);
             }
         } catch (err) {
-            toast.error("Error updating group.");
+            toast.error(res.data.message);
+        } finally {
+            setLoading(false);
         }
     };
     
-    
-
     
 
     const handleShowModal = () => {
@@ -171,6 +180,7 @@ function GroupInfo() {
                 group={group} 
                 editMode={true} 
                 onSubmit={handleUpdateGroup} 
+                loading={loading}
             />
 
         </Container>
