@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Form, Button, Modal } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Modal, Spinner } from 'react-bootstrap';
 import Axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
@@ -11,7 +11,7 @@ function SelectScoringMethod() {
     const [selectedMethod, setSelectedMethod] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [scoringmethod, setScoringMethod] = useState("");
-
+    const [loading, setLoading] = useState(false);
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const userId = USER_AUTH_DATA?.id;
 
@@ -53,6 +53,7 @@ function SelectScoringMethod() {
 
     // Save selected method to backend
     const saveSelectedMethod = async () => {
+        setLoading(true);
         if (!userId || !groupId || !selectedMethod) {
             toast.error("Invalid user, group, or method.");
             return;
@@ -73,6 +74,9 @@ function SelectScoringMethod() {
             }
         } catch (err) {
             toast.error("Error updating scoring method.");
+        }
+        finally {
+            setLoading(false);
         }
     };
 
@@ -99,8 +103,14 @@ function SelectScoringMethod() {
                                 </div>
                             ))}
                         </Form>
-                        <Button className="mt-3" onClick={saveSelectedMethod}>
-                            Save Method
+                        <Button className="mt-3" onClick={saveSelectedMethod} disabled={loading} >
+                            {loading ? (
+                                <>
+                                <Spinner animation="border" size="sm" /> Updating...
+                                </>
+                            ) : (
+                               "Save Method"
+                            )}
                         </Button>
                     </div>
                 </Col>
