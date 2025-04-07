@@ -7,7 +7,6 @@ const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScor
   const [isPasted, setIsPasted] = useState(false);
   const [gameNumber, setGameNumber] = useState();
   
-
   const calculateGameNumber = () => {
     // First game: Jan 1, 2024 at 12 PM local time
     const firstGame = DateTime.local(2024, 2, 1, 12, 0, 0); // 12:00 PM local
@@ -21,7 +20,6 @@ const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScor
   useEffect(() => {
     const updateGameNumber = () => {
       setGameNumber(calculateGameNumber());
-  
       const now = DateTime.local();
       let next;
   
@@ -40,8 +38,6 @@ const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScor
     updateGameNumber();
   }, []);
   
-  
-
     const handlePaste = (event) => {
         const pastedData = event.clipboardData.getData('Text');
         const phrazleTextExists = pastedData.includes('Phrazle');
