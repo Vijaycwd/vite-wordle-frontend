@@ -8,27 +8,22 @@ const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScor
   const [gameNumber, setGameNumber] = useState();
   
   const calculateGameNumber = () => {
-    // First game: Jan 1, 2024 at 12 PM local time
-    const firstGame = DateTime.local(2024, 2, 1, 12, 0, 0); // 12:00 PM local
-    const now = DateTime.local();
-    console.log(now);
+    const firstGame = DateTime.utc(2024, 2, 1, 12, 0);
+    const now = DateTime.utc();
     const intervalMs = Duration.fromObject({ hours: 12 }).as('milliseconds');
     const diffInMs = now.toMillis() - firstGame.toMillis();
-  
     return Math.floor(diffInMs / intervalMs);
   };
   useEffect(() => {
     const updateGameNumber = () => {
-      setGameNumber(calculateGameNumber());
+      setGameNumber(calculateGameNumber()); 
       const now = DateTime.local();
+      console.log(now);
       let next;
-  
       if (now.hour < 12) {
-        // Next 12:00 PM today
         next = now.set({ hour: 12, minute: 0, second: 0, millisecond: 0 });
       } else {
-        // Next 12:00 AM tomorrow
-        next = now.plus({ days: 1 }).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+        next = now.plus({ days: 1 }).set({ hour: 12, minute: 0, second: 0, millisecond: 0 });
       }
   
       const timeout = next.toMillis() - now.toMillis();
