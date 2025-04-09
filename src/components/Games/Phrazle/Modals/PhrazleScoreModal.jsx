@@ -11,27 +11,28 @@ const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScor
     const firstGame = DateTime.utc(2024, 2, 1, 12, 0);
     const now = DateTime.utc();
     const intervalMs = Duration.fromObject({ hours: 12 }).as('milliseconds');
-    const diffInMs = now.toMillis() - firstGame.toMillis();
-    return Math.floor(diffInMs / intervalMs);
+    return Math.floor((now.toMillis() - firstGame.toMillis()) / intervalMs);
   };
+  
   useEffect(() => {
     const updateGameNumber = () => {
-      setGameNumber(calculateGameNumber()); 
-      const now = DateTime.local();
-      console.log(now);
-      let next;
-      if (now.hour < 12) {
-        next = now.set({ hour: 12, minute: 0, second: 0, millisecond: 0 });
-      } else {
-        next = now.plus({ days: 1 }).set({ hour: 12, minute: 0, second: 0, millisecond: 0 });
-      }
+      const gameNumber = calculateGameNumber();
+      console.log("Game #", gameNumber);
+      setGameNumber(gameNumber);
   
-      const timeout = next.toMillis() - now.toMillis();
+      const now = DateTime.utc(); // 🔁 Use UTC here
+      console.log(now);
+      const nextReset = now.hour < 12
+        ? now.set({ hour: 12, minute: 0, second: 0, millisecond: 0 })
+        : now.plus({ hours: 12 }).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+  
+      const timeout = nextReset.toMillis() - now.toMillis();
       setTimeout(updateGameNumber, timeout);
     };
   
     updateGameNumber();
   }, []);
+  
   
     const handlePaste = (event) => {
         const pastedData = event.clipboardData.getData('Text');
