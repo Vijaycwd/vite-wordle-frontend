@@ -8,32 +8,39 @@ const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScor
   const [gameNumber, setGameNumber] = useState();
   
   const calculateGameNumber = () => {
-    const firstGame = DateTime.utc(2024, 2, 1, 12, 0);
-    const now = DateTime.utc();
-    const intervalMs = Duration.fromObject({ hours: 12 }).as('milliseconds');
-    return Math.floor((now.toMillis() - firstGame.toMillis()) / intervalMs);
+    // Start date: Feb 2, 2024 at 12:00 AM LOCAL TIME
+    const firstGameDate = new Date(2024, 1, 2, 0, 0, 0); // Month is 0-indexed
+  
+    const now = new Date();
+    console.log(now);
+    const diffMs = now.getTime() - firstGameDate.getTime();
+    const halfDayMs = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+  
+    return Math.floor(diffMs / halfDayMs) + 1;
   };
   
   useEffect(() => {
-    const updateGameNumber = () => {
-      const gameNumber = calculateGameNumber();
-      console.log("Game #", gameNumber);
-      setGameNumber(gameNumber);
+    const updateGame = () => {
+      setGameNumber(calculateGameNumber());
   
-      const now = DateTime.utc(); // 🔁 Use UTC here
-      console.log(now);
-      const nextReset = now.hour < 12
-        ? now.set({ hour: 12, minute: 0, second: 0, millisecond: 0 })
-        : now.plus({ hours: 12 }).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+      const now = new Date();
+      const nextReset = new Date(now);
   
-      const timeout = nextReset.toMillis() - now.toMillis();
-      setTimeout(updateGameNumber, timeout);
+      if (now.getHours() < 12) {
+        nextReset.setHours(12, 0, 0, 0); // Today at 12 PM
+      } else {
+        nextReset.setDate(now.getDate() + 1);
+        nextReset.setHours(0, 0, 0, 0); // Tomorrow at 12 AM
+      }
+  
+      const timeout = nextReset.getTime() - now.getTime();
+      setTimeout(updateGame, timeout);
     };
   
-    updateGameNumber();
+    updateGame();
   }, []);
   
-  
+    console.log(gameNumber);
     const handlePaste = (event) => {
         const pastedData = event.clipboardData.getData('Text');
         const phrazleTextExists = pastedData.includes('Phrazle');
