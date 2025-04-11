@@ -5,41 +5,46 @@ import { DateTime, Duration } from 'luxon';
 
 const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore, loginUsername }) => {
   const [isPasted, setIsPasted] = useState(false);
-  const [gameNumber, setGameNumber] = useState();
+  const [gameNumber, setPhrazleGameNumber] = useState();
   
-  const calculateGameNumber = () => {
-    // Start date: Feb 2, 2024 at 12:00 AM LOCAL TIME
-    const firstGameDate = new Date(2024, 1, 2, 0, 0, 0); // Month is 0-indexed
-  
+  const calculatePhrazleGameNumber = () => {
+    // First Phrasle game date (Feb 2, 2024)
+    const firstGameDate = new Date(2024, 1, 2); // local time, midnight
+    firstGameDate.setHours(0, 0, 0, 0);
+
     const now = new Date();
     console.log(now);
-    const diffMs = now.getTime() - firstGameDate.getTime();
-    const halfDayMs = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+    now.setHours(0, 0, 0, 0); // today at local midnight
+
+    // Timezone offset correction
+    const offsetDiffInMs = 60 * (now.getTimezoneOffset() - firstGameDate.getTimezoneOffset()) * 1000;
+
+    // Milliseconds difference between today and firstGameDate, adjusted
+    const timeDiff = now.getTime() - firstGameDate.getTime() - offsetDiffInMs;
+
+    // Number of full days passed
+    const daysPassed = Math.ceil(timeDiff / (24 * 60 * 60 * 1000));
+
+    // Return game number: 2 games per day, based on AM/PM
+    const currentHour = new Date().getHours();
+    return 2 * daysPassed + (currentHour < 12 ? 1 : 2);
+};
+
   
-    return Math.floor(diffMs / halfDayMs) + 1;
+useEffect(() => {
+  const updateGameNumber = () => {
+      setPhrazleGameNumber(calculatePhrazleGameNumber());
   };
-  
-  useEffect(() => {
-    const updateGame = () => {
-      setGameNumber(calculateGameNumber());
-  
-      const now = new Date();
-      const nextReset = new Date(now);
-  
-      if (now.getHours() < 12) {
-        nextReset.setHours(12, 0, 0, 0); // Today at 12 PM
-      } else {
-        nextReset.setDate(now.getDate() + 1);
-        nextReset.setHours(0, 0, 0, 0); // Tomorrow at 12 AM
-      }
-  
-      const timeout = nextReset.getTime() - now.getTime();
-      setTimeout(updateGame, timeout);
-    };
-  
-    updateGame();
-  }, []);
-  
+
+  updateGameNumber(); // initial run
+
+  // Optional: auto update every hour or minute
+  const interval = setInterval(() => {
+      updateGameNumber();
+  }, 60 * 1000); // every minute
+
+  return () => clearInterval(interval);
+}, []);
     console.log(gameNumber);
     const handlePaste = (event) => {
         const pastedData = event.clipboardData.getData('Text');
