@@ -112,7 +112,7 @@ const showDayResult = (date, useremail, game) => {
             scoreData = response.data?.wordlescore || [];
         } else if (game === "connections") {
             scoreData = response.data?.connectionsscore || [];
-            console.log('connections',scoreData);
+            
         } else if (game === "phrazle") {
             scoreData = response.data?.phrazlescore || [];
         }
@@ -124,7 +124,7 @@ const showDayResult = (date, useremail, game) => {
         console.error(`API Error for ${game}:`, error);
     });
 };
-console.log('dayResults',dayResults);
+
 
 const handleCloseModal = () => {
     setShowModal(false);

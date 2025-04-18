@@ -104,6 +104,7 @@ function ConnectionStat() {
                                     ) : (
                                         <div className='text-center my-4'>
                                             <p>You have not played today.</p>
+                                            <p><strong>If you not play your Gamle Score : 4</strong></p>
                                             <ConnectionPlayService updateStatsChart={getStatChart}/>
                                         </div>
                                     )

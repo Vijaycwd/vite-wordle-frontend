@@ -131,6 +131,7 @@ function PhrazleStat() {
                                                                  {label === "AM" && currentHour < 12 && (
                                                                     <>
                                                                          <p>You have not played today.</p>
+                                                                         <p>If you not play Gamle Score : 7</p>
                                                                          <PhrazlePlayService updateStatsChart={getStatChart}/>
                                                                     </>
                                                                 )}
@@ -156,6 +157,7 @@ function PhrazleStat() {
                                     ) : (
                                         <div className='text-center my-4'>
                                             <p>You have not played today.</p>
+                                            <p>If you not play your Gamle Score : 7</p>
                                             <PhrazlePlayService updateStatsChart={getStatChart}/>
                                         </div>
                                     )

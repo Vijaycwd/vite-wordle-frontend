@@ -28,7 +28,7 @@ function GroupLeaderboardScores() {
                     params: { user_id: userId, group_id: id }
                 });
 
-                console.log("Fetched Scoring Method:", res.data.scoring_method);
+                // console.log("Fetched Scoring Method:", res.data.scoring_method);
 
                 if (res.data.status === "success") {
                     setScoringMethod(res.data.scoring_method || ""); // Default to empty string
@@ -58,7 +58,7 @@ function GroupLeaderboardScores() {
                     params: { groupId: id, groupName, game, timeZone, today: todayDate }
                 });
 
-                console.log("Today's Scores Response:", todayResponse.data);
+                // console.log("Today's Scores Response:", todayResponse.data);
 
                 setTodayLeaderboard(todayResponse.data.data || []);
             } catch (error) {
@@ -82,9 +82,6 @@ function GroupLeaderboardScores() {
                 const cumulativeResponse = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-cumulative-score.php`, {
                     params: { groupId: id, groupName, game, timeZone }
                 });
-
-                console.log("Cumulative Scores Response:", cumulativeResponse.data);
-
                 setCumulativeScore(cumulativeResponse.data.data || []);
             } catch (error) {
                 console.error("Error fetching cumulative stats:", error.response ? error.response.data : error.message);
@@ -107,7 +104,7 @@ function GroupLeaderboardScores() {
                1; // Default to 1 if unknown
     };
 
-
+    console.log('cumulativeScore',cumulativeScore);
 
     return (
         <div>
@@ -317,76 +314,85 @@ function GroupLeaderboardScores() {
             <Row className="justify-content-center leaderboard mt-4">
                 <Col md={6} lg={5}>
                     <h4 className="py-3 text-center">Cumulative Leaderboard</h4>
-            {cumulativeScore.length > 0 && (() => {
-                // Filter out "phrazle" and find the lowest score
-                // const filteredLeaderboard = cumulativeScore.filter((data) => data.gamename !== "phrazle");
-                // if (filteredLeaderboard.length === 0) return null;
 
-                const minScore = Math.min(...cumulativeScore.map(data => Number(data.gamlescore)));
+                    {cumulativeScore &&
+                    cumulativeScore.length > 0 &&
+                    cumulativeScore.some(data => data.gamlescore !== undefined && !isNaN(Number(data.gamlescore)) && data.username) ? (
+                        <>
+                            {(() => {
+                                const minScore = Math.min(...cumulativeScore.map(data => Number(data.gamlescore)));
+                                const winners = cumulativeScore.filter(data => Number(data.gamlescore) === minScore);
 
-                // Find all players with the lowest score
-                const winners = cumulativeScore.filter(data => Number(data.gamlescore) === minScore);
+                                return cumulativeScore
+                                    .slice()
+                                    .sort((a, b) => a.gamlescore - b.gamlescore)
+                                    .map((data, index) => {
+                                        const totalScore = getTotalScore(data.gamename);
+                                        const incrementScore = (index + 1) * 6;
 
-                return (
-                    <>
-                        {cumulativeScore
-                            .slice()
-                            .sort((a, b) => a.gamlescore - b.gamlescore)
-                            .map((data, index) => {
-                                const totalScore = getTotalScore(data.gamename);
-                                // Check if the user is a winner
-                                const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
-                                const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
+                                        const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
+                                        const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
 
-                                // Assign points based on scoring method
-                                const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
-                                const pesceScore = isSharedWinner ? 1 : 0; // Pesce: all lowest get 1
+                                        const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
+                                        const pesceScore = isSharedWinner ? 1 : 0;
 
-                                return (
-                                    <Row 
-                                        key={index} 
-                                        className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
-                                    >
-                                        {/* Rank + Avatar */}
-                                        <Col xs={3} className="d-flex align-items-center gap-2">
-                                            <img 
-                                                src={data.avatar ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}` : "https://via.placeholder.com/50"} 
-                                                alt="Avatar" 
-                                                className="rounded-circle border" 
-                                                style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
-                                            />
-                                        </Col>
-
-                                        {/* Username */}
-                                        <Col xs={4} className="text-start fw-semibold">
-                                            {data.username}
-                                        </Col>
-
-                                        {/* Score & Progress */}
-                                        <Col xs={5}>
-                                            <Row className="align-items-center">
-                                                <Col xs={9}>
-
-                                                    <ProgressBar 
-                                                        now={Math.round((data.totalWinGames / data.totalGamesPlayed) * 100)} 
-                                                        className={`${data.gamename}-progressbar`} 
-                                                        variant="success"
-                                                        style={{ height: '8px' }}
+                                        return (
+                                            <Row
+                                                key={index}
+                                                className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
+                                            >
+                                                <Col xs={3} className="d-flex align-items-center gap-2">
+                                                    <img
+                                                        src={
+                                                            data.avatar
+                                                                ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}`
+                                                                : "https://via.placeholder.com/50"
+                                                        }
+                                                        alt="Avatar"
+                                                        className="rounded-circle border"
+                                                        style={{ width: "35px", height: "35px", objectFit: "cover" }}
                                                     />
                                                 </Col>
-                                                <Col xs={3} className="text-center fw-bold">
-                                                    {data.totalWinGames}
+
+                                                <Col xs={4} className="text-start fw-semibold">
+                                                    {data.username}
+                                                </Col>
+
+                                                <Col xs={5}>
+                                                    <Row className="align-items-center">
+                                                        <Col xs={9}>
+                                                            {/* <ProgressBar
+                                                                className={`${data.gamename}-progressbar`}
+                                                                variant="success"
+                                                                now={data.gamlescore}
+                                                                max={totalScore + incrementScore}
+                                                                style={{ height: "8px" }}
+                                                            /> */}
+                                                            <ProgressBar
+                                                                className={`${data.gamename}-progressbar`}
+                                                                variant="success"
+                                                                min={(data.gamename === "connections" ? 0 : 1)}
+                                                                now={(totalScore + incrementScore) - data.gamlescore}
+                                                                max={totalScore + incrementScore}
+                                                                style={{ height: "8px" }}
+                                                            />
+                                                        </Col>
+                                                        <Col xs={3} className="text-center fw-bold">
+                                                            {data.gamlescore}
+                                                        </Col>
+                                                    </Row>
                                                 </Col>
                                             </Row>
-                                        </Col>
-                                    </Row>
-                                );
-                            })}
-                    </>
-                );
-            })()}
-            </Col>
+                                        );
+                                    });
+                            })()}
+                        </>
+                    ) : (
+                        <div className="text-center text-muted py-4">No data found</div>
+                    )}
+                </Col>
             </Row>
+
 
         </div>
     );

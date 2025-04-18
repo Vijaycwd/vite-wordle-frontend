@@ -115,6 +115,7 @@ function Wordlestatechart() {
                                     ) : (
                                         <div className='text-center my-4'>
                                             <p>You have not played today.</p>
+                                            <p><strong>If you not play your Gamle Score : 7</strong></p>
                                             <WordlePlayService
                                                 updateStatsChart={getStatChart}
                                                
