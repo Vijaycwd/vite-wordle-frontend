@@ -69,7 +69,7 @@ function ConnectionStat() {
                     <Row>
                         <Col md={4} className="m-auto p-3">
                             <div>
-                                <h4 className="my-2 font-weight-bold fs-4 text-center">Today's Result</h4>
+                                <h4 className="my-2 font-weight-bold fs-4 text-center pb-3">Today's Result</h4>
                                 {loading ? (
                                     <div className='text-center my-4'>
                                         <p>Loading...</p>
@@ -91,20 +91,24 @@ function ConnectionStat() {
                                                 
                                                 <div key={index}>
                                                     <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
-                                                    <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
-                                                    <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
-                                                    <pre className='text-center'>
-                                                        {connectionsScore.map((row, rowIndex) => (
-                                                            <div key={rowIndex}>{row}</div>
-                                                        ))}
-                                                    </pre>
+                                                    {Number(gamleScore) !== 4 && (
+                                                        <>
+                                                        <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
+                                                        <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
+                                                        <pre className='text-center'>
+                                                            {connectionsScore.map((row, rowIndex) => (
+                                                                <div key={rowIndex}>{row}</div>
+                                                            ))}
+                                                        </pre>
+                                                        </>
+                                                    )}
+                                                    
                                                 </div>
                                             );
                                         })
                                     ) : (
                                         <div className='text-center my-4'>
                                             <p>You have not played today.</p>
-                                            <p><strong>If you not play your Gamle Score : 4</strong></p>
                                             <ConnectionPlayService updateStatsChart={getStatChart}/>
                                         </div>
                                     )

@@ -94,13 +94,18 @@ function WordleScoreByDate() {
                         return (
                             <li key={item.createdat}>
                                 <div className='text-center'>
-                                    <h6 className='text-center'>Gamle Score: {gamleScore}</h6>
-                                    <p className='m-0'><strong>{item.username}</strong></p>
-                                    <p className='m-1'>{cleanedScore}</p>
-                                    <p className='my-1'>{formatCreatedAt(item.createdat)}</p>
-                                    {wordleScores.map((row, rowIndex) => (
-                                        <p className='m-1' key={rowIndex}>{row}</p>
-                                    ))}
+                                    <h6 className='text-center pt-3'>Gamle Score: {gamleScore}</h6>
+                                    {Number(gamleScore) !== 7 && (
+                                    <>
+                                        <p className='m-0'><strong>{item.username}</strong></p>
+                                        <p className='m-1'>{cleanedScore}</p>
+                                        <p className='my-1'>{formatCreatedAt(item.createdat)}</p>
+                                        {wordleScores.map((row, rowIndex) => (
+                                            <p className='m-1' key={rowIndex}>{row}</p>
+                                        ))}
+                                    </>
+                                    )}
+                                    
                                 </div>
                             </li>
                         );

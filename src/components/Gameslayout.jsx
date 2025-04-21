@@ -37,6 +37,58 @@ function Gameslayout() {
     }
   }, [userEmail]);
 
+  useEffect(() => {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    // Check if time is between 11:59:00 PM and 11:59:59 PM
+    if (hours === 23  && minutes > 50) {
+      const today = now.toISOString().split('T')[0];
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      console.log('loginUserEmail',loginUserEmail);
+      Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/get-score.php?useremail=${loginUserEmail}&today=${today}`)
+        .then(res => {
+          console.log(res);
+          const hasPlayedToday = res.data.wordlescore;
+          console.log('hasPlayedToday',hasPlayedToday);
+          if (!hasPlayedToday) {
+            console.log("User has not played today — auto-submitting score 7");
+            const missedGameObj = {
+              username: loginUsername,
+              useremail: loginUserEmail,
+              wordlescore: 'X/6',
+              guessDistribution: guessDistribution,
+              isWin: false,
+              gamleScore: 7,
+              createdAt: now.toISOString(),
+              currentUserTime: now.toISOString(),
+              timeZone
+            };
+  
+            Axios.post('https://coralwebdesigns.com/college/wordgamle/games/wordle/create-score.php', missedGameObj)
+              .then(() => {
+                Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/create-statistics.php/${loginUserEmail}`)
+                  .then(statsRes => {
+                    const TotalGameObject = {
+                      username: loginUsername,
+                      useremail: loginUserEmail,
+                      totalWinGames: statsRes.data.totalWinGames || 0,
+                      lastgameisWin: false,
+                      currentStreak: 0,
+                      guessDistribution: guessDistribution,
+                      updatedDate: now.toISOString()
+                    };
+  
+                    updateTotalGamesPlayed(TotalGameObject);
+                  });
+              });
+          }
+        });
+    }
+  }, [userEmail]);
+  
+  
+
   const handleFormClose = () => {
       setShowForm(false);
       setScore('');

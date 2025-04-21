@@ -22,6 +22,19 @@ function GroupLeaderboardScores() {
 
 
     useEffect(() => {
+        // Call the auto-submit PHP script
+        axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/auto-submit-wordle-scores.php`, {
+            params: { timeZone}
+        })
+          .then(res => {
+            console.log('Phrazle auto-submit success:', res.data);
+          })
+          .catch(err => {
+            console.error('Phrazle auto-submit failed:', err);
+          });
+      }, []);
+      
+    useEffect(() => {
         const fetchScoringMethod = async () => {
             try {
                 const res = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-scoring-method.php`, {
@@ -98,9 +111,9 @@ function GroupLeaderboardScores() {
     // Function to get the max possible score for a game
     const getTotalScore = (gameName) => {
         const cleanedName = gameName ? gameName.trim().toLowerCase() : "";
-        return cleanedName === "wordle" ? 6 :
+        return cleanedName === "wordle" ? 7 :
                cleanedName === "connections" ? 4 :
-               cleanedName === "phrazle" ? 6 :
+               cleanedName === "phrazle" ? 7 :
                1; // Default to 1 if unknown
     };
 
@@ -328,7 +341,7 @@ function GroupLeaderboardScores() {
                                     .sort((a, b) => a.gamlescore - b.gamlescore)
                                     .map((data, index) => {
                                         const totalScore = getTotalScore(data.gamename);
-                                        const incrementScore = (index + 1) * 6;
+                                        const incrementScore = (index + 1) * totalScore;
 
                                         const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
                                         const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
@@ -346,7 +359,7 @@ function GroupLeaderboardScores() {
                                                         src={
                                                             data.avatar
                                                                 ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}`
-                                                                : "https://via.placeholder.com/50"
+                                                                : "https://coralwebdesigns.com/college/wordgamle/user/uploads/default_avatar.png"
                                                         }
                                                         alt="Avatar"
                                                         className="rounded-circle border"
@@ -368,6 +381,7 @@ function GroupLeaderboardScores() {
                                                                 max={totalScore + incrementScore}
                                                                 style={{ height: "8px" }}
                                                             /> */}
+                                                            {}
                                                             <ProgressBar
                                                                 className={`${data.gamename}-progressbar`}
                                                                 variant="success"

@@ -79,7 +79,7 @@ function Wordlestatechart() {
                     <Row>
                         <Col md={4} className="m-auto p-3">
                             <div>
-                                <h4 className="my-2 font-weight-bold fs-4 text-center">Today's Result</h4>
+                                <h4 className="my-2 font-weight-bold fs-4 text-center pb-3">Today's Result</h4>
                                 
                                 {loading ? (
                                     <div className='text-center my-4'>
@@ -90,7 +90,6 @@ function Wordlestatechart() {
                                         statschart.map((char, index) => {
                                             const cleanedScore = char.wordlescore.replace(/[🟩🟨⬜⬛]/g, "");
                                             const scoreParts = cleanedScore.split(" ");
-                                            const attempts = scoreParts[2].split("/")[0];
                                             const lettersAndNumbersRemoved = char.wordlescore.replace(/[a-zA-Z0-9,/\\]/g, "");
                                             const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
                                             const wordleScores = splitIntoRows(removespace, 5);
@@ -101,21 +100,25 @@ function Wordlestatechart() {
                                             const gamleScore = char.gamlescore;
                                             return (
                                                 <div key={index}>
-                                                    <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
-                                                    <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
-                                                    <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
-                                                    <pre className='text-center'>
+                                                  <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
+                                                  {Number(gamleScore) !== 7 && (
+                                                    <>
+                                                      <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
+                                                      <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
+                                                      <pre className='text-center'>
                                                         {wordleScores.map((row, rowIndex) => (
-                                                            <div key={rowIndex}>{row}</div>
+                                                          <div key={rowIndex}>{row}</div>
                                                         ))}
-                                                    </pre>
+                                                      </pre>
+                                                    </>
+                                                  )}
                                                 </div>
                                             );
+                                              
                                         })
                                     ) : (
                                         <div className='text-center my-4'>
                                             <p>You have not played today.</p>
-                                            <p><strong>If you not play your Gamle Score : 7</strong></p>
                                             <WordlePlayService
                                                 updateStatsChart={getStatChart}
                                                
