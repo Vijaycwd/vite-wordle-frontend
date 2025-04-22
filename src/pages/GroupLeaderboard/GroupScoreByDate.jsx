@@ -101,7 +101,7 @@ const showDayResult = (date, useremail, game) => {
     
     setSelectedGame(game);
     const timeZone = moment.tz.guess();
-    axios.get(`https://coralwebdesigns.com/college/wordgamle/games/${game}/get-score.php`, {
+    axios.get(`https://coralwebdesigns.com/college/wordgamle/games/${game}/get-group-score.php`, {
         params: { useremail, timeZone, today: date }
     })
     .then((response) => {
@@ -257,10 +257,11 @@ const handleCloseModal = () => {
 
                         // Find all players with the lowest score
                         const winners = filteredLeaderboard.filter(data => Number(data.gamlescore) === minScore);
-
+                        const missedUsers = filteredLeaderboard.filter(d => d.missed).map(d => d.username);
                         return (
                             <>
                                 {filteredLeaderboard
+                                    .filter(data => !missedUsers.includes(data.username))
                                     .slice()
                                     .sort((a, b) => a.gamlescore - b.gamlescore)
                                     .map((data, index) => {
