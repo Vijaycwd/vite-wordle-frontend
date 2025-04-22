@@ -186,3 +186,6 @@ span.notification-count.badge.bg-danger {
   font-size: 15px;
   padding: 5px;
 }
+.missed-user-section{
+  background-color: #f8f8f8;
+}
