@@ -23,18 +23,18 @@ function GroupLeaderboardScores() {
     yesterdayDate.setDate(yesterdayDate.getDate() - 1);
     const formattedYesterday = yesterdayDate.toISOString().slice(0, 10); // YYYY-MM-DD
 
-    useEffect(() => {
-        // Call the auto-submit PHP script
-        axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/auto-submit-wordle-scores.php`, {
-            params: { timeZone, formattedYesterday}
-        })
-          .then(res => {
-            //console.log('Phrazle auto-submit success:', res.data);
-          })
-          .catch(err => {
-            //console.error('Phrazle auto-submit failed:', err);
-          });
-      }, []);
+    // useEffect(() => {
+    //     // Call the auto-submit PHP script
+    //     axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/auto-submit-wordle-scores.php`, {
+    //         params: { timeZone, formattedYesterday}
+    //     })
+    //       .then(res => {
+    //         //console.log('Phrazle auto-submit success:', res.data);
+    //       })
+    //       .catch(err => {
+    //         //console.error('Phrazle auto-submit failed:', err);
+    //       });
+    //   }, []);
       
     useEffect(() => {
         const fetchScoringMethod = async () => {
@@ -423,7 +423,7 @@ function GroupLeaderboardScores() {
                                                             />
                                                         </Col>
                                                         <Col xs={3} className="text-center fw-bold">
-                                                            {data.gamlescore}({data.totalGamesPlayed})
+                                                            {data.gamlescore}
                                                         </Col>
                                                     </Row>
                                                 </Col>

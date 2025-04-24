@@ -11,6 +11,7 @@ function GroupScoreByDate() {
     const { id, groupName, game } = useParams();
     const [todayLeaderboard, setTodayLeaderboard] = useState([]);
     const [cumulativeScore, setCumulativeScore] = useState([]);
+    const [missedScore, setMissedScore] = useState([]);
     const [dataFetched, setDataFetched] = useState(false);
     const [startDate, setStartDate] = useState(new Date());
     const [dataFetchedError, setFetchedError] = useState(false);
@@ -56,6 +57,7 @@ function GroupScoreByDate() {
         fetchDataByDate(formatDateForBackend(date));  // Fetch data on date change
     };
 
+
     // Fetch data by selected date
     const fetchDataByDate = async (date) => {
         try {
@@ -63,7 +65,10 @@ function GroupScoreByDate() {
     
             const params = { groupId: id, groupName, game, today: date, timeZone };
     
-            const [todayResponse, cumulativeResponse] = await Promise.all([
+            const [missedScoreResponse, todayResponse, cumulativeResponse] = await Promise.all([
+                axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/auto-submit-wordle-scores.php`, {
+                    params: { timeZone, formattedYesterday: date}
+                }),
                 axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-score.php`, { params }),
                 axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-cumulative-score-bydate.php`, { params }),
             ]);
@@ -82,6 +87,8 @@ function GroupScoreByDate() {
     
             // Process cumulativeResponse
             setCumulativeScore(cumulativeResponse.data.data || []);
+            setMissedScore(missedScoreResponse.data.data || []);
+
             setDataFetched(true);
             
         } catch (error) {
@@ -92,7 +99,7 @@ function GroupScoreByDate() {
         }
     };
     
-    console.log('cumulativeResponse',cumulativeScore);
+    console.log('missedScore',missedScore);
     // Custom input button for DatePicker
     const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
         <Button className={`example-custom-input px-5 btn btn-primary ${game}-btn`} onClick={onClick} ref={ref}>
@@ -418,7 +425,7 @@ const handleCloseModal = () => {
                                                                                 />
                                                                             </Col>
                                                                             <Col xs={3} className="text-center fw-bold">
-                                                                                {data.gamlescore}({data.totalGamesPlayed})
+                                                                                {data.gamlescore}
                                                                             </Col>
                                                                         </Row>
                                                                     </Col>
