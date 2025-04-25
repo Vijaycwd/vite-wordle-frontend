@@ -6,6 +6,8 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment-timezone';
 import GetGroupScore from '../../constant/Models/GetGroupScore';
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import dayjs from "dayjs";
 
 function GroupScoreByDate() {
     const { id, groupName, game } = useParams();
@@ -49,15 +51,29 @@ function GroupScoreByDate() {
 
 
     // Function to format date for backend
-    const formatDateForBackend = (date) => moment(date).format('YYYY-MM-DD');
+    //const formatDateForBackend = (date) => moment(date).format('YYYY-MM-DD');
 
     // Handle date selection
-    const handleDateChange = (date) => {
-        setStartDate(date);
-        fetchDataByDate(formatDateForBackend(date));  // Fetch data on date change
+    // const handleDateChange = (date) => {
+    //     setStartDate(date);
+    //     fetchDataByDate(formatDateForBackend(date));  // Fetch data on date change
+    // };
+
+    const formatDateForBackend = (date) => {
+        if (!date || isNaN(date.getTime())) return "";
+        return moment(date).format("YYYY-MM-DD");
     };
 
-
+    const handleDateChange = (date) => {
+        if (!date || isNaN(date.getTime())) return;
+        const formatted = formatDateForBackend(date);
+        setStartDate(date);
+        if (formatted) fetchDataByDate(formatted);
+    };
+    useEffect(() => {
+        const formattedDate = formatDateForBackend(startDate);
+        fetchDataByDate(formattedDate);
+    }, []);
     // Fetch data by selected date
     const fetchDataByDate = async (date) => {
         try {
@@ -66,13 +82,13 @@ function GroupScoreByDate() {
             const params = { groupId: id, groupName, game, today: date, timeZone };
     
             const [missedScoreResponse, todayResponse, cumulativeResponse] = await Promise.all([
-                axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/auto-submit-wordle-scores.php`, {
+                axios.get(`https://coralwebdesigns.com/college/wordgamle/games/${game}/auto-submit-${game}-scores.php`, {
                     params: { timeZone, formattedYesterday: date}
                 }),
                 axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-score.php`, { params }),
                 axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-cumulative-score-bydate.php`, { params }),
             ]);
-    
+            
             // Process todayResponse
             if (
                 todayResponse.data.status === "success" &&
@@ -101,11 +117,42 @@ function GroupScoreByDate() {
     
     console.log('missedScore',missedScore);
     // Custom input button for DatePicker
-    const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
-        <Button className={`example-custom-input px-5 btn btn-primary ${game}-btn`} onClick={onClick} ref={ref}>
-        Go To Date
-    </Button>
-    ));
+    // const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
+    //     <Button className={`example-custom-input px-5 btn btn-primary ${game}-btn`} onClick={onClick} ref={ref}>
+    //     Go To Date
+    // </Button>
+    // ));
+
+    const goToPreviousDay = () => {
+        const prevDate = dayjs(startDate).subtract(1, 'day').toDate();
+        handleDateChange(prevDate);
+    };
+    
+    const goToNextDay = () => {
+        const nextDate = dayjs(startDate).add(1, 'day');
+        const today = dayjs();
+        if (nextDate.isAfter(today, 'day')) return;
+        handleDateChange(nextDate.toDate());
+    };
+
+    const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
+    const parsedDate = dayjs(value, "DD-MM-YYYY");
+
+    return (
+        <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
+            <button onClick={(e) => { e.stopPropagation(); goToPreviousDay(); }} className="bg-dark text-white px-3 py-1 rounded">
+                <FaArrowLeft />
+            </button>
+            <div onClick={onClick} ref={ref}>
+                {parsedDate.format("dddd, MMM D, YYYY")}
+            </div>
+            <button onClick={(e) => { e.stopPropagation(); goToNextDay(); }} className="bg-dark text-white px-3 py-1 rounded">
+                <FaArrowRight />
+            </button>
+        </div>
+    );
+});
+
 // Function to get the max possible score for a game
 const getTotalScore = (gameName) => {
     const cleanedName = gameName ? gameName.trim().toLowerCase() : "";
@@ -151,13 +198,19 @@ const handleCloseModal = () => {
     return (
         <>
             <div className='text-center'>
-                <DatePicker
+                {/* <DatePicker
                     selected={startDate}
                     onChange={handleDateChange}
                     customInput={<ExampleCustomInput />}
                     dateFormat="dd-MM-yyyy"
                     maxDate={new Date()}
-                />
+                /> */}
+                <DatePicker
+                    selected={startDate}
+                    onChange={handleDateChange}
+                    customInput={<ExampleCustomInput />}
+                    maxDate={new Date()}
+                    />
             </div>
             <Row className="justify-content-center leaderboard mt-4">
                 <Col md={5} className="text-center">
@@ -175,12 +228,18 @@ const handleCloseModal = () => {
 
                         const minScore = Math.min(...filteredPhrazle.map((data) => Number(data.gamlescore)));
                         const winners = filteredPhrazle.filter(data => Number(data.gamlescore) === minScore);
-
+                        const missedUsers = filteredPhrazle.filter(d => d.missed).map(d => d.username);
                         return (
                             <div key={timePeriod}>
-                                <h5 className="text-center">{`Phrazle ${timePeriod}`}</h5>
-
-                                {filteredPhrazle
+                                <h4 className="text-center py-3">Day Leaderboard</h4>
+                                
+                                {filteredPhrazle.filter(data => !missedUsers.includes(data.username)).length === 0 ? (
+                                    <Alert variant="info" className="text-center">
+                                        😕 No results found for this leaderboard.
+                                    </Alert>
+                                ) : (
+                                    
+                                filteredPhrazle
                                     .slice()
                                     .sort((a, b) => a.gamlescore - b.gamlescore)
                                     .map((data, index) => {
@@ -258,8 +317,10 @@ const handleCloseModal = () => {
                                                     </Row>
                                                 </Col>
                                             </Row>
-                                        );
-                                    })}
+                                         );
+                                    }) // <-- this closes map
+                                )}
+                                    
                             </div>
                         );
                     })}

@@ -150,82 +150,102 @@ function GroupLeaderboardScores() {
                             if (filteredPhrazle.length === 0) return null; // Skip rendering if no data for this time period
                                 const minScore = Math.min(...filteredPhrazle.map(data => Number(data.gamlescore)));
                                 const winners = filteredPhrazle.filter(data => Number(data.gamlescore) === minScore);
+                                const missedUsers = filteredPhrazle.filter(d => d.missed).map(d => d.username);
+                                
+                                if (missedUsers.length > 0) {
+                                    return (
+                                        <div className="text-center mb-3 missed-user-section py-3 px-2">
+                                            <h4 className="text-center">Today's Leaderboard</h4>
+                                            <p>Leaderboard viewable when all this group members have played.</p>
+                                            <p className="mb-1">Yet to play:</p>
+                                            {missedUsers.map((name, i) => (
+                                                <div key={i} className="fw-bold">{name}</div>
+                                            ))}
+                                        </div>
+                                    );
+                                }
+                                else{
+                                    return (
+                                        <>
+                                        <h4 className="text-center py-3">Today's Leaderboard</h4>
+                                        <div key={timePeriod}>
+                                            <h5 className="text-center">{`Phrazle ${timePeriod}`}</h5>
 
-                            return (
-                                <div key={timePeriod}>
-                                    <h5 className="text-center">{`Phrazle ${timePeriod}`}</h5>
+                                            {filteredPhrazle
+                                                .slice()
+                                                .sort((a, b) => a.gamlescore - b.gamlescore)
+                                                .map((data, index) => {
+                                                    
+                                                    const totalScore = getTotalScore(data.gamename);
+                                                    const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
+                                                    const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
 
-                                    {filteredPhrazle
-                                        .slice()
-                                        .sort((a, b) => a.gamlescore - b.gamlescore)
-                                        .map((data, index) => {
-                                            
-                                            const totalScore = getTotalScore(data.gamename);
-                                            const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
-                                            const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
+                                                    // Assign points based on scoring method
+                                                    const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
+                                                    const pesceScore = isSingleWinner ? 1 : isSharedWinner ? 1 : 0;
 
-                                            // Assign points based on scoring method
-                                            const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
-                                            const pesceScore = isSingleWinner ? 1 : isSharedWinner ? 1 : 0;
-
-                                            return (
-                                                <Row 
-                                                    key={index} 
-                                                    className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
-                                                >
-                                                    {/* Avatar */}
-                                                    <Col xs={3} className="d-flex align-items-center gap-2">
-                                                        <img 
-                                                            src={data.avatar ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}` : "https://via.placeholder.com/50"} 
-                                                            alt="Avatar" 
-                                                            className="rounded-circle border" 
-                                                            style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
-                                                        />
-                                                    </Col>
-
-                                                    {/* Username */}
-                                                    <Col xs={4} className="text-start fw-semibold">
-                                                        {data.username}
-                                                    </Col>
-
-                                                    {/* Score & Progress */}
-                                                    <Col xs={5}>
-                                                        <Row className="align-items-center">
-                                                            <Col xs={7}>
-                                                                <ProgressBar 
-                                                                    className={`${data.gamename}-progressbar`} 
-                                                                    variant="success" 
-                                                                    now={
-                                                                        scoringmethod === "Golf"
-                                                                            ? data.gamlescore
-                                                                            : scoringmethod === "World Cup"
-                                                                            ? worldCupScore
-                                                                            : scoringmethod === "Pesce"
-                                                                            ? pesceScore
-                                                                            : data.gamlescore
-                                                                    } 
-                                                                    max={totalScore} 
-                                                                    style={{ height: '8px' }}
+                                                    return (
+                                                        <Row 
+                                                            key={index} 
+                                                            className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
+                                                        >
+                                                            {/* Avatar */}
+                                                            <Col xs={3} className="d-flex align-items-center gap-2">
+                                                                <img 
+                                                                    src={data.avatar ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}` : "https://via.placeholder.com/50"} 
+                                                                    alt="Avatar" 
+                                                                    className="rounded-circle border" 
+                                                                    style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
                                                                 />
                                                             </Col>
-                                                            <Col xs={5} className="text-center d-flex fw-bold">
-                                                                {scoringmethod === "Golf" ? (
-                                                                    <> {data.gamlescore} {isSingleWinner && "🏆"} </>
-                                                                ) : scoringmethod === "World Cup" ? (
-                                                                    <>  {worldCupScore} {isSingleWinner && "🏆"} </>
-                                                                ) : scoringmethod === "Pesce" ? (
-                                                                    <> {pesceScore} {isSingleWinner && "🏆"} </>
-                                                                ) : (
-                                                                    <> {data.gamlescore} {isSingleWinner && "🏆"} </>
-                                                                )}
+
+                                                            {/* Username */}
+                                                            <Col xs={4} className="text-start fw-semibold">
+                                                                {data.username}
+                                                            </Col>
+
+                                                            {/* Score & Progress */}
+                                                            <Col xs={5}>
+                                                                <Row className="align-items-center">
+                                                                    <Col xs={7}>
+                                                                        <ProgressBar 
+                                                                            className={`${data.gamename}-progressbar`} 
+                                                                            variant="success" 
+                                                                            now={
+                                                                                scoringmethod === "Golf"
+                                                                                    ? data.gamlescore
+                                                                                    : scoringmethod === "World Cup"
+                                                                                    ? worldCupScore
+                                                                                    : scoringmethod === "Pesce"
+                                                                                    ? pesceScore
+                                                                                    : data.gamlescore
+                                                                            } 
+                                                                            max={totalScore} 
+                                                                            style={{ height: '8px' }}
+                                                                        />
+                                                                    </Col>
+                                                                    <Col xs={5} className="text-center d-flex fw-bold">
+                                                                        {scoringmethod === "Golf" ? (
+                                                                            <> {data.gamlescore} {isSingleWinner && "🏆"} </>
+                                                                        ) : scoringmethod === "World Cup" ? (
+                                                                            <>  {worldCupScore} {isSingleWinner && "🏆"} </>
+                                                                        ) : scoringmethod === "Pesce" ? (
+                                                                            <> {pesceScore} {isSingleWinner && "🏆"} </>
+                                                                        ) : (
+                                                                            <> {data.gamlescore} {isSingleWinner && "🏆"} </>
+                                                                        )}
+                                                                    </Col>
+                                                                </Row>
                                                             </Col>
                                                         </Row>
-                                                    </Col>
-                                                </Row>
-                                            );
-                                        })}
-                                </div>
-                            );
+                                                    );
+                                                })}
+                                        </div>
+                                    </>
+                                    );
+                                    
+                                }
+                            
                         })}
 
                             {/* Render non-Phrazle games */}
