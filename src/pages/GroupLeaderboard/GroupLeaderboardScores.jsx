@@ -87,28 +87,28 @@ function GroupLeaderboardScores() {
         fetchGroupStats();
     }, [id, groupName, game, todayDate]);
 
-    useEffect(() => {
-        const fetchCumulativeScore = async () => {
-            if (!id || !game) return;
+    // useEffect(() => {
+    //     const fetchCumulativeScore = async () => {
+    //         if (!id || !game) return;
 
-            try {
-                setLoading(true);
+    //         try {
+    //             setLoading(true);
 
-                // Fetch Cumulative Scores
-                const cumulativeResponse = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-cumulative-score.php`, {
-                    params: { groupId: id, groupName, game, timeZone }
-                });
-                setlatestJoinDate(cumulativeResponse.data.latestJoinDate || []);
-                setCumulativeScore(cumulativeResponse.data.data || []);
-            } catch (error) {
-                console.error("Error fetching cumulative stats:", error.response ? error.response.data : error.message);
-            } finally {
-                setLoading(false);
-            }
-        };
+    //             // Fetch Cumulative Scores
+    //             const cumulativeResponse = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-cumulative-score.php`, {
+    //                 params: { groupId: id, groupName, game, timeZone }
+    //             });
+    //             setlatestJoinDate(cumulativeResponse.data.latestJoinDate || []);
+    //             setCumulativeScore(cumulativeResponse.data.data || []);
+    //         } catch (error) {
+    //             console.error("Error fetching cumulative stats:", error.response ? error.response.data : error.message);
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     };
 
-        fetchCumulativeScore();
-    }, [id, groupName, game]);
+    //     fetchCumulativeScore();
+    // }, [id, groupName, game]);
 
     
 
@@ -376,24 +376,25 @@ function GroupLeaderboardScores() {
 
            
             {/* Cumulative Leaderboard */}
-            <Row className="justify-content-center leaderboard mt-4">
-                <Col md={6} lg={5}>
-                
-                <h4 className="py-3 text-center">
-                    Cumulative Leaderboard as of {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                </h4>
-                {latestJoinDate && (
-                <p className="text-center">
-                    Latest user join date: {(() => {
-                    const [year, month, day] = latestJoinDate.split(' ')[0].split('-');
-                    return `${day}-${month}-${year}`;
-                    })()}
-                </p>
-                )}
-                    {cumulativeScore &&
+            
+                    {/*cumulativeScore &&
                     cumulativeScore.length > 0 &&
                     cumulativeScore.some(data => data.gamlescore !== undefined && !isNaN(Number(data.gamlescore)) && data.username) ? (
                         <>
+                        <Row className="justify-content-center leaderboard mt-4">
+                            <Col md={6} lg={5}>
+                            
+                            <h4 className="py-3 text-center">
+                                Cumulative Leaderboard as of {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                            </h4>
+                            {latestJoinDate && (
+                            <p className="text-center">
+                                Latest user join date: {(() => {
+                                const [year, month, day] = latestJoinDate.split(' ')[0].split('-');
+                                return `${day}-${month}-${year}`;
+                                })()}
+                            </p>
+                            )}
                             {(() => {
                                 
                                 const minScore = Math.min(...cumulativeScore.map(data => Number(data.gamlescore)));
@@ -438,14 +439,6 @@ function GroupLeaderboardScores() {
                                                 <Col xs={5}>
                                                     <Row className="align-items-center">
                                                         <Col xs={9}>
-                                                            {/* <ProgressBar
-                                                                className={`${data.gamename}-progressbar`}
-                                                                variant="success"
-                                                                now={data.gamlescore}
-                                                                max={totalScore + incrementScore}
-                                                                style={{ height: "8px" }}
-                                                            /> */}
-                                                            {}
                                                             <ProgressBar
                                                                 className={`${data.gamename}-progressbar`}
                                                                 variant="success"
@@ -465,12 +458,13 @@ function GroupLeaderboardScores() {
                                         );
                                     });
                             })()}
+                            </Col>
+                            </Row>
                         </>
                     ) : (
                         <div className="text-center text-muted py-4">No data found</div>
-                    )}
-                </Col>
-            </Row>
+                    )*/}
+                
 
 
         </div>

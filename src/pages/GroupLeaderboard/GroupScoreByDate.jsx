@@ -139,6 +139,10 @@ function GroupScoreByDate() {
     const parsedDate = dayjs(value, "DD-MM-YYYY");
 
     return (
+        <>
+        <Button className={`example-custom-input px-5 mb-5 btn btn-primary ${game}-btn`} onClick={onClick} ref={ref}>
+            Go To Date
+        </Button>
         <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
             <button onClick={(e) => { e.stopPropagation(); goToPreviousDay(); }} className="bg-dark text-white px-3 py-1 rounded">
                 <FaArrowLeft />
@@ -150,6 +154,7 @@ function GroupScoreByDate() {
                 <FaArrowRight />
             </button>
         </div>
+        </>
     );
 });
 
