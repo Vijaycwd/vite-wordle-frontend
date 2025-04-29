@@ -8,6 +8,7 @@ function GroupLeaderboardScores() {
     const { id, groupName, game } = useParams();
     const [todayLeaderboard, setTodayLeaderboard] = useState([]);
     const [cumulativeScore, setCumulativeScore] = useState([]);
+    const [latestJoinDate, setlatestJoinDate] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [scoringmethod, setScoringMethod] = useState("");
@@ -97,6 +98,7 @@ function GroupLeaderboardScores() {
                 const cumulativeResponse = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-cumulative-score.php`, {
                     params: { groupId: id, groupName, game, timeZone }
                 });
+                setlatestJoinDate(cumulativeResponse.data.latestJoinDate || []);
                 setCumulativeScore(cumulativeResponse.data.data || []);
             } catch (error) {
                 console.error("Error fetching cumulative stats:", error.response ? error.response.data : error.message);
@@ -120,7 +122,7 @@ function GroupLeaderboardScores() {
     };
 
     //console.log('todayLeaderboard',todayLeaderboard);
-
+    console.log('latestJoinDate',latestJoinDate);
     return (
         <div>
             <ToastContainer/>
@@ -376,15 +378,24 @@ function GroupLeaderboardScores() {
             {/* Cumulative Leaderboard */}
             <Row className="justify-content-center leaderboard mt-4">
                 <Col md={6} lg={5}>
+                
                 <h4 className="py-3 text-center">
                     Cumulative Leaderboard as of {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                 </h4>
-
+                {latestJoinDate && (
+                <p className="text-center">
+                    Latest user join date: {(() => {
+                    const [year, month, day] = latestJoinDate.split(' ')[0].split('-');
+                    return `${day}-${month}-${year}`;
+                    })()}
+                </p>
+                )}
                     {cumulativeScore &&
                     cumulativeScore.length > 0 &&
                     cumulativeScore.some(data => data.gamlescore !== undefined && !isNaN(Number(data.gamlescore)) && data.username) ? (
                         <>
                             {(() => {
+                                
                                 const minScore = Math.min(...cumulativeScore.map(data => Number(data.gamlescore)));
                                 const winners = cumulativeScore.filter(data => Number(data.gamlescore) === minScore);
 
@@ -400,8 +411,9 @@ function GroupLeaderboardScores() {
 
                                         const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
                                         const pesceScore = isSharedWinner ? 1 : 0;
-
+                                       
                                         return (
+                                            <>
                                             <Row
                                                 key={index}
                                                 className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
@@ -448,6 +460,8 @@ function GroupLeaderboardScores() {
                                                     </Row>
                                                 </Col>
                                             </Row>
+                                            
+                                            </>
                                         );
                                     });
                             })()}
