@@ -129,7 +129,7 @@ function GroupLeaderboardScores() {
             {loading && <p>Loading scores...</p>}
             {error && <p className="text-danger">{error}</p>}
 
-            <h6 className="py-3">Scoring Method: {scoringmethod}</h6>
+            {/* <h6 className="py-3">Scoring Method: {scoringmethod}</h6> */}
             
             
             
@@ -158,7 +158,6 @@ function GroupLeaderboardScores() {
                                     return (
                                         <div className="text-center mb-3 missed-user-section py-3 px-2">
                                             <h4 className="text-center">Today's Leaderboard</h4>
-                                            <p>Leaderboard viewable when all this group members have played.</p>
                                             <p className="mb-1">Yet to play:</p>
                                             {missedUsers.map((name, i) => (
                                                 <div key={i} className="fw-bold">{name}</div>
@@ -267,7 +266,7 @@ function GroupLeaderboardScores() {
                                     return (
                                         <div className="text-center mb-3 missed-user-section py-3 px-2">
                                             <h4 className="text-center">Today's Leaderboard</h4>
-                                            <p>Leaderboard viewable when all this group members have played.</p>
+                                            <p>The Leaderboard will be viewable when all group members have played.</p>
                                             <p className="mb-1">Yet to play:</p>
                                             {missedUsers.map((name, i) => (
                                                 <div key={i} className="fw-bold">{name}</div>

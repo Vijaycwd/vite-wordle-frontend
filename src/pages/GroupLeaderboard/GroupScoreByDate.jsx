@@ -5,14 +5,14 @@ import { Button, Alert, Row, Col, ProgressBar } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment-timezone';
-import GetGroupScore from '../../constant/Models/GetGroupScore';
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import dayjs from "dayjs";
 
 function GroupScoreByDate() {
     const { id, groupName, game } = useParams();
     const [todayLeaderboard, setTodayLeaderboard] = useState([]);
-    const [cumulativeScore, setCumulativeScore] = useState([]);
+    const [cumulativeAverageScore, setcumulativeAverageScore] = useState([]);
+    const [cumulativeDailyScore, setcumulativeDailyScore] = useState([]);
     const [missedScore, setMissedScore] = useState([]);
     const [dataFetched, setDataFetched] = useState(false);
     const [startDate, setStartDate] = useState(new Date());
@@ -70,10 +70,10 @@ function GroupScoreByDate() {
         setStartDate(date);
         if (formatted) fetchDataByDate(formatted);
     };
-    useEffect(() => {
-        const formattedDate = formatDateForBackend(startDate);
-        fetchDataByDate(formattedDate);
-    }, []);
+    // useEffect(() => {
+    //     const formattedDate = formatDateForBackend(startDate);
+    //     fetchDataByDate(formattedDate);
+    // }, []);
     // Fetch data by selected date
     const fetchDataByDate = async (date) => {
         try {
@@ -81,11 +81,12 @@ function GroupScoreByDate() {
     
             const params = { groupId: id, groupName, game, today: date, timeZone };
     
-            const [missedScoreResponse, todayResponse, cumulativeResponse] = await Promise.all([
+            const [missedScoreResponse, todayResponse, cumulativeAverageResponse, cumulativeDailyResponse] = await Promise.all([
                 axios.get(`https://coralwebdesigns.com/college/wordgamle/games/${game}/auto-submit-${game}-scores.php`, {
                     params: { timeZone, formattedYesterday: date}
                 }),
                 axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-score.php`, { params }),
+                axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-cumulative-average-score.php`, { params }),
                 axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-cumulative-score-bydate.php`, { params }),
             ]);
             
@@ -95,14 +96,14 @@ function GroupScoreByDate() {
                 Array.isArray(todayResponse.data.data)
             ) {
                 setTodayLeaderboard(todayResponse.data.data);
-                setFetchedError(false);
             } else {
                 setTodayLeaderboard([]);
                 setFetchedError(true);
             }
     
-            // Process cumulativeResponse
-            setCumulativeScore(cumulativeResponse.data.data || []);
+            // Process cumulativeDailyResponse
+            setcumulativeAverageScore(cumulativeAverageResponse.data.data || []);
+            setcumulativeDailyScore(cumulativeDailyResponse.data.data || []);
             setMissedScore(missedScoreResponse.data.data || []);
 
             setDataFetched(true);
@@ -140,20 +141,11 @@ function GroupScoreByDate() {
 
     return (
         <>
-        <Button className={`example-custom-input px-5 mb-5 btn btn-primary ${game}-btn`} onClick={onClick} ref={ref}>
-            Go To Date
-        </Button>
-        <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
-            <button onClick={(e) => { e.stopPropagation(); goToPreviousDay(); }} className="bg-dark text-white px-3 py-1 rounded">
-                <FaArrowLeft />
-            </button>
-            <div onClick={onClick} ref={ref}>
-                {parsedDate.format("dddd, MMM D, YYYY")}
-            </div>
-            <button onClick={(e) => { e.stopPropagation(); goToNextDay(); }} className="bg-dark text-white px-3 py-1 rounded">
-                <FaArrowRight />
-            </button>
-        </div>
+            <Button className={`example-custom-input px-5 btn btn-primary ${game}-btn`} onClick={onClick} ref={ref}>
+        Go To Date
+    </Button>
+        
+       
         </>
     );
 });
@@ -161,15 +153,15 @@ function GroupScoreByDate() {
 // Function to get the max possible score for a game
 const getTotalScore = (gameName) => {
     const cleanedName = gameName ? gameName.trim().toLowerCase() : "";
-    return cleanedName === "wordle" ? 6 :
+    return cleanedName === "wordle" ? 7 :
            cleanedName === "connections" ? 4 :
-           cleanedName === "phrazle" ? 6 :
+           cleanedName === "phrazle" ? 7 :
            1; // Default to 1 if unknown
 };
 
 const showDayResult = (date, useremail, game) => {
     console.log('showDayResult');
-    setSelectedGame(game);
+    // setSelectedGame(game);
     const timeZone = moment.tz.guess();
     axios.get(`https://coralwebdesigns.com/college/wordgamle/games/${game}/get-group-score.php`, {
         params: { useremail, timeZone, today: date }
@@ -187,7 +179,7 @@ const showDayResult = (date, useremail, game) => {
             scoreData = response.data?.phrazlescore || [];
         }
 
-        setDayResults(scoreData);
+        // setDayResults(scoreData);
         setShowModal(true);
     })
     .catch((error) => {
@@ -236,6 +228,17 @@ const handleCloseModal = () => {
                         const missedUsers = filteredPhrazle.filter(d => d.missed).map(d => d.username);
                         return (
                             <div key={timePeriod}>
+                                <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
+                                    <button onClick={(e) => { e.stopPropagation(); goToPreviousDay(); }} className="bg-dark text-white px-3 py-1 rounded">
+                                        <FaArrowLeft />
+                                    </button>
+                                    <div>
+                                        {dayjs(startDate).format("dddd, MMM D, YYYY")}
+                                    </div>
+                                    <button onClick={(e) => { e.stopPropagation(); goToNextDay(); }} className="bg-dark text-white px-3 py-1 rounded">
+                                        <FaArrowRight />
+                                    </button>
+                                </div>
                                 <h4 className="text-center py-3">Daily Leaderboard</h4>
                                 
                                 {filteredPhrazle.filter(data => !missedUsers.includes(data.username)).length === 0 ? (
@@ -344,6 +347,17 @@ const handleCloseModal = () => {
                         const missedUsers = filteredLeaderboard.filter(d => d.missed).map(d => d.username);
                         return (
                             <>
+                                <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
+                                    <button onClick={(e) => { e.stopPropagation(); goToPreviousDay(); }} className="bg-dark text-white px-3 py-1 rounded">
+                                        <FaArrowLeft />
+                                    </button>
+                                    <div>
+                                        {dayjs(startDate).format("dddd, MMM D, YYYY")}
+                                    </div>
+                                    <button onClick={(e) => { e.stopPropagation(); goToNextDay(); }} className="bg-dark text-white px-3 py-1 rounded">
+                                        <FaArrowRight />
+                                    </button>
+                                </div>
                                 <h4 className="text-center py-3">Daily Leaderboard</h4>
                                 {filteredLeaderboard.filter(data => !missedUsers.includes(data.username)).length === 0 ? (
                                     <Alert variant="info" className="text-center">
@@ -425,18 +439,119 @@ const handleCloseModal = () => {
                                 <Row className="justify-content-center leaderboard mt-4">
                                     <Col>
                                     <h4 className="py-3 text-center">
-                                        Cumulative Leaderboard
+                                        Cumulative Leaderboard(average score)
                                     </h4>
                     
-                                        {cumulativeScore &&
-                                        cumulativeScore.length > 0 &&
-                                        cumulativeScore.some(data => data.gamlescore !== undefined && !isNaN(Number(data.gamlescore)) && data.username) ? (
+                                        {cumulativeAverageScore &&
+                                        cumulativeAverageScore.length > 0 &&
+                                        cumulativeAverageScore.some(data => data.gamlescore !== undefined && !isNaN(Number(data.gamlescore)) && data.username) ? (
                                             <>
                                                 {(() => {
-                                                    const minScore = Math.min(...cumulativeScore.map(data => Number(data.gamlescore)));
-                                                    const winners = cumulativeScore.filter(data => Number(data.gamlescore) === minScore);
+                                                    const minScore = Math.min(...cumulativeAverageScore.map(data => Number(data.gamlescore)));
+                                                    const winners = cumulativeAverageScore.filter(data => Number(data.gamlescore) === minScore);
                     
-                                                    return cumulativeScore
+                                                    return cumulativeAverageScore
+                                                        .slice()
+                                                        // .sort((a, b) => (a.gamlescore / a.totalGamesPlayed) - (b.gamlescore / b.totalGamesPlayed))
+                                                        .sort((a, b) => {
+                                                            if (scoringmethod === "Golf") {
+                                                                return (a.gamlescore / a.totalGamesPlayed) - (b.gamlescore / b.totalGamesPlayed);
+                                                            } else if (scoringmethod === "World Cup") {
+                                                                return (b.gamlescore / b.totalGamesPlayed) - (a.gamlescore / a.totalGamesPlayed);
+                                                            } else if (scoringmethod === "Pesce") {
+                                                                return (b.gamlescore / b.totalGamesPlayed) - (a.gamlescore / a.totalGamesPlayed);
+                                                            }
+                                                            return 0;
+                                                        })
+                                                        .map((data, index) => {
+                                                            const totalScore = getTotalScore(data.gamename);
+                                                            const incrementScore = (index + 1) * totalScore;
+                    
+                                                            const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
+                                                            const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
+                    
+                                                            const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
+                                                            const pesceScore = isSharedWinner ? 1 : 0;
+                    
+                                                            return (
+                                                                <>
+                                                                {/* <p>Total Score - {data.gamlescore}</p>
+                                                                <p>Total Game Played {data.totalGamesPlayed}</p>
+                                                                <p>Game Chances {totalScore}</p> */}
+                                                                <Row
+                                                                    key={index}
+                                                                    className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
+                                                                >
+                                                                    <Col xs={3} className="d-flex align-items-center gap-2">
+                                                                        <img
+                                                                            src={
+                                                                                data.avatar
+                                                                                    ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}`
+                                                                                    : "https://coralwebdesigns.com/college/wordgamle/user/uploads/default_avatar.png"
+                                                                            }
+                                                                            alt="Avatar"
+                                                                            className="rounded-circle border"
+                                                                            style={{ width: "35px", height: "35px", objectFit: "cover" }}
+                                                                        />
+                                                                    </Col>
+                    
+                                                                    <Col xs={4} className="text-start fw-semibold">
+                                                                        {data.username}
+                                                                    </Col>
+                    
+                                                                    <Col xs={5}>
+                                                                        <Row className="align-items-center">
+                                                                            <Col xs={9}>
+                                                                                {/* <ProgressBar
+                                                                                    className={`${data.gamename}-progressbar`}
+                                                                                    variant="success"
+                                                                                    now={data.gamlescore}
+                                                                                    max={totalScore + incrementScore}
+                                                                                    style={{ height: "8px" }}
+                                                                                /> */}
+                                                                                {}
+                                                                                <ProgressBar
+                                                                                    className={`${data.gamename}-progressbar`}
+                                                                                    variant="success"
+                                                                                    now={data.gamlescore}
+                                                                                    max={data.totalGamesPlayed * totalScore}
+                                                                                    style={{ height: "8px" }}
+                                                                                />
+                                                                            </Col>
+                                                                            <Col xs={3} className="text-center fw-bold">
+                                                                                {/* {data.gamlescore} */}  
+                                                                                {((data.gamlescore / data.totalGamesPlayed)).toFixed(2)}
+                                                                            </Col>
+                                                                        </Row>
+                                                                    </Col>
+                                                                </Row>
+                                                                </>
+                                                            );
+                                                        });
+                                                })()}
+                                            </>
+                                        ) : (
+                                            <Alert variant="info" className="text-center">
+                                                😕 No results found for this leaderboard.
+                                            </Alert>
+                                        )}
+                                    </Col>
+                                </Row>
+                                <Row className="justify-content-center leaderboard mt-4">
+                                    <Col>
+                                    <h4 className="py-3 text-center">
+                                        Cumulative Leaderboard(daily score)
+                                    </h4>
+                    
+                                        {cumulativeDailyScore &&
+                                        cumulativeDailyScore.length > 0 &&
+                                        cumulativeDailyScore.some(data => data.gamlescore !== undefined && !isNaN(Number(data.gamlescore)) && data.username) ? (
+                                            <>
+                                                {(() => {
+                                                    const minScore = Math.min(...cumulativeDailyScore.map(data => Number(data.gamlescore)));
+                                                    const winners = cumulativeDailyScore.filter(data => Number(data.gamlescore) === minScore);
+                    
+                                                    return cumulativeDailyScore
                                                         .slice()
                                                         .sort((a, b) => a.gamlescore - b.gamlescore)
                                                         .map((data, index) => {
@@ -516,16 +631,6 @@ const handleCloseModal = () => {
                     </Alert>
                 )
             )}
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <GetGroupScore
-                        showForm={showModal} 
-                        handleFormClose={handleCloseModal} 
-                        dayResults={dayResults}
-                        game={selectedGame}
-                    />
                 </Col>
             </Row>
         </>
