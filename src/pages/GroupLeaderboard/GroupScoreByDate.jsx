@@ -236,7 +236,7 @@ const handleCloseModal = () => {
                         const missedUsers = filteredPhrazle.filter(d => d.missed).map(d => d.username);
                         return (
                             <div key={timePeriod}>
-                                <h4 className="text-center py-3">Day Leaderboard</h4>
+                                <h4 className="text-center py-3">Daily Leaderboard</h4>
                                 
                                 {filteredPhrazle.filter(data => !missedUsers.includes(data.username)).length === 0 ? (
                                     <Alert variant="info" className="text-center">
@@ -344,7 +344,7 @@ const handleCloseModal = () => {
                         const missedUsers = filteredLeaderboard.filter(d => d.missed).map(d => d.username);
                         return (
                             <>
-                                <h4 className="text-center py-3">Day Leaderboard</h4>
+                                <h4 className="text-center py-3">Daily Leaderboard</h4>
                                 {filteredLeaderboard.filter(data => !missedUsers.includes(data.username)).length === 0 ? (
                                     <Alert variant="info" className="text-center">
                                         😕 No results found for this leaderboard.
