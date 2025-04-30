@@ -11,6 +11,7 @@ import dayjs from "dayjs";
 function GroupScoreByDate() {
     const { id, groupName, game } = useParams();
     const [todayLeaderboard, setTodayLeaderboard] = useState([]);
+    const [latestJoinDate, setlatestJoinDate] = useState('');
     const [cumulativeAverageScore, setcumulativeAverageScore] = useState([]);
     const [cumulativeDailyScore, setcumulativeDailyScore] = useState([]);
     const [missedScore, setMissedScore] = useState([]);
@@ -102,6 +103,7 @@ function GroupScoreByDate() {
             }
     
             // Process cumulativeDailyResponse
+            setlatestJoinDate(cumulativeDailyResponse.data.latestJoinDate || []);
             setcumulativeAverageScore(cumulativeAverageResponse.data.data || []);
             setcumulativeDailyScore(cumulativeDailyResponse.data.data || []);
             setMissedScore(missedScoreResponse.data.data || []);
@@ -203,10 +205,9 @@ const handleCloseModal = () => {
                     maxDate={new Date()}
                 /> */}
                 <DatePicker
-                    selected={startDate}
                     onChange={handleDateChange}
                     customInput={<ExampleCustomInput />}
-                    maxDate={new Date()}
+                    maxDate={new Date(new Date().setDate(new Date().getDate() - 1))}
                     />
             </div>
             <Row className="justify-content-center leaderboard mt-4">
@@ -436,10 +437,102 @@ const handleCloseModal = () => {
                     })()}
 
                     {/* Cumulative Leaderboard */}
+                    <Row className="justify-content-center leaderboard mt-4">
+                                    <Col>
+                                    <h4 className="py-3 text-center">
+                                        Cumulative Leaderboard
+                                    </h4>
+                                    {latestJoinDate && (
+                                    <p className="text-center">
+                                        Latest user join date: {(() => {
+                                        const [year, month, day] = latestJoinDate.split(' ')[0].split('-');
+                                        return `${day}-${month}-${year}`;
+                                        })()}
+                                    </p>
+                                    )}
+                                        {cumulativeDailyScore &&
+                                        cumulativeDailyScore.length > 0 &&
+                                        cumulativeDailyScore.some(data => data.gamlescore !== undefined && !isNaN(Number(data.gamlescore)) && data.username) ? (
+                                            <>
+                                                {(() => {
+                                                    const minScore = Math.min(...cumulativeDailyScore.map(data => Number(data.gamlescore)));
+                                                    const winners = cumulativeDailyScore.filter(data => Number(data.gamlescore) === minScore);
+                    
+                                                    return cumulativeDailyScore
+                                                        .slice()
+                                                        .sort((a, b) => a.gamlescore - b.gamlescore)
+                                                        .map((data, index) => {
+                                                            const totalScore = getTotalScore(data.gamename);
+                                                            const incrementScore = (index + 1) * totalScore;
+                    
+                                                            const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
+                                                            const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
+                    
+                                                            const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
+                                                            const pesceScore = isSharedWinner ? 1 : 0;
+                    
+                                                            return (
+                                                                <Row
+                                                                    key={index}
+                                                                    className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
+                                                                >
+                                                                    <Col xs={3} className="d-flex align-items-center gap-2">
+                                                                        <img
+                                                                            src={
+                                                                                data.avatar
+                                                                                    ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}`
+                                                                                    : "https://coralwebdesigns.com/college/wordgamle/user/uploads/default_avatar.png"
+                                                                            }
+                                                                            alt="Avatar"
+                                                                            className="rounded-circle border"
+                                                                            style={{ width: "35px", height: "35px", objectFit: "cover" }}
+                                                                        />
+                                                                    </Col>
+                    
+                                                                    <Col xs={4} className="text-start fw-semibold">
+                                                                        {data.username}
+                                                                    </Col>
+                    
+                                                                    <Col xs={5}>
+                                                                        <Row className="align-items-center">
+                                                                            <Col xs={9}>
+                                                                                {/* <ProgressBar
+                                                                                    className={`${data.gamename}-progressbar`}
+                                                                                    variant="success"
+                                                                                    now={data.gamlescore}
+                                                                                    max={totalScore + incrementScore}
+                                                                                    style={{ height: "8px" }}
+                                                                                /> */}
+                                                                                {}
+                                                                                <ProgressBar
+                                                                                    className={`${data.gamename}-progressbar`}
+                                                                                    variant="success"
+                                                                                    now={data.gamlescore}
+                                                                                    max={data.totalGamesPlayed * totalScore}
+                                                                                    style={{ height: "8px" }}
+                                                                                />
+                                                                            </Col>
+                                                                            <Col xs={3} className="text-center fw-bold">
+                                                                                {data.gamlescore}
+                                                                            </Col>
+                                                                        </Row>
+                                                                    </Col>
+                                                                </Row>
+                                                            );
+                                                        });
+                                                })()}
+                                            </>
+                                        ) : (
+                                            <Alert variant="info" className="text-center">
+                                                😕 No results found for this leaderboard.
+                                            </Alert>
+                                        )}
+                                    </Col>
+                                </Row>
                                 <Row className="justify-content-center leaderboard mt-4">
                                     <Col>
                                     <h4 className="py-3 text-center">
-                                        Cumulative Leaderboard(average score)
+                                        Average Leaderboard
                                     </h4>
                     
                                         {cumulativeAverageScore &&
@@ -537,91 +630,7 @@ const handleCloseModal = () => {
                                         )}
                                     </Col>
                                 </Row>
-                                <Row className="justify-content-center leaderboard mt-4">
-                                    <Col>
-                                    <h4 className="py-3 text-center">
-                                        Cumulative Leaderboard(daily score)
-                                    </h4>
-                    
-                                        {cumulativeDailyScore &&
-                                        cumulativeDailyScore.length > 0 &&
-                                        cumulativeDailyScore.some(data => data.gamlescore !== undefined && !isNaN(Number(data.gamlescore)) && data.username) ? (
-                                            <>
-                                                {(() => {
-                                                    const minScore = Math.min(...cumulativeDailyScore.map(data => Number(data.gamlescore)));
-                                                    const winners = cumulativeDailyScore.filter(data => Number(data.gamlescore) === minScore);
-                    
-                                                    return cumulativeDailyScore
-                                                        .slice()
-                                                        .sort((a, b) => a.gamlescore - b.gamlescore)
-                                                        .map((data, index) => {
-                                                            const totalScore = getTotalScore(data.gamename);
-                                                            const incrementScore = (index + 1) * totalScore;
-                    
-                                                            const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
-                                                            const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
-                    
-                                                            const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
-                                                            const pesceScore = isSharedWinner ? 1 : 0;
-                    
-                                                            return (
-                                                                <Row
-                                                                    key={index}
-                                                                    className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
-                                                                >
-                                                                    <Col xs={3} className="d-flex align-items-center gap-2">
-                                                                        <img
-                                                                            src={
-                                                                                data.avatar
-                                                                                    ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}`
-                                                                                    : "https://coralwebdesigns.com/college/wordgamle/user/uploads/default_avatar.png"
-                                                                            }
-                                                                            alt="Avatar"
-                                                                            className="rounded-circle border"
-                                                                            style={{ width: "35px", height: "35px", objectFit: "cover" }}
-                                                                        />
-                                                                    </Col>
-                    
-                                                                    <Col xs={4} className="text-start fw-semibold">
-                                                                        {data.username}
-                                                                    </Col>
-                    
-                                                                    <Col xs={5}>
-                                                                        <Row className="align-items-center">
-                                                                            <Col xs={9}>
-                                                                                {/* <ProgressBar
-                                                                                    className={`${data.gamename}-progressbar`}
-                                                                                    variant="success"
-                                                                                    now={data.gamlescore}
-                                                                                    max={totalScore + incrementScore}
-                                                                                    style={{ height: "8px" }}
-                                                                                /> */}
-                                                                                {}
-                                                                                <ProgressBar
-                                                                                    className={`${data.gamename}-progressbar`}
-                                                                                    variant="success"
-                                                                                    now={data.gamlescore}
-                                                                                    max={data.totalGamesPlayed * totalScore}
-                                                                                    style={{ height: "8px" }}
-                                                                                />
-                                                                            </Col>
-                                                                            <Col xs={3} className="text-center fw-bold">
-                                                                                {data.gamlescore}
-                                                                            </Col>
-                                                                        </Row>
-                                                                    </Col>
-                                                                </Row>
-                                                            );
-                                                        });
-                                                })()}
-                                            </>
-                                        ) : (
-                                            <Alert variant="info" className="text-center">
-                                                😕 No results found for this leaderboard.
-                                            </Alert>
-                                        )}
-                                    </Col>
-                                </Row>
+                                
 
                 </>
             ) : (

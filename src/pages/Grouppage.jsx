@@ -70,7 +70,7 @@ function GroupPage() {
                 </Row>
 
             )}
-            <Button className="px-5 mt-3" onClick={() => navigate(`/group/${group.id}/${group.name.toLowerCase().replace(/\s+/g, '-')}/stats`)}>Group Stats</Button>
+            <Button className="px-5 mt-3" onClick={() => navigate(`/group/${group.id}/${group.name.toLowerCase().replace(/\s+/g, '-')}/stats`)}>Group Leaderboards</Button>
             <MemberGameSelections />
             {isCaptain && (
                 <SelectScoringMethod/>

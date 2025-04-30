@@ -77,7 +77,7 @@ function GroupStats() {
       <Row className="justify-content-center">
         <Col md={6} className="text-center mt-4">
           <h2 className='text-capitalize pb-2'>{group?.name || ""}</h2>
-          <h3 className='pb-4'>Group Stats</h3>
+          <h3 className='pb-4'>Group Leaderboards</h3>
           <Row>
           {selectedGames.map((game, index) => (
             <Col className="text-center mt-4">

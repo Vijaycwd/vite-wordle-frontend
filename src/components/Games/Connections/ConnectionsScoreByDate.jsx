@@ -4,6 +4,8 @@ import { Button, Alert } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment-timezone';
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import dayjs from "dayjs";
 
 function ConnectionsScoreByDate() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
@@ -66,20 +68,51 @@ function ConnectionsScoreByDate() {
     // Format createdAt to display as DD-MM-YYYY
     const formatCreatedAt = (createdat) => moment(createdat).format('DD-MMM-YYYY');
 
-    const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
-        <Button className="example-custom-input connections-btn px-5 btn btn-primary" onClick={onClick} ref={ref}>
+    // const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
+    //     <Button className="example-custom-input connections-btn px-5 btn btn-primary" onClick={onClick} ref={ref}>
+    //         Go To Date
+    //     </Button>
+    // ));
+
+    const goToPreviousDay = () => {
+        const prevDate = dayjs(startDate).subtract(1, 'day').toDate();
+        handleDateChange(prevDate);
+    };
+    
+    const goToNextDay = () => {
+        const nextDate = dayjs(startDate).add(1, 'day');
+        const today = dayjs();
+        if (nextDate.isAfter(today, 'day')) return;
+        handleDateChange(nextDate.toDate());
+    };
+    const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
+            const parsedDate = dayjs(value, "DD-MM-YYYY");
+
+        return (
+            <>
+                <Button className={`example-custom-input px-5 btn btn-primary connections-btn`} onClick={onClick} ref={ref}>
             Go To Date
         </Button>
-    ));
+            
+        
+            </>
+        );
+    });
 
     return (
         <>
             <div className='text-center'>
-                <DatePicker
+                {/* <DatePicker
                     selected={startDate}
                     onChange={handleDateChange}
                     customInput={<ExampleCustomInput />}
                     dateFormat="dd-MM-yyyy"
+                    maxDate={new Date()}
+                /> */}
+                <DatePicker
+                    selected={startDate}
+                    onChange={handleDateChange}
+                    customInput={<ExampleCustomInput />}
                     maxDate={new Date()}
                 />
             </div>
@@ -94,6 +127,17 @@ function ConnectionsScoreByDate() {
 
                         return (
                             <li key={item.createdat}>
+                                <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
+                                    <button onClick={(e) => { e.stopPropagation(); goToPreviousDay(); }} className="bg-dark text-white px-3 py-1 rounded">
+                                        <FaArrowLeft />
+                                    </button>
+                                    <div>
+                                        {dayjs(startDate).format("dddd, MMM D, YYYY")}
+                                    </div>
+                                    <button onClick={(e) => { e.stopPropagation(); goToNextDay(); }} className="bg-dark text-white px-3 py-1 rounded">
+                                        <FaArrowRight />
+                                    </button>
+                                </div>
                                 <div className='text-center'>
                                     <h6 className='text-center pt-3'>Gamle Score: {gamleScore}</h6>
                                     {Number(gamleScore) !== 4 && (
