@@ -22,6 +22,7 @@ function GroupScoreByDate() {
     const [showModal, setShowModal] = useState(false);
     const [dayResults, setDayResults] = useState(null);
     const [selectedGame, setSelectedGame] = useState("");
+    const [period, setPeriod] = useState('');
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const userId = USER_AUTH_DATA?.id;
     const loginuserEmail = USER_AUTH_DATA?.email;
@@ -65,33 +66,115 @@ function GroupScoreByDate() {
         return moment(date).format("YYYY-MM-DD");
     };
 
+   
     const handleDateChange = (date) => {
         if (!date || isNaN(date.getTime())) return;
-        const formatted = formatDateForBackend(date);
-        setStartDate(date);
-        if (formatted) fetchDataByDate(formatted);
+    
+        const formattedDate = formatDateForBackend(date);
+    
+        if (game === 'phrazle') {
+            const newPeriod = 'AM';
+            fetchDataByDate(formattedDate, newPeriod);
+            setStartDate(date);
+            setPeriod(newPeriod);
+        } else {
+            setStartDate(date);
+            fetchDataByDate(formattedDate);
+        }
     };
+    const goToPreviousDay = () => {
+        const prevDate = dayjs(startDate).subtract(1, 'day').toDate();
+    
+        if (game === 'phrazle') {
+            if (period === 'PM') {
+                const newPeriod = 'AM';
+                const formattedDate = formatDateForBackend(startDate);
+                fetchDataByDate(formattedDate, newPeriod);
+                setPeriod(newPeriod);
+            } else {
+                const newPeriod = 'PM';
+                const formattedDate = formatDateForBackend(prevDate);
+                fetchDataByDate(formattedDate, newPeriod);
+                setStartDate(prevDate);
+                setPeriod(newPeriod);
+            }
+        } else {
+            handleDateChange(prevDate);
+        }
+    };
+    
+    
+    const goToNextDay = () => {
+        const maxAllowedDate = dayjs().subtract(1, 'day').startOf('day'); // Yesterday (May 1)
+        const nextDate = dayjs(startDate).add(1, 'day').startOf('day');
+        const currentDate = dayjs(startDate).startOf('day');
+    
+        if (game === 'phrazle') {
+            if (period === 'AM') {
+                const newPeriod = 'PM';
+                const formattedDate = formatDateForBackend(startDate);
+                fetchDataByDate(formattedDate, newPeriod);
+                setPeriod(newPeriod);
+            } else {
+                if (nextDate.isAfter(maxAllowedDate)) return; // Don't go beyond May 1
+                const newPeriod = 'AM';
+                const formattedDate = formatDateForBackend(nextDate.toDate());
+                fetchDataByDate(formattedDate, newPeriod);
+                setStartDate(nextDate.toDate());
+                setPeriod(newPeriod);
+            }
+        } else {
+            if (nextDate.isAfter(maxAllowedDate)) return; // Don't go beyond May 1
+            handleDateChange(nextDate.toDate());
+        }
+    };
+    
+    
+    
+
+    const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
+        const parsedDate = dayjs(value, "DD-MM-YYYY");
+
+        return (
+            <>
+                <Button className={`example-custom-input px-5 btn btn-primary ${game}-btn`} onClick={onClick} ref={ref}>
+            Go To Date
+        </Button>
+            
+        
+            </>
+        );
+    });
     // useEffect(() => {
     //     const formattedDate = formatDateForBackend(startDate);
     //     fetchDataByDate(formattedDate);
     // }, []);
     // Fetch data by selected date
-    const fetchDataByDate = async (date) => {
+    const fetchDataByDate = async (date, customPeriod = null) => {
         try {
             const timeZone = moment.tz.guess();
+            
+            const baseParams = {
+                groupId: id,
+                groupName,
+                game,
+                today: date,
+                timeZone,
+                formattedYesterday: date
+            };
     
-            const params = { groupId: id, groupName, game, today: date, timeZone };
+            // Add period if game is phrazle
+            const params = game === 'phrazle' 
+                ? { ...baseParams, period: customPeriod || period }
+                : baseParams;
     
             const [missedScoreResponse, todayResponse, cumulativeAverageResponse, cumulativeDailyResponse] = await Promise.all([
-                axios.get(`https://coralwebdesigns.com/college/wordgamle/games/${game}/auto-submit-${game}-scores.php`, {
-                    params: { timeZone, formattedYesterday: date}
-                }),
+                axios.get(`https://coralwebdesigns.com/college/wordgamle/games/${game}/auto-submit-${game}-scores.php`, { params }),
                 axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-score.php`, { params }),
                 axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-cumulative-average-score.php`, { params }),
                 axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-cumulative-score-bydate.php`, { params }),
             ]);
-            
-            // Process todayResponse
+    
             if (
                 todayResponse.data.status === "success" &&
                 Array.isArray(todayResponse.data.data)
@@ -102,14 +185,13 @@ function GroupScoreByDate() {
                 setFetchedError(true);
             }
     
-            // Process cumulativeDailyResponse
             setlatestJoinDate(cumulativeDailyResponse.data.latestJoinDate || []);
             setcumulativeAverageScore(cumulativeAverageResponse.data.data || []);
             setcumulativeDailyScore(cumulativeDailyResponse.data.data || []);
-            setMissedScore(missedScoreResponse.data.data || []);
-
+           
+    
             setDataFetched(true);
-            
+    
         } catch (error) {
             console.error("API Error:", error);
             setTodayLeaderboard([]);
@@ -118,39 +200,15 @@ function GroupScoreByDate() {
         }
     };
     
-    console.log('missedScore',missedScore);
+    
+    console.log('todayLeaderboard',todayLeaderboard);
     // Custom input button for DatePicker
     // const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     //     <Button className={`example-custom-input px-5 btn btn-primary ${game}-btn`} onClick={onClick} ref={ref}>
     //     Go To Date
     // </Button>
     // ));
-
-    const goToPreviousDay = () => {
-        const prevDate = dayjs(startDate).subtract(1, 'day').toDate();
-        handleDateChange(prevDate);
-    };
     
-    const goToNextDay = () => {
-        const nextDate = dayjs(startDate).add(1, 'day');
-        const today = dayjs();
-        if (nextDate.isAfter(today, 'day')) return;
-        handleDateChange(nextDate.toDate());
-    };
-
-    const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
-    const parsedDate = dayjs(value, "DD-MM-YYYY");
-
-    return (
-        <>
-            <Button className={`example-custom-input px-5 btn btn-primary ${game}-btn`} onClick={onClick} ref={ref}>
-        Go To Date
-    </Button>
-        
-       
-        </>
-    );
-});
 
 // Function to get the max possible score for a game
 const getTotalScore = (gameName) => {
@@ -212,9 +270,23 @@ const handleCloseModal = () => {
             </div>
             <Row className="justify-content-center leaderboard mt-4">
                 <Col md={5} className="text-center">
-                {dataFetched &&todayLeaderboard.length > 0 ? (
-                                            <>
-                    {/* Separate Phrazle AM and PM */}
+                {dataFetched && todayLeaderboard.length > 0 ? (
+                    <>
+                    {todayLeaderboard.some(data => data.gamename === "phrazle") && (
+                        <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
+                            <button onClick={(e) => { e.stopPropagation(); goToPreviousDay(); }} className="bg-dark text-white px-3 py-1 rounded">
+                                <FaArrowLeft />
+                            </button>
+                            <div>
+                                {dayjs(startDate).format("dddd, MMM D, YYYY")} - {period}
+                            </div>
+                            <button onClick={(e) => { e.stopPropagation(); goToNextDay(); }} className="bg-dark text-white px-3 py-1 rounded">
+                                <FaArrowRight />
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Phrazle Game*/}
                     {["AM", "PM"].map((timePeriod) => {
                         const filteredPhrazle = todayLeaderboard.filter((data) => {
                             if (data.gamename !== "phrazle") return false;
@@ -226,9 +298,88 @@ const handleCloseModal = () => {
 
                         const minScore = Math.min(...filteredPhrazle.map((data) => Number(data.gamlescore)));
                         const winners = filteredPhrazle.filter(data => Number(data.gamlescore) === minScore);
-                        const missedUsers = filteredPhrazle.filter(d => d.missed).map(d => d.username);
                         return (
                             <div key={timePeriod}>
+                                <h4 className="text-center py-3">Daily Leaderboard</h4>
+                                {
+                                    filteredPhrazle
+                                    .slice()
+                                    .sort((a, b) => a.gamlescore - b.gamlescore)
+                                    .map((data, index) => {
+                                      const totalScore = getTotalScore(data.gamename);
+                                      const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
+                                      const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
+                                      const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
+                                      const pesceScore = isSingleWinner ? 1 : isSharedWinner ? 1 : 0;
+                              
+                                      return (
+                                        <Row key={index} className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm">
+                                          <Col xs={3} className="d-flex align-items-center gap-2">
+                                            <img 
+                                              src={data.avatar ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}` : "https://via.placeholder.com/50"} 
+                                              alt="Avatar" 
+                                              className="rounded-circle border" 
+                                              style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
+                                            />
+                                          </Col>
+                                          <Col xs={4} className="text-start fw-semibold">{data.username}</Col>
+                                          <Col xs={5}>
+                                            <Row className="align-items-center">
+                                              <Col xs={7}>
+                                                <ProgressBar 
+                                                  className={`${data.gamename}-progressbar`} 
+                                                  variant="success" 
+                                                  now={
+                                                    scoringmethod === "Golf"
+                                                      ? data.gamlescore
+                                                      : scoringmethod === "World Cup"
+                                                      ? worldCupScore
+                                                      : scoringmethod === "Pesce"
+                                                      ? pesceScore
+                                                      : data.gamlescore
+                                                  } 
+                                                  max={totalScore} 
+                                                  style={{ height: '8px' }}
+                                                />
+                                              </Col>
+                                              <Col xs={5} className="text-center d-flex fw-bold">
+                                                <span onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)} style={{ cursor: "pointer" }}>
+                                                  {scoringmethod === "Golf"
+                                                    ? `${data.gamlescore}${isSingleWinner ? " 🏆" : ""}`
+                                                    : scoringmethod === "World Cup"
+                                                    ? `${worldCupScore}${isSingleWinner ? " 🏆" : ""}`
+                                                    : scoringmethod === "Pesce"
+                                                    ? `${pesceScore}${isSingleWinner ? " 🏆" : ""}`
+                                                    : `${data.gamlescore}${isSingleWinner ? " 🏆" : ""}`
+                                                  }
+                                                </span>
+                                              </Col>
+                                            </Row>
+                                          </Col>
+                                        </Row>
+                                      );
+                                    })
+                                }
+                                    
+                            </div>
+                        );
+                    })}
+
+                    {/* Wordle, Connections */}
+
+                    {todayLeaderboard.length > 0 && (() => {
+                        // Filter out "phrazle" and find the lowest score
+                        const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename !== "phrazle");
+                        console.log('filteredLeaderboard',filteredLeaderboard);
+                        if (filteredLeaderboard.length === 0) return null;
+
+                        const minScore = Math.min(...filteredLeaderboard.map(data => Number(data.gamlescore)));
+
+                        // Find all players with the lowest score
+                        const winners = filteredLeaderboard.filter(data => Number(data.gamlescore) === minScore);
+                        
+                        return (
+                            <>
                                 <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
                                     <button onClick={(e) => { e.stopPropagation(); goToPreviousDay(); }} className="bg-dark text-white px-3 py-1 rounded">
                                         <FaArrowLeft />
@@ -241,30 +392,26 @@ const handleCloseModal = () => {
                                     </button>
                                 </div>
                                 <h4 className="text-center py-3">Daily Leaderboard</h4>
-                                
-                                {filteredPhrazle.filter(data => !missedUsers.includes(data.username)).length === 0 ? (
-                                    <Alert variant="info" className="text-center">
-                                        😕 No results found for this leaderboard.
-                                    </Alert>
-                                ) : (
-                                    
-                                filteredPhrazle
+                                {
+                                    filteredLeaderboard
                                     .slice()
                                     .sort((a, b) => a.gamlescore - b.gamlescore)
                                     .map((data, index) => {
                                         const totalScore = getTotalScore(data.gamename);
-                                        
+                                        const progressValue =
+                                            totalScore > 0
+                                                ? data.gamename === "connections"
+                                                    ? (data.gamlescore / totalScore) * 100
+                                                    : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
+                                                : 0;
+
                                         const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
                                         const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
-
-                                        // Assign points based on scoring method
                                         const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
                                         const pesceScore = isSingleWinner ? 1 : isSharedWinner ? 1 : 0;
+
                                         return (
-                                            <Row 
-                                                key={index} 
-                                                className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
-                                            >
+                                            <Row key={index} className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm">
                                                 {/* Avatar */}
                                                 <Col xs={3} className="d-flex align-items-center gap-2">
                                                     <img 
@@ -280,7 +427,7 @@ const handleCloseModal = () => {
                                                     {data.username}
                                                 </Col>
 
-                                                {/* Score & Progress */}
+                                                {/* Score */}
                                                 <Col xs={5}>
                                                     <Row className="align-items-center">
                                                         <Col xs={7}>
@@ -301,335 +448,221 @@ const handleCloseModal = () => {
                                                             />
                                                         </Col>
                                                         <Col xs={5} className="text-center d-flex fw-bold">
-                                                            {scoringmethod === "Golf" ? (
-                                                                <> 
-                                                                <span onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)} style={{ cursor: "pointer" }}>
-                                                                    {data.gamlescore} {isSingleWinner && "🏆"} 
-                                                                </span>
-                                                                </>
-                                                            ) : scoringmethod === "World Cup" ? (
-                                                                <>
-                                                                <span onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)} style={{ cursor: "pointer" }}>
-                                                                    {worldCupScore} {isSingleWinner && "🏆"} 
-                                                                </span>
-                                                                </>
-                                                            ) : scoringmethod === "Pesce" ? (
-                                                                <> 
-                                                                <span onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)} style={{ cursor: "pointer" }}>
-                                                                    {pesceScore} {isSingleWinner && "🏆"} 
-                                                                </span>
-                                                                </>
-                                                            ) : (
-                                                                <> {data.gamlescore} {isSingleWinner && "🏆"} </>
-                                                            )}
+                                                            <span onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)} style={{ cursor: "pointer" }}>
+                                                                {scoringmethod === "Golf" ? data.gamlescore : scoringmethod === "World Cup" ? worldCupScore : pesceScore}
+                                                                {isSingleWinner && " 🏆"}
+                                                            </span>
                                                         </Col>
+                                                        
                                                     </Row>
                                                 </Col>
                                             </Row>
-                                         );
-                                    }) // <-- this closes map
-                                )}
-                                    
-                            </div>
+                                        );
+                                    })
+                                }
+                            </>
                         );
-                    })}
-                    
-
-                    {/* Render non-Phrazle games */}
-                    {todayLeaderboard.length > 0 && (() => {
-                        // Filter out "phrazle" and find the lowest score
-                        const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename !== "phrazle");
-                        if (filteredLeaderboard.length === 0) return null;
-
-                        const minScore = Math.min(...filteredLeaderboard.map(data => Number(data.gamlescore)));
-
-                        // Find all players with the lowest score
-                        const winners = filteredLeaderboard.filter(data => Number(data.gamlescore) === minScore);
-                        const missedUsers = filteredLeaderboard.filter(d => d.missed).map(d => d.username);
-                        return (
+                    })()}
+                    </>
+                ) : null}
+                </Col>
+            </Row>
+                {dataFetched && todayLeaderboard.length > 0 ? (
+                    <>
+                    {/* Cumulative Leaderboard */}
+                    <Row className="justify-content-center leaderboard mt-4">
+                    <Col md={5}>
+                    <h4 className="py-3 text-center">
+                        Cumulative Leaderboard
+                    </h4>
+                    {latestJoinDate && (
+                    <p className="text-center">
+                        Latest user join date: {(() => {
+                        const [year, month, day] = latestJoinDate.split(' ')[0].split('-');
+                        return `${day}-${month}-${year}`;
+                        })()}
+                    </p>
+                    )}
+                        {cumulativeDailyScore &&
+                        cumulativeDailyScore.length > 0 &&
+                        cumulativeDailyScore.some(data => data.gamlescore !== undefined && !isNaN(Number(data.gamlescore)) && data.username) ? (
                             <>
-                                <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
-                                    <button onClick={(e) => { e.stopPropagation(); goToPreviousDay(); }} className="bg-dark text-white px-3 py-1 rounded">
-                                        <FaArrowLeft />
-                                    </button>
-                                    <div>
-                                        {dayjs(startDate).format("dddd, MMM D, YYYY")}
-                                    </div>
-                                    <button onClick={(e) => { e.stopPropagation(); goToNextDay(); }} className="bg-dark text-white px-3 py-1 rounded">
-                                        <FaArrowRight />
-                                    </button>
-                                </div>
-                                <h4 className="text-center py-3">Daily Leaderboard</h4>
-                                {filteredLeaderboard.filter(data => !missedUsers.includes(data.username)).length === 0 ? (
-                                    <Alert variant="info" className="text-center">
-                                        😕 No results found for this leaderboard.
-                                    </Alert>
-                                ) : (
-                                    filteredLeaderboard
-                                        .filter(data => !missedUsers.includes(data.username))
+                                {(() => {
+                                    const minScore = Math.min(...cumulativeDailyScore.map(data => Number(data.gamlescore)));
+                                    const winners = cumulativeDailyScore.filter(data => Number(data.gamlescore) === minScore);
+    
+                                    return cumulativeDailyScore
                                         .slice()
                                         .sort((a, b) => a.gamlescore - b.gamlescore)
                                         .map((data, index) => {
                                             const totalScore = getTotalScore(data.gamename);
-                                            const progressValue =
-                                                totalScore > 0
-                                                    ? data.gamename === "connections"
-                                                        ? (data.gamlescore / totalScore) * 100
-                                                        : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
-                                                    : 0;
-
+                                            const incrementScore = (index + 1) * totalScore;
+    
                                             const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
                                             const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
+    
                                             const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
-                                            const pesceScore = isSingleWinner ? 1 : isSharedWinner ? 1 : 0;
-
+                                            const pesceScore = isSharedWinner ? 1 : 0;
+    
                                             return (
-                                                <Row key={index} className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm">
-                                                    {/* Avatar */}
+                                                <Row
+                                                    key={index}
+                                                    className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
+                                                >
                                                     <Col xs={3} className="d-flex align-items-center gap-2">
-                                                        <img 
-                                                            src={data.avatar ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}` : "https://via.placeholder.com/50"} 
-                                                            alt="Avatar" 
-                                                            className="rounded-circle border" 
-                                                            style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
+                                                        <img
+                                                            src={
+                                                                data.avatar
+                                                                    ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}`
+                                                                    : "https://coralwebdesigns.com/college/wordgamle/user/uploads/default_avatar.png"
+                                                            }
+                                                            alt="Avatar"
+                                                            className="rounded-circle border"
+                                                            style={{ width: "35px", height: "35px", objectFit: "cover" }}
                                                         />
                                                     </Col>
-
-                                                    {/* Username */}
+    
                                                     <Col xs={4} className="text-start fw-semibold">
                                                         {data.username}
                                                     </Col>
-
-                                                    {/* Score */}
+    
                                                     <Col xs={5}>
                                                         <Row className="align-items-center">
-                                                            <Col xs={7}>
-                                                                <ProgressBar 
-                                                                    className={`${data.gamename}-progressbar`} 
-                                                                    variant="success" 
-                                                                    now={
-                                                                        scoringmethod === "Golf"
-                                                                            ? data.gamlescore
-                                                                            : scoringmethod === "World Cup"
-                                                                            ? worldCupScore
-                                                                            : scoringmethod === "Pesce"
-                                                                            ? pesceScore
-                                                                            : data.gamlescore
-                                                                    } 
-                                                                    max={totalScore} 
-                                                                    style={{ height: '8px' }}
+                                                            <Col xs={9}>
+                                                                {/* <ProgressBar
+                                                                    className={`${data.gamename}-progressbar`}
+                                                                    variant="success"
+                                                                    now={data.gamlescore}
+                                                                    max={totalScore + incrementScore}
+                                                                    style={{ height: "8px" }}
+                                                                /> */}
+                                                                {}
+                                                                <ProgressBar
+                                                                    className={`${data.gamename}-progressbar`}
+                                                                    variant="success"
+                                                                    now={data.gamlescore}
+                                                                    max={data.totalGamesPlayed * totalScore}
+                                                                    style={{ height: "8px" }}
                                                                 />
                                                             </Col>
-                                                            <Col xs={5} className="text-center d-flex fw-bold">
-                                                                <span onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)} style={{ cursor: "pointer" }}>
-                                                                    {scoringmethod === "Golf" ? data.gamlescore : scoringmethod === "World Cup" ? worldCupScore : pesceScore}
-                                                                    {isSingleWinner && " 🏆"}
-                                                                </span>
+                                                            <Col xs={3} className="text-center fw-bold">
+                                                                {data.gamlescore}
                                                             </Col>
                                                         </Row>
                                                     </Col>
                                                 </Row>
                                             );
-                                        })
-                                )}
+                                        });
+                                })()}
                             </>
-                        );
-                    })()}
-
-                    {/* Cumulative Leaderboard */}
-                    <Row className="justify-content-center leaderboard mt-4">
-                                    <Col>
-                                    <h4 className="py-3 text-center">
-                                        Cumulative Leaderboard
-                                    </h4>
-                                    {latestJoinDate && (
-                                    <p className="text-center">
-                                        Latest user join date: {(() => {
-                                        const [year, month, day] = latestJoinDate.split(' ')[0].split('-');
-                                        return `${day}-${month}-${year}`;
-                                        })()}
-                                    </p>
-                                    )}
-                                        {cumulativeDailyScore &&
-                                        cumulativeDailyScore.length > 0 &&
-                                        cumulativeDailyScore.some(data => data.gamlescore !== undefined && !isNaN(Number(data.gamlescore)) && data.username) ? (
-                                            <>
-                                                {(() => {
-                                                    const minScore = Math.min(...cumulativeDailyScore.map(data => Number(data.gamlescore)));
-                                                    const winners = cumulativeDailyScore.filter(data => Number(data.gamlescore) === minScore);
-                    
-                                                    return cumulativeDailyScore
-                                                        .slice()
-                                                        .sort((a, b) => a.gamlescore - b.gamlescore)
-                                                        .map((data, index) => {
-                                                            const totalScore = getTotalScore(data.gamename);
-                                                            const incrementScore = (index + 1) * totalScore;
-                    
-                                                            const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
-                                                            const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
-                    
-                                                            const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
-                                                            const pesceScore = isSharedWinner ? 1 : 0;
-                    
-                                                            return (
-                                                                <Row
-                                                                    key={index}
-                                                                    className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
-                                                                >
-                                                                    <Col xs={3} className="d-flex align-items-center gap-2">
-                                                                        <img
-                                                                            src={
-                                                                                data.avatar
-                                                                                    ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}`
-                                                                                    : "https://coralwebdesigns.com/college/wordgamle/user/uploads/default_avatar.png"
-                                                                            }
-                                                                            alt="Avatar"
-                                                                            className="rounded-circle border"
-                                                                            style={{ width: "35px", height: "35px", objectFit: "cover" }}
-                                                                        />
-                                                                    </Col>
-                    
-                                                                    <Col xs={4} className="text-start fw-semibold">
-                                                                        {data.username}
-                                                                    </Col>
-                    
-                                                                    <Col xs={5}>
-                                                                        <Row className="align-items-center">
-                                                                            <Col xs={9}>
-                                                                                {/* <ProgressBar
-                                                                                    className={`${data.gamename}-progressbar`}
-                                                                                    variant="success"
-                                                                                    now={data.gamlescore}
-                                                                                    max={totalScore + incrementScore}
-                                                                                    style={{ height: "8px" }}
-                                                                                /> */}
-                                                                                {}
-                                                                                <ProgressBar
-                                                                                    className={`${data.gamename}-progressbar`}
-                                                                                    variant="success"
-                                                                                    now={data.gamlescore}
-                                                                                    max={data.totalGamesPlayed * totalScore}
-                                                                                    style={{ height: "8px" }}
-                                                                                />
-                                                                            </Col>
-                                                                            <Col xs={3} className="text-center fw-bold">
-                                                                                {data.gamlescore}
-                                                                            </Col>
-                                                                        </Row>
-                                                                    </Col>
-                                                                </Row>
-                                                            );
-                                                        });
-                                                })()}
-                                            </>
-                                        ) : (
-                                            <Alert variant="info" className="text-center">
-                                                😕 No results found for this leaderboard.
-                                            </Alert>
-                                        )}
-                                    </Col>
-                                </Row>
-                                <Row className="justify-content-center leaderboard mt-4">
-                                    <Col>
-                                    <h4 className="py-3 text-center">
-                                        Average Leaderboard
-                                    </h4>
-                    
-                                        {cumulativeAverageScore &&
-                                        cumulativeAverageScore.length > 0 &&
-                                        cumulativeAverageScore.some(data => data.gamlescore !== undefined && !isNaN(Number(data.gamlescore)) && data.username) ? (
-                                            <>
-                                                {(() => {
-                                                    const minScore = Math.min(...cumulativeAverageScore.map(data => Number(data.gamlescore)));
-                                                    const winners = cumulativeAverageScore.filter(data => Number(data.gamlescore) === minScore);
-                    
-                                                    return cumulativeAverageScore
-                                                        .slice()
-                                                        // .sort((a, b) => (a.gamlescore / a.totalGamesPlayed) - (b.gamlescore / b.totalGamesPlayed))
-                                                        .sort((a, b) => {
-                                                            if (scoringmethod === "Golf") {
-                                                                return (a.gamlescore / a.totalGamesPlayed) - (b.gamlescore / b.totalGamesPlayed);
-                                                            } else if (scoringmethod === "World Cup") {
-                                                                return (b.gamlescore / b.totalGamesPlayed) - (a.gamlescore / a.totalGamesPlayed);
-                                                            } else if (scoringmethod === "Pesce") {
-                                                                return (b.gamlescore / b.totalGamesPlayed) - (a.gamlescore / a.totalGamesPlayed);
+                        ) : (
+                            <Alert variant="info" className="text-center">
+                                😕 No results found for this leaderboard.
+                            </Alert>
+                        )}
+                    </Col>
+                </Row>
+                <Row className="justify-content-center leaderboard mt-4">
+                    <Col md={5}>
+                    <h4 className="py-3 text-center">
+                        Average Leaderboard
+                    </h4>
+    
+                        {cumulativeAverageScore &&
+                        cumulativeAverageScore.length > 0 &&
+                        cumulativeAverageScore.some(data => data.gamlescore !== undefined && !isNaN(Number(data.gamlescore)) && data.username) ? (
+                            <>
+                                {(() => {
+                                    const minScore = Math.min(...cumulativeAverageScore.map(data => Number(data.gamlescore)));
+                                    const winners = cumulativeAverageScore.filter(data => Number(data.gamlescore) === minScore);
+    
+                                    return cumulativeAverageScore
+                                        .slice()
+                                        // .sort((a, b) => (a.gamlescore / a.totalGamesPlayed) - (b.gamlescore / b.totalGamesPlayed))
+                                        .sort((a, b) => {
+                                            if (scoringmethod === "Golf") {
+                                                return (a.gamlescore / a.totalGamesPlayed) - (b.gamlescore / b.totalGamesPlayed);
+                                            } else if (scoringmethod === "World Cup") {
+                                                return (b.gamlescore / b.totalGamesPlayed) - (a.gamlescore / a.totalGamesPlayed);
+                                            } else if (scoringmethod === "Pesce") {
+                                                return (b.gamlescore / b.totalGamesPlayed) - (a.gamlescore / a.totalGamesPlayed);
+                                            }
+                                            return 0;
+                                        })
+                                        .map((data, index) => {
+                                            const totalScore = getTotalScore(data.gamename);
+                                            const incrementScore = (index + 1) * totalScore;
+    
+                                            const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
+                                            const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
+    
+                                            const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
+                                            const pesceScore = isSharedWinner ? 1 : 0;
+    
+                                            return (
+                                                <>
+                                                {/* <p>Total Score - {data.gamlescore}</p>
+                                                <p>Total Game Played {data.totalGamesPlayed}</p>
+                                                <p>Game Chances {totalScore}</p> */}
+                                                <Row
+                                                    key={index}
+                                                    className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
+                                                >
+                                                    <Col xs={3} className="d-flex align-items-center gap-2">
+                                                        <img
+                                                            src={
+                                                                data.avatar
+                                                                    ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}`
+                                                                    : "https://coralwebdesigns.com/college/wordgamle/user/uploads/default_avatar.png"
                                                             }
-                                                            return 0;
-                                                        })
-                                                        .map((data, index) => {
-                                                            const totalScore = getTotalScore(data.gamename);
-                                                            const incrementScore = (index + 1) * totalScore;
-                    
-                                                            const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
-                                                            const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
-                    
-                                                            const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
-                                                            const pesceScore = isSharedWinner ? 1 : 0;
-                    
-                                                            return (
-                                                                <>
-                                                                {/* <p>Total Score - {data.gamlescore}</p>
-                                                                <p>Total Game Played {data.totalGamesPlayed}</p>
-                                                                <p>Game Chances {totalScore}</p> */}
-                                                                <Row
-                                                                    key={index}
-                                                                    className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
-                                                                >
-                                                                    <Col xs={3} className="d-flex align-items-center gap-2">
-                                                                        <img
-                                                                            src={
-                                                                                data.avatar
-                                                                                    ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}`
-                                                                                    : "https://coralwebdesigns.com/college/wordgamle/user/uploads/default_avatar.png"
-                                                                            }
-                                                                            alt="Avatar"
-                                                                            className="rounded-circle border"
-                                                                            style={{ width: "35px", height: "35px", objectFit: "cover" }}
-                                                                        />
-                                                                    </Col>
-                    
-                                                                    <Col xs={4} className="text-start fw-semibold">
-                                                                        {data.username}
-                                                                    </Col>
-                    
-                                                                    <Col xs={5}>
-                                                                        <Row className="align-items-center">
-                                                                            <Col xs={9}>
-                                                                                {/* <ProgressBar
-                                                                                    className={`${data.gamename}-progressbar`}
-                                                                                    variant="success"
-                                                                                    now={data.gamlescore}
-                                                                                    max={totalScore + incrementScore}
-                                                                                    style={{ height: "8px" }}
-                                                                                /> */}
-                                                                                {}
-                                                                                <ProgressBar
-                                                                                    className={`${data.gamename}-progressbar`}
-                                                                                    variant="success"
-                                                                                    now={data.gamlescore}
-                                                                                    max={data.totalGamesPlayed * totalScore}
-                                                                                    style={{ height: "8px" }}
-                                                                                />
-                                                                            </Col>
-                                                                            <Col xs={3} className="text-center fw-bold">
-                                                                                {/* {data.gamlescore} */}  
-                                                                                {((data.gamlescore / data.totalGamesPlayed)).toFixed(2)}
-                                                                            </Col>
-                                                                        </Row>
-                                                                    </Col>
-                                                                </Row>
-                                                                </>
-                                                            );
-                                                        });
-                                                })()}
-                                            </>
-                                        ) : (
-                                            <Alert variant="info" className="text-center">
-                                                😕 No results found for this leaderboard.
-                                            </Alert>
-                                        )}
-                                    </Col>
-                                </Row>
+                                                            alt="Avatar"
+                                                            className="rounded-circle border"
+                                                            style={{ width: "35px", height: "35px", objectFit: "cover" }}
+                                                        />
+                                                    </Col>
+    
+                                                    <Col xs={4} className="text-start fw-semibold">
+                                                        {data.username}
+                                                    </Col>
+    
+                                                    <Col xs={5}>
+                                                        <Row className="align-items-center">
+                                                            <Col xs={9}>
+                                                                {/* <ProgressBar
+                                                                    className={`${data.gamename}-progressbar`}
+                                                                    variant="success"
+                                                                    now={data.gamlescore}
+                                                                    max={totalScore + incrementScore}
+                                                                    style={{ height: "8px" }}
+                                                                /> */}
+                                                                {}
+                                                                <ProgressBar
+                                                                    className={`${data.gamename}-progressbar`}
+                                                                    variant="success"
+                                                                    now={data.gamlescore}
+                                                                    max={data.totalGamesPlayed * totalScore}
+                                                                    style={{ height: "8px" }}
+                                                                />
+                                                            </Col>
+                                                            <Col xs={3} className="text-center fw-bold">
+                                                                {/* {data.gamlescore} */}  
+                                                                {((data.gamlescore / data.totalGamesPlayed)).toFixed(2)}
+                                                            </Col>
+                                                        </Row>
+                                                    </Col>
+                                                </Row>
+                                                </>
+                                            );
+                                        });
+                                })()}
+                            </>
+                        ) : (
+                            <Alert variant="info" className="text-center">
+                                😕 No results found for this leaderboard.
+                            </Alert>
+                        )}
+                    </Col>
+                </Row>
                                 
 
                 </>
@@ -640,8 +673,6 @@ const handleCloseModal = () => {
                     </Alert>
                 )
             )}
-                </Col>
-            </Row>
         </>
     );
 }

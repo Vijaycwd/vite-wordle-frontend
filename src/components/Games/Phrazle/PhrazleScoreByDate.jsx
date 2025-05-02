@@ -11,7 +11,7 @@ function PhrazleScoreByDate() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA?.email;
     const [startDate, setStartDate] = useState(new Date());
-    const [period, setPeriod] = useState(''); // AM or PM
+    const [period, setPeriod] = useState('');
     const [statsChart, setStatsChart] = useState([]);
     const [dataFetched, setDataFetched] = useState(false);
     const [dataFetchedError, setFetchedError] = useState(false);
@@ -125,6 +125,7 @@ function PhrazleScoreByDate() {
                 />
             </div>
             <ul className='score-by-date p-2'>
+                
                 {dataFetched && statsChart.length > 0 ? (
                     statsChart.map((char, index) => {
                         const cleanedScore = char.phrazlescore.replace(/[🟨,🟩,🟦,🟪,⬜]/g, "");
@@ -138,17 +139,17 @@ function PhrazleScoreByDate() {
 
                         return (
                             <div key={index}>
-                                <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
-                                    <button onClick={(e) => { e.stopPropagation(); goToPreviousPeriod(); }} className="bg-dark text-white px-3 py-1 rounded">
-                                        <FaArrowLeft />
-                                    </button>
-                                    <div>
-                                        {dayjs(startDate).format("dddd, MMM D, YYYY")} - {period}
-                                    </div>
-                                    <button onClick={(e) => { e.stopPropagation(); goToNextPeriod(); }} className="bg-dark text-white px-3 py-1 rounded">
-                                        <FaArrowRight />
-                                    </button>
+                                <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium py-4">
+                                <button onClick={(e) => { e.stopPropagation(); goToPreviousPeriod(); }} className="bg-dark text-white px-3 py-1 rounded">
+                                    <FaArrowLeft />
+                                </button>
+                                <div>
+                                    {dayjs(startDate).format("dddd, MMM D, YYYY")} - {period}
                                 </div>
+                                <button onClick={(e) => { e.stopPropagation(); goToNextPeriod(); }} className="bg-dark text-white px-3 py-1 rounded">
+                                    <FaArrowRight />
+                                </button>
+                            </div>
                                 <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
                                 <div className={`phrazle-score-board-text my-3 fs-5 text-center`}>{phrasle_score_text}</div>
                                 <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
@@ -172,9 +173,22 @@ function PhrazleScoreByDate() {
                     })
                 ) : (
                     dataFetched && (
+                        <>
+                        <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium py-4">
+                            <button onClick={(e) => { e.stopPropagation(); goToPreviousPeriod(); }} className="bg-dark text-white px-3 py-1 rounded">
+                                <FaArrowLeft />
+                            </button>
+                            <div>
+                                {dayjs(startDate).format("dddd, MMM D, YYYY")} - {period}
+                            </div>
+                            <button onClick={(e) => { e.stopPropagation(); goToNextPeriod(); }} className="bg-dark text-white px-3 py-1 rounded">
+                                <FaArrowRight />
+                            </button>
+                        </div>
                         <Alert key='danger' variant='danger' className='p-1'>
                             No data found for the selected date.
                         </Alert>
+                        </>
                     )
                 )}
             </ul>
