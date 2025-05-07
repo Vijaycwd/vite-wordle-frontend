@@ -136,6 +136,7 @@ function PhrazleScoreByDate() {
                         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                         const todayDate = `${String(date.getDate()).padStart(2, '0')}-${months[date.getMonth()]}-${date.getFullYear()}`;
                         const gamleScore = char.gamlescore;
+                        const gamePlayed = char.gamePlayed;
 
                         return (
                             <div key={index}>
@@ -151,23 +152,29 @@ function PhrazleScoreByDate() {
                                 </button>
                             </div>
                                 <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
-                                <div className={`phrazle-score-board-text my-3 fs-5 text-center`}>{phrasle_score_text}</div>
-                                <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
-                                <div className='text-center'>
-                                    {phrazleScore.map((row, rowIndex) => {
-                                        if (!row.trim()) return null;
-                                        const symbols = row.split(' ');
-                                        return (
-                                            <div className="phrasle-row-score" key={rowIndex}>
-                                                {symbols.map((part, partIndex) => (
-                                                    <div className="items" key={partIndex}>
-                                                        {part}
+                                {gamePlayed === 'no' ? (
+                                        <p className='text-muted'>No Play</p>
+                                        ) : (
+                                        <>
+                                        <div className={`phrazle-score-board-text my-3 fs-5 text-center`}>{phrasle_score_text}</div>
+                                        <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
+                                        <div className='text-center'>
+                                            {phrazleScore.map((row, rowIndex) => {
+                                                if (!row.trim()) return null;
+                                                const symbols = row.split(' ');
+                                                return (
+                                                    <div className="phrasle-row-score" key={rowIndex}>
+                                                        {symbols.map((part, partIndex) => (
+                                                            <div className="items" key={partIndex}>
+                                                                {part}
+                                                            </div>
+                                                        ))}
                                                     </div>
-                                                ))}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
+                                                );
+                                            })}
+                                        </div>
+                                        </>
+                                    )}
                             </div>
                         );
                     })

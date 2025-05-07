@@ -98,20 +98,17 @@ function Wordlestatechart() {
                                             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                                             const todayDate = `${String(date.getDate()).padStart(2, '0')}-${months[date.getMonth()]}-${date.getFullYear()}`;
                                             const gamleScore = char.gamlescore;
+                                            
                                             return (
                                                 <div key={index}>
                                                   <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
-                                                  {Number(gamleScore) !== 7 && (
-                                                    <>
-                                                      <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
-                                                      <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
-                                                      <pre className='text-center'>
-                                                        {wordleScores.map((row, rowIndex) => (
-                                                          <div key={rowIndex}>{row}</div>
-                                                        ))}
-                                                      </pre>
-                                                    </>
-                                                  )}
+                                                  <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
+                                                    <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
+                                                    <pre className='text-center'>
+                                                    {wordleScores.map((row, rowIndex) => (
+                                                        <div key={rowIndex}>{row}</div>
+                                                    ))}
+                                                    </pre>
                                                 </div>
                                             );
                                               

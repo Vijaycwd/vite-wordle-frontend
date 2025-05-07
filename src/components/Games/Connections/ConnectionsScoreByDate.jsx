@@ -124,7 +124,7 @@ function ConnectionsScoreByDate() {
                         const lettersAndNumbersRemoved = item.connectionsscore.replace(/[a-zA-Z0-9,#/\\]/g, "");
                         const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
                         const connectionsScore = splitIntoRows(removespace, 4);
-
+                        const gamePlayed = item.gamePlayed;
                         return (
                             <li key={item.createdat}>
                                 <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
@@ -140,13 +140,15 @@ function ConnectionsScoreByDate() {
                                 </div>
                                 <div className='text-center'>
                                     <h6 className='text-center pt-3'>Gamle Score: {gamleScore}</h6>
-                                    {Number(gamleScore) !== 4 && (
+                                    {gamePlayed === 'no' ? (
+                                        <p className='text-muted'>No Play</p>
+                                        ) : (
                                         <>
                                             <p className='m-0'><strong>{item.username}</strong></p>
                                             <p className='m-1'>{cleanedScore}</p>
                                             <p className='my-1'>{formatCreatedAt(item.createdat)}</p>
-                                            {connectionsScore.map((row, rowIndex) => (
-                                                <p className='m-1' key={rowIndex}>{row}</p>
+                                            {wordleScores.map((row, rowIndex) => (
+                                            <p className='m-1' key={rowIndex}>{row}</p>
                                             ))}
                                         </>
                                     )}

@@ -106,28 +106,24 @@ function PhrazleStat() {
                                                                 <div className="text-center pb-2" key={index}>
                                                                     <h4 className="text-center my-3">{label} Data</h4>
                                                                     <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
-                                                                    {Number(gamleScore) !== 7 && (
-                                                                        <>
-                                                                        <div className="phrazle-score-board-text my-3 fs-5 text-center">{phrazle_score_text}</div>
-                                                                        <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
-                                                                        <div className="phrazle-score m-auto text-center">
-                                                                            {phrazleScore.map((row, rowIndex) => (
-                                                                                row.trim() && (
-                                                                                    <div className="phrasle-row-score" key={rowIndex}>
-                                                                                        {row.split(' ').map((part, partIndex) => (
-                                                                                            <div className="row" key={partIndex}>
-                                                                                                {part.split(' ').map((symbol, symbolIndex) => (
-                                                                                                    <div className="items" key={symbolIndex}>{symbol}</div>
-                                                                                                ))}
-                                                                                            </div>
-                                                                                        ))}
-                                                                                    </div>
-                                                                                )
-                                                                            ))}
-                                                                        </div>
-                                                                        </>
-                                                                    )}
                                                                     
+                                                                    <div className="phrazle-score-board-text my-3 fs-5 text-center">{phrazle_score_text}</div>
+                                                                    <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
+                                                                    <div className="phrazle-score m-auto text-center">
+                                                                        {phrazleScore.map((row, rowIndex) => (
+                                                                            row.trim() && (
+                                                                                <div className="phrasle-row-score" key={rowIndex}>
+                                                                                    {row.split(' ').map((part, partIndex) => (
+                                                                                        <div className="row" key={partIndex}>
+                                                                                            {part.split(' ').map((symbol, symbolIndex) => (
+                                                                                                <div className="items" key={symbolIndex}>{symbol}</div>
+                                                                                            ))}
+                                                                                        </div>
+                                                                                    ))}
+                                                                                </div>
+                                                                            )
+                                                                        ))}
+                                                                    </div>
                                                                 </div>
                                                             );
                                                         })
