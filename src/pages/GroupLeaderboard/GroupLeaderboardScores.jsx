@@ -62,20 +62,64 @@ function GroupLeaderboardScores() {
     }, [id, userId]); 
     
 
+    // useEffect(() => {
+    //     const fetchGroupStats = async () => {
+    //         if (!id || !game) return;
+
+    //         try {
+    //             setLoading(true);
+
+    //             // Fetch Today's Scores
+    //             const todayResponse = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-score.php`, {
+    //                 params: { groupId: id, groupName, game, timeZone, today: todayDate }
+    //             });
+
+    //             // console.log("Today's Scores Response:", todayResponse.data);
+
+    //             setTodayLeaderboard(todayResponse.data.data || []);
+    //         } catch (error) {
+    //             console.error("Error fetching group stats:", error.response ? error.response.data : error.message);
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     };
+
+    //     fetchGroupStats();
+    // }, [id, groupName, game, todayDate]);
+
+    const getCurrentPeriod = () => {
+    const hours = new Date().getHours();
+    return hours < 12 ? 'AM' : 'PM';
+    };
+    
+    const period = game === 'phrazle' ? getCurrentPeriod() : null;
+
+
     useEffect(() => {
         const fetchGroupStats = async () => {
             if (!id || !game) return;
-
+    
             try {
                 setLoading(true);
-
-                // Fetch Today's Scores
-                const todayResponse = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-score.php`, {
-                    params: { groupId: id, groupName, game, timeZone, today: todayDate }
-                });
-
-                // console.log("Today's Scores Response:", todayResponse.data);
-
+    
+                const params = {
+                    groupId: id,
+                    groupName,
+                    game,
+                    timeZone,
+                    today: todayDate,
+                };
+    
+                // If the game is Phrazle, include the period
+                if (game === 'phrazle') {
+                    params.period = period; // 'AM' or 'PM'
+                }
+    
+                const todayResponse = await axios.get(
+                    `https://coralwebdesigns.com/college/wordgamle/groups/get-group-score.php`,
+                    { params }
+                );
+    
                 setTodayLeaderboard(todayResponse.data.data || []);
             } catch (error) {
                 console.error("Error fetching group stats:", error.response ? error.response.data : error.message);
@@ -83,9 +127,10 @@ function GroupLeaderboardScores() {
                 setLoading(false);
             }
         };
-
+    
         fetchGroupStats();
-    }, [id, groupName, game, todayDate]);
+    }, [id, groupName, game, todayDate, period]);
+    
 
     // useEffect(() => {
     //     const fetchCumulativeScore = async () => {
@@ -141,23 +186,25 @@ function GroupLeaderboardScores() {
                     {todayLeaderboard.length > 0 ? (
                         <>
                             {/* Separate Phrazle AM and PM */}
-                            
-                            {["AM", "PM"].map((timePeriod) => {
-                            const filteredPhrazle = todayLeaderboard.filter((data) => {
-                                if (data.gamename !== "phrazle") return false;
-                                const gameTime = new Date(data.createdat).getHours();
-                                return timePeriod === "AM" ? gameTime < 12 : gameTime >= 12;
-                            });
+                        
 
-                            if (filteredPhrazle.length === 0) return null; // Skip rendering if no data for this time period
-                                const minScore = Math.min(...filteredPhrazle.map(data => Number(data.gamlescore)));
-                                const winners = filteredPhrazle.filter(data => Number(data.gamlescore) === minScore);
-                                const missedUsers = filteredPhrazle.filter(d => d.missed).map(d => d.username);
+                            {!loading && !error && todayLeaderboard.length > 0 && (() => {
+                                // Filter out "phrazle" and find the lowest score
+                                const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename === "phrazle");
+                                //console.log('filteredLeaderboard',filteredLeaderboard);
+                                if (filteredLeaderboard.length === 0) return null;
+
+                                const minScore = Math.min(...filteredLeaderboard.map(data => Number(data.gamlescore)));
+
+                                // Find all players with the lowest score
+                                const winners = filteredLeaderboard.filter(data => Number(data.gamlescore) === minScore);
+                                const missedUsers = filteredLeaderboard.filter(d => d.missed).map(d => d.username);
                                 
                                 if (missedUsers.length > 0) {
                                     return (
                                         <div className="text-center mb-3 missed-user-section py-3 px-2">
                                             <h4 className="text-center">Today's Leaderboard</h4>
+                                            <p>The Leaderboard will be viewable when all group members have played.</p>
                                             <p className="mb-1">Yet to play:</p>
                                             {missedUsers.map((name, i) => (
                                                 <div key={i} className="fw-bold">{name}</div>
@@ -166,45 +213,54 @@ function GroupLeaderboardScores() {
                                     );
                                 }
                                 else{
+                                    
                                     return (
+                                        
                                         <>
-                                        <h4 className="text-center py-3">Today's Leaderboard</h4>
-                                        <div key={timePeriod}>
-                                            <h5 className="text-center">{`Phrazle ${timePeriod}`}</h5>
-
-                                            {filteredPhrazle
+                                            <h4 className="text-center py-3">Today's Leaderboard</h4>
+                                            {filteredLeaderboard
                                                 .slice()
                                                 .sort((a, b) => a.gamlescore - b.gamlescore)
                                                 .map((data, index) => {
-                                                    
                                                     const totalScore = getTotalScore(data.gamename);
+                                                    const progressValue =
+                                                        totalScore > 0
+                                                            ? data.gamename === "connections"
+                                                                ? (data.gamlescore / totalScore) * 100
+                                                                : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
+                                                            : 0;
+    
+                                                    // Check if the user is a winner
                                                     const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
                                                     const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
-
+    
                                                     // Assign points based on scoring method
                                                     const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
-                                                    const pesceScore = isSingleWinner ? 1 : isSharedWinner ? 1 : 0;
-
+                                                    const pesceScore = isSingleWinner ? 1 : isSharedWinner ? 1 : 0; // Pesce: all lowest get 1
+    
                                                     return (
+                                                        <>
+                                                        
                                                         <Row 
                                                             key={index} 
                                                             className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
                                                         >
-                                                            {/* Avatar */}
+                                                            
+                                                            {/* Rank + Avatar */}
                                                             <Col xs={3} className="d-flex align-items-center gap-2">
                                                                 <img 
-                                                                    src={data.avatar ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}` : "https://via.placeholder.com/50"} 
+                                                                    src={data.avatar ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}` : "https://coralwebdesigns.com/college/wordgamle/user/uploads/defalut_avatar.png"} 
                                                                     alt="Avatar" 
                                                                     className="rounded-circle border" 
                                                                     style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
                                                                 />
                                                             </Col>
-
+    
                                                             {/* Username */}
                                                             <Col xs={4} className="text-start fw-semibold">
                                                                 {data.username}
                                                             </Col>
-
+    
                                                             {/* Score & Progress */}
                                                             <Col xs={5}>
                                                                 <Row className="align-items-center">
@@ -239,16 +295,14 @@ function GroupLeaderboardScores() {
                                                                 </Row>
                                                             </Col>
                                                         </Row>
+                                                        </>
                                                     );
                                                 })}
-                                        </div>
-                                    </>
+                                        </>
                                     );
-                                    
                                 }
-                            
-                        })}
-
+                                
+                            })()}
                             {/* Render non-Phrazle games */}
                             {!loading && !error && todayLeaderboard.length > 0 && (() => {
                                 // Filter out "phrazle" and find the lowest score

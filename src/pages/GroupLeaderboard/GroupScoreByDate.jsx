@@ -199,9 +199,7 @@ function GroupScoreByDate() {
             setDataFetched(true);
         }
     };
-    
-    
-    console.log('todayLeaderboard',todayLeaderboard);
+
     // Custom input button for DatePicker
     // const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     //     <Button className={`example-custom-input px-5 btn btn-primary ${game}-btn`} onClick={onClick} ref={ref}>
