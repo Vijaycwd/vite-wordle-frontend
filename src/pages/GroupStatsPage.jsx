@@ -38,8 +38,8 @@ function GroupStatsPage() {
     <Container>
       <Row className='pb-5'>
         <Col className="text-center mt-4">
-          <h2 className='text-capitalize pb-2'>{group?.name || ""}</h2>
-          <h3 className='text-capitalize py-3'>{game} Leaderboard</h3>
+          <h2 className='text-capitalize py-3'>{group?.name || ""} - {game}</h2>
+          {/* <h3 className='text-capitalize py-3'>{game} Leaderboard</h3> */}
           {/* <h3 className='text-capitalize py-3'>{game.charAt(0).toUpperCase() + game.slice(1)} Stats</h3> */}
           <GroupLeaderboardScores/>
         </Col>

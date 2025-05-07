@@ -199,7 +199,9 @@ function GroupScoreByDate() {
             setDataFetched(true);
         }
     };
-
+    
+    
+    console.log('todayLeaderboard',todayLeaderboard);
     // Custom input button for DatePicker
     // const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     //     <Button className={`example-custom-input px-5 btn btn-primary ${game}-btn`} onClick={onClick} ref={ref}>
@@ -475,7 +477,7 @@ const handleCloseModal = () => {
                     </h4>
                     {latestJoinDate && (
                     <p className="text-center">
-                        Latest user join date: {(() => {
+                        Start Date: {(() => {
                         const [year, month, day] = latestJoinDate.split(' ')[0].split('-');
                         return `${day}-${month}-${year}`;
                         })()}
@@ -660,8 +662,7 @@ const handleCloseModal = () => {
                             </Alert>
                         )}
                     </Col>
-                </Row>
-                                
+                </Row>                   
 
                 </>
             ) : (
