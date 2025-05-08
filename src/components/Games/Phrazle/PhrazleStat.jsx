@@ -21,6 +21,14 @@ function PhrazleStat() {
         }
     }, [loginuserEmail]);
 
+    const getCurrentPeriod = () => {
+        const hours = new Date().getHours();
+        return hours < 12 ? 'AM' : 'PM';
+        };
+        
+        const period =  getCurrentPeriod();
+
+        
     function getStatChart() {
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         const localDate = new Date();
@@ -28,9 +36,15 @@ function PhrazleStat() {
         const adjustedDate = new Date(localDate.getTime() - offsetMinutes * 60 * 1000);
         const todayDate = adjustedDate.toISOString().slice(0, -1);
 
-        Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/get-score.php`, {
-            params: { useremail: loginuserEmail, timeZone, today: todayDate }
-        })
+        const params = {
+            useremail: loginuserEmail,
+            timeZone,
+            today: todayDate,
+            period
+        };
+
+       
+        Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/get-score.php`, {params})
         .then((res) => {
             if (res.data.status === "success") {
                 setStatsChart(res.data.phrazlescore);
@@ -70,7 +84,7 @@ function PhrazleStat() {
         const rows = cleanedData.split(/\n+/);
         return rows.map(row => row.replace(/\s+/g, ' ').trim());
     }
-
+     console.log('statschart',statschart);
     return (
         <Container>
             <Row className='align-items-center justify-content-center'>
