@@ -118,11 +118,11 @@ function ConnectionStat() {
                             <Connectionsstatistics/>
                         </Col>
                     </Row>
-                    <Row className='align-items-center justify-content-center'>
+                    {/* <Row className='align-items-center justify-content-center'>
                         <Col md={4}>
                             <ConnectionsGuessDistribution/>
                         </Col>
-                    </Row>
+                    </Row> */}
                     <Row className='align-items-center justify-content-center'>
                         <Col md={4} className='text-align-center py-5'>
                             <ConnectionsScoreByDate/>

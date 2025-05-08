@@ -131,11 +131,11 @@ function Wordlestatechart() {
                             <Wordlestatistics/>
                         </Col>
                     </Row>
-                    <Row className='align-items-center justify-content-center'>
+                    {/* <Row className='align-items-center justify-content-center'>
                         <Col md={4}>
                             <WordleGuessDistribution/>
                         </Col>
-                    </Row>
+                    </Row> */}
                     <Row className='align-items-center justify-content-center'>
                         <Col md={4} className='text-align-center py-5'>
                             <WordleScoreByDate/>

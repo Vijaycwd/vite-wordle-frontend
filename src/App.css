@@ -164,17 +164,21 @@ span.notification-count.badge.bg-danger {
   background-color: transparent;
   border-radius: 0px;
 }
-.wordle-progressbar .progress-bar
+.wordle-progress-bar, .connections-progress-bar, .phrazle-progress-bar{
+  height: 20px !important;
+  border-radius: 0px;
+}
+.wordle-progressbar .progress-bar, .wordle-progress-bar .progress-bar
 {
   background-color: #a0c35a!important;
   
 }
-.connections-progressbar .progress-bar
+.connections-progressbar .progress-bar, .connections-progress-bar .progress-bar
 {
   background-color: #B3A7FF!important;
   
 }
-.phrazle-progressbar .progress-bar
+.phrazle-progressbar .progress-bar, .phrazle-progress-bar .progress-bar
 {
   background-color: #218838!important;
   
