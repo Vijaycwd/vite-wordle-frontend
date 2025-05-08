@@ -147,7 +147,7 @@ function ConnectionsScoreByDate() {
                                             <p className='m-0'><strong>{item.username}</strong></p>
                                             <p className='m-1'>{cleanedScore}</p>
                                             <p className='my-1'>{formatCreatedAt(item.createdat)}</p>
-                                            {wordleScores.map((row, rowIndex) => (
+                                            {connectionsScore.map((row, rowIndex) => (
                                             <p className='m-1' key={rowIndex}>{row}</p>
                                             ))}
                                         </>
