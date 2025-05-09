@@ -168,8 +168,7 @@ function GroupScoreByDate() {
                 ? { ...baseParams, period: customPeriod || period }
                 : baseParams;
     
-            const [missedScoreResponse, todayResponse, cumulativeAverageResponse, cumulativeDailyResponse] = await Promise.all([
-                axios.get(`https://coralwebdesigns.com/college/wordgamle/games/${game}/auto-submit-${game}-scores.php`, { params }),
+            const [todayResponse, cumulativeAverageResponse, cumulativeDailyResponse] = await Promise.all([
                 axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-score.php`, { params }),
                 axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-cumulative-average-score.php`, { params }),
                 axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-cumulative-score-bydate.php`, { params }),
@@ -296,8 +295,8 @@ const handleCloseModal = () => {
 
                         if (filteredPhrazle.length === 0) return null; // Skip rendering if no data for this time period
 
-                        const minScore = Math.min(...filteredPhrazle.map((data) => Number(data.gamlescore)));
-                        const winners = filteredPhrazle.filter(data => Number(data.gamlescore) === minScore);
+                        const minScore = Math.min(...filteredPhrazle.map((data) => Number(data.gamlescore ?? 4)));
+                        const winners = filteredPhrazle.filter(data => Number(data.gamlescore ?? 4) === minScore);
                         return (
                             <div key={timePeriod}>
                                 <h4 className="text-center py-3">Daily Leaderboard</h4>
@@ -331,12 +330,12 @@ const handleCloseModal = () => {
                                                   variant="success" 
                                                   now={
                                                     scoringmethod === "Golf"
-                                                      ? data.gamlescore
+                                                      ? data.gamlescore ?? 4
                                                       : scoringmethod === "World Cup"
                                                       ? worldCupScore
                                                       : scoringmethod === "Pesce"
                                                       ? pesceScore
-                                                      : data.gamlescore
+                                                      : data.gamlescore ?? 4
                                                   } 
                                                   max={totalScore} 
                                                   style={{ height: '8px' }}
@@ -345,12 +344,12 @@ const handleCloseModal = () => {
                                               <Col xs={5} className="text-center d-flex fw-bold">
                                                 <span onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)} style={{ cursor: "pointer" }}>
                                                   {scoringmethod === "Golf"
-                                                    ? `${data.gamlescore}${isSingleWinner ? " 🏆" : ""}`
+                                                    ? `${(data.gamlescore ?? '') === '' ? 4 : data.gamlescore}${isSingleWinner ? " 🏆" : ""}`
                                                     : scoringmethod === "World Cup"
                                                     ? `${worldCupScore}${isSingleWinner ? " 🏆" : ""}`
                                                     : scoringmethod === "Pesce"
                                                     ? `${pesceScore}${isSingleWinner ? " 🏆" : ""}`
-                                                    : `${data.gamlescore}${isSingleWinner ? " 🏆" : ""}`
+                                                    : `${(data.gamlescore ?? '') === '' ? 4 : data.gamlescore}${isSingleWinner ? " 🏆" : ""}`
                                                   }
                                                 </span>
                                               </Col>
@@ -373,10 +372,10 @@ const handleCloseModal = () => {
                         console.log('filteredLeaderboard',filteredLeaderboard);
                         if (filteredLeaderboard.length === 0) return null;
 
-                        const minScore = Math.min(...filteredLeaderboard.map(data => Number(data.gamlescore)));
+                        const minScore = Math.min(...filteredLeaderboard.map(data => Number(data.gamlescore ?? 7)));
 
                         // Find all players with the lowest score
-                        const winners = filteredLeaderboard.filter(data => Number(data.gamlescore) === minScore);
+                        const winners = filteredLeaderboard.filter(data => Number(data.gamlescore ?? 7) === minScore);
                         
                         return (
                             <>
@@ -395,7 +394,7 @@ const handleCloseModal = () => {
                                 {
                                     filteredLeaderboard
                                     .slice()
-                                    .sort((a, b) => a.gamlescore - b.gamlescore)
+                                    .sort((a, b) => b.gamlescore - a.gamlescore)
                                     .map((data, index) => {
                                         const totalScore = getTotalScore(data.gamename);
                                         const progressValue =
@@ -436,23 +435,31 @@ const handleCloseModal = () => {
                                                                 variant="success" 
                                                                 now={
                                                                     scoringmethod === "Golf"
-                                                                        ? data.gamlescore
+                                                                        ? data.gamlescore ?? 7
                                                                         : scoringmethod === "World Cup"
                                                                         ? worldCupScore
                                                                         : scoringmethod === "Pesce"
                                                                         ? pesceScore
-                                                                        : data.gamlescore
+                                                                        : (data.gamlescore ?? 7)
                                                                 } 
                                                                 max={totalScore} 
                                                                 style={{ height: '8px' }}
                                                             />
                                                         </Col>
                                                         <Col xs={5} className="text-center d-flex fw-bold">
-                                                            <span onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)} style={{ cursor: "pointer" }}>
-                                                                {scoringmethod === "Golf" ? data.gamlescore : scoringmethod === "World Cup" ? worldCupScore : pesceScore}
+                                                            <span
+                                                                onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)}
+                                                                style={{ cursor: "pointer" }}
+                                                            >
+                                                                {scoringmethod === "Golf"
+                                                                    ? (data.gamlescore ?? '') === '' ? 7 : data.gamlescore
+                                                                    : scoringmethod === "World Cup"
+                                                                    ? worldCupScore
+                                                                    : pesceScore}
                                                                 {isSingleWinner && " 🏆"}
                                                             </span>
                                                         </Col>
+
                                                         
                                                     </Row>
                                                 </Col>
@@ -493,7 +500,11 @@ const handleCloseModal = () => {
     
                                     return cumulativeDailyScore
                                         .slice()
-                                        .sort((a, b) => a.gamlescore - b.gamlescore)
+                                        .sort((a, b) =>
+                                            scoringmethod === "Golf"
+                                                ? a.gamlescore - b.gamlescore
+                                                : (b.gamlescore ?? 0) - (a.gamlescore ?? 0)
+                                        )
                                         .map((data, index) => {
                                             const totalScore = getTotalScore(data.gamename);
                                             const incrementScore = (index + 1) * totalScore;

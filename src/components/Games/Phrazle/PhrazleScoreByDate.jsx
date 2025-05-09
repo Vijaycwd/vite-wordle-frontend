@@ -10,8 +10,7 @@ import dayjs from "dayjs";
 function PhrazleScoreByDate() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA?.email;
-    const loginuserName =  USER_AUTH_DATA.username;
-    const [startDate, setStartDate] = useState(new Date());
+    const [startDate, setStartDate] = useState(new Date(new Date().setDate(new Date().getDate() - 1)));
     const [period, setPeriod] = useState('');
     const [statsChart, setStatsChart] = useState([]);
     const [dataFetched, setDataFetched] = useState(false);
@@ -19,75 +18,37 @@ function PhrazleScoreByDate() {
 
     const formatDateForBackend = (date) => moment(date).format('YYYY-MM-DD hh:mm A');
 
-    // const fetchDataByDate = (date, periodValue) => {
-    //     const timeZone = moment.tz.guess();
-    //     const originalDate = moment.tz(date, "YYYY-MM-DD hh:mm A", timeZone);
-    //     const formattedDate = originalDate.format("YYYY-MM-DDTHH:mm:ss");
-
-    //     axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/get-score.php`, {
-    //         params: {
-    //             useremail: loginuserEmail,
-    //             today: formattedDate,
-    //             timeZone: timeZone,
-    //             period: periodValue
-    //         }
-    //     })
-    //     .then((response) => {
-    //         if (response.data.status === "success") {
-    //             setStatsChart(response.data.phrazlescore);
-    //             setDataFetched(true);
-    //             setFetchedError(false);
-    //         } else {
-    //             setStatsChart([]);
-    //             setDataFetched(true);
-    //             setFetchedError(true);
-    //         }
-    //     })
-    //     .catch(() => {
-    //         setStatsChart([]);
-    //         setDataFetched(true);
-    //         setFetchedError(true);
-    //     });
-    // };
-    const fetchDataByDate = async (date, periodValue) => {
+    const fetchDataByDate = (date, periodValue) => {
         const timeZone = moment.tz.guess();
         const originalDate = moment.tz(date, "YYYY-MM-DD hh:mm A", timeZone);
         const formattedDate = originalDate.format("YYYY-MM-DDTHH:mm:ss");
-            try {
-                const timeZone = moment.tz.guess();
-                
-                const params = {
-                    userename: loginuserName,
-                    useremail: loginuserEmail,
-                    formattedYesterday: date,
-                    today: date,
-                    timeZone: timeZone,
-                    period: periodValue
-                };
-        
-                const [missedScoreResponse, todayResponse] = await Promise.all([
-                    axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/auto-submit-phrazle-scores.php`, { params }),
-                    axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/get-score.php`, { params }),
-                ]);
-                console.log('todayResponse',todayResponse.data.phrazlescore);
-    
-                if(todayResponse.data.status === "success"){
-    
-                    setStatsChart(todayResponse.data.phrazlescore);
-                }
-                else {
-                    setStatsChart([]);
-                    setFetchedError(true);
-                }
-                setDataFetched(true);
-        
-            } catch (error) {
-                console.error("API Error:", error);
-                setStatsChart([]);
-                setFetchedError(true);
-                setDataFetched(true);
+
+        axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/get-score.php`, {
+            params: {
+                useremail: loginuserEmail,
+                today: formattedDate,
+                timeZone: timeZone,
+                period: periodValue
             }
-        };
+        })
+        .then((response) => {
+            if (response.data.status === "success") {
+                setStatsChart(response.data.phrazlescore);
+                setDataFetched(true);
+                setFetchedError(false);
+            } else {
+                setStatsChart([]);
+                setDataFetched(true);
+                setFetchedError(true);
+            }
+        })
+        .catch(() => {
+            setStatsChart([]);
+            setDataFetched(true);
+            setFetchedError(true);
+        });
+    };
+
     // useEffect(() => {
     //     const formattedDate = formatDateForBackend(startDate);
     //     fetchDataByDate(formattedDate, period);
@@ -118,8 +79,8 @@ function PhrazleScoreByDate() {
     };
     
     const goToNextPeriod = () => {
-        const yesterday = dayjs().subtract(1, 'day').startOf('day');
-        const nextDate = dayjs(startDate).add(1, 'day').startOf('day');
+        const today = dayjs();
+        const nextDate = dayjs(startDate).add(1, 'day');
     
         if (period === 'AM') {
             const newPeriod = 'PM';
@@ -127,9 +88,7 @@ function PhrazleScoreByDate() {
             fetchDataByDate(formattedDate, newPeriod);
             setPeriod(newPeriod);
         } else {
-            // Prevent selecting today or future
-            if (nextDate.isAfter(yesterday, 'day')) return;
-    
+            if (nextDate.isAfter(today, 'day')) return;
             const newPeriod = 'AM';
             const formattedDate = formatDateForBackend(nextDate.toDate());
             fetchDataByDate(formattedDate, newPeriod);
@@ -155,6 +114,7 @@ function PhrazleScoreByDate() {
         <>
             <div className='text-center'>
                 <DatePicker
+                    selected={startDate}
                     onChange={handleDateChange}
                     customInput={<ExampleCustomInput />}
                     dateFormat="dd-MM-yyyy"
@@ -166,7 +126,21 @@ function PhrazleScoreByDate() {
             </div>
             <ul className='score-by-date p-2'>
                 
-                {dataFetched && statsChart.length > 0 ? (
+            {dataFetched && (
+            <>
+                <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium py-4">
+                    <button onClick={(e) => { e.stopPropagation(); goToPreviousPeriod(); }} className="bg-dark text-white px-3 py-1 rounded">
+                        <FaArrowLeft />
+                    </button>
+                    <div>
+                        {dayjs(startDate).format("dddd, MMM D, YYYY")} - {period}
+                    </div>
+                    <button onClick={(e) => { e.stopPropagation(); goToNextPeriod(); }} className="bg-dark text-white px-3 py-1 rounded">
+                        <FaArrowRight />
+                    </button>
+                </div>
+
+                {statsChart.length > 0 ? (
                     statsChart.map((char, index) => {
                         const cleanedScore = char.phrazlescore.replace(/[🟨,🟩,🟦,🟪,⬜]/g, "");
                         const phrasle_score_text = cleanedScore.replace(/#phrazle|https:\/\/solitaired.com\/phrazle/g, '');
@@ -180,64 +154,37 @@ function PhrazleScoreByDate() {
 
                         return (
                             <div key={index}>
-                                <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium py-4">
-                                <button onClick={(e) => { e.stopPropagation(); goToPreviousPeriod(); }} className="bg-dark text-white px-3 py-1 rounded">
-                                    <FaArrowLeft />
-                                </button>
-                                <div>
-                                    {dayjs(startDate).format("dddd, MMM D, YYYY")} - {period}
-                                </div>
-                                <button onClick={(e) => { e.stopPropagation(); goToNextPeriod(); }} className="bg-dark text-white px-3 py-1 rounded">
-                                    <FaArrowRight />
-                                </button>
-                            </div>
-                                <h6 className='text-center'>Gamle Score: {gamleScore}</h6>
-                                {gamePlayed === 'no' || cleanedScore === '' || cleanedScore === 'X/6' ? (
-                                        <p className='text-muted text-center'>No Play</p>
-                                        ) : (
-                                        <>
-                                        <div className={`phrazle-score-board-text my-3 fs-5 text-center`}>{phrasle_score_text}</div>
-                                        <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
-                                        <div className='text-center'>
-                                            {phrazleScore.map((row, rowIndex) => {
-                                                if (!row.trim()) return null;
-                                                const symbols = row.split(' ');
-                                                return (
-                                                    <div className="phrasle-row-score" key={rowIndex}>
-                                                        {symbols.map((part, partIndex) => (
-                                                            <div className="items" key={partIndex}>
-                                                                {part}
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                );
-                                            })}
+                            <h6 className='text-center'>Gamle Score: {gamleScore}</h6>
+                            <div className='phrazle-score-board-text my-3 fs-5 text-center'>{phrasle_score_text}</div>
+                            <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
+                            <div className='text-center'>
+                                {phrazleScore.map((row, rowIndex) => {
+                                    if (!row.trim()) return null;
+                                    const symbols = row.split(' ');
+                                    return (
+                                        <div className="phrasle-row-score" key={rowIndex}>
+                                            {symbols.map((part, partIndex) => (
+                                                <div className="items" key={partIndex}>
+                                                    {part}
+                                                </div>
+                                            ))}
                                         </div>
-                                        </>
-                                    )}
+                                    );
+                                })}
                             </div>
+                        </div>
+
                         );
                     })
                 ) : (
-                    dataFetched && (
-                        <>
-                        <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium py-4">
-                            <button onClick={(e) => { e.stopPropagation(); goToPreviousPeriod(); }} className="bg-dark text-white px-3 py-1 rounded">
-                                <FaArrowLeft />
-                            </button>
-                            <div>
-                                {dayjs(startDate).format("dddd, MMM D, YYYY")} - {period}
-                            </div>
-                            <button onClick={(e) => { e.stopPropagation(); goToNextPeriod(); }} className="bg-dark text-white px-3 py-1 rounded">
-                                <FaArrowRight />
-                            </button>
-                        </div>
-                        <Alert key='danger' variant='danger' className='p-1'>
-                            No data found for the selected date.
-                        </Alert>
-                        </>
-                    )
+                    <div>
+                        <h6 className='text-center'>Gamle Score: 7</h6>
+                        <p className='text-muted text-center'>No Play</p>
+                    </div>
                 )}
+            </>
+        )}
+
             </ul>
         </>
     );
