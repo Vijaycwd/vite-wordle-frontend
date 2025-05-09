@@ -10,6 +10,7 @@ import dayjs from "dayjs";
 function WordleScoreByDate() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA.email;
+    const loginuserName =  USER_AUTH_DATA.username;
     const [selectedDate, setSelectedDate] = useState(null);
     const [statsChart, setStatsChart] = useState([]);
     const [dataFetched, setDataFetched] = useState(false);
@@ -26,33 +27,40 @@ function WordleScoreByDate() {
         fetchDataByDate(formattedDate);  // Trigger data fetching after date selection
     };
 
-    const fetchDataByDate = (date) => {
-        const timeZone = moment.tz.guess(); // Automatically get the user's local time zone
-    
-        // Make the API request to the endpoint with date and timeZone as query parameters
-        axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/get-score.php`, {
-            params: {
+    const fetchDataByDate = async (date) => {
+        try {
+            const timeZone = moment.tz.guess();
+            
+            const params = {
+                userename: loginuserName,
                 useremail: loginuserEmail,
+                formattedYesterday: date,
                 today: date,
                 timeZone: timeZone
+            };
+    
+            const [missedScoreResponse, todayResponse] = await Promise.all([
+                axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/auto-submit-wordle-scores.php`, { params }),
+                axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/get-score.php`, { params }),
+            ]);
+            console.log('todayResponse',todayResponse.data.wordlescore);
+
+            if(todayResponse.data.status === "success"){
+
+                setStatsChart(todayResponse.data.wordlescore);
             }
-        })
-        .then((response) => {
-            if (response.data.status === "success") {
-                setStatsChart(response.data.wordlescore);
-                setDataFetched(true);
-                setFetchedError(false);
-            } else {
+            else {
                 setStatsChart([]);
-                setDataFetched(true);
                 setFetchedError(true);
             }
-        })
-        .catch((error) => {
-            setStatsChart([]);
             setDataFetched(true);
+    
+        } catch (error) {
+            console.error("API Error:", error);
+            setStatsChart([]);
             setFetchedError(true);
-        });
+            setDataFetched(true);
+        }
     };
 
     // Function to slice the string into rows of a specified length
@@ -80,7 +88,7 @@ function WordleScoreByDate() {
         
     const goToNextDay = () => {
         const nextDate = dayjs(startDate).add(1, 'day');
-        const today = dayjs();
+        const today = dayjs().subtract(1, 'day').startOf('day');
         if (nextDate.isAfter(today, 'day')) return;
         handleDateChange(nextDate.toDate());
     };
@@ -109,10 +117,9 @@ function WordleScoreByDate() {
                     maxDate={new Date()}
                 /> */}
                 <DatePicker
-                     selected={startDate}
                     onChange={handleDateChange}
                     customInput={<ExampleCustomInput />}
-                    maxDate={new Date()}
+                    maxDate={new Date(new Date().setDate(new Date().getDate() - 1))}
                 />
             </div>
             <ul className='score-by-date p-2'>
@@ -140,7 +147,7 @@ function WordleScoreByDate() {
                                 </div>
                                 <div className='text-center'>
                                     <h6 className='text-center pt-3'>Gamle Score: {gamleScore}</h6>
-                                    {gamePlayed === 'no' ? (
+                                    {gamePlayed === 'no' ||  cleanedScore === 'X/6' ?(
                                         <p className='text-muted'>No Play</p>
                                         ) : (
                                         <>
