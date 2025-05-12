@@ -294,23 +294,40 @@ const handleCloseModal = () => {
                         });
 
                         if (filteredPhrazle.length === 0) return null; // Skip rendering if no data for this time period
+                        const minScore = Math.min(
+                            ...filteredPhrazle.map(data => 
+                                Number(data.gamlescore ?? getTotalScore(data.gamename))
+                            )
+                        );
 
-                        const minScore = Math.min(...filteredPhrazle.map((data) => Number(data.gamlescore ?? 4)));
-                        const winners = filteredPhrazle.filter(data => Number(data.gamlescore ?? 4) === minScore);
+                        // Find all players with the lowest score
+                        const winners = filteredPhrazle.filter(data => 
+                            Number(data.gamlescore ?? getTotalScore(data.gamename)) === minScore
+                        );
                         return (
                             <div key={timePeriod}>
                                 <h4 className="text-center py-3">Daily Leaderboard</h4>
                                 {
                                     filteredPhrazle
                                     .slice()
-                                    .sort((a, b) => a.gamlescore - b.gamlescore)
+                                   .sort((a, b) => {
+                                    const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
+                                    const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
+
+                                    if (scoringmethod === "Golf") {
+                                        return aScore - bScore; // lower is better
+                                    } else {
+                                        return bScore - aScore; // higher is better (normal)
+                                    }
+                                    })
+
                                     .map((data, index) => {
                                       const totalScore = getTotalScore(data.gamename);
                                       const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
                                       const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
                                       const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
                                       const pesceScore = isSingleWinner ? 1 : isSharedWinner ? 1 : 0;
-                              
+                                    
                                       return (
                                         <Row key={index} className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm">
                                           <Col xs={3} className="d-flex align-items-center gap-2">
@@ -330,12 +347,12 @@ const handleCloseModal = () => {
                                                   variant="success" 
                                                   now={
                                                     scoringmethod === "Golf"
-                                                      ? data.gamlescore ?? 4
+                                                      ? data.gamlescore ?? totalScore
                                                       : scoringmethod === "World Cup"
                                                       ? worldCupScore
                                                       : scoringmethod === "Pesce"
                                                       ? pesceScore
-                                                      : data.gamlescore ?? 4
+                                                      : data.gamlescore ?? totalScore
                                                   } 
                                                   max={totalScore} 
                                                   style={{ height: '8px' }}
@@ -344,12 +361,12 @@ const handleCloseModal = () => {
                                               <Col xs={5} className="text-center d-flex fw-bold">
                                                 <span onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)} style={{ cursor: "pointer" }}>
                                                   {scoringmethod === "Golf"
-                                                    ? `${(data.gamlescore ?? '') === '' ? 4 : data.gamlescore}${isSingleWinner ? " 🏆" : ""}`
+                                                    ? `${(data.gamlescore ?? '') === '' ? totalScore : data.gamlescore}${isSingleWinner ? " 🏆" : ""}`
                                                     : scoringmethod === "World Cup"
                                                     ? `${worldCupScore}${isSingleWinner ? " 🏆" : ""}`
                                                     : scoringmethod === "Pesce"
                                                     ? `${pesceScore}${isSingleWinner ? " 🏆" : ""}`
-                                                    : `${(data.gamlescore ?? '') === '' ? 4 : data.gamlescore}${isSingleWinner ? " 🏆" : ""}`
+                                                    : `${(data.gamlescore ?? '') === '' ? totalScore : data.gamlescore}${isSingleWinner ? " 🏆" : ""}`
                                                   }
                                                 </span>
                                               </Col>
@@ -372,13 +389,20 @@ const handleCloseModal = () => {
                         console.log('filteredLeaderboard',filteredLeaderboard);
                         if (filteredLeaderboard.length === 0) return null;
 
-                        const minScore = Math.min(...filteredLeaderboard.map(data => Number(data.gamlescore ?? 7)));
+                        const minScore = Math.min(
+                            ...filteredLeaderboard.map(data => 
+                                Number(data.gamlescore ?? getTotalScore(data.gamename))
+                            )
+                        );
 
                         // Find all players with the lowest score
-                        const winners = filteredLeaderboard.filter(data => Number(data.gamlescore ?? 7) === minScore);
+                        const winners = filteredLeaderboard.filter(data => 
+                            Number(data.gamlescore ?? getTotalScore(data.gamename)) === minScore
+                        );
                         
                         return (
                             <>
+                        
                                 <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
                                     <button onClick={(e) => { e.stopPropagation(); goToPreviousDay(); }} className="bg-dark text-white px-3 py-1 rounded">
                                         <FaArrowLeft />
@@ -390,11 +414,21 @@ const handleCloseModal = () => {
                                         <FaArrowRight />
                                     </button>
                                 </div>
-                                <h4 className="text-center py-3">Daily Leaderboard</h4>
+                                <h4 className="text-center py-3">Daily Leaderboardss</h4>
                                 {
                                     filteredLeaderboard
                                     .slice()
-                                    .sort((a, b) => b.gamlescore - a.gamlescore)
+                                    .sort((a, b) => {
+                                    const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
+                                    const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
+
+                                    if (scoringmethod === "Golf") {
+                                        return aScore - bScore; // lower is better
+                                    } else {
+                                        return bScore - aScore; // higher is better (normal)
+                                    }
+                                    })
+
                                     .map((data, index) => {
                                         const totalScore = getTotalScore(data.gamename);
                                         const progressValue =
@@ -435,12 +469,12 @@ const handleCloseModal = () => {
                                                                 variant="success" 
                                                                 now={
                                                                     scoringmethod === "Golf"
-                                                                        ? data.gamlescore ?? 7
+                                                                        ? data.gamlescore ?? totalScore
                                                                         : scoringmethod === "World Cup"
                                                                         ? worldCupScore
                                                                         : scoringmethod === "Pesce"
                                                                         ? pesceScore
-                                                                        : (data.gamlescore ?? 7)
+                                                                        : (data.gamlescore ?? totalScore)
                                                                 } 
                                                                 max={totalScore} 
                                                                 style={{ height: '8px' }}
@@ -452,7 +486,7 @@ const handleCloseModal = () => {
                                                                 style={{ cursor: "pointer" }}
                                                             >
                                                                 {scoringmethod === "Golf"
-                                                                    ? (data.gamlescore ?? '') === '' ? 7 : data.gamlescore
+                                                                    ? (data.gamlescore ?? '') === '' ? totalScore : data.gamlescore
                                                                     : scoringmethod === "World Cup"
                                                                     ? worldCupScore
                                                                     : pesceScore}

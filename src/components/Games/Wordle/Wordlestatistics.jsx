@@ -55,7 +55,7 @@ function Wordlestatistics(updateStatistics) {
                     <ul>
                         <li>
                             <div className='value'>{totalGame}</div>
-                            <div className='bottom-text'>Total Played</div>
+                            <div className='bottom-text'>Played</div>
                         </li>
                         <li>
                             <div className='value'>{totalWin}</div>
@@ -81,17 +81,17 @@ function Wordlestatistics(updateStatistics) {
                                 <div key={guess} className="mb-2">
                                 <div className="d-flex align-items-center">
                                   {/* Guess Number */}
-                                  <div style={{ width: "5%", textAlign: "center", fontWeight: "bold" }}>
+                                  <div className="text-end" style={{ width: "20%", textAlign: "center", fontWeight: "bold" }}>
                                     {guess}
                                   </div>
                               
                                   {/* Progress Bar */}
-                                  <div style={{ width: "80%", margin: "0 10px" }}>
+                                  <div style={{ width: "75%", margin: "0 10px" }}>
                                     <ProgressBar className="wordle-progress-bar" now={percent} label={count > 0 ? count : ''} />
                                   </div>
                               
                                   {/* Percentage */}
-                                  <div style={{ width: "10%", textAlign: "right", fontSize: "0.9rem" }}>
+                                  <div style={{ width: "5%", textAlign: "right", fontSize: "0.9rem" }}>
                                     {`${percent.toFixed(0)}%`}
                                   </div>
                                 </div>
