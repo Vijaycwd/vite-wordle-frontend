@@ -519,10 +519,14 @@ const handleCloseModal = () => {
                     {latestJoinDate && (
                     <p className="text-center">
                         Start Date: {(() => {
-                        const [year, month, day] = latestJoinDate.split(' ')[0].split('-');
-                        return `${day}-${month}-${year}`;
+                            const date = new Date(latestJoinDate);
+                            return date.toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            });
                         })()}
-                    </p>
+                        </p>
                     )}
                         {cumulativeDailyScore &&
                         cumulativeDailyScore.length > 0 &&
@@ -581,7 +585,8 @@ const handleCloseModal = () => {
                                                                     max={totalScore + incrementScore}
                                                                     style={{ height: "8px" }}
                                                                 /> */}
-                                                                {}
+                                                                
+                                                                {/* {data.gamlescore}({data.totalGamesPlayed * totalScore}) */}
                                                                 <ProgressBar
                                                                     className={`${data.gamename}-progressbar`}
                                                                     variant="success"
@@ -607,7 +612,7 @@ const handleCloseModal = () => {
                         )}
                     </Col>
                 </Row>
-                <Row className="justify-content-center leaderboard mt-4">
+                {/* <Row className="justify-content-center leaderboard mt-4">
                     <Col md={5}>
                     <h4 className="py-3 text-center">
                         Average Leaderboard
@@ -646,9 +651,7 @@ const handleCloseModal = () => {
     
                                             return (
                                                 <>
-                                                {/* <p>Total Score - {data.gamlescore}</p>
-                                                <p>Total Game Played {data.totalGamesPlayed}</p>
-                                                <p>Game Chances {totalScore}</p> */}
+                                                
                                                 <Row
                                                     key={index}
                                                     className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
@@ -673,14 +676,7 @@ const handleCloseModal = () => {
                                                     <Col xs={5}>
                                                         <Row className="align-items-center">
                                                             <Col xs={9}>
-                                                                {/* <ProgressBar
-                                                                    className={`${data.gamename}-progressbar`}
-                                                                    variant="success"
-                                                                    now={data.gamlescore}
-                                                                    max={totalScore + incrementScore}
-                                                                    style={{ height: "8px" }}
-                                                                /> */}
-                                                                {}
+                                                    
                                                                 <ProgressBar
                                                                     className={`${data.gamename}-progressbar`}
                                                                     variant="success"
@@ -690,7 +686,7 @@ const handleCloseModal = () => {
                                                                 />
                                                             </Col>
                                                             <Col xs={3} className="text-center fw-bold">
-                                                                {/* {data.gamlescore} */}  
+                                                                  
                                                                 {((data.gamlescore / data.totalGamesPlayed)).toFixed(2)}
                                                             </Col>
                                                         </Row>
@@ -707,7 +703,7 @@ const handleCloseModal = () => {
                             </Alert>
                         )}
                     </Col>
-                </Row>                   
+                </Row>                    */}
 
                 </>
             ) : (

@@ -124,16 +124,31 @@ const AddMembers = ({ showForm, handleFormClose, groupName, groupId, onSubmit })
             <Select
               isMulti
               options={filteredUsers
-                .filter(user => searchInput.length >= 3) // Show results only when input is 3+ chars
-                .map(user => ({ value: user.id, label: user.username }))}
+                .filter(user => {
+                  console.log('user',user);
+                  const input = searchInput.toLowerCase();
+                  return (
+                    searchInput.length >= 3 &&
+                    (
+                      user.first_name?.toLowerCase().includes(input) ||
+                      user.last_name?.toLowerCase().includes(input) ||
+                      user.username?.toLowerCase().includes(input)
+                    )
+                  );
+                })
+                .map(user => ({
+                  value: user.id,
+                  label: `${user.first_name} ${user.last_name} (${user.username})`,
+                }))}
               value={selectedMembers}
               onChange={setSelectedMembers}
-              onInputChange={(input) => setSearchInput(input)} // Track user input
+              onInputChange={(input) => setSearchInput(input)}
               placeholder="Type at least 3 characters to search..."
-              noOptionsMessage={() => 
+              noOptionsMessage={() =>
                 searchInput.length < 3 ? "Type at least 3 letters..." : "No users found"
               }
             />
+
           </Form.Group>
 
 

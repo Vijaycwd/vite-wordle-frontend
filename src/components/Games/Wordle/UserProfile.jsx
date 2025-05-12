@@ -9,7 +9,8 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 
 function UserProfile() {
     const [userData, setUserData] = useState({});
-    const [name, setName] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [username, setUsername] = useState("");
     const [avatar, setAvatar] = useState(null);
     const [previewUrl, setPreviewUrl] = useState('');
@@ -34,7 +35,8 @@ function UserProfile() {
                 if (res.data) {
                     console.log(res.data);
                     setUserData(res.data.user);
-                    setName(res.data.user.name || "");
+                    setFirstName(res.data.user.first_name || "");
+                    setLastName(res.data.user.last_name || "");
                     setUsername(res.data.user.username || "");
                     setPreviewUrl(res.data.user.avatar || "");
                 }
@@ -45,12 +47,16 @@ function UserProfile() {
         fetchUserData();
     }, [loginuserEmail]);
 
-    const handleUpload = (event) => {
-        const file = event.target.files[0];
-        setAvatar(file);
+    const handleUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        setAvatar(file); // required to send to backend
         const reader = new FileReader();
-        reader.onloadend = () => setPreviewUrl(reader.result);
-        if (file) reader.readAsDataURL(file);
+        reader.onloadend = () => {
+        setPreviewUrl(reader.result); // set preview
+        };
+        reader.readAsDataURL(file);
+    }
     };
 
     const updateUser = async (e) => {
@@ -64,7 +70,8 @@ function UserProfile() {
         try {
             const formData = new FormData();
             formData.append("id", userData.id);
-            formData.append("name", name);
+            formData.append("firstName", firstName);
+            formData.append("lastName", lastName);
             formData.append("username", username);
             if (password) formData.append("password", password);
             if (avatar) formData.append("avatar", avatar);
@@ -80,7 +87,7 @@ function UserProfile() {
                 // Update localStorage with new data
                 localStorage.setItem(
                     "auth",
-                    JSON.stringify({ ...USER_AUTH_DATA, name, username, avatar: previewUrl })
+                    JSON.stringify({ ...USER_AUTH_DATA, firstName, lastName, username, avatar: previewUrl })
                 );
     
                 navigate('/');
@@ -99,31 +106,56 @@ function UserProfile() {
             <Container>
                 <ToastContainer />
                 {/* User Info Section */}
-                <Row className="align-content-center justify-content-center text-center">
-                    <Col md={4}>
-                        <img 
-                            src={previewUrl ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${previewUrl}` : Logo} 
-                            alt="Profile" 
-                            className="rounded-circle mb-3" 
-                            style={{ width: '100px', height: '100px', objectFit: 'cover' }} 
-                        />
-                        <h2>{username || "User"}</h2>
-                        <h4>{name}</h4>
-                    </Col>
-                </Row>
 
                 {/* Update Form */}
                 <Row className="align-content-center justify-content-center">
                     <Col md={4}>
                         <Form onSubmit={updateUser}>
-                            <Form.Group>
-                                <Form.Label>Name</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
+                            <Form.Group controlId="formFile" className="mb-3 text-center">
+                            <label htmlFor="profilePicInput" style={{ cursor: 'pointer' }}>
+                                <img 
+                               src={
+                                previewUrl.startsWith("data:")
+                                    ? previewUrl
+                                    : previewUrl
+                                    ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${previewUrl}`
+                                    : Logo
+                                }
+                                alt="Profile" 
+                                className="rounded-circle mb-3" 
+                                style={{ width: '100px', height: '100px', objectFit: 'cover' }} 
                                 />
+                            </label>
+                            <Form.Control 
+                                id="profilePicInput"
+                                type="file" 
+                                onChange={handleUpload}
+                                style={{ display: 'none' }} // hides the actual input
+                            />
                             </Form.Group>
+                            <div className='text-center'>
+                                 <h2>{username || "User"}</h2>
+                                <h4>{firstName} {lastName}</h4>
+                            </div>
+                           
+                           <Form.Group>
+                            <Form.Label>First Name</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                            />
+                            </Form.Group>
+
+                            <Form.Group className="mt-3">
+                            <Form.Label>Last Name</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                            />
+                            </Form.Group>
+
     
                             <Form.Group>
                                 <Form.Label>Username</Form.Label>
