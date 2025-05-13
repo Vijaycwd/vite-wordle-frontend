@@ -81,10 +81,11 @@ function ConnectionsScoreByDate() {
     
     const goToNextDay = () => {
         const nextDate = dayjs(startDate).add(1, 'day');
-        const today = dayjs();
-        if (nextDate.isAfter(today, 'day')) return;
+        const today = dayjs().startOf('day');
+        if (!nextDate.isBefore(today)) return; // stop if nextDate is today or after
         handleDateChange(nextDate.toDate());
     };
+
     const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
             const parsedDate = dayjs(value, "DD-MM-YYYY");
 
@@ -110,7 +111,6 @@ function ConnectionsScoreByDate() {
                     maxDate={new Date()}
                 /> */}
                 <DatePicker
-                    selected={startDate}
                     onChange={handleDateChange}
                     customInput={<ExampleCustomInput />}
                     maxDate={new Date(new Date().setDate(new Date().getDate() - 1))}

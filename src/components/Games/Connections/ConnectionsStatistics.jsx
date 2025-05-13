@@ -12,6 +12,8 @@ function ConnectionsStatistics() {
     const [currentStreak, setcurrentStreak] = useState();
     const [maxStreak, setmaxStreak] = useState();
     const [guessDistribution, setguessDistribution] = useState();
+    const [perfectPuzzles, setperfectPuzzles] = useState();
+    const [purpleFirst, setpurpleFirst] = useState();
 
     // useEffect(() => {
     //     getStatsValue();
@@ -37,7 +39,9 @@ function ConnectionsStatistics() {
                 setTotalWin(statistics.winPercentage);
                 setcurrentStreak(statistics.currentStreak);
                 setmaxStreak(statistics.maxStreak);
-                setguessDistribution(statistics.guessDistribution);       
+                setguessDistribution(statistics.guessDistribution);    
+                setperfectPuzzles(statistics.perfectPuzzles);
+                setpurpleFirst(statistics.purpleFirst);   
             })
             .catch((error) => {
                 console.error("Error fetching data: ", error);
@@ -69,6 +73,16 @@ function ConnectionsStatistics() {
                             <li>
                                 <div className='value'>{maxStreak}</div>
                                 <div className='bottom-text'>Max Streak</div>
+                            </li>
+                        </ul>
+                        <ul>
+                            <li>
+                                <div className='value'>{perfectPuzzles}</div>
+                                <div className='bottom-text'>Perfect Puzzles</div>
+                            </li>
+                            <li>
+                                <div className='value'>{purpleFirst}</div>
+                                <div className='bottom-text'>Purple First</div>
                             </li>
                         </ul>
         

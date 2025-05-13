@@ -15,7 +15,7 @@ const GroupInvites = () => {
       const response = await axios.get(
         `https://coralwebdesigns.com/college/wordgamle/groups/get-invites.php?user_id=${userId}`
       );
-  
+      console.log(response);
       // Only update state if the invites are different
       if (JSON.stringify(response.data.invitations) !== JSON.stringify(invites)) {
         setInvites(response.data.invitations);

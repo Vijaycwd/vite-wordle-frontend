@@ -80,8 +80,8 @@ function WordleScoreByDate() {
         
     const goToNextDay = () => {
         const nextDate = dayjs(startDate).add(1, 'day');
-        const today = dayjs();
-        if (nextDate.isAfter(today, 'day')) return;
+        const today = dayjs().startOf('day');
+        if (!nextDate.isBefore(today)) return; // stop if nextDate is today or after
         handleDateChange(nextDate.toDate());
     };
     const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {

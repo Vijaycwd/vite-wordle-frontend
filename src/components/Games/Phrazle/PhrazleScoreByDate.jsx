@@ -79,23 +79,24 @@ function PhrazleScoreByDate() {
     };
     
     const goToNextPeriod = () => {
-        const today = dayjs();
-        const nextDate = dayjs(startDate).add(1, 'day');
-    
-        if (period === 'AM') {
-            const newPeriod = 'PM';
-            const formattedDate = formatDateForBackend(startDate);
-            fetchDataByDate(formattedDate, newPeriod);
-            setPeriod(newPeriod);
-        } else {
-            if (nextDate.isAfter(today, 'day')) return;
-            const newPeriod = 'AM';
-            const formattedDate = formatDateForBackend(nextDate.toDate());
-            fetchDataByDate(formattedDate, newPeriod);
-            setStartDate(nextDate.toDate());
-            setPeriod(newPeriod);
-        }
-    };
+    const today = dayjs().startOf('day'); // Only allow dates before today
+    const nextDate = dayjs(startDate).add(1, 'day');
+
+    if (period === 'AM') {
+        const newPeriod = 'PM';
+        const formattedDate = formatDateForBackend(startDate);
+        fetchDataByDate(formattedDate, newPeriod);
+        setPeriod(newPeriod);
+    } else {
+        if (!nextDate.isBefore(today)) return; // Stop if nextDate is today or later
+        const newPeriod = 'AM';
+        const formattedDate = formatDateForBackend(nextDate.toDate());
+        fetchDataByDate(formattedDate, newPeriod);
+        setStartDate(nextDate.toDate());
+        setPeriod(newPeriod);
+    }
+};
+
     
 
     const splitIntoRows = (text) => {
