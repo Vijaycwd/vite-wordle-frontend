@@ -167,7 +167,7 @@ function GroupLeaderboardScores() {
     };
 
     //console.log('todayLeaderboard',todayLeaderboard);
-    console.log('latestJoinDate',latestJoinDate);
+    // console.log('latestJoinDate',latestJoinDate);
     return (
         <div>
             <ToastContainer/>

@@ -12,6 +12,7 @@ function GroupScoreByDate() {
     const { id, groupName, game } = useParams();
     const [todayLeaderboard, setTodayLeaderboard] = useState([]);
     const [latestJoinDate, setlatestJoinDate] = useState('');
+    const [totalGames, settotalGames] = useState('');
     const [cumulativeAverageScore, setcumulativeAverageScore] = useState([]);
     const [cumulativeDailyScore, setcumulativeDailyScore] = useState([]);
     const [missedScore, setMissedScore] = useState([]);
@@ -183,8 +184,9 @@ function GroupScoreByDate() {
                 setTodayLeaderboard([]);
                 setFetchedError(true);
             }
-    
+            console.log(cumulativeDailyResponse.data.totalGames);
             setlatestJoinDate(cumulativeDailyResponse.data.latestJoinDate || []);
+            settotalGames(cumulativeDailyResponse.data.totalGames || []);
             setcumulativeAverageScore(cumulativeAverageResponse.data.data || []);
             setcumulativeDailyScore(cumulativeDailyResponse.data.data || []);
            
@@ -200,7 +202,7 @@ function GroupScoreByDate() {
     };
     
     
-    console.log('todayLeaderboard',todayLeaderboard);
+    // console.log('todayLeaderboard',todayLeaderboard);
     // Custom input button for DatePicker
     // const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     //     <Button className={`example-custom-input px-5 btn btn-primary ${game}-btn`} onClick={onClick} ref={ref}>
@@ -587,11 +589,12 @@ const handleCloseModal = () => {
                                                                 /> */}
                                                                 
                                                                 {/* {data.gamlescore}({data.totalGamesPlayed * totalScore}) */}
+                                                                
                                                                 <ProgressBar
                                                                     className={`${data.gamename}-progressbar`}
                                                                     variant="success"
                                                                     now={data.gamlescore}
-                                                                    max={data.totalGamesPlayed * totalScore}
+                                                                    max={totalGames * totalScore}
                                                                     style={{ height: "8px" }}
                                                                 />
                                                             </Col>

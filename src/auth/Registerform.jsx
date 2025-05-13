@@ -6,7 +6,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import logo from '../Logo.png'
 import { useNavigate } from "react-router-dom";
 function Registerform() {
-    const [name, setName] = useState('');
+    const [firstName, setfirstName] = useState('');
+    const [lastName, setlastName] = useState('');
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState();
     const [password, setPassword] = useState();
@@ -78,7 +79,8 @@ function Registerform() {
     const signUp = async (event) => {
         event.preventDefault();
         const userObject = {
-            name: name,
+            firstname: firstName,
+            lastname: lastName,
             username: username,
             email: email,
             password: password,
@@ -153,15 +155,26 @@ function Registerform() {
                     <h5>Create New Account</h5>
                     <Form className="js-validation-signup" enctype="multipart/form-data">
                         <Form.Group>
-                            <Form.Label>Name</Form.Label>
+                            <Form.Label>First Name</Form.Label>
                             <Form.Control
                                 type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
+                                value={firstName}
+                                onChange={(e) => setfirstName(e.target.value)}
                                 onBlur={() => handleBlur('name')}
                                 placeholder='Enter your name'
                             />
-                            {errors.name && <p className='form-validation-error'>{errors.name}</p>}
+                            {errors.firstName && <p className='form-validation-error'>{errors.firstName}</p>}
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Last Name</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={lastName}
+                                onChange={(e) => setlastName(e.target.value)}
+                                onBlur={() => handleBlur('name')}
+                                placeholder='Enter your name'
+                            />
+                            {errors.lastName && <p className='form-validation-error'>{errors.lastName}</p>}
                         </Form.Group>
 
                         <Form.Group>
