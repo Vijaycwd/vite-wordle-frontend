@@ -8,10 +8,10 @@ import moment from 'moment-timezone';
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import dayjs from "dayjs";
 
-function GroupScoreByDate() {
+function GroupScoreByDate({ latestJoinDate }) {
     const { id, groupName, game } = useParams();
     const [todayLeaderboard, setTodayLeaderboard] = useState([]);
-    const [latestJoinDate, setlatestJoinDate] = useState('');
+    // const [latestJoinDate, setlatestJoinDate] = useState('');
     const [totalGames, settotalGames] = useState('');
     const [cumulativeAverageScore, setcumulativeAverageScore] = useState([]);
     const [cumulativeDailyScore, setcumulativeDailyScore] = useState([]);
@@ -27,7 +27,7 @@ function GroupScoreByDate() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const userId = USER_AUTH_DATA?.id;
     const loginuserEmail = USER_AUTH_DATA?.email;
- 
+    const formattedDate = latestJoinDate ? latestJoinDate.split(' ')[0] : 'N/A';
 
     useEffect(() => {
         const fetchScoringMethod = async () => {
@@ -85,7 +85,13 @@ function GroupScoreByDate() {
     };
     const goToPreviousDay = () => {
         const prevDate = dayjs(startDate).subtract(1, 'day').toDate();
-    
+        const latestDateLimit = dayjs(latestJoinDate).startOf('day'); // normalize time
+
+        // Prevent navigating to a date earlier than latestJoinDate
+        if (dayjs(prevDate).isBefore(latestDateLimit)) {
+            return; // Do nothing
+        }
+
         if (game === 'phrazle') {
             if (period === 'PM') {
                 const newPeriod = 'AM';
@@ -103,7 +109,7 @@ function GroupScoreByDate() {
             handleDateChange(prevDate);
         }
     };
-    
+
     
     const goToNextDay = () => {
         const maxAllowedDate = dayjs().subtract(1, 'day').startOf('day'); // Yesterday (May 1)
@@ -185,7 +191,7 @@ function GroupScoreByDate() {
                 setFetchedError(true);
             }
             console.log(cumulativeDailyResponse.data.totalGames);
-            setlatestJoinDate(cumulativeDailyResponse.data.latestJoinDate || []);
+            // setlatestJoinDate(cumulativeDailyResponse.data.latestJoinDate || []);
             settotalGames(cumulativeDailyResponse.data.totalGames || []);
             setcumulativeAverageScore(cumulativeAverageResponse.data.data || []);
             setcumulativeDailyScore(cumulativeDailyResponse.data.data || []);
@@ -219,7 +225,7 @@ const getTotalScore = (gameName) => {
            cleanedName === "phrazle" ? 7 :
            1; // Default to 1 if unknown
 };
-
+console.log(latestJoinDate);
 const showDayResult = (date, useremail, game) => {
     console.log('showDayResult');
     // setSelectedGame(game);
@@ -266,6 +272,7 @@ const handleCloseModal = () => {
                 <DatePicker
                     onChange={handleDateChange}
                     customInput={<ExampleCustomInput />}
+                    minDate={formattedDate}
                     maxDate={new Date(new Date().setDate(new Date().getDate() - 1))}
                     />
             </div>

@@ -167,6 +167,24 @@ span.notification-count.badge.bg-danger {
 .wordle-progress-bar, .connections-progress-bar, .phrazle-progress-bar{
   height: 20px !important;
   border-radius: 0px;
+  position: relative;
+  background-color: #787c7e;
+}
+.progress-label {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color:#f8f8f8;
+  width: 100%;
+  pointer-events: none; 
+  font-weight: 500;
+  font-size: 15px;
 }
 .wordle-progressbar .progress-bar, .wordle-progress-bar .progress-bar
 {

@@ -4,11 +4,10 @@ import axios from "axios";
 import { Row, Col, ProgressBar } from "react-bootstrap";
 import { ToastContainer, toast } from 'react-toastify';
 
-function GroupLeaderboardScores() {
+function GroupLeaderboardScores({ setLatestJoinDate }) {
     const { id, groupName, game } = useParams();
     const [todayLeaderboard, setTodayLeaderboard] = useState([]);
     const [cumulativeScore, setCumulativeScore] = useState([]);
-    const [latestJoinDate, setlatestJoinDate] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [scoringmethod, setScoringMethod] = useState("");
@@ -132,28 +131,28 @@ function GroupLeaderboardScores() {
     }, [id, groupName, game, todayDate, period]);
     
 
-    // useEffect(() => {
-    //     const fetchCumulativeScore = async () => {
-    //         if (!id || !game) return;
+    useEffect(() => {
+        const fetchCumulativeScore = async () => {
+            if (!id || !game) return;
 
-    //         try {
-    //             setLoading(true);
+            try {
+                setLoading(true);
 
-    //             // Fetch Cumulative Scores
-    //             const cumulativeResponse = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-cumulative-score.php`, {
-    //                 params: { groupId: id, groupName, game, timeZone }
-    //             });
-    //             setlatestJoinDate(cumulativeResponse.data.latestJoinDate || []);
-    //             setCumulativeScore(cumulativeResponse.data.data || []);
-    //         } catch (error) {
-    //             console.error("Error fetching cumulative stats:", error.response ? error.response.data : error.message);
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     };
+                // Fetch Cumulative Scores
+                const cumulativeResponse = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-cumulative-score.php`, {
+                    params: { groupId: id, groupName, game, timeZone }
+                });
+                setLatestJoinDate(cumulativeResponse.data.latestJoinDate || []);
+                setCumulativeScore(cumulativeResponse.data.data || []);
+            } catch (error) {
+                console.error("Error fetching cumulative stats:", error.response ? error.response.data : error.message);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    //     fetchCumulativeScore();
-    // }, [id, groupName, game]);
+        fetchCumulativeScore();
+    }, [id, groupName, game]);
 
     
 
@@ -167,7 +166,6 @@ function GroupLeaderboardScores() {
     };
 
     //console.log('todayLeaderboard',todayLeaderboard);
-    // console.log('latestJoinDate',latestJoinDate);
     return (
         <div>
             <ToastContainer/>

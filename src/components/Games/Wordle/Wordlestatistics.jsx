@@ -86,9 +86,14 @@ function Wordlestatistics(updateStatistics) {
                                   </div>
                               
                                   {/* Progress Bar */}
-                                  <div style={{ width: "75%", margin: "0 10px" }}>
-                                    <ProgressBar className="wordle-progress-bar" now={percent} label={count > 0 ? count : ''} />
-                                  </div>
+                                  <div style={{ width: "75%", margin: "0 10px", position: "relative" }}>
+                                    <ProgressBar
+                                        className="wordle-progress-bar"
+                                        now={percent}
+                                        label=""
+                                    />
+                                    <span className="progress-label">{count > 0 ? count : ''}</span>
+                                    </div>
                               
                                   {/* Percentage */}
                                   <div style={{ width: "5%", textAlign: "right", fontSize: "0.9rem" }}>

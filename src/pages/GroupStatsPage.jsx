@@ -10,6 +10,7 @@ import GroupScoreByDate from './GroupLeaderboard/GroupScoreByDate';
 function GroupStatsPage() {
   const { id, groupName, game } = useParams(); // Extract groupName and game from URL
   const [group, setGroup] = useState(null);
+  const [latestJoinDate, setLatestJoinDate] = useState(null);
   // Get user ID from localStorage
   const userAuthData = JSON.parse(localStorage.getItem('auth')) || {};
   const userId = userAuthData.id;
@@ -41,12 +42,12 @@ function GroupStatsPage() {
           <h2 className='text-capitalize py-3'>{group?.name || ""} - {game}</h2>
           {/* <h3 className='text-capitalize py-3'>{game} Leaderboard</h3> */}
           {/* <h3 className='text-capitalize py-3'>{game.charAt(0).toUpperCase() + game.slice(1)} Stats</h3> */}
-          <GroupLeaderboardScores/>
+          <GroupLeaderboardScores setLatestJoinDate={setLatestJoinDate}/>
         </Col>
       </Row>
       <Row>
         <Col>
-          <GroupScoreByDate/>
+          <GroupScoreByDate latestJoinDate={latestJoinDate}/>
         </Col>
       </Row>
     </Container>
