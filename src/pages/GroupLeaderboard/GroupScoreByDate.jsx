@@ -259,6 +259,7 @@ const handleCloseModal = () => {
     setShowModal(false);
     // if (updated) fetchGroupInfo();
 };
+console.log('cumulativeDailyScore',cumulativeDailyScore);
     return (
         <>
             <div className='text-center'>
@@ -536,7 +537,7 @@ const handleCloseModal = () => {
                     <h4 className="py-3 text-center">
                         Cumulative Leaderboard
                     </h4>
-                    
+                  
                         {cumulativeDailyScore &&
                         cumulativeDailyScore.length > 0 &&
                         cumulativeDailyScore.some(data => data.gamlescore !== undefined && !isNaN(Number(data.gamlescore)) && data.username) ? (

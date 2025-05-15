@@ -211,3 +211,7 @@ span.notification-count.badge.bg-danger {
 .missed-user-section{
   background-color: #f8f8f8;
 }
+.cropper-view-box,
+.cropper-face {
+  border-radius: 50% !important;
+}
