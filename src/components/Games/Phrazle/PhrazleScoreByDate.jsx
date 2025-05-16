@@ -63,6 +63,7 @@ function PhrazleScoreByDate() {
     };
     
     const goToPreviousPeriod = () => {
+        console.log('goToPreviousPeriod',period)
         if (period === 'PM') {
             const newPeriod = 'AM';
             const formattedDate = formatDateForBackend(startDate);
@@ -84,11 +85,16 @@ function PhrazleScoreByDate() {
 
     if (period === 'AM') {
         const newPeriod = 'PM';
+        const isToday = dayjs(startDate).isSame(today, 'day');
+        const isTodayPMBlocked = isToday && today.hour() < 12;
+
+        if (isTodayPMBlocked) return;
+
         const formattedDate = formatDateForBackend(startDate);
         fetchDataByDate(formattedDate, newPeriod);
         setPeriod(newPeriod);
     } else {
-        if (!nextDate.isBefore(today)) return; // Stop if nextDate is today or later
+        // if (!nextDate.isBefore(today)) return;
         const newPeriod = 'AM';
         const formattedDate = formatDateForBackend(nextDate.toDate());
         fetchDataByDate(formattedDate, newPeriod);
@@ -111,17 +117,23 @@ function PhrazleScoreByDate() {
         </Button>
     ));
 
+    const now = new Date();
+    const isAfternoon = now.getHours() >= 12;
+
+    const maxSelectableDate = isAfternoon
+    ? new Date() // allow today
+    : new Date(now.setDate(now.getDate() - 1));
     return (
         <>
             <div className='text-center'>
                 <DatePicker
-                    selected={startDate}
+                    
                     onChange={handleDateChange}
                     customInput={<ExampleCustomInput />}
                     dateFormat="dd-MM-yyyy"
                     timeFormat="hh:mm aa"
                     timeIntervals={720}
-                    maxDate={new Date(new Date().setDate(new Date().getDate() - 1))}
+                    maxDate={maxSelectableDate}
                     timeCaption="AM/PM"
                 />
             </div>
