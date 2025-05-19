@@ -112,8 +112,11 @@ function PhrazleStat() {
                                                             const phrazleScore = splitIntoRows(lettersAndNumbersRemoved);
                                                             
                                                             const date = new Date(char.createdat);
-                                                            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                                                            const todayDate = `${String(date.getDate()).padStart(2, '0')}-${months[date.getMonth()]}-${date.getFullYear()}`;
+                                                            const todayDate = date.toLocaleDateString('en-US', {
+                                                            year: 'numeric',
+                                                            month: 'long',
+                                                            day: 'numeric',
+                                                            });
                                                             const gamleScore = char.gamlescore;
 
                                                             return (

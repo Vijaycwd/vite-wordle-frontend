@@ -84,8 +84,11 @@ function ConnectionStat() {
                                             const connectionsScore = splitIntoRows(removespace, 4);
                                             const createDate = char.createdat; // Ensure this matches your database field name
                                             const date = new Date(createDate);
-                                            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                                            const todayDate = `${String(date.getDate()).padStart(2, '0')}-${months[date.getMonth()]}-${date.getFullYear()}`;
+                                            const todayDate = date.toLocaleDateString('en-US', {
+                                                            year: 'numeric',
+                                                            month: 'long',
+                                                            day: 'numeric',
+                                                            });
                                             const gamleScore = char.gamlescore;
                                             return (
                                                 
