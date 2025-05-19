@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import Axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import logo from '../Logo.png'
 import { useNavigate } from "react-router-dom";
 function Registerform() {
@@ -146,8 +145,7 @@ function Registerform() {
         }  
       }
   return (
-    <>  
-        <ToastContainer />
+    <> 
         <Container>
             <Row className='align-content-center justify-content-center'> 
                 <Col md={4}>

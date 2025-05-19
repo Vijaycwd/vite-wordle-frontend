@@ -124,7 +124,7 @@ function ConnectionsScoreByDate() {
                             <FaArrowLeft />
                         </button>
                         <div>
-                            {dayjs(startDate).format("dddd, MMM D, YYYY")}
+                            {dayjs(startDate).format("MMM D, YYYY")}
                         </div>
                         <button onClick={(e) => { e.stopPropagation(); goToNextDay(); }} className="bg-dark text-white px-3 py-1 rounded">
                             <FaArrowRight />

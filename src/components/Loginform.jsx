@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button, InputGroup } from 'react-bootstrap';
 import Axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Logo from '../Logo.png';
@@ -54,7 +53,7 @@ function Loginform() {
     
     return (
         <>
-            <ToastContainer />
+            
             <Container className="login-section">
                 <Row className="align-content-center justify-content-center">
                     <Col md={4} className='bg-white px-5 py-3 text-center'>

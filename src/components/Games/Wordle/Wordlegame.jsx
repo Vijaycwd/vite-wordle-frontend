@@ -1,8 +1,7 @@
 import React from 'react';
 import { Row, Col, Button} from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import WordlePlayService from './WordlePlayService';
 
 const Wordlegame = () => {
@@ -15,7 +14,6 @@ const Wordlegame = () => {
     
     return (
         <>
-            <ToastContainer />
             <Row>
                 <Col>
                     <WordlePlayService/>

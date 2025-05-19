@@ -3,7 +3,7 @@ import { Container, Row, Col, Button } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import Axios from 'axios';
 import AddMembers from '../constant/Models/AddMembers';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import MemberGameSelections from './MemberGameSelections';
 import SelectScoringMethod from './SelectScoringMethod';
 
@@ -16,6 +16,7 @@ function GroupPage() {
     const [group, setGroup] = useState(null);
     const [showMemberForm, setShowMemberForm] = useState(false);
     const [isCaptain, setIsCaptain] = useState(false);
+    const [existingMembers, setExistingMembers] = useState([]); // NEW
 
     useEffect(() => {
         const fetchGroupDetails = async () => {
@@ -35,7 +36,24 @@ function GroupPage() {
             }
         };
 
+        const fetchGroupMembers = async () => {
+            try {
+                const res = await Axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-members.php?group_id=${id}`);
+               
+                if (res.data.status === "success") {
+                   const memberIds = res.data.members.map(m => String(m.member_id));
+                    setExistingMembers(memberIds);
+                } else {
+                    setExistingMembers([]);
+                }
+            } catch (err) {
+                console.error("Failed to fetch group members");
+                setExistingMembers([]);
+            }
+        };
+
         fetchGroupDetails();
+        fetchGroupMembers();
     }, [id, userId]);
 
     const goToGroupInfo = () => {
@@ -43,14 +61,12 @@ function GroupPage() {
     };
 
     if (!group) return null;
-
+    console.log('existingMembers',existingMembers)
     return (
         <Container className="text-center">
-            <ToastContainer />
             <Row>
                 <Col>
                     <h4>Group: {group.name}</h4>
-                    {/* <p>Group ID: {group.id}</p> */}
                 </Col>
             </Row>
             <Row>
@@ -68,19 +84,16 @@ function GroupPage() {
                         </Button>
                     </Col>
                 </Row>
-
             )}
             <Button className="px-5 mt-3" onClick={() => navigate(`/group/${group.id}/${group.name.toLowerCase().replace(/\s+/g, '-')}/stats`)}>Group Leaderboards</Button>
             <MemberGameSelections />
-            {isCaptain && (
-                <SelectScoringMethod/>
-                
-            )}
+            {isCaptain && <SelectScoringMethod />}
             <AddMembers
                 showForm={showMemberForm}
                 handleFormClose={() => setShowMemberForm(false)}
                 groupName={group.name}
                 groupId={group.id}
+                existingMembers={existingMembers}
             />
         </Container>
     );

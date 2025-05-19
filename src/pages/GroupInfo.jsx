@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import Axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { FaCheck } from "react-icons/fa6";
 import { IoClose } from "react-icons/io5";
 import GroupModal from '../constant/Models/GroupModal';
@@ -27,7 +27,8 @@ function GroupInfo() {
 
     const fetchGroupInfo = async () => {
         try {
-            const res = await Axios.post(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-members.php`, { group_id: id });
+            const res = await Axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-members.php?group_id=${id}`);
+            
             if (res.data.status === "success") {
                 setGroup(res.data.group);
                 setCaptainId(res.data.captain_id);
@@ -130,7 +131,6 @@ function GroupInfo() {
 
     return (
         <Container>
-            <ToastContainer />
             <Row className="justify-content-center">
                 <Col md={6} className="border p-3 shadow rounded">
                     <h3 className='text-center'>{group.name} Group Members</h3>

@@ -71,7 +71,7 @@ function GroupStats() {
     { key: 'connections', label: 'Connections' },
     { key: 'phrazle', label: 'Phrazle' }
   ];
-  
+  console.log('selectedGames',selectedGames);
   return (
     <Container>
       <Row className="justify-content-center">
@@ -79,17 +79,16 @@ function GroupStats() {
           <h2 className='text-capitalize pb-2'>{group?.name || ""}</h2>
           <h3 className='pb-4'>Group Leaderboards</h3>
           <Row>
-          {selectedGames.map((game, index) => (
-            <Col className="text-center mt-4">
-            <Button 
-              key={index} 
-              className="btn-lg btn-block w-100" 
-              onClick={() => navigate(`/group/${id}/${groupName}/stats/${game.toLowerCase()}`)}
-            >
-              {game}
-            </Button>
-            </Col>
-          ))}
+            {selectedGames.length > 0 && selectedGames.map((game, index) => (
+              <Col key={index} className="text-center mt-4">
+                <Button
+                  className="btn-lg btn-block w-100"
+                  onClick={() => navigate(`/group/${id}/${groupName}/stats/${game.toLowerCase()}`)}
+                >
+                  {game}
+                </Button>
+              </Col>
+            ))}
           </Row>
         </Col>
       </Row>

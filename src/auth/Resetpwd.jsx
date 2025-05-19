@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import Axios from "axios";
 import {Container, Row, Col, Button} from 'react-bootstrap';
 
@@ -38,7 +37,7 @@ function Resetpwd() {
     
     return (
         <>
-            <ToastContainer/>
+            
             <Container>
             <Row>
                 <Col md={{ span: 6, offset: 3 }}>

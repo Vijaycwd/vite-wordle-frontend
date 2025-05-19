@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Form, Button, Modal, Spinner } from 'react-bootstrap';
 import Axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 
 function SelectScoringMethod() {
     const { id } = useParams();
@@ -82,7 +81,6 @@ function SelectScoringMethod() {
 
     return (
         <Container>
-            <ToastContainer />
             <Row className="justify-content-center pt-4">
                 <Col md={6}>
                     <div className="border p-3 shadow rounded mt-4">

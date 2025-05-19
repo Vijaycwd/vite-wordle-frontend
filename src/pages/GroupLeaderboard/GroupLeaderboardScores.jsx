@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Row, Col, ProgressBar } from "react-bootstrap";
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
+import WordlePlayService from '../../components/Games/Wordle/WordlePlayService';
 
 function GroupLeaderboardScores({ setLatestJoinDate }) {
     const { id, groupName, game } = useParams();
@@ -13,6 +14,7 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
     const [scoringmethod, setScoringMethod] = useState("");
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const userId = USER_AUTH_DATA?.id;
+    const userName = USER_AUTH_DATA?.username;
 
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const localDate = new Date();
@@ -168,7 +170,7 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
     //console.log('todayLeaderboard',todayLeaderboard);
     return (
         <div>
-            <ToastContainer/>
+            
             {loading && <p>Loading scores...</p>}
             {error && <p className="text-danger">{error}</p>}
 
@@ -197,7 +199,7 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                                 // Find all players with the lowest score
                                 const winners = filteredLeaderboard.filter(data => Number(data.gamlescore) === minScore);
                                 const missedUsers = filteredLeaderboard.filter(d => d.missed).map(d => d.username);
-                                
+                                // console.log('missedUsers',missedUsers);
                                 if (missedUsers.length > 0) {
                                     return (
                                         <div className="text-center mb-3 missed-user-section py-3 px-2">
@@ -207,6 +209,9 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                                             {missedUsers.map((name, i) => (
                                                 <div key={i} className="fw-bold">{name}</div>
                                             ))}
+                                            {missedUsers.includes(userName) && (
+                                                <WordlePlayService/>
+                                            )}
                                         </div>
                                     );
                                 }
@@ -321,8 +326,13 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                                             <p>The Leaderboard will be viewable when all group members have played.</p>
                                             <p className="mb-1">Yet to play:</p>
                                             {missedUsers.map((name, i) => (
-                                                <div key={i} className="fw-bold">{name}</div>
+                                                <div key={i} className="fw-bold">
+                                                    {name === userName ? "You" : name}
+                                                </div>
                                             ))}
+                                            {missedUsers.includes(userName) && (
+                                                <WordlePlayService/>
+                                            )}
                                         </div>
                                     );
                                 }

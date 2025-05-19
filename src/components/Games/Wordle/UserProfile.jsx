@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Container, Row, Col, Form, Button, InputGroup } from 'react-bootstrap';
 import Axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 import Logo from '../../../Logo.png';
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -110,7 +109,6 @@ function UserProfile() {
     return (
         <>
             <Container>
-                <ToastContainer />
                 <Row className="align-content-center justify-content-center">
                     <Col md={5}>
                         <Form onSubmit={updateUser}>

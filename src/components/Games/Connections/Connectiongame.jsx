@@ -1,8 +1,6 @@
 import React from 'react';
 import { Row, Col, Button} from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import ConnectionPlayService from './ConnectionPlayService';
 
 const Connectiongame = () => {
@@ -15,7 +13,6 @@ const Connectiongame = () => {
     
     return (
         <>
-            <ToastContainer />
             <Row>
                 <Col>
                     <ConnectionPlayService/>

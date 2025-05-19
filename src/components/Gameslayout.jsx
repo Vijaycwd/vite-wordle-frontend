@@ -3,8 +3,7 @@ import { Col, Container, Row, Button } from 'react-bootstrap';
 import Wordlegamesection from './Games/Wordle/Wordlegamesection';
 import Axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import LoginModal from './Games/Wordle/Modals/LoginModal';
 import WordleModal from './Games/Wordle/Modals/WordleScoreModal';
 
@@ -252,7 +251,6 @@ const updateTotalGamesPlayed = async (TotalGameObject) => {
         loginUsername={loginUsername}
       />
     </Container>
-    <ToastContainer/>
     </>
   );
 }

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import Axios from 'axios';
 import { useParams } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
@@ -49,7 +48,7 @@ function ResetPwdForm() {
 
     return (
         <>
-            <ToastContainer />
+           
             <div className="bg-image">
                 <div className="row no-gutters justify-content-center bg-black-75">
                     <div className="hero-static col-md-6 d-flex align-items-center bg-white">

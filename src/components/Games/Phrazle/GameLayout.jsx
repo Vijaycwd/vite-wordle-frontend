@@ -3,8 +3,7 @@ import { Col, Container, Row, Button } from 'react-bootstrap';
 import Phrazlesgamesection from './Phrazlegamesection';
 import Axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import LoginModal from './Modals/LoginModal';
 import PhrazlesModal from './Modals/PhrazleScoreModal';
 
@@ -195,7 +194,6 @@ function GamesLayout() {
           loginUsername={loginUsername}
         />
       </Container>
-      <ToastContainer />
     </>
   );
 }

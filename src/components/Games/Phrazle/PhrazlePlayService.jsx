@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Button } from 'react-bootstrap';
 import Axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import LoginModal from './Modals/LoginModal';
 import PhrazlesModal from './Modals/PhrazleScoreModal';
 
@@ -155,7 +154,7 @@ const updateTotalGamesPlayed = async (TotalGameObject) => {
                 loginUsername={loginUsername}
             />
 
-            <ToastContainer />
+           
         </>
     );
 }

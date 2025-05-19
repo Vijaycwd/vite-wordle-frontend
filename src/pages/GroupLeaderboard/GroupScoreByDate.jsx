@@ -27,7 +27,15 @@ function GroupScoreByDate({ latestJoinDate }) {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const userId = USER_AUTH_DATA?.id;
     const loginuserEmail = USER_AUTH_DATA?.email;
-    const formattedDate = latestJoinDate ? latestJoinDate.split(' ')[0] : 'N/A';
+    //const formattedDate = latestJoinDate.slice(0, 10);
+    const formattedDateStr = latestJoinDate ? latestJoinDate.slice(0, 10) : null;
+ // "2025-04-16"
+    let minDate = new Date(); // fallback
+    if (formattedDateStr && typeof formattedDateStr === 'string') {
+    const [year, month, day] = formattedDateStr.split('-').map(Number);
+    minDate = new Date(year, month - 1, day);
+    }
+   
 
     useEffect(() => {
         const fetchScoringMethod = async () => {
@@ -71,16 +79,16 @@ function GroupScoreByDate({ latestJoinDate }) {
     const handleDateChange = (date) => {
     if (!date || isNaN(date.getTime())) return;
 
-    const formattedDate = formatDateForBackend(date);
+    const formattedDateStr = formatDateForBackend(date);
 
     if (game === 'phrazle') {
         const newPeriod = 'AM';
-        fetchDataByDate(formattedDate, newPeriod);
+        fetchDataByDate(formattedDateStr, newPeriod);
         setStartDate(date);
         setPeriod(newPeriod);
     } else {
         setStartDate(date);
-        fetchDataByDate(formattedDate);
+        fetchDataByDate(formattedDateStr);
     }
 };
 
@@ -93,13 +101,13 @@ function GroupScoreByDate({ latestJoinDate }) {
     if (game === 'phrazle') {
         if (period === 'PM') {
             const newPeriod = 'AM';
-            const formattedDate = formatDateForBackend(startDate);
-            fetchDataByDate(formattedDate, newPeriod);
+            const formattedDateStr = formatDateForBackend(startDate);
+            fetchDataByDate(formattedDateStr, newPeriod);
             setPeriod(newPeriod);
         } else {
             const newPeriod = 'PM';
-            const formattedDate = formatDateForBackend(prevDate);
-            fetchDataByDate(formattedDate, newPeriod);
+            const formattedDateStr = formatDateForBackend(prevDate);
+            fetchDataByDate(formattedDateStr, newPeriod);
             setStartDate(prevDate);
             setPeriod(newPeriod);
         }
@@ -124,15 +132,15 @@ function GroupScoreByDate({ latestJoinDate }) {
 
             if (isTodayPMBlocked) return;
 
-            const formattedDate = formatDateForBackend(startDate);
-            fetchDataByDate(formattedDate, newPeriod);
+            const formattedDateStr = formatDateForBackend(startDate);
+            fetchDataByDate(formattedDateStr, newPeriod);
             setPeriod(newPeriod);
         } else {
             if (nextDate.isAfter(maxAllowedDate)) return;
 
             const newPeriod = 'AM';
-            const formattedDate = formatDateForBackend(nextDate.toDate());
-            fetchDataByDate(formattedDate, newPeriod);
+            const formattedDateStr = formatDateForBackend(nextDate.toDate());
+            fetchDataByDate(formattedDateStr, newPeriod);
             setStartDate(nextDate.toDate());
             setPeriod(newPeriod);
         }
@@ -230,7 +238,7 @@ const getTotalScore = (gameName) => {
            cleanedName === "phrazle" ? 7 :
            1; // Default to 1 if unknown
 };
-console.log(latestJoinDate);
+
 const showDayResult = (date, useremail, game) => {
     console.log('showDayResult');
     // setSelectedGame(game);
@@ -264,13 +272,27 @@ const handleCloseModal = () => {
     setShowModal(false);
     // if (updated) fetchGroupInfo();
 };
-const now = new Date();
-    const isAfternoon = now.getHours() >= 12;
 
-    const maxSelectableDate = isAfternoon
+const now = new Date();
+let maxSelectableDate;
+if (game === "phrazle") {
+  const isAfternoon = now.getHours() >= 12;
+
+  maxSelectableDate = isAfternoon
     ? new Date() // allow today
-    : new Date(now.setDate(now.getDate() - 1));
-console.log('cumulativeDailyScore',cumulativeDailyScore);
+    : new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate() - 1
+      ));
+} else {
+  maxSelectableDate = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate() - 1
+  ));
+}
+
     return (
         <>
             <div className='text-center'>
@@ -284,8 +306,8 @@ console.log('cumulativeDailyScore',cumulativeDailyScore);
                 <DatePicker
                     onChange={handleDateChange}
                     customInput={<ExampleCustomInput />}
-                    minDate={formattedDate}
-                    maxDate={isAfternoon ? new Date() : new Date(new Date().setDate(new Date().getDate() - 1))}
+                    minDate={minDate}
+                    maxDate={maxSelectableDate}
                     />
             </div>
             <Row className="justify-content-center leaderboard mt-4">
@@ -317,7 +339,7 @@ console.log('cumulativeDailyScore',cumulativeDailyScore);
                                         <FaArrowLeft />
                                     </button>
                                     <div>
-                                        {dayjs(startDate).format("dddd, MMM D, YYYY")} - {period}
+                                        {dayjs(startDate).format("MMM D, YYYY")} - {period}
                                     </div>
                                     <button onClick={(e) => { e.stopPropagation(); goToNextDay(); }} className="bg-dark text-white px-3 py-1 rounded">
                                         <FaArrowRight />
@@ -440,7 +462,7 @@ console.log('cumulativeDailyScore',cumulativeDailyScore);
                                         <FaArrowLeft />
                                     </button>
                                     <div>
-                                        {dayjs(startDate).format("dddd, MMM D, YYYY")}
+                                        {dayjs(startDate).format("MMM D, YYYY")}
                                     </div>
                                     <button onClick={(e) => { e.stopPropagation(); goToNextDay(); }} className="bg-dark text-white px-3 py-1 rounded">
                                         <FaArrowRight />

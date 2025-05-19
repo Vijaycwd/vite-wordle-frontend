@@ -146,7 +146,7 @@ function PhrazleScoreByDate() {
                         <FaArrowLeft />
                     </button>
                     <div>
-                        {dayjs(startDate).format("dddd, MMM D, YYYY")} - {period}
+                        {dayjs(startDate).format("MMM D, YYYY")} - {period}
                     </div>
                     <button onClick={(e) => { e.stopPropagation(); goToNextPeriod(); }} className="bg-dark text-white px-3 py-1 rounded">
                         <FaArrowRight />

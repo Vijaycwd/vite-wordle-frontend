@@ -106,7 +106,7 @@ useEffect(() => {
           <ListGroup variant="flush">
             {invites.map(invite => (
               <ListGroup.Item key={invite.id} className="   ">
-                <p>You have received an invite from "{invite.group_name}"</p>
+                <p>You have received an invitation from "{invite.group_name}"</p>
                 <p><strong>Group Name:</strong> {invite.group_name}</p>
                 <p><strong>Group Captain:</strong> {invite.captain_name}</p>
                 <Button size="sm" variant="success" onClick={() => handleAcceptInvite(invite.id, invite.group_id)}>Accept</Button>{' '}

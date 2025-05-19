@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import Axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import GroupModal from '../constant/Models/GroupModal';
@@ -76,7 +76,6 @@ function Groups() {
 
     return (
         <>
-            <ToastContainer />
             <Container>
                 <Row className="justify-content-center">
                     <Col md={6} className="border p-3 shadow rounded text-center">
