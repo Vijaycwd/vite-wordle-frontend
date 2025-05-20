@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Container, Row, Col, Form, Button, InputGroup } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, InputGroup, Modal } from 'react-bootstrap';
 import Axios from "axios";
 import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
@@ -7,7 +7,8 @@ import Logo from '../../../Logo.png';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Cropper from 'react-cropper';
 import 'react-cropper/node_modules/cropperjs/dist/cropper.css';
-
+import { FaPencilAlt } from 'react-icons/fa';
+import ImageCropModal from './Modals/ImageCropModal';
 
 function UserProfile() {
     const [userData, setUserData] = useState({});
@@ -16,6 +17,7 @@ function UserProfile() {
     const [username, setUsername] = useState("");
     const [avatar, setAvatar] = useState(null); // cropped blob
     const [previewUrl, setPreviewUrl] = useState('');
+    const [showCropModal, setShowCropModal] = useState(false);
     const [rawImage, setRawImage] = useState(null); // original file preview
     const [password, setPassword] = useState("");
     const [confirmpassword, setConfirmpassword] = useState("");
@@ -29,6 +31,9 @@ function UserProfile() {
 
     const togglePasswordVisibility = () => setShowPassword(!showPassword);
     const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
+
+    const [showManage, setShowManage] = useState(false);
+    const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -54,6 +59,7 @@ function UserProfile() {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setRawImage(reader.result); // show in cropper
+                setShowCropModal(true);
             };
             reader.readAsDataURL(file);
         }
@@ -67,6 +73,7 @@ function UserProfile() {
                     setAvatar(blob);
                     setPreviewUrl(URL.createObjectURL(blob));
                     setRawImage(null); // hide cropper after cropping
+                    setShowCropModal(false);
                 }
             });
         }
@@ -106,57 +113,68 @@ function UserProfile() {
         }
     };
 
+    const handlePausePlay = async () => {
+        try {
+            await Axios.post('https://coralwebdesigns.com/college/wordgamle/user/pause-user.php', { user_id: userData.id, is_paused: 1,});
+            toast.success("Your account has been paused. Others can't invite you to groups.", { position: "top-center" });
+        } catch (error) {
+            toast.error("Failed to pause account.", { position: "top-center" });
+        }
+    };
+
+    const handleDeleteAccount = async () => {
+        try {
+            await Axios.post('https://coralwebdesigns.com/college/wordgamle/user/delete-user.php', { user_id: userData.id });
+            toast.success("Your account has been deleted.", { position: "top-center" });
+            localStorage.removeItem('auth');
+            navigate('/');
+        } catch (error) {
+            toast.error("Failed to delete account.", { position: "top-center" });
+        }
+    };
+
+
     return (
         <>
             <Container>
                 <Row className="align-content-center justify-content-center">
                     <Col md={5}>
                         <Form onSubmit={updateUser}>
-                            <Form.Group controlId="formFile" className="mb-3 text-center">
-                                <label htmlFor="profilePicInput" style={{ cursor: 'pointer' }}>
+                            <Form.Group className="mb-3 text-center">
+                               <div className="profile-pic-wrapper">
+                                <label htmlFor="profilePicInput" className="profile-pic-label">
                                     <img
-                                        src={
-                                            previewUrl?.startsWith("blob:")
-                                                ? previewUrl
-                                                : previewUrl
-                                                    ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${previewUrl}`
-                                                    : Logo
-                                        }
-                                        alt="Profile"
-                                        className="rounded-circle mb-3"
-                                        style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                                    src={
+                                        previewUrl?.startsWith("blob:")
+                                        ? previewUrl
+                                        : previewUrl
+                                            ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${previewUrl}`
+                                            : Logo
+                                    }
+                                    alt="Profile"
+                                    className="profile-pic-img"
                                     />
                                 </label>
+
+                                <label htmlFor="profilePicInput" className="edit-icon-label">
+                                    <FaPencilAlt size={18} color="#ffffff" />
+                                </label>
+
+                                <input
+                                    type="file"
+                                    id="profilePicInput"
+                                    className="profile-pic-input"
+                                    onChange={handleUpload}
+                                />
+                                </div>
                                 <Form.Control
                                     id="profilePicInput"
                                     type="file"
                                     onChange={handleUpload}
                                     style={{ display: 'none' }}
                                 />
+
                             </Form.Group>
-
-                            {rawImage && (
-                                <>
-                                    <Cropper
-                                    src={rawImage}
-                                    style={{ height: 400, width: "100%" }}
-                                    aspectRatio={1}
-                                    viewMode={1}
-                                    guides={false}
-                                    background={false}
-                                    dragMode="move"
-                                    scalable={true}
-                                    zoomable={true}
-                                    cropBoxResizable={false}
-                                    cropBoxMovable={false}
-                                    ref={cropperRef}
-                                    />
-                                    <div className="text-center mt-2">
-                                        <Button variant="primary" onClick={cropImage}>Crop Image</Button>
-                                    </div>
-                                </>
-                            )}
-
                             <div className='text-center'>
                                 <h2>{username || "User"}</h2>
                                 <h4>{firstName} {lastName}</h4>
@@ -210,9 +228,41 @@ function UserProfile() {
                             <Button className="btn btn-block btn-hero-lg btn-hero-success mt-4" type="submit">
                                 Update Profile
                             </Button>
+                            <Button className="btn btn-block btn-hero-lg btn-hero-success mt-4 float-right" onClick={() => setShowManage(true)}>Manage Account</Button>
                         </Form>
                     </Col>
                 </Row>
+                <Modal show={showManage} onHide={() => setShowManage(false)} centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Manage Account</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <p><strong>Pause Play</strong></p>
+                        <p className="small">
+                        Keep my account and ability to enter and track my game results, but no other users will be able to see my name to invite me into a group.
+                        </p>
+                        <Button variant="warning" className="mb-3 w-100" onClick={handlePausePlay}>
+                        Pause Play
+                        </Button>
+
+                        <p><strong>Delete Account</strong></p>
+                        <p className="small">
+                        Remove my account from WordGAMLE entirely. If I decide to re-join in the future, I understand that my history will start fresh at that time.
+                        </p>
+                        <Button variant="danger" className="w-100" onClick={handleDeleteAccount}>
+                        Delete Account
+                        </Button>
+                    </Modal.Body>
+                    </Modal>
+                    <ImageCropModal
+                        show={showCropModal}
+                        handleClose={() => setShowCropModal(false)}
+                        rawImage={rawImage}
+                        cropperRef={cropperRef}
+                        cropImage={cropImage}
+                    />
+        
+
             </Container>
         </>
     );

@@ -93,11 +93,11 @@ const AddMembers = ({ showForm, handleFormClose, groupName, groupId, existingMem
   };
 
   const filteredUsers = users.filter(user =>
+    // !user.is_paused &&
     String(user.id) !== String(selectedCaptain) &&
     String(user.id) !== String(loggedInUserId) &&
-    !existingMembers.includes(String(user.id)) // exclude already joined
+    !existingMembers.includes(String(user.id))
   );
-
   return (
   <>
     <Modal show={showForm} onHide={handleFormClose}>
@@ -143,6 +143,9 @@ const AddMembers = ({ showForm, handleFormClose, groupName, groupId, existingMem
                 searchInput.length < 3 ? "Type at least 3 letters..." : "No users found"
               }
             />
+            <div className="alert alert-warning py-2 px-3 mb-2" style={{ fontSize: '0.85rem', marginBottom: '5px' }}>
+              * Only active users are shown. Paused users are not available for selection.
+            </div>
           </Form.Group>
 
           <Button variant="success" onClick={handleSendInvitation}>

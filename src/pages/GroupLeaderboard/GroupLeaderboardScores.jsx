@@ -4,6 +4,8 @@ import axios from "axios";
 import { Row, Col, ProgressBar } from "react-bootstrap";
 import { toast } from 'react-toastify';
 import WordlePlayService from '../../components/Games/Wordle/WordlePlayService';
+import ConnectionPlayService from '../../components/Games/Connections/ConnectionPlayService';
+import PhrazlePlayService from '../../components/Games/Phrazle/PhrazlePlayService';
 
 function GroupLeaderboardScores({ setLatestJoinDate }) {
     const { id, groupName, game } = useParams();
@@ -206,11 +208,13 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                                             <h4 className="text-center">Today's Leaderboard</h4>
                                             <p>The Leaderboard will be viewable when all group members have played.</p>
                                             <p className="mb-1">Yet to play:</p>
-                                            {missedUsers.map((name, i) => (
-                                                <div key={i} className="fw-bold">{name}</div>
+                                             {missedUsers.map((name, i) => (
+                                                <div key={i} className="fw-bold">
+                                                    {name === userName ? "You" : name}
+                                                </div>
                                             ))}
                                             {missedUsers.includes(userName) && (
-                                                <WordlePlayService/>
+                                                <PhrazlePlayService/>
                                             )}
                                         </div>
                                     );
@@ -306,7 +310,7 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                                 }
                                 
                             })()}
-                            {/* Render non-Phrazle games */}
+                           
                             {!loading && !error && todayLeaderboard.length > 0 && (() => {
                                 // Filter out "phrazle" and find the lowest score
                                 const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename !== "phrazle");
@@ -320,6 +324,7 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                                 const missedUsers = filteredLeaderboard.filter(d => d.missed).map(d => d.username);
                                 
                                 if (missedUsers.length > 0) {
+                                    const currentUserData = filteredLeaderboard.find(d => d.username === userName);
                                     return (
                                         <div className="text-center mb-3 missed-user-section py-3 px-2">
                                             <h4 className="text-center">Today's Leaderboard</h4>
@@ -330,8 +335,12 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                                                     {name === userName ? "You" : name}
                                                 </div>
                                             ))}
-                                            {missedUsers.includes(userName) && (
-                                                <WordlePlayService/>
+                                            {missedUsers.includes(userName) && currentUserData && (
+                                            currentUserData.gamename === 'connections' ? (
+                                                <ConnectionPlayService />
+                                            ) : currentUserData.gamename === 'wordle' ? (
+                                                <WordlePlayService />
+                                            ) : null
                                             )}
                                         </div>
                                     );
