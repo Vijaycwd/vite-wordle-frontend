@@ -17,12 +17,12 @@ function ImageCropModal({ show, handleClose, rawImage, cropperRef, cropImage }) 
                             aspectRatio={1}
                             viewMode={1}
                             guides={false}
-                            background={false}
+                            background={true}
                             dragMode="move"
                             scalable={true}
                             zoomable={true}
-                            // cropBoxResizable={false}
-                            // cropBoxMovable={false}
+                            cropBoxResizable={true}
+                            cropBoxMovable={true}
                             ref={cropperRef}
                         />
                         <div className="text-center mt-3">

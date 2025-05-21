@@ -45,42 +45,66 @@ const GroupInvites = () => {
   };
 
   // Accept invite
-  const handleAcceptInvite = async (inviteId, groupId) => {
-    try {
-      await axios.post(
-        'https://coralwebdesigns.com/college/wordgamle/groups/accept-invite.php',
-        { inviteId, groupId }
-      );
-      setInvites((prevInvites) =>
-        prevInvites.filter((invite) => invite.id !== inviteId)
-      );
-
-      if (invites.length === 1) {
-        clearInterval(inviteIntervalRef.current);
+  // Accept invite
+const handleAcceptInvite = async (inviteId, groupId) => {
+  setShowDropdown(false);
+  try {
+    await axios.post(
+      'https://coralwebdesigns.com/college/wordgamle/groups/accept-invite.php',
+      {
+        user_id: userId,
+        invite_id: inviteId,
+        group_id: groupId
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       }
-    } catch (error) {
-      console.error('Error accepting invite:', error);
+    );
+
+    setInvites((prevInvites) =>
+      prevInvites.filter((invite) => invite.id !== inviteId)
+    );
+
+    if (invites.length === 1) {
+      clearInterval(inviteIntervalRef.current);
     }
-  };
+  } catch (error) {
+    console.error('Error accepting invite:', error);
+  }
+};
 
-  // Decline invite
-  const handleDeclineInvite = async (inviteId) => {
-    try {
-      await axios.post(
-        'https://coralwebdesigns.com/college/wordgamle/groups/decline-invite.php',
-        { inviteId }
-      );
-      setInvites((prevInvites) =>
-        prevInvites.filter((invite) => invite.id !== inviteId)
-      );
 
-      if (invites.length === 1) {
-        clearInterval(inviteIntervalRef.current);
+// Decline invite
+const handleDeclineInvite = async (inviteId) => {
+  setShowDropdown(false);
+  try {
+    await axios.post(
+      'https://coralwebdesigns.com/college/wordgamle/groups/decline-invite.php',
+      {
+        user_id: userId,
+        invite_id: inviteId
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       }
-    } catch (error) {
-      console.error('Error declining invite:', error);
+    );
+    setInvites((prevInvites) =>
+      prevInvites.filter((invite) => invite.id !== inviteId)
+    );
+
+    if (invites.length === 1) {
+      clearInterval(inviteIntervalRef.current);
     }
-  };
+
+    setShowDropdown(false); // Close dropdown
+  } catch (error) {
+    console.error('Error declining invite:', error);
+  }
+};
 
   // Invite polling effect
   useEffect(() => {

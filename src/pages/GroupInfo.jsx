@@ -165,8 +165,16 @@ function GroupInfo() {
                     <div>
                         <p><strong>*Captain</strong></p>
                         <Button className="btn btn-primary my-4" onClick={() => navigate(`/group/${group.id}/${group.name.toLowerCase().replace(/\s+/g, '-')}/stats`)}>Group Leaderboards</Button>
-                        <Button className="btn btn-warning my-2 mx-2" onClick={handleShowModal}>Edit Group</Button>
-                        <Button className="btn btn-danger my-2" onClick={handleDeleteGroup}>Delete Group</Button>
+                        {userId === captainid && (
+                           <>
+                                <Button className="btn btn-warning my-2 mx-2" onClick={handleShowModal}>
+                                    Edit Group
+                                </Button>
+                                <Button className="btn btn-danger my-2" onClick={handleDeleteGroup}>
+                                    Delete Group
+                                </Button>
+                           </>
+                        )}
                     </div>
                 </Col>
             </Row>
