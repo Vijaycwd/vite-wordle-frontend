@@ -2,14 +2,18 @@ import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import Axios from 'axios';
 import { useParams } from 'react-router-dom';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
+import {Form, Button, InputGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
 function ResetPwdForm() {
+    const baseURL = import.meta.env.VITE_BASE_URL;
     const [password, setPassword] = useState('');
     const { id, token } = useParams();
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
     const resetPwd = async (e) => {
         e.preventDefault();
         
@@ -21,25 +25,19 @@ function ResetPwdForm() {
         };
         
         try {
-            const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/auth/reset-password.php', userObject);
+            const res = await Axios.post(`${baseURL}/auth/reset-password.php`, userObject);
             console.log(res.data);
 
             if (res.data.status === 'error') {
-                toast.error(res.data.message, {
-                    position: 'top-center'
-                });
+                toast.error(res.data.message);
             } else {
-                toast.success('Password updated successfully', {
-                    position: 'top-center'
-                });
+                toast.success('Password updated successfully');
                 navigate('/login');
                 
             }
         } catch (err) {
-            console.error(err);
-            toast.error('An error occurred. Please try again.', {
-                position: 'top-center'
-            });
+            
+            toast.error('An error occurred. Please try again.');
         }
 
         // Clear password input
@@ -59,15 +57,21 @@ function ResetPwdForm() {
                                     <Form className="js-validation-signup" onSubmit={resetPwd}>
                                         <Form.Group controlId="password">
                                             <Form.Label>Password</Form.Label>
-                                            <Form.Control 
-                                                type="password" 
-                                                className="form-control form-control-lg form-control-alt" 
-                                                value={password} 
-                                                onChange={(event) => setPassword(event.target.value)} 
-                                                placeholder='Enter your new password' 
-                                                required
-                                            />
+                                            <InputGroup>
+                                                <Form.Control 
+                                                    type={showPassword ? 'text' : 'password'}
+                                                    className="form-control form-control-lg form-control-alt" 
+                                                    value={password} 
+                                                    onChange={(event) => setPassword(event.target.value)} 
+                                                    placeholder="Enter your new password"
+                                                    required
+                                                />
+                                                <InputGroup.Text style={{ cursor: 'pointer' }} onClick={togglePasswordVisibility}>
+                                                    <i className={showPassword ? "fa fa-eye-slash" : "fa fa-eye"}></i>
+                                                </InputGroup.Text>
+                                            </InputGroup>
                                         </Form.Group>
+
                                         <Button type="submit" className="btn btn-block btn-hero-lg btn-hero-success mt-4">
                                             Update
                                         </Button>

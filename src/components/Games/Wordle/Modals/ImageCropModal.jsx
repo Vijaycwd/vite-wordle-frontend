@@ -26,9 +26,10 @@ function ImageCropModal({ show, handleClose, rawImage, cropperRef, cropImage }) 
                             ref={cropperRef}
                         />
                         <div className="text-center mt-3">
-                            <Button variant="primary" onClick={cropImage}>
+                            <Button variant="primary" className="me-2" onClick={cropImage}>
                                 Crop Image
                             </Button>
+                             <Button  variant="secondary" onClick={handleClose}>Cancel</Button>
                         </div>
                     </>
                 )}

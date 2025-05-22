@@ -3,6 +3,7 @@ import { Modal, Button, Form, FloatingLabel } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
 const ConnectionsScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore, loginUsername }) => {
+  
   const [isPasted, setIsPasted] = useState(false);
   const [gameNumber, setGameNumber] = useState(null);
   

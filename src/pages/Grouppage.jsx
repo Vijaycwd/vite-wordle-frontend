@@ -8,6 +8,7 @@ import MemberGameSelections from './MemberGameSelections';
 import SelectScoringMethod from './SelectScoringMethod';
 
 function GroupPage() {
+    const baseURL = import.meta.env.VITE_BASE_URL;
     const { id } = useParams();
     const navigate = useNavigate();
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
@@ -21,7 +22,7 @@ function GroupPage() {
     useEffect(() => {
         const fetchGroupDetails = async () => {
             try {
-                const res = await Axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-groups.php?id=${id}`);
+                const res = await Axios.get(`${baseURL}/groups/get-groups.php?id=${id}`);
                 if (res.data.status === "success" && res.data.groups.length > 0) {
                     const fetchedGroup = res.data.groups[0];
                     setGroup(fetchedGroup);
@@ -38,7 +39,7 @@ function GroupPage() {
 
         const fetchGroupMembers = async () => {
             try {
-                const res = await Axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-members.php?group_id=${id}`);
+                const res = await Axios.get(`${baseURL}/groups/get-group-members.php?group_id=${id}`);
                
                 if (res.data.status === "success") {
                    const memberIds = res.data.members.map(m => String(m.member_id));

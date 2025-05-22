@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import Select from "react-select";
 
 const AddMembers = ({ showForm, handleFormClose, groupName, groupId, existingMembers = [] }) => {
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const [groups, setGroups] = useState([]);
   const [users, setUsers] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState("");
@@ -18,7 +19,7 @@ const AddMembers = ({ showForm, handleFormClose, groupName, groupId, existingMem
   useEffect(() => {
     const fetchGroups = async () => {
       try {
-        const res = await Axios.get("https://coralwebdesigns.com/college/wordgamle/groups/get-groups.php");
+        const res = await Axios.get(`${baseURL}/groups/get-groups.php`);
         setGroups(res.data.groups || []);
       } catch (err) {
         console.error("Failed to fetch groups");
@@ -27,7 +28,7 @@ const AddMembers = ({ showForm, handleFormClose, groupName, groupId, existingMem
 
     const fetchUsers = async () => {
       try {
-        const res = await Axios.get("https://coralwebdesigns.com/college/wordgamle/groups/get-user.php");
+        const res = await Axios.get(`${baseURL}/groups/get-user.php`);
         setUsers(res.data.users || []);
       } catch (err) {
         console.error("Failed to fetch users");
@@ -49,18 +50,18 @@ const AddMembers = ({ showForm, handleFormClose, groupName, groupId, existingMem
     };
 
     try {
-      const res = await Axios.post("https://coralwebdesigns.com/college/wordgamle/groups/add-group-members.php", groupData);
+      const res = await Axios.post(`${baseURL}/groups/add-group-members.php`, groupData);
       if (res.data.status === "success") {
-        toast.success(res.data.message, { position: "top-center" });
+        toast.success(res.data.message);
         handleFormClose();
         setSelectedGroup('');
         setSelectedCaptain('');
         setSelectedMembers([]);
       } else {
-        toast.error(res.data.message, { position: "top-center" });
+        toast.error(res.data.message);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'An unexpected error occurred.', { position: "top-center" });
+      toast.error(error.response?.data?.message || 'An unexpected error occurred.');
     }
   };
 
@@ -82,7 +83,7 @@ const AddMembers = ({ showForm, handleFormClose, groupName, groupId, existingMem
       }));
 
       await Promise.all(invitations.map(invite =>
-        Axios.post("https://coralwebdesigns.com/college/wordgamle/groups/send-invite.php", invite)
+        Axios.post(`${baseURL}/groups/send-invite.php`, invite)
       ));
 
       toast.success("Invitations sent successfully!");

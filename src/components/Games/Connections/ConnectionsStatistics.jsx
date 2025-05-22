@@ -3,7 +3,7 @@ import Axios from 'axios';
 import { ProgressBar } from "react-bootstrap";
 
 function ConnectionsStatistics() {
-
+    const baseURL = import.meta.env.VITE_BASE_URL;
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA.email;
     const [totalGame, setTotalGame] = useState('');
@@ -27,7 +27,7 @@ function ConnectionsStatistics() {
 
     function getStatsValue() {
        
-        Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/connections/get-statistics.php?useremail=${loginuserEmail}`)
+        Axios.get(`${baseURL}/games/connections/get-statistics.php?useremail=${loginuserEmail}`)
             .then((response) => {
                 if (typeof updateStatistics === 'function') {
                     updateStatistics();

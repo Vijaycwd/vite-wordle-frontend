@@ -4,27 +4,24 @@ import Axios from "axios";
 import {Container, Row, Col, Button} from 'react-bootstrap';
 
 function Resetpwd() {
+    const baseURL = import.meta.env.VITE_BASE_URL;
     const [email, setEmail] = useState();
-
+    const frontendURL = window.location.origin;
     const resetPwd = async (e) => {
         e.preventDefault();
         
         try {
             // Send the request
-            const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/auth/reset-password.php', {
-                useremail: email
+            const res = await Axios.post(`${baseURL}/auth/reset-password.php`, {
+                frontendURL, useremail: email
             });
             
             // Handle response
             if (res.data.status === 'success') {
-                toast.success(res.data.message, {
-                    position: "top-center"
-                });
+                toast.success(res.data.message);
             }
             else{
-                toast.error(res.data.message, {
-                    position: "top-center"
-                });
+                toast.error(res.data.message);
             } 
         } catch (err) {
             // Handle error
@@ -55,8 +52,8 @@ function Resetpwd() {
                                         </div>
                                         <div className="form-group">
                                         <Button onClick ={resetPwd} type="submit"  className="btn btn-block wordle-btn">
-                                                                <i className="fa fa-fw fa-sign-in-alt mr-1"></i> Send
-                                                            </Button>
+                                            <i className="fa fa-fw fa-sign-in-alt mr-1"></i> Send
+                                        </Button>
                                         </div>
                                     </form>
                         </div>

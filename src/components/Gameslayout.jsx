@@ -8,7 +8,7 @@ import LoginModal from './Games/Wordle/Modals/LoginModal';
 import WordleModal from './Games/Wordle/Modals/WordleScoreModal';
 
 function Gameslayout() {
-
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
   const { username, email } = USER_AUTH_DATA;
   const loginUsername = username;
@@ -24,7 +24,7 @@ function Gameslayout() {
   const userEmail = USER_AUTH_DATA.email;
   useEffect(() => {
     if (userEmail) {
-      Axios.get('https://coralwebdesigns.com/college/wordgamle/user/get-user.php', {
+      Axios.get(`${baseURL}/user/get-user.php`, {
         params: { useremail: userEmail },
       })
       .then(response => {
@@ -45,7 +45,7 @@ function Gameslayout() {
       const today = now.toISOString().split('T')[0];
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       console.log('loginUserEmail',loginUserEmail);
-      Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/get-score.php?useremail=${loginUserEmail}&today=${today}`)
+      Axios.get(`${baseURL}/games/wordle/get-score.php?useremail=${loginUserEmail}&today=${today}`)
         .then(res => {
           console.log(res);
           const hasPlayedToday = res.data.wordlescore;
@@ -64,9 +64,9 @@ function Gameslayout() {
               timeZone
             };
   
-            Axios.post('https://coralwebdesigns.com/college/wordgamle/games/wordle/create-score.php', missedGameObj)
+            Axios.post(`${baseURL}/games/wordle/create-score.php`, missedGameObj)
               .then(() => {
-                Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/create-statistics.php/${loginUserEmail}`)
+                Axios.get(`${baseURL}/games/wordle/create-statistics.php/${loginUserEmail}`)
                   .then(statsRes => {
                     const TotalGameObject = {
                       username: loginUsername,
@@ -160,13 +160,13 @@ function Gameslayout() {
         };
         console.log(wordleObject);
         try {
-            const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/wordle/create-score.php', wordleObject);
+            const res = await Axios.post(`${baseURL}/games/wordle/create-score.php`, wordleObject);
             console.log(res.data.status);
             if (res.data.status === 'success') {
                 if (typeof updateStatsChart === 'function') {
                     updateStatsChart();
                 }
-                const currentStats = await Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/create-statistics.php/${loginUserEmail}`);
+                const currentStats = await Axios.get(`${baseURL}/games/wordle/create-statistics.php/${loginUserEmail}`);
                 const currentStreak = currentStats.data.currentStreak || 0;
                 const streak = isWin ? currentStreak + 1 : 0;
                 const TotalGameObject = {
@@ -182,22 +182,22 @@ function Gameslayout() {
                 await updateTotalGamesPlayed(TotalGameObject);
                 setScore('');
                 navigate('/wordlestats');
-                toast.success(res.data.message , { position: "top-center" });
+                toast.success(res.data.message );
             }
             else{
-                toast.error(res.data.message , { position: "top-center" });
+                toast.error(res.data.message );
             }
         } catch (err) {
-            toast.error(err.res?.data?.message || 'An unexpected error occurred.', { position: "top-center" });
+            toast.error(err.res?.data?.message || 'An unexpected error occurred.');
         }
     }
 };
 
 const updateTotalGamesPlayed = async (TotalGameObject) => {
     try {
-        await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/wordle/update-statistics.php', TotalGameObject);
+        await Axios.post(`${baseURL}/games/wordle/update-statistics.php`, TotalGameObject);
     } catch (err) {
-        toast.error('Failed to update total games played', { position: "top-center" });
+        toast.error('Failed to update total games played');
     }
 };
   // console.log(userData);

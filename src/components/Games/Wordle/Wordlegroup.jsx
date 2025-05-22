@@ -3,6 +3,7 @@ import { Container, Row, Col } from 'react-bootstrap';
 import Axios from 'axios';
 
 function Wordlegroup() {
+    const baseURL = import.meta.env.VITE_BASE_URL;
     const [memberCount, setMemberCount] = useState(null);
     const [highestPlayedMember, setHighestPlayedMember] = useState(null);
     const [totalGame, setTotalGame] = useState('');
@@ -11,7 +12,7 @@ function Wordlegroup() {
     const [maxStreak, setMaxStreak] = useState('');
 
     useEffect(() => {
-        Axios.get('https://coralwebdesigns.com/college/wordgamle/games/wordle/get-group-details.php')
+        Axios.get(`${baseURL}/games/wordle/get-group-details.php`)
             .then((response) => {
                 console.log(response.data);
                 setMemberCount(response.data.member.total_users);

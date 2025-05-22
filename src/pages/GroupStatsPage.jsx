@@ -7,6 +7,7 @@ import GroupLeaderboardScores from './GroupLeaderboard/GroupLeaderboardScores';
 import GroupScoreByDate from './GroupLeaderboard/GroupScoreByDate';
 
 function GroupStatsPage() {
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const { id, groupName, game } = useParams(); // Extract groupName and game from URL
   const [group, setGroup] = useState(null);
   const [latestJoinDate, setLatestJoinDate] = useState(null);
@@ -17,7 +18,7 @@ function GroupStatsPage() {
   useEffect(() => {
     const fetchGroupDetails = async () => {
         try {
-            const res = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-groups.php?id=${id}`);
+            const res = await axios.get(`${baseURL}/groups/get-groups.php?id=${id}`);
             if (res.data.status === "success" && res.data.groups.length > 0) {
                 const fetchedGroup = res.data.groups[0];
                 setGroup(fetchedGroup);

@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import GroupModal from '../constant/Models/GroupModal';
 
 function Groups() {
+    const baseURL = import.meta.env.VITE_BASE_URL;
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
     const { id: userId, username: loginUsername, email: loginUserEmail } = USER_AUTH_DATA;
 
@@ -25,19 +26,19 @@ function Groups() {
             try {
                 // Fetch groups created by the user
                 const resCreated = await Axios.post(
-                    "https://coralwebdesigns.com/college/wordgamle/groups/get-groups.php",
+                    `${baseURL}/groups/get-groups.php`,
                     { user_id: userId }
                 );
                 setGroups(resCreated.data.groups || []);
 
                 // Fetch groups where user is a member
                 const resMember = await Axios.post(
-                    "https://coralwebdesigns.com/college/wordgamle/groups/get-groups.php",
+                    `${baseURL}/groups/get-groups.php`,
                     { member_id: userId } // New API for groups where user is a member
                 );
                 setMemberGroups(resMember.data.groups || []);
             } catch (err) {
-                toast.error("Failed to load groups.", { position: "top-center" });
+                toast.error("Failed to load groups.");
             }
         };
 
@@ -51,7 +52,7 @@ function Groups() {
 
     const handleShowCreateForm = () => {
         if (!loginUsername || !loginUserEmail) {
-            toast.error("Please log in to create a group.", { position: "top-center" });
+            toast.error("Please log in to create a group.");
             return;
         }
         setShowCreateForm(true);
@@ -63,14 +64,14 @@ function Groups() {
 
         try {
             const res = await Axios.post(
-                "https://coralwebdesigns.com/college/wordgamle/groups/create-group.php",
+                `${baseURL}/groups/create-group.php`,
                 { name: groupname, captain_id: userId, games: selectedGames }
             );
 
-            toast.success(res.data.message, { position: "top-center" });
+            toast.success(res.data.message);
             setGroups([...groups, { id: res.data.group_id, name: groupname, games: selectedGames.join(", ") }]);
         } catch (err) {
-            toast.error(err.response?.data?.message || "An unexpected error occurred.", { position: "top-center" });
+            toast.error(err.response?.data?.message || "An unexpected error occurred.");
         }
     };
 

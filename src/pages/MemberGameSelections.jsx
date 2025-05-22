@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { toast } from 'react-toastify';
 
 function MemberGameSelections() {
+    const baseURL = import.meta.env.VITE_BASE_URL;
     const { id: groupId } = useParams(); // Get group ID from URL
     const [selectedGames, setSelectedGames] = useState([]);
     const [Games, setGames] = useState([]); // Store selected games from backend
@@ -15,7 +16,7 @@ function MemberGameSelections() {
         const fetchSelectedGames = async () => {
             if (!groupId || !userId) return;
             try {
-                const res = await Axios.get("https://coralwebdesigns.com/college/wordgamle/groups/get-selected-games.php", {
+                const res = await Axios.get(`${baseURL}/groups/get-selected-games.php`, {
                     params: { user_id: userId, group_id: groupId }
                 });
     
@@ -59,7 +60,7 @@ function MemberGameSelections() {
         }
 
         try {
-            const res = await Axios.post("https://coralwebdesigns.com/college/wordgamle/groups/update-games.php", {
+            const res = await Axios.post(`${baseURL}/groups/update-games.php`, {
                 userId,
                 groupId,
                 selectedGames

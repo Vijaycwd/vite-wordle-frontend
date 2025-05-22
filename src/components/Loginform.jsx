@@ -8,6 +8,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import Logo from '../Logo.png';
 
 function Loginform() {
+    const baseURL = import.meta.env.VITE_BASE_URL;
     const userAuthData = JSON.parse(localStorage.getItem('auth')); // Change here
     const navigate = useNavigate();
     const [validated, setValidated] = useState(false);
@@ -33,18 +34,18 @@ function Loginform() {
             setEmailOrUsername('');
             setPassword('');
             const userObject = { email: emailOrUsername, password }; // Use a single field for both email and username
-            Axios.post('https://coralwebdesigns.com/college/wordgamle/auth/login.php', userObject)
+            Axios.post(`${baseURL}/auth/login.php`, userObject)
                 .then(res => {
                     if (res.data.status === 'success') {
-                        toast.success("Login Successfully", { position: "top-center" });
+                        toast.success("Login Successfully");
                         localStorage.setItem('auth', JSON.stringify(res.data));
                         navigate("/");
                     } else {
-                        toast.error("Invalid username/email or password!", { position: "top-center" });
+                        toast.error("Invalid username/email or password!");
                     }
                 })
                 .catch(() => {
-                    toast.error("Invalid User Details", { position: "top-center" });
+                    toast.error("Invalid User Details");
                 });
         }
     };

@@ -9,6 +9,7 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import dayjs from "dayjs";
 
 function GroupScoreByDate({ latestJoinDate }) {
+    const baseURL = import.meta.env.VITE_BASE_URL;
     const { id, groupName, game } = useParams();
     const [todayLeaderboard, setTodayLeaderboard] = useState([]);
     // const [latestJoinDate, setlatestJoinDate] = useState('');
@@ -40,7 +41,7 @@ function GroupScoreByDate({ latestJoinDate }) {
     useEffect(() => {
         const fetchScoringMethod = async () => {
             try {
-                const res = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-scoring-method.php`, {
+                const res = await axios.get(`${baseURL}/groups/get-scoring-method.php`, {
                     params: { user_id: userId, group_id: id }
                 });
 
@@ -189,9 +190,9 @@ function GroupScoreByDate({ latestJoinDate }) {
                 : baseParams;
     
             const [todayResponse, cumulativeAverageResponse, cumulativeDailyResponse] = await Promise.all([
-                axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-score.php`, { params }),
-                axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-cumulative-average-score.php`, { params }),
-                axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-cumulative-score-bydate.php`, { params }),
+                axios.get(`${baseURL}/groups/get-group-score.php`, { params }),
+                axios.get(`${baseURL}/groups/get-cumulative-average-score.php`, { params }),
+                axios.get(`${baseURL}/groups/get-cumulative-score-bydate.php`, { params }),
             ]);
     
             if (
@@ -243,7 +244,7 @@ const showDayResult = (date, useremail, game) => {
     console.log('showDayResult');
     // setSelectedGame(game);
     const timeZone = moment.tz.guess();
-    axios.get(`https://coralwebdesigns.com/college/wordgamle/games/${game}/get-group-score.php`, {
+    axios.get(`${baseURL}/games/${game}/get-group-score.php`, {
         params: { useremail, timeZone, today: date }
     })
     .then((response) => {
@@ -379,7 +380,7 @@ if (game === "phrazle") {
                                                 {/* Avatar */}
                                                 <Col xs={3} className="d-flex align-items-center gap-2">
                                                     <img 
-                                                        src={data.avatar ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}` : "https://via.placeholder.com/50"} 
+                                                        src={data.avatar ? `${baseURL}/user/uploads/${data.avatar}` : `${baseURL}/user/uploads/defalut_avatar.png`} 
                                                         alt="Avatar" 
                                                         className="rounded-circle border" 
                                                         style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
@@ -502,7 +503,7 @@ if (game === "phrazle") {
                                                 {/* Avatar */}
                                                 <Col xs={3} className="d-flex align-items-center gap-2">
                                                     <img 
-                                                        src={data.avatar ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}` : "https://via.placeholder.com/50"} 
+                                                        src={data.avatar ? `${baseURL}/user/uploads/${data.avatar}` : `${baseURL}/user/uploads/defalut_avatar.png`} 
                                                         alt="Avatar" 
                                                         className="rounded-circle border" 
                                                         style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
@@ -605,8 +606,8 @@ if (game === "phrazle") {
                                                         <img
                                                             src={
                                                                 data.avatar
-                                                                    ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}`
-                                                                    : "https://coralwebdesigns.com/college/wordgamle/user/uploads/default_avatar.png"
+                                                                    ? `${baseURL}/user/uploads/${data.avatar}`
+                                                                    : `${baseURL}/user/uploads/defalut_avatar.png`
                                                             }
                                                             alt="Avatar"
                                                             className="rounded-circle border"
@@ -716,8 +717,8 @@ if (game === "phrazle") {
                                                         <img
                                                             src={
                                                                 data.avatar
-                                                                    ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}`
-                                                                    : "https://coralwebdesigns.com/college/wordgamle/user/uploads/default_avatar.png"
+                                                                    ? `${baseURL}/user/uploads/${data.avatar}`
+                                                                    : `${baseURL}/user/uploads/defalut_avatar.png`
                                                             }
                                                             alt="Avatar"
                                                             className="rounded-circle border"

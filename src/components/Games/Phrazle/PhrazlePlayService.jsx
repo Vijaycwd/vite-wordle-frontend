@@ -7,7 +7,8 @@ import LoginModal from './Modals/LoginModal';
 import PhrazlesModal from './Modals/PhrazleScoreModal';
 
 function PhrazlePlayService({ updateStatsChart }) {
-    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
+  const baseURL = import.meta.env.VITE_BASE_URL;
+  const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
   const { username: loginUsername, email: loginUserEmail } = USER_AUTH_DATA;
   
   const [showForm, setShowForm] = useState(false);
@@ -94,14 +95,14 @@ const onSubmit = async (event) => {
     };
     console.log(phrazleObject);
     try {
-      const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/phrazle/create-score.php', phrazleObject);
+      const res = await Axios.post(`${baseURL}/games/phrazle/create-score.php`, phrazleObject);
       
       if (res.data.status === 'success') {
         if (typeof updateStatsChart === 'function') {
           updateStatsChart();
         }
         // Fetch current statistics and update
-        const currentStats = await Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/create-statistics.php/${loginUserEmail}`);
+        const currentStats = await Axios.get(`${baseURL}/games/phrazle/create-statistics.php/${loginUserEmail}`);
         const currentStreak = currentStats.data.currentStreak || 0;
         const streak = isWin ? currentStreak + 1 : 0;
         const TotalGameObject = {
@@ -113,25 +114,25 @@ const onSubmit = async (event) => {
           guessDistribution: updatedGuessDistribution,
           updatedDate: adjustedCreatedAt
         };
-        toast.success(res.data.message, { position: "top-center" });
+        toast.success(res.data.message);
         await updateTotalGamesPlayed(TotalGameObject);
         setScore('');
         navigate('/phrazlestats');
        
       } else {
-        toast.error(res.data.message, { position: "top-center" });
+        toast.error(res.data.message);
       }
     } catch (err) {
-      toast.error(err.res?.data?.message || 'An unexpected error occurred.', { position: "top-center" });
+      toast.error(err.res?.data?.message || 'An unexpected error occurred.');
     }
   }
 };
 const updateTotalGamesPlayed = async (TotalGameObject) => {
   // console.log(TotalGameObject);
     try {
-        await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/phrazle/update-statistics.php', TotalGameObject);
+        await Axios.post(`${baseURL}/games/phrazle/update-statistics.php`, TotalGameObject);
     } catch (err) {
-        toast.error('Failed to update total games played', { position: "top-center" });
+        toast.error('Failed to update total games played');
     }
 };
 

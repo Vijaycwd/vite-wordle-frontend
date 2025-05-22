@@ -8,6 +8,7 @@ import ConnectionsScoreByDate from './ConnectionsScoreByDate';
 import ConnectionsGuessDistribution from './ConnectionsGuessDistribution';
 
 function ConnectionStat() {
+    const baseURL = import.meta.env.VITE_BASE_URL;
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA?.email; // Optional chaining to avoid errors
 
@@ -34,7 +35,7 @@ function ConnectionStat() {
         // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
         const todayDate = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
         
-        Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/connections/get-score.php`, {
+        Axios.get(`${baseURL}/games/connections/get-score.php`, {
             params: { useremail: loginuserEmail, timeZone:timeZone, today: todayDate }
         })
         .then((res) => {

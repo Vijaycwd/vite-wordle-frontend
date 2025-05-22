@@ -7,7 +7,8 @@ import LoginModal from './Modals/LoginModal';
 import ConnectionsModal from './Modals/ConnectionsScoreModal';
 
 function ConnectionPlayService({ updateStatsChart }) {
-    const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
+  const baseURL = import.meta.env.VITE_BASE_URL;
+  const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
   const { username: loginUsername, email: loginUserEmail } = USER_AUTH_DATA;
   
   const [showForm, setShowForm] = useState(false);
@@ -127,7 +128,7 @@ const onSubmit = async (event) => {
  console.log(scoreObject);
   try {
     const res = await Axios.post(
-      "https://coralwebdesigns.com/college/wordgamle/games/connections/create-score.php",
+      `${baseURL}/college/wordgamle/games/connections/create-score.php`,
       scoreObject
     );
 
@@ -166,9 +167,9 @@ const onSubmit = async (event) => {
       await updateTotalGamesPlayed(TotalGameObject);
       setScore("");
       navigate("/connectionstats");
-      toast.success(res.data.message, { position: "top-center" });
+      toast.success(res.data.message);
     } else {
-      toast.error(res.data.message, { position: "top-center" });
+      toast.error(res.data.message);
     }
   } catch (err) {
     toast.error(
@@ -180,10 +181,10 @@ const onSubmit = async (event) => {
   const updateTotalGamesPlayed = async (TotalGameObject) => {
     console.log(TotalGameObject);
     try {
-      const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/connections/update-statistics.php', TotalGameObject);
+      const res = await Axios.post(`${baseURL}/games/connections/update-statistics.php`, TotalGameObject);
       console.log(res);
     } catch (err) {
-      toast.error('Failed to update total games played', { position: "top-center" });
+      toast.error('Failed to update total games played');
     }
   };
     return (

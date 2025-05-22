@@ -8,6 +8,7 @@ import ConnectionPlayService from '../../components/Games/Connections/Connection
 import PhrazlePlayService from '../../components/Games/Phrazle/PhrazlePlayService';
 
 function GroupLeaderboardScores({ setLatestJoinDate }) {
+    const baseURL = import.meta.env.VITE_BASE_URL;
     const { id, groupName, game } = useParams();
     const [todayLeaderboard, setTodayLeaderboard] = useState([]);
     const [cumulativeScore, setCumulativeScore] = useState([]);
@@ -15,9 +16,10 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
     const [error, setError] = useState(null);
     const [scoringmethod, setScoringMethod] = useState("");
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
+    
     const userId = USER_AUTH_DATA?.id;
     const userName = USER_AUTH_DATA?.username;
-
+    const userEmail = USER_AUTH_DATA?.email;
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const localDate = new Date();
     const offsetMinutes = localDate.getTimezoneOffset();
@@ -29,7 +31,7 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
 
     // useEffect(() => {
     //     // Call the auto-submit PHP script
-    //     axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/auto-submit-wordle-scores.php`, {
+    //     axios.get(`${baseURL}/games/wordle/auto-submit-wordle-scores.php`, {
     //         params: { timeZone, formattedYesterday}
     //     })
     //       .then(res => {
@@ -43,7 +45,7 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
     useEffect(() => {
         const fetchScoringMethod = async () => {
             try {
-                const res = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-scoring-method.php`, {
+                const res = await axios.get(`${baseURL}/groups/get-scoring-method.php`, {
                     params: { user_id: userId, group_id: id }
                 });
 
@@ -73,7 +75,7 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
     //             setLoading(true);
 
     //             // Fetch Today's Scores
-    //             const todayResponse = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-score.php`, {
+    //             const todayResponse = await axios.get(`${baseURL}/groups/get-group-score.php`, {
     //                 params: { groupId: id, groupName, game, timeZone, today: todayDate }
     //             });
 
@@ -119,7 +121,7 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                 }
     
                 const todayResponse = await axios.get(
-                    `https://coralwebdesigns.com/college/wordgamle/groups/get-group-score.php`,
+                    `${baseURL}/groups/get-group-score.php`,
                     { params }
                 );
     
@@ -143,7 +145,7 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                 setLoading(true);
 
                 // Fetch Cumulative Scores
-                const cumulativeResponse = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-cumulative-score.php`, {
+                const cumulativeResponse = await axios.get(`${baseURL}/groups/get-cumulative-score.php`, {
                     params: { groupId: id, groupName, game, timeZone }
                 });
                 setLatestJoinDate(cumulativeResponse.data.latestJoinDate || []);
@@ -200,7 +202,10 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
 
                                 // Find all players with the lowest score
                                 const winners = filteredLeaderboard.filter(data => Number(data.gamlescore) === minScore);
-                                const missedUsers = filteredLeaderboard.filter(d => d.missed).map(d => d.username);
+                                const missedUsers = filteredLeaderboard.filter(d => d.missed).map(d => ({
+                                    name: d.username,
+                                    email: d.useremail
+                                }));
                                 // console.log('missedUsers',missedUsers);
                                 if (missedUsers.length > 0) {
                                     return (
@@ -208,13 +213,14 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                                             <h4 className="text-center">Today's Leaderboard</h4>
                                             <p>The Leaderboard will be viewable when all group members have played.</p>
                                             <p className="mb-1">Yet to play:</p>
-                                             {missedUsers.map((name, i) => (
-                                                <div key={i} className="fw-bold">
-                                                    {name === userName ? "You" : name}
-                                                </div>
+                                            {missedUsers.map((user, i) => (
+                                            <div key={i} className="fw-bold">
+                                                {user.email === userEmail ? "You" : user.name}
+                                            </div>
                                             ))}
-                                            {missedUsers.includes(userName) && (
-                                                <PhrazlePlayService/>
+
+                                            {missedUsers.some(user => user.email === userEmail) && (
+                                            <PhrazlePlayService />
                                             )}
                                         </div>
                                     );
@@ -256,7 +262,7 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                                                             {/* Rank + Avatar */}
                                                             <Col xs={3} className="d-flex align-items-center gap-2">
                                                                 <img 
-                                                                    src={data.avatar ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}` : "https://coralwebdesigns.com/college/wordgamle/user/uploads/defalut_avatar.png"} 
+                                                                    src={data.avatar ? `${baseURL}/user/uploads/${data.avatar}` : `${baseURL}/user/uploads/defalut_avatar.png`} 
                                                                     alt="Avatar" 
                                                                     className="rounded-circle border" 
                                                                     style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
@@ -321,7 +327,10 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
 
                                 // Find all players with the lowest score
                                 const winners = filteredLeaderboard.filter(data => Number(data.gamlescore) === minScore);
-                                const missedUsers = filteredLeaderboard.filter(d => d.missed).map(d => d.username);
+                                const missedUsers = filteredLeaderboard.filter(d => d.missed).map(d => ({
+                                    name: d.username,
+                                    email: d.useremail
+                                }));
                                 
                                 if (missedUsers.length > 0) {
                                     const currentUserData = filteredLeaderboard.find(d => d.username === userName);
@@ -330,17 +339,17 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                                             <h4 className="text-center">Today's Leaderboard</h4>
                                             <p>The Leaderboard will be viewable when all group members have played.</p>
                                             <p className="mb-1">Yet to play:</p>
-                                            {missedUsers.map((name, i) => (
+                                            {missedUsers.map((user, i) => (
                                                 <div key={i} className="fw-bold">
-                                                    {name === userName ? "You" : name}
+                                                    {user.email === userEmail ? "You" : user.name}
                                                 </div>
                                             ))}
-                                            {missedUsers.includes(userName) && currentUserData && (
-                                            currentUserData.gamename === 'connections' ? (
-                                                <ConnectionPlayService />
-                                            ) : currentUserData.gamename === 'wordle' ? (
-                                                <WordlePlayService />
-                                            ) : null
+                                            {missedUsers.some(user => user.email === userEmail) && currentUserData && (
+                                                currentUserData.gamename === 'connections' ? (
+                                                    <ConnectionPlayService />
+                                                ) : currentUserData.gamename === 'wordle' ? (
+                                                    <WordlePlayService />
+                                                ) : null
                                             )}
                                         </div>
                                     );
@@ -382,7 +391,7 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                                                             {/* Rank + Avatar */}
                                                             <Col xs={3} className="d-flex align-items-center gap-2">
                                                                 <img 
-                                                                    src={data.avatar ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}` : "https://coralwebdesigns.com/college/wordgamle/user/uploads/defalut_avatar.png"} 
+                                                                    src={data.avatar ? `${baseURL}/user/uploads/${data.avatar}` : `${baseURL}/user/uploads/defalut_avatar.png`} 
                                                                     alt="Avatar" 
                                                                     className="rounded-circle border" 
                                                                     style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
@@ -493,8 +502,8 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                                                     <img
                                                         src={
                                                             data.avatar
-                                                                ? `https://coralwebdesigns.com/college/wordgamle/user/uploads/${data.avatar}`
-                                                                : "https://coralwebdesigns.com/college/wordgamle/user/uploads/default_avatar.png"
+                                                                ? `${baseURL}/user/uploads/${data.avatar}`
+                                                                : `${baseURL}/user/uploads/default_avatar.png`
                                                         }
                                                         alt="Avatar"
                                                         className="rounded-circle border"

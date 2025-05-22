@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 function SelectScoringMethod() {
+    const baseURL = import.meta.env.VITE_BASE_URL;
     const { id } = useParams();
     const groupId = Number(id);
     const [selectedMethod, setSelectedMethod] = useState("");
@@ -18,7 +19,7 @@ function SelectScoringMethod() {
     useEffect(() => {
         const fetchScoringMethod = async () => {
             try {
-                const res = await Axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-scoring-method.php`, {
+                const res = await Axios.get(`${baseURL}/groups/get-scoring-method.php`, {
                     params: { user_id: userId, group_id: id }
                 });
 
@@ -59,7 +60,7 @@ function SelectScoringMethod() {
         }
 
         try {
-            const res = await Axios.post("https://coralwebdesigns.com/college/wordgamle/groups/update-scoring-method.php", {
+            const res = await Axios.post(`${baseURL}/groups/update-scoring-method.php`, {
                 userId,
                 groupId,
                 scoringMethod: selectedMethod

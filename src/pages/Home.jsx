@@ -3,6 +3,7 @@ import { Container, Row, Col, Button } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import { toast } from 'react-toastify';
 
 function Home() {
     const userAuthData = JSON.parse(localStorage.getItem('auth')) || {};
@@ -26,7 +27,7 @@ function Home() {
             setIsAuthenticated(true);
             localStorage.setItem("pageUnlocked", "true"); // Store authentication
         } else {
-            alert("Incorrect password!");
+            toast.error("Incorrect password!");
         }
     };
 

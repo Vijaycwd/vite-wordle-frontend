@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Axios from 'axios';
 
 function WordleGuessDistribution() {
-
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
   const loginuserEmail = USER_AUTH_DATA?.email;
   const [wordleGuessData, setwordleGuessData] = useState([]);
@@ -14,7 +14,7 @@ function WordleGuessDistribution() {
       }, []);
   
   function getGuessValue() {
-    Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/get-guessdistribution.php?useremail=${loginuserEmail}`)
+    Axios.get(`${baseURL}/games/wordle/get-guessdistribution.php?useremail=${loginuserEmail}`)
       .then((response) => {
         //console.log("Response Data:", response.data.guessdistribution);
         const guessdistribution = response.data.guessdistribution;

@@ -8,6 +8,7 @@ import LoginModal from './Modals/LoginModal';
 import ConnectionsModal from './Modals/ConnectionsScoreModal';
 
 function GamesLayout() {
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
   const { username: loginUsername, email: loginUserEmail } = USER_AUTH_DATA;
   
@@ -128,7 +129,7 @@ function GamesLayout() {
    console.log(scoreObject);
     try {
       const res = await Axios.post(
-        "https://coralwebdesigns.com/college/wordgamle/games/connections/create-score.php",
+        `${baseURL}/games/connections/create-score.php`,
         scoreObject
       );
   
@@ -167,9 +168,9 @@ function GamesLayout() {
         await updateTotalGamesPlayed(TotalGameObject);
         setScore("");
         navigate("/connectionstats");
-        toast.success(res.data.message, { position: "top-center" });
+        toast.success(res.data.message);
       } else {
-        toast.error(res.data.message, { position: "top-center" });
+        toast.error(res.data.message);
       }
     } catch (err) {
       toast.error(
@@ -183,10 +184,10 @@ function GamesLayout() {
   const updateTotalGamesPlayed = async (TotalGameObject) => {
     console.log(TotalGameObject);
     try {
-      const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/connections/update-statistics.php', TotalGameObject);
+      const res = await Axios.post(`${baseURL}/games/connections/update-statistics.php`, TotalGameObject);
       console.log(res);
     } catch (err) {
-      toast.error('Failed to update total games played', { position: "top-center" });
+      toast.error('Failed to update total games played');
     }
   };
 

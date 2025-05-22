@@ -8,6 +8,7 @@ import PhrazleScoreByDate from './PhrazleScoreByDate';
 import PhrazleGuessDistribution from './PhrazleGuessDistribution';
 
 function PhrazleStat() {
+    const baseURL = import.meta.env.VITE_BASE_URL;
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA?.email;
 
@@ -44,7 +45,7 @@ function PhrazleStat() {
         };
 
        
-        Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/get-score.php`, {params})
+        Axios.get(`${baseURL}/games/phrazle/get-score.php`, {params})
         .then((res) => {
             if (res.data.status === "success") {
                 setStatsChart(res.data.phrazlescore);
@@ -64,7 +65,7 @@ function PhrazleStat() {
     }, [loginuserEmail]);
 
     function getDisscussion() {
-        Axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/get-guessdistribution.php`, {
+        Axios.get(`${baseURL}/games/phrazle/get-guessdistribution.php`, {
             params: { useremail: loginuserEmail }
         })
         .then((res) => {

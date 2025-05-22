@@ -3,6 +3,7 @@ import { Col, Dropdown, Button, ListGroup, Badge } from 'react-bootstrap';
 import axios from 'axios';
 
 const GroupInvites = () => {
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
   const userId = USER_AUTH_DATA?.id;
 
@@ -17,7 +18,7 @@ const GroupInvites = () => {
   const fetchGroupInvites = async () => {
     try {
       const response = await axios.get(
-        `https://coralwebdesigns.com/college/wordgamle/groups/get-invites.php?user_id=${userId}`
+        `${baseURL}/groups/get-invites.php?user_id=${userId}`
       );
 
       const newInvites = Array.isArray(response.data.invitations)
@@ -36,7 +37,7 @@ const GroupInvites = () => {
   const fetchGroupMessages = async () => {
     try {
       const response = await axios.get(
-        `https://coralwebdesigns.com/college/wordgamle/groups/get-group-messages.php?user_id=${userId}`
+        `${baseURL}/groups/get-group-messages.php?user_id=${userId}`
       );
       console.log(response.data);
     } catch (error) {
@@ -50,7 +51,7 @@ const handleAcceptInvite = async (inviteId, groupId) => {
   setShowDropdown(false);
   try {
     await axios.post(
-      'https://coralwebdesigns.com/college/wordgamle/groups/accept-invite.php',
+      `${baseURL}/groups/accept-invite.php`,
       {
         user_id: userId,
         invite_id: inviteId,
@@ -81,7 +82,7 @@ const handleDeclineInvite = async (inviteId) => {
   setShowDropdown(false);
   try {
     await axios.post(
-      'https://coralwebdesigns.com/college/wordgamle/groups/decline-invite.php',
+      `${baseURL}/groups/decline-invite.php`,
       {
         user_id: userId,
         invite_id: inviteId

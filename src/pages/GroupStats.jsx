@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 function GroupStats() {
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const navigate = useNavigate();
   const { id, groupName } = useParams();
   const [selectedGames, setSelectedGames] = useState([]);
@@ -18,7 +19,7 @@ function GroupStats() {
   useEffect(() => {
     const fetchGroupDetails = async () => {
         try {
-            const res = await axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-groups.php?id=${id}`);
+            const res = await axios.get(`${baseURL}/groups/get-groups.php?id=${id}`);
             if (res.data.status === "success" && res.data.groups.length > 0) {
                 const fetchedGroup = res.data.groups[0];
                 setGroup(fetchedGroup);
@@ -38,7 +39,7 @@ function GroupStats() {
   useEffect(() => {
     const fetchSelectedGames = async () => {
         try {
-          const res = await axios.get("https://coralwebdesigns.com/college/wordgamle/groups/get-selected-games.php", {
+          const res = await axios.get(`${baseURL}/groups/get-selected-games.php`, {
               params: { user_id: userId, group_id: id }
           });
             let userGames = res.data.selected_games;

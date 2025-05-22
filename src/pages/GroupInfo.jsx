@@ -8,6 +8,7 @@ import { IoClose } from "react-icons/io5";
 import GroupModal from '../constant/Models/GroupModal';
 
 function GroupInfo() {
+    const baseURL = import.meta.env.VITE_BASE_URL;
     const { id } = useParams();
     const navigate = useNavigate();
     const [group, setGroup] = useState(null);
@@ -27,7 +28,7 @@ function GroupInfo() {
 
     const fetchGroupInfo = async () => {
         try {
-            const res = await Axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-group-members.php?group_id=${id}`);
+            const res = await Axios.get(`${baseURL}/groups/get-group-members.php?group_id=${id}`);
             
             if (res.data.status === "success") {
                 setGroup(res.data.group);
@@ -44,7 +45,7 @@ function GroupInfo() {
     useEffect(() => {
         const fetchScoringMethod = async () => {
             try {
-                const res = await Axios.get(`https://coralwebdesigns.com/college/wordgamle/groups/get-scoring-method.php`, {
+                const res = await Axios.get(`${baseURL}/groups/get-scoring-method.php`, {
                     params: { user_id: userId, group_id: id }
                 });
 
@@ -67,7 +68,7 @@ function GroupInfo() {
         if (!window.confirm("Are you sure you want to delete this group?")) return;
 
         try {
-            const res = await Axios.post(`https://coralwebdesigns.com/college/wordgamle/groups/delete-group.php`, { group_id: id });
+            const res = await Axios.post(`${baseURL}/groups/delete-group.php`, { group_id: id });
             if (res.data.status === "success") {
                 toast.success(res.data.message);
                 navigate('/groups');
@@ -89,7 +90,7 @@ function GroupInfo() {
         const created_at = adjustedDate.toISOString().slice(0, 19); // Correct format for MySQL DATETIME
     
         try {
-            const res = await Axios.post(`https://coralwebdesigns.com/college/wordgamle/groups/update-group.php`, { 
+            const res = await Axios.post(`${baseURL}/groups/update-group.php`, { 
                 group_id: id,
                 captainid,
                 groupname,
@@ -141,7 +142,11 @@ function GroupInfo() {
                                     {member.username} {member.member_id === captainid && <strong>*</strong>}
                                 </h5>
                                 <img 
-                                    src={`https://coralwebdesigns.com/college/wordgamle/user/uploads/${member.avatar || 'default_avatar.png'}`} 
+                                    src={
+                                            member.avatar
+                                            ? `${baseURL}/user/uploads/${member.avatar}`
+                                            : `${baseURL}/user/uploads/defalut_avatar.png`
+                                        }
                                     alt="Profile" 
                                     className="rounded-circle mb-3" 
                                     style={{ width: '50px', height: '50px', objectFit: 'cover' }} 

@@ -8,6 +8,7 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import dayjs from "dayjs";
 
 function WordleScoreByDate() {
+    const baseURL = import.meta.env.VITE_BASE_URL;
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA.email;
     const [selectedDate, setSelectedDate] = useState(null);
@@ -30,7 +31,7 @@ function WordleScoreByDate() {
         const timeZone = moment.tz.guess(); // Automatically get the user's local time zone
     
         // Make the API request to the endpoint with date and timeZone as query parameters
-        axios.get(`https://coralwebdesigns.com/college/wordgamle/games/wordle/get-score.php`, {
+        axios.get(`${baseURL}/games/wordle/get-score.php`, {
             params: {
                 useremail: loginuserEmail,
                 today: date,

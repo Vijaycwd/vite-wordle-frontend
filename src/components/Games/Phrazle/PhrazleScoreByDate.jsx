@@ -8,6 +8,7 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import dayjs from "dayjs";
 
 function PhrazleScoreByDate() {
+    const baseURL = import.meta.env.VITE_BASE_URL;
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA?.email;
     const [startDate, setStartDate] = useState(new Date(new Date().setDate(new Date().getDate() - 1)));
@@ -23,7 +24,7 @@ function PhrazleScoreByDate() {
         const originalDate = moment.tz(date, "YYYY-MM-DD hh:mm A", timeZone);
         const formattedDate = originalDate.format("YYYY-MM-DDTHH:mm:ss");
 
-        axios.get(`https://coralwebdesigns.com/college/wordgamle/games/phrazle/get-score.php`, {
+        axios.get(`${baseURL}/games/phrazle/get-score.php`, {
             params: {
                 useremail: loginuserEmail,
                 today: formattedDate,

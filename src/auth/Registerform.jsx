@@ -4,7 +4,9 @@ import Axios from "axios";
 import { toast } from 'react-toastify';
 import logo from '../Logo.png'
 import { useNavigate } from "react-router-dom";
+
 function Registerform() {
+    const baseURL = import.meta.env.VITE_BASE_URL;
     const [firstName, setfirstName] = useState('');
     const [lastName, setlastName] = useState('');
     const [username, setUsername] = useState('');
@@ -91,7 +93,7 @@ function Registerform() {
 
         // console.log(userObject);
         const HEADERS = { headers: { 'Content-Type': 'multipart/form-data' } };
-        const res = await Axios.post('https://coralwebdesigns.com/college/wordgamle/user/create-user.php', userObject, HEADERS);
+        const res = await Axios.post(`${baseURL}/user/create-user.php`, userObject, HEADERS);
         if (res.data.status === 'success') {
             const WordleStatistics = {
                 username,
@@ -105,7 +107,7 @@ function Registerform() {
                 handleHighlight: [0],
                 updatedDate: createdAt
             };
-            const wordleStats = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/wordle/create-statistics.php', WordleStatistics);
+            const wordleStats = await Axios.post(`${baseURL}/games/wordle/create-statistics.php`, WordleStatistics);
             console.log(wordleStats);
 
             const ConnectionStatistics = {
@@ -120,7 +122,7 @@ function Registerform() {
                 handleHighlight: 0,
                 updatedDate: createdAt
             };
-            const connectionStats = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/connections/create-statistics.php', ConnectionStatistics);
+            const connectionStats = await Axios.post(`${baseURL}/games/connections/create-statistics.php`, ConnectionStatistics);
             console.log(connectionStats);
 
             const PhrazleStatistics = {
@@ -135,13 +137,13 @@ function Registerform() {
                 handleHighlight: [0],
                 updatedDate: createdAt
             };
-            const phrazleStats = await Axios.post('https://coralwebdesigns.com/college/wordgamle/games/phrazle/create-statistics.php', PhrazleStatistics);
+            const phrazleStats = await Axios.post(`${baseURL}/games/phrazle/create-statistics.php`, PhrazleStatistics);
             console.log(phrazleStats);
-            toast.success(res.data.message, { position: "top-center" });
+            toast.success(res.data.message);
             navigate('/login');
             }
         else{
-            toast.error(res.data.message, { position: "top-center" });
+            toast.error(res.data.message);
         }  
       }
   return (

@@ -11,6 +11,7 @@ import { Toast } from 'react-bootstrap';
 import GroupInvites from '../../pages/GroupInvites';
 
 const Headerbar = () => {
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
   const userEmail = USER_AUTH_DATA?.email;
   const [userData, setUserData] = useState({});
@@ -24,7 +25,7 @@ const Headerbar = () => {
 
   useEffect(() => {
     if (userEmail) {
-      axios.get('https://coralwebdesigns.com/college/wordgamle/user/get-user.php', {
+      axios.get(`${baseURL}/user/get-user.php`, {
         params: { useremail: userEmail },
       })
       .then(response => {
@@ -141,12 +142,12 @@ const Headerbar = () => {
                 <>
                   <div>
                     <img 
-                      src={`https://coralwebdesigns.com/college/wordgamle/user/uploads/${userData.avatar}`} 
+                      src={`${baseURL}/user/uploads/${userData.avatar}`}
                       alt="User Avatar" 
                       width="30px"
                       height="30px"
-                      className="img-fluid" 
-                      onError={(e) => e.target.src = 'https://coralwebdesigns.com/college/wordgamle/user/uploads/default_avatar.png'}
+                      className="img-fluid user-avatar" 
+                      onError={(e) => e.target.src = `${baseURL}/user/uploads/default_avatar.png`}
                     />
                     <p className='fs-4 m-0 cwd-edit-profile' onClick={() => editUser(userData.name, userData.username, userData.email, userData.id, userData.avatar, true)}>{userData.username}</p>
                     <p>{userData.email}</p>
