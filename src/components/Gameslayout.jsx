@@ -44,14 +44,14 @@ function Gameslayout() {
     if (hours === 23  && minutes > 50) {
       const today = now.toISOString().split('T')[0];
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      console.log('loginUserEmail',loginUserEmail);
+      
       Axios.get(`${baseURL}/games/wordle/get-score.php?useremail=${loginUserEmail}&today=${today}`)
         .then(res => {
-          console.log(res);
+         
           const hasPlayedToday = res.data.wordlescore;
-          console.log('hasPlayedToday',hasPlayedToday);
+          
           if (!hasPlayedToday) {
-            console.log("User has not played today — auto-submitting score 7");
+            
             const missedGameObj = {
               username: loginUsername,
               useremail: loginUserEmail,
@@ -127,14 +127,13 @@ function Gameslayout() {
     // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
     const adjustedCreatedAt = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
 
-    console.log(adjustedCreatedAt);  // Output: Local time in 24-hour format (without 'Z')
+    
 
 
 
     const wordleScore = score.replace(/[🟩🟨⬜⬛]/g, "");
     const match = wordleScore.match(/(\d+|X)\/(\d+)/);
-    console.log(match);
-
+    
     if (match) {
         let guessesUsed = match[1] === "X" ? 7 : parseInt(match[1], 10); // Assign 7 for failed attempts ("X")
         const totalGuesses = parseInt(match[2], 10);
@@ -158,10 +157,10 @@ function Gameslayout() {
             currentUserTime: adjustedCreatedAt,
             timeZone
         };
-        console.log(wordleObject);
+       
         try {
             const res = await Axios.post(`${baseURL}/games/wordle/create-score.php`, wordleObject);
-            console.log(res.data.status);
+           
             if (res.data.status === 'success') {
                 if (typeof updateStatsChart === 'function') {
                     updateStatsChart();
@@ -178,7 +177,7 @@ function Gameslayout() {
                     guessDistribution: updatedGuessDistribution,
                     updatedDate: adjustedCreatedAt
                 };
-                console.log(TotalGameObject);
+                
                 await updateTotalGamesPlayed(TotalGameObject);
                 setScore('');
                 navigate('/wordlestats');
@@ -200,7 +199,7 @@ const updateTotalGamesPlayed = async (TotalGameObject) => {
         toast.error('Failed to update total games played');
     }
 };
-  // console.log(userData);
+
   return (
     <>
     <Container>

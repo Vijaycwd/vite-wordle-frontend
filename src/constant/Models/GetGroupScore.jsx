@@ -41,7 +41,7 @@ function GetGroupScore({ showForm, handleFormClose, dayResults, game }) {
                             connectionsScore = splitIntoRows(lettersAndNumbersRemoved.replace(/\s+/g, ''), 4);
                             gameScore = char.gamlescore
                             ; // Fixed variable name
-                            console.log(char);
+                            // console.log(char);
                         } else if (game === "phrazle") {
                             const phrazle_score_text = char.phrazlescore.replace(/[🟨🟩🟦🟪⬜]/g, "");
                             cleanedScore = phrazle_score_text.replace(/#phrazle|https:\/\/solitaired.com\/phrazle/g, '');

@@ -39,7 +39,7 @@ const GroupInvites = () => {
       const response = await axios.get(
         `${baseURL}/groups/get-group-messages.php?user_id=${userId}`
       );
-      console.log(response.data);
+      // console.log(response.data);
     } catch (error) {
       console.error('Error fetching group messages:', error);
     }

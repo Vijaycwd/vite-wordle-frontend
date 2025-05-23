@@ -26,12 +26,12 @@ function ConnectionsGuessDistribution() {
       const day = String(today.getDate()).padStart(2, '0');
 
       const formattedToday = `${year}-${month}-${day}`;
-      console.log("Formatted Today Date:", formattedToday);
+      // console.log("Formatted Today Date:", formattedToday);
 
       const handleHighlights = guessdistribution
       .filter((item) => {
         const formattedDate = item.updatedDate.split('T')[0];
-        console.log("Item Date:", formattedDate, "Matches Today:", formattedDate === formattedToday);
+        // console.log("Item Date:", formattedDate, "Matches Today:", formattedDate === formattedToday);
         return formattedDate === formattedToday; // Compare with today's formatted date
       })
       .map((item) => item.handleHighlight)

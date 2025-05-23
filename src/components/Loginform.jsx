@@ -16,7 +16,7 @@ function Loginform() {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showLoginForm, setShowLoginForm] = useState(false);
-    console.log(userAuthData);
+    
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
@@ -37,7 +37,6 @@ function Loginform() {
             Axios.post(`${baseURL}/auth/login.php`, userObject)
                 .then(res => {
                     if (res.data.status === 'success') {
-                        toast.success("Login Successfully");
                         localStorage.setItem('auth', JSON.stringify(res.data));
                         navigate("/");
                     } else {

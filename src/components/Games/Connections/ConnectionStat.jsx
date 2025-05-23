@@ -62,7 +62,7 @@ function ConnectionStat() {
         }
         return rows;
     }
- console.log(statistics);
+ // console.log(statistics);
     return (
         <Container>
             <Row className='align-items-center justify-content-center'>
@@ -78,7 +78,7 @@ function ConnectionStat() {
                                 ) : (
                                     statschart && Array.isArray(statschart) && statschart.length > 0 ? (
                                         statschart.map((char, index) => {
-                                            console.log(char);
+                                            // console.log(char);
                                             const cleanedScore = char.connectionsscore.replace(/[🟨,🟩,🟦,🟪]/g, "");
                                             const lettersAndNumbersRemoved = char.connectionsscore.replace(/[a-zA-Z0-9,#:/\\]/g, "");
                                             const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');

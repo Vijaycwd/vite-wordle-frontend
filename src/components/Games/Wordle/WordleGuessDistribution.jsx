@@ -16,7 +16,7 @@ function WordleGuessDistribution() {
   function getGuessValue() {
     Axios.get(`${baseURL}/games/wordle/get-guessdistribution.php?useremail=${loginuserEmail}`)
       .then((response) => {
-        //console.log("Response Data:", response.data.guessdistribution);
+        //// console.log("Response Data:", response.data.guessdistribution);
         const guessdistribution = response.data.guessdistribution;
         setwordleGuessData(guessdistribution);
         const today = new Date();

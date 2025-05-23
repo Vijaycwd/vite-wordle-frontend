@@ -31,7 +31,7 @@ function phrazleStatistics() {
                     updateStatistics();
                 }
                 const statistics = response.data.statistics;
-                console.log(statistics);
+                // console.log(statistics);
                 setphrazleStatsData(statistics);
                 setTotalGame(statistics.totalGamesPlayed);
                 setTotalWin(statistics.winPercentage);

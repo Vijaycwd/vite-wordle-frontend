@@ -110,7 +110,7 @@ const onSubmit = async (event) => {
   // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
   const adjustedCreatedAt = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
 
-  console.log(adjustedCreatedAt);  // Output: Local time in 24-hour format (without 'Z')
+  
 
 
   const scoreObject = {
@@ -125,7 +125,7 @@ const onSubmit = async (event) => {
     handleHighlight: mistakeCount,
     timeZone,
   };
- console.log(scoreObject);
+
   try {
     const res = await Axios.post(
       `${baseURL}/college/wordgamle/games/connections/create-score.php`,
@@ -179,10 +179,10 @@ const onSubmit = async (event) => {
   }
 };
   const updateTotalGamesPlayed = async (TotalGameObject) => {
-    console.log(TotalGameObject);
+    
     try {
       const res = await Axios.post(`${baseURL}/games/connections/update-statistics.php`, TotalGameObject);
-      console.log(res);
+     
     } catch (err) {
       toast.error('Failed to update total games played');
     }

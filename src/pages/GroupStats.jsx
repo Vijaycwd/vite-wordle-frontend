@@ -72,7 +72,7 @@ function GroupStats() {
     { key: 'connections', label: 'Connections' },
     { key: 'phrazle', label: 'Phrazle' }
   ];
-  console.log('selectedGames',selectedGames);
+  // console.log('selectedGames',selectedGames);
   return (
     <Container>
       <Row className="justify-content-center">

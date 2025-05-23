@@ -76,8 +76,8 @@ function MemberGameSelections() {
         }
     };
 
-    console.log("Fetched Games:", Games);
-    console.log("Selected Games:", selectedGames);
+    // console.log("Fetched Games:", Games);
+    // console.log("Selected Games:", selectedGames);
 
     return (
         <Container>

@@ -35,7 +35,7 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
     //         params: { timeZone, formattedYesterday}
     //     })
     //       .then(res => {
-    //         //console.log('Phrazle auto-submit success:', res.data);
+    //         //// console.log('Phrazle auto-submit success:', res.data);
     //       })
     //       .catch(err => {
     //         //console.error('Phrazle auto-submit failed:', err);
@@ -171,7 +171,7 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                1; // Default to 1 if unknown
     };
 
-    //console.log('todayLeaderboard',todayLeaderboard);
+    //// console.log('todayLeaderboard',todayLeaderboard);
     return (
         <div>
             
@@ -195,7 +195,7 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                             {!loading && !error && todayLeaderboard.length > 0 && (() => {
                                 // Filter out "phrazle" and find the lowest score
                                 const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename === "phrazle");
-                                //console.log('filteredLeaderboard',filteredLeaderboard);
+                                //// console.log('filteredLeaderboard',filteredLeaderboard);
                                 if (filteredLeaderboard.length === 0) return null;
 
                                 const minScore = Math.min(...filteredLeaderboard.map(data => Number(data.gamlescore)));
@@ -320,7 +320,7 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                             {!loading && !error && todayLeaderboard.length > 0 && (() => {
                                 // Filter out "phrazle" and find the lowest score
                                 const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename !== "phrazle");
-                                //console.log('filteredLeaderboard',filteredLeaderboard);
+                                //// console.log('filteredLeaderboard',filteredLeaderboard);
                                 if (filteredLeaderboard.length === 0) return null;
 
                                 const minScore = Math.min(...filteredLeaderboard.map(data => Number(data.gamlescore)));

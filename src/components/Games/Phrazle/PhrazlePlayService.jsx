@@ -61,7 +61,7 @@ const onSubmit = async (event) => {
   // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
   const adjustedCreatedAt = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
 
-  console.log(adjustedCreatedAt);  // Output: Local time in 24-hour format (without 'Z')
+  // console.log(adjustedCreatedAt);  // Output: Local time in 24-hour format (without 'Z')
 
   // Process the Wordle score and match it against a valid format
   const phrazleScore = score.replace(/[🟩🟨⬜🟪]/g, "");
@@ -93,7 +93,7 @@ const onSubmit = async (event) => {
       currentUserTime: adjustedCreatedAt,
       timeZone,
     };
-    console.log(phrazleObject);
+    // console.log(phrazleObject);
     try {
       const res = await Axios.post(`${baseURL}/games/phrazle/create-score.php`, phrazleObject);
       

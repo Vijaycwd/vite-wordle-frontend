@@ -14,7 +14,7 @@ function Wordlegroup() {
     useEffect(() => {
         Axios.get(`${baseURL}/games/wordle/get-group-details.php`)
             .then((response) => {
-                console.log(response.data);
+                // console.log(response.data);
                 setMemberCount(response.data.member.total_users);
                 setHighestPlayedMember(response.data.member.highest_games_played_user);
                 setTotalGame(response.data.member.highest_games_played_user.totalGamesPlayed);

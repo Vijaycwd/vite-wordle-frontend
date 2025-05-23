@@ -111,7 +111,7 @@ function GamesLayout() {
     // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
     const adjustedCreatedAt = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
   
-    console.log(adjustedCreatedAt);  // Output: Local time in 24-hour format (without 'Z')
+    // console.log(adjustedCreatedAt);  // Output: Local time in 24-hour format (without 'Z')
   
   
     const scoreObject = {
@@ -126,7 +126,7 @@ function GamesLayout() {
       handleHighlight: mistakeCount,
       timeZone,
     };
-   console.log(scoreObject);
+   // console.log(scoreObject);
     try {
       const res = await Axios.post(
         `${baseURL}/games/connections/create-score.php`,
@@ -182,10 +182,10 @@ function GamesLayout() {
   
     
   const updateTotalGamesPlayed = async (TotalGameObject) => {
-    console.log(TotalGameObject);
+    // console.log(TotalGameObject);
     try {
       const res = await Axios.post(`${baseURL}/games/connections/update-statistics.php`, TotalGameObject);
-      console.log(res);
+      // console.log(res);
     } catch (err) {
       toast.error('Failed to update total games played');
     }

@@ -72,7 +72,7 @@ function GamesLayout() {
     // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
     const adjustedCreatedAt = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
 
-    console.log(adjustedCreatedAt);  // Output: Local time in 24-hour format (without 'Z')
+    // console.log(adjustedCreatedAt);  // Output: Local time in 24-hour format (without 'Z')
   
     // Process the Wordle score and match it against a valid format
     const phrazleScore = score.replace(/[🟩🟨⬜🟪]/g, "");
@@ -106,7 +106,7 @@ function GamesLayout() {
       };
       try {
         const res = await Axios.post(`${baseURL}/games/phrazle/create-score.php`, phrazleObject);
-        console.log(res.data.status);
+        // console.log(res.data.status);
         if (res.data.status === 'success') {
           if (typeof updateStatsChart === 'function') {
             updateStatsChart();
@@ -124,7 +124,7 @@ function GamesLayout() {
             guessDistribution: updatedGuessDistribution,
             updatedDate: adjustedCreatedAt
           };
-          console.log(TotalGameObject);
+          // console.log(TotalGameObject);
           toast.success(res.data.message);
           await updateTotalGamesPlayed(TotalGameObject);
           setScore('');

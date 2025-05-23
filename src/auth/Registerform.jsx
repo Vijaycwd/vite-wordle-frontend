@@ -89,9 +89,9 @@ function Registerform() {
             avatar: avatar,
             createdAt
         }
-        console.log(userObject);
+        
 
-        // console.log(userObject);
+       
         const HEADERS = { headers: { 'Content-Type': 'multipart/form-data' } };
         const res = await Axios.post(`${baseURL}/user/create-user.php`, userObject, HEADERS);
         if (res.data.status === 'success') {

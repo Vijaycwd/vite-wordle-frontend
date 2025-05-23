@@ -204,7 +204,7 @@ function GroupScoreByDate({ latestJoinDate }) {
                 setTodayLeaderboard([]);
                 setFetchedError(true);
             }
-            console.log(cumulativeDailyResponse.data.totalGames);
+            // console.log(cumulativeDailyResponse.data.totalGames);
             // setlatestJoinDate(cumulativeDailyResponse.data.latestJoinDate || []);
             settotalGames(cumulativeDailyResponse.data.totalGames || []);
             setcumulativeAverageScore(cumulativeAverageResponse.data.data || []);
@@ -241,7 +241,7 @@ const getTotalScore = (gameName) => {
 };
 
 const showDayResult = (date, useremail, game) => {
-    console.log('showDayResult');
+    // console.log('showDayResult');
     // setSelectedGame(game);
     const timeZone = moment.tz.guess();
     axios.get(`${baseURL}/games/${game}/get-group-score.php`, {
@@ -318,7 +318,7 @@ if (game === "phrazle") {
                     {todayLeaderboard.length > 0 && (() => {
                         // Filter out "phrazle" and find the lowest score
                         const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename === "phrazle");
-                        console.log('filteredLeaderboard',filteredLeaderboard);
+                        // console.log('filteredLeaderboard',filteredLeaderboard);
                         if (filteredLeaderboard.length === 0) return null;
 
                         const minScore = Math.min(
@@ -441,7 +441,7 @@ if (game === "phrazle") {
                     {todayLeaderboard.length > 0 && (() => {
                         // Filter out "phrazle" and find the lowest score
                         const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename !== "phrazle");
-                        console.log('filteredLeaderboard',filteredLeaderboard);
+                        // console.log('filteredLeaderboard',filteredLeaderboard);
                         if (filteredLeaderboard.length === 0) return null;
 
                         const minScore = Math.min(

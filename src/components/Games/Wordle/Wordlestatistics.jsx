@@ -34,7 +34,7 @@ function Wordlestatistics(updateStatistics) {
                     updateStatistics();
                 }
                 const statistics = response.data.statistics;
-                console.log(statistics);
+                // console.log(statistics);
                 setwordleStatsData(statistics);
                 setTotalGame(statistics.totalGamesPlayed);
                 setTotalWin(statistics.winPercentage);

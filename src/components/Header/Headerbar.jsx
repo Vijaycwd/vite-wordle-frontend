@@ -135,32 +135,39 @@ const Headerbar = () => {
       >
         <Popover id="popover-contained">
           <Popover.Body>
-            <div className='text-center'>
-              {!USER_AUTH_DATA ? (
-                <Button onClick={login}>Login</Button>
-              ) : (
-                <>
-                  <div>
-                    <img 
-                      src={`${baseURL}/user/uploads/${userData.avatar}`}
-                      alt="User Avatar" 
-                      width="30px"
-                      height="30px"
-                      className="img-fluid user-avatar" 
-                      onError={(e) => e.target.src = `${baseURL}/user/uploads/default_avatar.png`}
-                    />
-                    <p className='fs-4 m-0 cwd-edit-profile' onClick={() => editUser(userData.name, userData.username, userData.email, userData.id, userData.avatar, true)}>{userData.username}</p>
-                    <p>{userData.email}</p>
-                    <div className="user-profile-button">
-                      <Button onClick={() => editUser(userData.name, userData.username, userData.email, userData.id, true)}>Edit</Button>
-                      <Button onClick={logout}>Logout</Button>
-                    </div>
-                  </div>
-                </>
-              )}
+            <div className="container">
+              <div className="row justify-content-center">
+                <div className="col-12 col-md-8 col-lg-12 text-center">
+                  {!USER_AUTH_DATA ? (
+                    <Button onClick={login}>Login</Button>
+                  ) : (
+                    <>
+                      <div>
+                        <img 
+                          src={`${baseURL}/user/uploads/${userData.avatar}`}
+                          alt="User Avatar" 
+                          width="30"
+                          height="30"
+                          className="img-fluid user-avatar rounded-circle mb-2"
+                          onError={(e) => e.target.src = `${baseURL}/user/uploads/default_avatar.png`}
+                        />
+                        <p className='fs-4 m-0 cwd-edit-profile' onClick={() => editUser(userData.name, userData.username, userData.email, userData.id, userData.avatar, true)}>
+                          {userData.username}
+                        </p>
+                        <p>{userData.email}</p>
+                        <div className="user-profile-button d-flex justify-content-center gap-2 mt-2">
+                          <Button onClick={() => editUser(userData.name, userData.username, userData.email, userData.id, true)}>Edit</Button>
+                          <Button onClick={logout}>Logout</Button>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
           </Popover.Body>
         </Popover>
+
       </Overlay>
     </Container>
   );

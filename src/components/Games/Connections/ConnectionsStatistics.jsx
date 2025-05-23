@@ -33,7 +33,7 @@ function ConnectionsStatistics() {
                     updateStatistics();
                 }
                 const statistics = response.data.statistics;
-                console.log(statistics);
+                // console.log(statistics);
                 setconnectionsStatsData(statistics);
                 setTotalGame(statistics.totalGamesPlayed);
                 setTotalWin(statistics.winPercentage);
