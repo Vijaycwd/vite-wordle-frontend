@@ -202,7 +202,7 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
 
                                 // Find all players with the lowest score
                                 const winners = filteredLeaderboard.filter(data => Number(data.gamlescore) === minScore);
-                                const missedUsers = filteredLeaderboard.filter(d => d.missed).map(d => ({
+                                const missedUsers = filteredLeaderboard.filter(d => d.missed && d.is_paused === "0").map(d => ({
                                     name: d.username,
                                     email: d.useremail
                                 }));
@@ -320,14 +320,16 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                             {!loading && !error && todayLeaderboard.length > 0 && (() => {
                                 // Filter out "phrazle" and find the lowest score
                                 const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename !== "phrazle");
-                                //// console.log('filteredLeaderboard',filteredLeaderboard);
+                                console.log('filteredLeaderboard',filteredLeaderboard);
                                 if (filteredLeaderboard.length === 0) return null;
 
                                 const minScore = Math.min(...filteredLeaderboard.map(data => Number(data.gamlescore)));
 
                                 // Find all players with the lowest score
                                 const winners = filteredLeaderboard.filter(data => Number(data.gamlescore) === minScore);
-                                const missedUsers = filteredLeaderboard.filter(d => d.missed).map(d => ({
+                               const missedUsers = filteredLeaderboard
+                                .filter(d => d?.missed && String(d?.is_paused) === "0")
+                                .map(d => ({
                                     name: d.username,
                                     email: d.useremail
                                 }));

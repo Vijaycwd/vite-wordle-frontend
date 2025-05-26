@@ -128,7 +128,7 @@ const onSubmit = async (event) => {
 
   try {
     const res = await Axios.post(
-      `${baseURL}/college/wordgamle/games/connections/create-score.php`,
+      `${baseURL}/games/connections/create-score.php`,
       scoreObject
     );
 
@@ -167,7 +167,6 @@ const onSubmit = async (event) => {
       await updateTotalGamesPlayed(TotalGameObject);
       setScore("");
       navigate("/connectionstats");
-      toast.success(res.data.message);
     } else {
       toast.error(res.data.message);
     }

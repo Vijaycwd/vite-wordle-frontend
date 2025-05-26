@@ -113,7 +113,7 @@ function WordlePlayService({ updateStatsChart }) {
                     await updateTotalGamesPlayed(TotalGameObject);
                     setScore('');
                     navigate('/wordlestats');
-                    toast.success(res.data.message );
+                    
                 }
                 else{
                     toast.error(res.data.message );

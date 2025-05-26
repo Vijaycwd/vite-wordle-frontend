@@ -114,7 +114,7 @@ const onSubmit = async (event) => {
           guessDistribution: updatedGuessDistribution,
           updatedDate: adjustedCreatedAt
         };
-        toast.success(res.data.message);
+       
         await updateTotalGamesPlayed(TotalGameObject);
         setScore('');
         navigate('/phrazlestats');

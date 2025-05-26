@@ -24,6 +24,9 @@ function UserProfile() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const cropperRef = useRef(null);
+    const [errors, setErrors] = useState({});
+    const [isPaused, setIsPaused] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA?.email;
@@ -43,6 +46,7 @@ function UserProfile() {
                     setLastName(res.data.user.last_name || "");
                     setUsername(res.data.user.username || "");
                     setPreviewUrl(res.data.user.avatar || "");
+                    setIsPaused(res.data.user.is_paused === 1);
                 }
             } catch (error) {
                 console.error("Error fetching user data:", error);
@@ -91,6 +95,18 @@ function UserProfile() {
             return;
         }
 
+        const newErrors = {};
+
+        if (!firstName.trim()) newErrors.firstName = "First name is required";
+        if (!lastName.trim()) newErrors.lastName = "Last name is required";
+        if (!username.trim()) newErrors.username = "Username is required";
+        if (password && password !== confirmpassword) {
+            newErrors.confirmpassword = "Passwords do not match";
+        }
+
+        setErrors(newErrors);
+        if (Object.keys(newErrors).length > 0) return;
+        
         try {
             const formData = new FormData();
             formData.append("id", userData.id);
@@ -122,20 +138,23 @@ function UserProfile() {
         }
     };
 
-    const handlePausePlay = async () => {
+   const handlePauseToggle = async () => {
         try {
-            await Axios.post(`${baseURL}/user/pause-user.php`, { user_id: userData.id, is_paused: 1 });
-            // toast.success("Your account has been paused.");
-            setShowManage(false);
+            const newPausedState = !isPaused;
+            await Axios.post(`${baseURL}/user/pause-user.php`, {
+                user_id: userData.id,
+                is_paused: newPausedState ? 1 : 0,
+            });
+            setIsPaused(newPausedState);
+            toast.success(newPausedState ? "Paused Play" : "Unpaused Play");
         } catch (error) {
-            toast.error("Failed to pause account.");
+            toast.error("Failed to update pause state.");
         }
     };
 
     const handleDeleteAccount = async () => {
         try {
             await Axios.post(`${baseURL}/user/delete-user.php`, { user_id: userData.id });
-            toast.success("Your account has been deleted.");
             localStorage.removeItem('auth');
             navigate('/');
         } catch (error) {
@@ -185,18 +204,21 @@ function UserProfile() {
                         </div>
 
                         <Form.Group className="mt-3">
-                            <Form.Label>First Name</Form.Label>
+                            <Form.Label>First Name <span style={{ color: 'red' }}>*</span></Form.Label>
                             <Form.Control type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                            {errors.firstName && <div style={{ color: "red" }}>{errors.firstName}</div>}
                         </Form.Group>
 
                         <Form.Group className="mt-3">
-                            <Form.Label>Last Name</Form.Label>
+                            <Form.Label>Last Name <span style={{ color: 'red' }}>*</span></Form.Label>
                             <Form.Control type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                            {errors.firstName && <div style={{ color: "red" }}>{errors.lastName}</div>}
                         </Form.Group>
 
                         <Form.Group className="mt-3">
-                            <Form.Label>Username</Form.Label>
+                            <Form.Label>Username <span style={{ color: 'red' }}>*</span></Form.Label>
                             <Form.Control type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+                            {errors.firstName && <div style={{ color: "red" }}>{errors.username}</div>}
                         </Form.Group>
 
                         <Form.Group className="mt-3">
@@ -244,19 +266,66 @@ function UserProfile() {
                     <Modal.Title>Manage Account</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p><strong>Pause Play</strong></p>
-                    <p className="small">Keep my account active but hide from group invites.</p>
-                    <Button variant="warning" className="mb-3 w-100" onClick={handlePausePlay}>
-                        Pause Play
-                    </Button>
-
-                    <p><strong>Delete Account</strong></p>
-                    <p className="small">Delete your account permanently. This cannot be undone.</p>
-                    <Button variant="danger" className="w-100" onClick={handleDeleteAccount}>
+                    <div className='mb-4'>
+                        <h6>Pause Play</h6>
+                        <p className="small">Keep my account active but hide from group invites.</p>
+                        <Button 
+                        variant={isPaused ? "success" : "warning"} 
+                        className="w-100" 
+                        onClick={handlePauseToggle}
+                        >
+                        {isPaused ? "Pause Play" : "Paused"}
+                        </Button>
+                    </div>      
+                    <div>
+                        <h6>Delete Account</h6>
+                        <p className="small">Delete your account permanently. This cannot be undone.</p>
+                        <Button
+                        variant="danger"
+                        className="w-100" 
+                        onClick={() => {
+                            setShowManage(false);         
+                            setShowDeleteConfirm(true);   
+                        }}
+                        >
                         Delete Account
-                    </Button>
+                        </Button>
+                    </div>              
+                    
+
                 </Modal.Body>
             </Modal>
+            <Modal
+            show={showDeleteConfirm}
+            onHide={() => {
+                setShowDeleteConfirm(false);
+                setShowManage(true);
+            }}
+            centered
+            >
+            <Modal.Header closeButton>
+                <Modal.Title>Confirm Delete</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button
+                variant="secondary"
+                onClick={() => {
+                    setShowDeleteConfirm(false);
+                    setShowManage(true);
+                }}
+                >
+                Cancel
+                </Button>
+
+                <Button variant="danger" onClick={handleDeleteAccount}>
+                Yes, Delete
+                </Button>
+            </Modal.Footer>
+            </Modal>
+
 
             <ImageCropModal
                 show={showCropModal}

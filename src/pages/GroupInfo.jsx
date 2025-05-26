@@ -128,6 +128,26 @@ function GroupInfo() {
         // if (updated) fetchGroupInfo();
     };
 
+    const handleRemoveMember = async (memberId) => {
+
+        try {
+            const response = await Axios.post(`${baseURL}/groups/remove-member.php`, {
+                group_id: Number(id), // pass current group ID
+                member_id: memberId,
+            });
+
+            if (response.data.success) {
+                // Refresh members list
+                setMembers((prev) => prev.filter(m => m.member_id !== memberId));
+            } else {
+                alert(response.data.message || "Failed to remove member.");
+            }
+        } catch (error) {
+            console.error(error);
+           
+        }
+    };
+
     if (!group) return null;
 
     return (
@@ -137,22 +157,22 @@ function GroupInfo() {
                     <h3 className='text-center'>{group.name} Group Members</h3>
                     {members.map((member) => (
                         <Row key={member.member_id} className='mt-5'>
-                            <Col className="text-start">
+                            <Col md={4} className="text-start">
                                 <h5>
                                     {member.username} {member.member_id === captainid && <strong>*</strong>}
                                 </h5>
                                 <img 
                                     src={
-                                            member.avatar
+                                        member.avatar
                                             ? `${baseURL}/user/uploads/${member.avatar}`
                                             : `${baseURL}/user/uploads/defalut_avatar.png`
-                                        }
+                                    }
                                     alt="Profile" 
                                     className="rounded-circle mb-3" 
                                     style={{ width: '50px', height: '50px', objectFit: 'cover' }} 
                                 />
                             </Col>
-                            <Col className="text-start">
+                            <Col md={6} className="text-start">
                                 <ul style={{ listStyleType: "none", padding: 0 }}>
                                     {["Wordle", "Connections", "Phrazle"].map((game) => (
                                         <li key={game}>
@@ -161,8 +181,21 @@ function GroupInfo() {
                                     ))}
                                 </ul>
                             </Col>
+                            <Col md={2}>
+                                {member.member_id !== captainid && (
+                                    <Button
+                                        variant="danger"
+                                        size="sm"
+                                        onClick={() => handleRemoveMember(member.member_id)}
+                                        className="mt-2"
+                                    >
+                                        Remove
+                                    </Button>
+                                )}
+                            </Col>
                         </Row>
                     ))}
+
                     <div className='scoring-method my-4'>
                         <h4>Scoring Method</h4>
                         <h5>{scoringMethod}</h5>

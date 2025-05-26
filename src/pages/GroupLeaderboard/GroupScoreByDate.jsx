@@ -30,12 +30,23 @@ function GroupScoreByDate({ latestJoinDate }) {
     const loginuserEmail = USER_AUTH_DATA?.email;
     //const formattedDate = latestJoinDate.slice(0, 10);
     const formattedDateStr = latestJoinDate ? latestJoinDate.slice(0, 10) : null;
- // "2025-04-16"
+    console.log('formattedDateStr',formattedDateStr);
     let minDate = new Date(); // fallback
+
     if (formattedDateStr && typeof formattedDateStr === 'string') {
-    const [year, month, day] = formattedDateStr.split('-').map(Number);
-    minDate = new Date(year, month - 1, day);
+    const parts = formattedDateStr.split('-');
+    if (parts.length === 3) {
+        const [year, month, day] = parts.map(Number);
+        if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
+            minDate = new Date(year, month - 1, day);
+        } else {
+            console.error('Invalid date parts:', { year, month, day });
+        }
+    } else {
+        console.error('Unexpected date format:', formattedDateStr);
     }
+    }
+
    
 
     useEffect(() => {
@@ -317,7 +328,7 @@ if (game === "phrazle") {
                     <>
                     {todayLeaderboard.length > 0 && (() => {
                         // Filter out "phrazle" and find the lowest score
-                        const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename === "phrazle");
+                        const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename === "phrazle" && String(data?.is_paused) === "0");
                         // console.log('filteredLeaderboard',filteredLeaderboard);
                         if (filteredLeaderboard.length === 0) return null;
 
@@ -440,7 +451,7 @@ if (game === "phrazle") {
 
                     {todayLeaderboard.length > 0 && (() => {
                         // Filter out "phrazle" and find the lowest score
-                        const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename !== "phrazle");
+                        const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename !== "phrazle" && String(data?.is_paused) === "0");
                         // console.log('filteredLeaderboard',filteredLeaderboard);
                         if (filteredLeaderboard.length === 0) return null;
 
@@ -548,7 +559,7 @@ if (game === "phrazle") {
                                                                 {isSingleWinner && " 🏆"}
                                                             </span>
                                                         </Col>
-
+                                                                 
                                                         
                                                     </Row>
                                                 </Col>
@@ -574,13 +585,20 @@ if (game === "phrazle") {
                   
                         {cumulativeDailyScore &&
                         cumulativeDailyScore.length > 0 &&
-                        cumulativeDailyScore.some(data => data.gamlescore !== undefined && !isNaN(Number(data.gamlescore)) && data.username) ? (
+                        cumulativeDailyScore.some(data => data.gamlescore !== undefined && !isNaN(Number(data.gamlescore)) && data.username ) ? (
                             <>
                                 {(() => {
-                                    const minScore = Math.min(...cumulativeDailyScore.map(data => Number(data.gamlescore)));
-                                    const winners = cumulativeDailyScore.filter(data => Number(data.gamlescore) === minScore);
+                                    const filteredScores = cumulativeDailyScore.filter(
+                                        data =>
+                                            data.gamlescore !== undefined &&
+                                            !isNaN(Number(data.gamlescore)) &&
+                                            data.username &&
+                                            String(data?.is_paused) === "0"
+                                    );
+                                    const minScore = Math.min(...filteredScores.map(data => Number(data.gamlescore)));
+                                    const winners = filteredScores.filter(data => Number(data.gamlescore) === minScore);
     
-                                    return cumulativeDailyScore
+                                    return filteredScores
                                         .slice()
                                         .sort((a, b) =>
                                             scoringmethod === "Golf"
@@ -649,6 +667,7 @@ if (game === "phrazle") {
                                             );
                                         });
                                 })()}
+
                                 {latestJoinDate && (
                                 <p className="text-center">
                                     Start Date: {(() => {

@@ -125,7 +125,7 @@ function GamesLayout() {
             updatedDate: adjustedCreatedAt
           };
           // console.log(TotalGameObject);
-          toast.success(res.data.message);
+          
           await updateTotalGamesPlayed(TotalGameObject);
           setScore('');
           navigate('/phrazlestats');

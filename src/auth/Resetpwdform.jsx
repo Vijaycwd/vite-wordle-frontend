@@ -26,7 +26,7 @@ function ResetPwdForm() {
         
         try {
             const res = await Axios.post(`${baseURL}/auth/reset-password.php`, userObject);
-            console.log(res.data);
+            
 
             if (res.data.status === 'error') {
                 toast.error(res.data.message);
