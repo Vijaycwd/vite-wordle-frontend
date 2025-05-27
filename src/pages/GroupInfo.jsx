@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Button } from 'react-bootstrap';
+import { Container, Row, Col, Button, Modal } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import Axios from 'axios';
 import { toast } from 'react-toastify';
 import { FaCheck } from "react-icons/fa6";
 import { IoClose } from "react-icons/io5";
 import GroupModal from '../constant/Models/GroupModal';
+import { FaTrash } from 'react-icons/fa';
 
 function GroupInfo() {
     const baseURL = import.meta.env.VITE_BASE_URL;
@@ -18,7 +19,7 @@ function GroupInfo() {
     const [showModal, setShowModal] = useState(false);  // Modal state
     const [groupname, setGroupname] = useState('');
     const [loading, setLoading] = useState(false);
-
+    const [showExitConfirm, setShowExitConfirm] = useState(false);
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const userId = USER_AUTH_DATA?.id;
 
@@ -65,8 +66,7 @@ function GroupInfo() {
     }, [id, userId]); 
 
     const handleDeleteGroup = async () => {
-        if (!window.confirm("Are you sure you want to delete this group?")) return;
-
+       
         try {
             const res = await Axios.post(`${baseURL}/groups/delete-group.php`, { group_id: id });
             if (res.data.status === "success") {
@@ -140,7 +140,7 @@ function GroupInfo() {
                 // Refresh members list
                 setMembers((prev) => prev.filter(m => m.member_id !== memberId));
             } else {
-                alert(response.data.message || "Failed to remove member.");
+                toast.error(response.data.message || "Failed to remove member.");
             }
         } catch (error) {
             console.error(error);
@@ -148,74 +148,169 @@ function GroupInfo() {
         }
     };
 
+    const handleExitGroup = async () => {
+    
+        try {
+        const response = await Axios.post(`${baseURL}/groups/exit-group.php`, {
+            member_id: userId,
+            group_id: group.id
+        });
+
+        if (response.data.success) {
+            setShowExitConfirm(false);
+            navigate('/groups'); 
+        } else {
+            console.log('error');
+        }
+        } catch (error) {
+        console.error("Exit error:", error);
+        
+        }
+   
+    };
+
+
     if (!group) return null;
 
     return (
         <Container>
             <Row className="justify-content-center">
-                <Col md={6} className="border p-3 shadow rounded">
-                    <h3 className='text-center'>{group.name} Group Members</h3>
+                <Col xs={12} md={6} lg={6} className="border p-3 shadow rounded">
+                    <h3 className="text-center">{group.name} Group Members</h3>
+
                     {members.map((member) => (
-                        <Row key={member.member_id} className='mt-5'>
-                            <Col md={4} className="text-start">
-                                <h5>
-                                    {member.username} {member.member_id === captainid && <strong>*</strong>}
-                                </h5>
-                                <img 
-                                    src={
-                                        member.avatar
-                                            ? `${baseURL}/user/uploads/${member.avatar}`
-                                            : `${baseURL}/user/uploads/defalut_avatar.png`
-                                    }
-                                    alt="Profile" 
-                                    className="rounded-circle mb-3" 
-                                    style={{ width: '50px', height: '50px', objectFit: 'cover' }} 
-                                />
-                            </Col>
-                            <Col md={6} className="text-start">
-                                <ul style={{ listStyleType: "none", padding: 0 }}>
-                                    {["Wordle", "Connections", "Phrazle"].map((game) => (
-                                        <li key={game}>
-                                            <h5>{game}: {member.selected_games.includes(game) ? <FaCheck /> : <IoClose />}</h5>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </Col>
-                            <Col md={2}>
+                    <Row
+                    key={member.member_id}
+                    className="mt-3 py-3 px-2 align-items-center border rounded"
+                    style={{ flexWrap: 'nowrap' }}
+                    >
+                        {/* Avatar and username */}
+                        <Col xs={3} md={4} lg={4} className="text-center text-md-start me-3">
+                            <img
+                            src={
+                                member.avatar
+                                ? `${baseURL}/user/uploads/${member.avatar}`
+                                : `${baseURL}/user/uploads/defalut_avatar.png`
+                            }
+                            alt="Profile"
+                            className="rounded-circle mb-1"
+                            style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                            />
+                            <h6 className="mt-1 mb-0">
+                            {member.username} {member.member_id === captainid && <strong>*</strong>}
+                            </h6>
+                        </Col>
+
+                        {/* Selected Games */}
+                        <Col xs={6}  md={6} lg={6}  className="text-start me-3">
+                            <ul style={{ listStyleType: 'none', padding: 0, marginBottom: 0 }}>
+                            {["Wordle", "Connections", "Phrazle"].map((game) => (
+                                <li key={game}>
+                                <span>
+                                    {game}: {member.selected_games.includes(game) ? <FaCheck /> : <IoClose />}
+                                </span>
+                                </li>
+                            ))}
+                            </ul>
+                        </Col>
+
+                        {/* Remove button */}
+                        
+                        {userId === captainid && (
+                            <>
+                        
+                            <Col xs={2}  md={2} lg={2}  className="text-center">
                                 {member.member_id !== captainid && (
                                     <Button
-                                        variant="danger"
-                                        size="sm"
-                                        onClick={() => handleRemoveMember(member.member_id)}
-                                        className="mt-2"
+                                    variant="danger"
+                                    size="sm"
+                                    onClick={() => handleRemoveMember(member.member_id)}
                                     >
-                                        Remove
+                                    <FaTrash />
                                     </Button>
                                 )}
                             </Col>
-                        </Row>
+                        
+                            </>
+                        )} 
+                    </Row>
+
                     ))}
 
-                    <div className='scoring-method my-4'>
-                        <h4>Scoring Method</h4>
-                        <h5>{scoringMethod}</h5>
+                    {/* Scoring method */}
+                    <div className="scoring-method my-4 text-center text-md-start">
+                    <h4>Scoring Method</h4>
+                    <h5>{scoringMethod}</h5>
                     </div>
-                    <div>
+
+                    {/* Footer actions */}
+                    <div className="text-center text-md-start">
                         <p><strong>*Captain</strong></p>
-                        <Button className="btn btn-primary my-4" onClick={() => navigate(`/group/${group.id}/${group.name.toLowerCase().replace(/\s+/g, '-')}/stats`)}>Group Leaderboards</Button>
-                        {userId === captainid && (
-                           <>
-                                <Button className="btn btn-warning my-2 mx-2" onClick={handleShowModal}>
+                        <Row>
+                            <Col xs={7} md={4}>
+                                <Button
+                                    className="btn btn-primary my-2 me-md-2"
+                                    onClick={() =>
+                                    navigate(`/group/${group.id}/${group.name.toLowerCase().replace(/\s+/g, '-')}/stats`)
+                                    }
+                                >
+                                    Group Leaderboards
+                                </Button>
+                            </Col>
+                            {userId === captainid ? (
+                            <>
+                                <Col xs={5} md={3}>
+                                <Button className="btn btn-warning my-2" onClick={handleShowModal}>
                                     Edit Group
                                 </Button>
+                                </Col>
+                                <Col xs={6} md={3}>
                                 <Button className="btn btn-danger my-2" onClick={handleDeleteGroup}>
                                     Delete Group
                                 </Button>
-                           </>
-                        )}
+                                </Col>
+                            </>
+                            ) : (
+                            <Col xs={6} md={3}>
+                                <Button className="btn btn-danger my-2" onClick={() => {setShowExitConfirm(true);}}>
+                                Exit Group
+                                </Button>
+                            </Col>
+                            )}
+
+                        </Row>
                     </div>
                 </Col>
             </Row>
+
+            <Modal
+                show={showExitConfirm}
+                onHide={() => {
+                    setShowExitConfirm(false);
+                }}
+                centered
+                >
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Exit</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>Are you sure you want to exit your account from group?</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button
+                    variant="secondary"
+                    onClick={() => {
+                        setShowExitConfirm(false);
+                    }}
+                    >
+                    Cancel
+                    </Button>
+
+                    <Button variant="danger" onClick={handleExitGroup}>
+                    Yes, Exit
+                    </Button>
+                </Modal.Footer>
+            </Modal>
 
             {/* Group Edit Modal */}
             <GroupModal 

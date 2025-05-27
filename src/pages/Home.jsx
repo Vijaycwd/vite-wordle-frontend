@@ -46,7 +46,7 @@ function Home() {
 
     return isAuthenticated ? (
         <Container className="login-section">
-            <Row className="align-content-center justify-content-center">
+            <Row className="align-content-center justify-content-center text-center">
                 <Col md={6} className='bg-white px-3 py-3 text-center'>
                     <Row>
                         <Col>

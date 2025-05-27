@@ -67,30 +67,30 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
     }, [id, userId]); 
     
 
-    // useEffect(() => {
-    //     const fetchGroupStats = async () => {
-    //         if (!id || !game) return;
+    useEffect(() => {
+        const fetchGroupStats = async () => {
+            if (!id || !game) return;
 
-    //         try {
-    //             setLoading(true);
+            try {
+                setLoading(true);
 
-    //             // Fetch Today's Scores
-    //             const todayResponse = await axios.get(`${baseURL}/groups/get-group-score.php`, {
-    //                 params: { groupId: id, groupName, game, timeZone, today: todayDate }
-    //             });
+                // Fetch Today's Scores
+                const todayResponse = await axios.get(`${baseURL}/groups/get-group-score.php`, {
+                    params: { groupId: id, groupName, game, timeZone, today: todayDate }
+                });
 
-    //             // console.log("Today's Scores Response:", todayResponse.data);
+                // console.log("Today's Scores Response:", todayResponse.data);
 
-    //             setTodayLeaderboard(todayResponse.data.data || []);
-    //         } catch (error) {
-    //             console.error("Error fetching group stats:", error.response ? error.response.data : error.message);
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     };
+                setTodayLeaderboard(todayResponse.data.data || []);
+            } catch (error) {
+                console.error("Error fetching group stats:", error.response ? error.response.data : error.message);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    //     fetchGroupStats();
-    // }, [id, groupName, game, todayDate]);
+        fetchGroupStats();
+    }, [id, groupName, game, todayDate]);
 
     const getCurrentPeriod = () => {
     const hours = new Date().getHours();
@@ -148,6 +148,7 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                 const cumulativeResponse = await axios.get(`${baseURL}/groups/get-cumulative-score.php`, {
                     params: { groupId: id, groupName, game, timeZone }
                 });
+                console.log(cumulativeResponse.data.latestJoinDate);
                 setLatestJoinDate(cumulativeResponse.data.latestJoinDate || []);
                 setCumulativeScore(cumulativeResponse.data.data || []);
             } catch (error) {
@@ -202,10 +203,13 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
 
                                 // Find all players with the lowest score
                                 const winners = filteredLeaderboard.filter(data => Number(data.gamlescore) === minScore);
-                                const missedUsers = filteredLeaderboard.filter(d => d.missed && d.is_paused === "0").map(d => ({
-                                    name: d.username,
-                                    email: d.useremail
-                                }));
+                                const missedUsers = filteredLeaderboard
+                                    .filter(d => d?.missed && String(d?.is_paused) === "0")
+                                    .map(d => ({
+                                        name: d.username,
+                                        email: d.useremail
+                                    }));
+                                
                                 // console.log('missedUsers',missedUsers);
                                 if (missedUsers.length > 0) {
                                     return (

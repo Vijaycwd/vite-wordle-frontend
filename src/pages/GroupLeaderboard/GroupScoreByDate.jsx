@@ -8,11 +8,11 @@ import moment from 'moment-timezone';
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import dayjs from "dayjs";
 
-function GroupScoreByDate({ latestJoinDate }) {
+function GroupScoreByDate({latestJoinDate}) {
     const baseURL = import.meta.env.VITE_BASE_URL;
     const { id, groupName, game } = useParams();
     const [todayLeaderboard, setTodayLeaderboard] = useState([]);
-    // const [latestJoinDate, setlatestJoinDate] = useState('');
+    //const [latestJoinDate, setlatestJoinDate] = useState('');
     const [totalGames, settotalGames] = useState('');
     const [cumulativeAverageScore, setcumulativeAverageScore] = useState([]);
     const [cumulativeDailyScore, setcumulativeDailyScore] = useState([]);
@@ -29,6 +29,7 @@ function GroupScoreByDate({ latestJoinDate }) {
     const userId = USER_AUTH_DATA?.id;
     const loginuserEmail = USER_AUTH_DATA?.email;
     //const formattedDate = latestJoinDate.slice(0, 10);
+    console.log(latestJoinDate);
     const formattedDateStr = latestJoinDate ? latestJoinDate.slice(0, 10) : null;
     console.log('formattedDateStr',formattedDateStr);
     let minDate = new Date(); // fallback
@@ -47,7 +48,7 @@ function GroupScoreByDate({ latestJoinDate }) {
     }
     }
 
-   
+   console.log(minDate);
 
     useEffect(() => {
         const fetchScoringMethod = async () => {
@@ -215,8 +216,8 @@ function GroupScoreByDate({ latestJoinDate }) {
                 setTodayLeaderboard([]);
                 setFetchedError(true);
             }
-            // console.log(cumulativeDailyResponse.data.totalGames);
-            // setlatestJoinDate(cumulativeDailyResponse.data.latestJoinDate || []);
+            console.log('cumulativeDailyResponse.data',cumulativeDailyResponse.data);
+            setlatestJoinDate(cumulativeDailyResponse.data.latestJoinDate || []);
             settotalGames(cumulativeDailyResponse.data.totalGames || []);
             setcumulativeAverageScore(cumulativeAverageResponse.data.data || []);
             setcumulativeDailyScore(cumulativeDailyResponse.data.data || []);

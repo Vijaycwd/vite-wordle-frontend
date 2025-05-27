@@ -3,13 +3,14 @@ import { Col, Dropdown, Button, ListGroup, Badge } from 'react-bootstrap';
 import axios from 'axios';
 
 const GroupInvites = () => {
+
   const baseURL = import.meta.env.VITE_BASE_URL;
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
   const userId = USER_AUTH_DATA?.id;
 
   const [invites, setInvites] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
-
+  
   const inviteIntervalRef = useRef(null);
   const messageIntervalRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -49,13 +50,28 @@ const GroupInvites = () => {
   // Accept invite
 const handleAcceptInvite = async (inviteId, groupId) => {
   setShowDropdown(false);
+  
+  const date = new Date(); // current date/time
+
+  // Get components in local time
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+
+  // Format as desired
+  const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
   try {
     await axios.post(
       `${baseURL}/groups/accept-invite.php`,
       {
         user_id: userId,
         invite_id: inviteId,
-        group_id: groupId
+        group_id: groupId,
+        formattedDate
       },
       {
         headers: {

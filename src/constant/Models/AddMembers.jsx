@@ -15,6 +15,7 @@ const AddMembers = ({ showForm, handleFormClose, groupName, groupId, existingMem
   const userAuthData = JSON.parse(localStorage.getItem('auth')) || {};
   const loggedInUserId = String(userAuthData.id || "");
   const loggedInUsername = userAuthData.username || "";
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -72,7 +73,7 @@ const AddMembers = ({ showForm, handleFormClose, groupName, groupId, existingMem
       toast.error("Please select a group and at least one member.");
       return;
     }
-
+    setLoading(true);
     try {
       const invitations = selectedMembers.map(member => ({
         group_id: groupId,
@@ -90,6 +91,9 @@ const AddMembers = ({ showForm, handleFormClose, groupName, groupId, existingMem
       handleFormClose();
     } catch (error) {
       toast.error("Failed to send invitations.");
+    }
+    finally {
+      setLoading(false); // stop loading
     }
   };
 
@@ -149,9 +153,17 @@ const AddMembers = ({ showForm, handleFormClose, groupName, groupId, existingMem
             </div>
           </Form.Group>
 
-          <Button variant="success" onClick={handleSendInvitation}>
-            Send Invitations
+          <Button variant="success" onClick={handleSendInvitation} disabled={loading}>
+            {loading ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Sending...
+              </>
+            ) : (
+              "Send Invitations"
+            )}
           </Button>
+
         </Form>
       </Modal.Body>
       <Modal.Footer>
