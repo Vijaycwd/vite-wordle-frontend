@@ -90,7 +90,7 @@ function Groups() {
                                     className="w-100 text-wrap"
                                     onClick={() =>
                                         navigate(
-                                        `/group/${group.id}/me-${group.name
+                                        `/group/${group.id}/${group.name
                                             .toLowerCase()
                                             .replace(/\//g, '')
                                             .replace(/\s+/g, '-')

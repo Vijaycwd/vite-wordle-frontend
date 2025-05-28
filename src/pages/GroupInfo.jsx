@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Button, Modal } from 'react-bootstrap';
+import { Container, Row, Col, Button, Modal, Spinner } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import Axios from 'axios';
 import { toast } from 'react-toastify';
@@ -19,6 +19,7 @@ function GroupInfo() {
     const [showModal, setShowModal] = useState(false);  // Modal state
     const [groupname, setGroupname] = useState('');
     const [loading, setLoading] = useState(false);
+    const [deleteloading, setDeleteLoading] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [showExitConfirm, setShowExitConfirm] = useState(false);
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
@@ -67,20 +68,6 @@ function GroupInfo() {
         }
     }, [id, userId]); 
 
-    const handleDeleteGroup = async () => {
-       
-        try {
-            const res = await Axios.post(`${baseURL}/groups/delete-group.php`, { group_id: id });
-            if (res.data.status === "success") {
-                toast.success(res.data.message);
-                navigate('/groups');
-            } else {
-                toast.error("Failed to delete group.");
-            }
-        } catch (err) {
-            toast.error("Error deleting group.");
-        }
-    };
 
     const handleUpdateGroup = async (event) => {
         event.preventDefault();
@@ -150,17 +137,19 @@ function GroupInfo() {
         }
     };
     const confirmDeleteGroup = async () => {
+        setDeleteLoading(true);
         setShowDeleteConfirm(false);
         try {
             const res = await Axios.post(`${baseURL}/groups/delete-group.php`, { group_id: Number(id) });
             if (res.data.status === "success") {
-                toast.success(res.data.message);
                 navigate('/groups');
             } else {
                 toast.error(res.data.message);
             }
         } catch (err) {
             toast.error("Error deleting group.");
+        }finally {
+            setDeleteLoading(false);
         }
         
     };
@@ -302,9 +291,22 @@ function GroupInfo() {
                                 </Button>
                                 </Col>
                                 <Col xs={6} md={3}>
-                                <Button className="btn btn-danger my-2" onClick={() => setShowDeleteConfirm(true)}>
-                                    Delete Group
-                                </Button>
+                                    <Button variant="danger" className='my-2' onClick={confirmDeleteGroup} disabled={loading}>
+                                    {deleteloading? (
+                                        <>
+                                        <Spinner
+                                            as="span"
+                                            animation="border"
+                                            size="sm"
+                                            role="status"
+                                            aria-hidden="true"
+                                        />{' '}
+                                        Deleting...
+                                        </>
+                                    ) : (
+                                        'Yes, Delete'
+                                    )}
+                                    </Button>
 
                                 </Col>
                             </>

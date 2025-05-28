@@ -210,7 +210,8 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                                         email: d.useremail
                                     }));
                                 
-                                // console.log('missedUsers',missedUsers);
+                                console.log('missedUsers',missedUsers);
+                                
                                 if (missedUsers.length > 0) {
                                     return (
                                         <div className="text-center mb-3 missed-user-section py-3 px-2">
@@ -331,13 +332,12 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
 
                                 // Find all players with the lowest score
                                 const winners = filteredLeaderboard.filter(data => Number(data.gamlescore) === minScore);
-                               const missedUsers = filteredLeaderboard
-                                .filter(d => d?.missed && String(d?.is_paused) === "0")
-                                .map(d => ({
-                                    name: d.username,
-                                    email: d.useremail
-                                }));
-                                
+                                const missedUsers = filteredLeaderboard
+                                    .filter(d => d?.missed && String(d?.is_paused) === "0")
+                                    .map(d => ({
+                                        name: d.username,
+                                        email: d.useremail
+                                    }));
                                 if (missedUsers.length > 0) {
                                     const currentUserData = filteredLeaderboard.find(d => d.username === userName);
                                     return (
@@ -361,7 +361,6 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                                     );
                                 }
                                 else{
-                                    
                                     return (
                                         
                                         <>
