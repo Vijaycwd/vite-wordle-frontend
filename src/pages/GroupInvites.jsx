@@ -159,7 +159,7 @@ const handleDeclineInvite = async (inviteId) => {
                   <strong>Group Name:</strong> {invite.group_name}
                 </p>
                 <p>
-                  <strong>Group Captain:</strong> {invite.captain_name}
+                  <strong>Group Captain:</strong> {invite.captain_name || `${invite.first_name} ${invite.last_name}`}
                 </p>
                 <Button
                   size="sm"

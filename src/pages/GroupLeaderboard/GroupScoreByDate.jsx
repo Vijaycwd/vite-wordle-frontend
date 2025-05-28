@@ -137,25 +137,27 @@ function GroupScoreByDate({ latestJoinDate }) {
     const currentDate = dayjs(startDate).startOf('day');
 
     if (game === 'phrazle') {
-        if (period === 'AM') {
-            const newPeriod = 'PM';
-            const isToday = currentDate.isSame(today, 'day');
-            const isTodayPMBlocked = isToday && today.hour() < 12;
-
-            if (isTodayPMBlocked) return;
-
-            const formattedDateStr = formatDateForBackend(startDate);
-            fetchDataByDate(formattedDateStr, newPeriod);
-            setPeriod(newPeriod);
-        } else {
-            if (nextDate.isAfter(maxAllowedDate)) return;
-
-            const newPeriod = 'AM';
-            const formattedDateStr = formatDateForBackend(nextDate.toDate());
-            fetchDataByDate(formattedDateStr, newPeriod);
-            setStartDate(nextDate.toDate());
-            setPeriod(newPeriod);
-        }
+            const today = dayjs().startOf('day'); // Only allow dates before today
+            const nextDate = dayjs(startDate).add(1, 'day');
+        
+            if (period === 'AM') {
+                const newPeriod = 'PM';
+                const isToday = dayjs(startDate).isSame(today, 'day');
+                const isTodayPMBlocked = isToday && today.hour() < 12;
+        
+                if (isTodayPMBlocked) return;
+        
+                const formattedDate = formatDateForBackend(startDate);
+                fetchDataByDate(formattedDate, newPeriod);
+                setPeriod(newPeriod);
+            } else {
+                // if (!nextDate.isBefore(today)) return;
+                const newPeriod = 'AM';
+                const formattedDate = formatDateForBackend(nextDate.toDate());
+                fetchDataByDate(formattedDate, newPeriod);
+                setStartDate(nextDate.toDate());
+                setPeriod(newPeriod);
+            }
     } else {
         if (nextDate.isAfter(maxAllowedDate)) return;
         handleDateChange(nextDate.toDate());

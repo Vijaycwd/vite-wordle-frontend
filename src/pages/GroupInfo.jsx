@@ -19,9 +19,11 @@ function GroupInfo() {
     const [showModal, setShowModal] = useState(false);  // Modal state
     const [groupname, setGroupname] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [showExitConfirm, setShowExitConfirm] = useState(false);
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const userId = USER_AUTH_DATA?.id;
+    const [invites, setInvites] = useState([]);
 
     useEffect(() => {
         fetchGroupInfo();
@@ -147,6 +149,21 @@ function GroupInfo() {
            
         }
     };
+    const confirmDeleteGroup = async () => {
+        setShowDeleteConfirm(false);
+        try {
+            const res = await Axios.post(`${baseURL}/groups/delete-group.php`, { group_id: Number(id) });
+            if (res.data.status === "success") {
+                toast.success(res.data.message);
+                navigate('/groups');
+            } else {
+                toast.error(res.data.message);
+            }
+        } catch (err) {
+            toast.error("Error deleting group.");
+        }
+        
+    };
 
     const handleExitGroup = async () => {
     
@@ -170,8 +187,28 @@ function GroupInfo() {
     };
 
 
+    useEffect(() => {
+        fetchGroupInvites();
+    }, [id]);
+    const fetchGroupInvites = async () => {
+        try {
+          const response = await Axios.get(
+            `${baseURL}/groups/get-group-invites.php?group_id=${id}`
+          );
+    
+          const newInvites = Array.isArray(response.data.invitations)
+            ? response.data.invitations
+            : [];
+    
+          if (JSON.stringify(newInvites) !== JSON.stringify(invites)) {
+            setInvites(newInvites);
+          }
+        } catch (error) {
+          console.error('Error fetching invites:', error);
+        }
+      };
+    
     if (!group) return null;
-
     return (
         <Container>
             <Row className="justify-content-center">
@@ -181,11 +218,11 @@ function GroupInfo() {
                     {members.map((member) => (
                     <Row
                     key={member.member_id}
-                    className="mt-3 py-3 px-2 align-items-center border rounded"
+                    className="mt-3 py-3 align-items-center border rounded"
                     style={{ flexWrap: 'nowrap' }}
                     >
                         {/* Avatar and username */}
-                        <Col xs={3} md={4} lg={4} className="text-center text-md-start me-3">
+                        <Col xs={5} md={4} lg={4} className="text-center text-md-start">
                             <img
                             src={
                                 member.avatar
@@ -197,12 +234,12 @@ function GroupInfo() {
                             style={{ width: '50px', height: '50px', objectFit: 'cover' }}
                             />
                             <h6 className="mt-1 mb-0">
-                            {member.username} {member.member_id === captainid && <strong>*</strong>}
+                            {member.username} {member.member_id === captainid && <strong><sup>*</sup></strong>}
                             </h6>
                         </Col>
 
                         {/* Selected Games */}
-                        <Col xs={6}  md={6} lg={6}  className="text-start me-3">
+                        <Col xs={5}  md={6} lg={6}  className="text-start">
                             <ul style={{ listStyleType: 'none', padding: 0, marginBottom: 0 }}>
                             {["Wordle", "Connections", "Phrazle"].map((game) => (
                                 <li key={game}>
@@ -238,13 +275,13 @@ function GroupInfo() {
                     ))}
 
                     {/* Scoring method */}
-                    <div className="scoring-method my-4 text-center text-md-start">
+                    <div className="scoring-method my-4 text-md-start">
                     <h4>Scoring Method</h4>
                     <h5>{scoringMethod}</h5>
                     </div>
 
                     {/* Footer actions */}
-                    <div className="text-center text-md-start">
+                    <div className="text-md-start">
                         <p><strong>*Captain</strong></p>
                         <Row>
                             <Col xs={7} md={4}>
@@ -265,9 +302,10 @@ function GroupInfo() {
                                 </Button>
                                 </Col>
                                 <Col xs={6} md={3}>
-                                <Button className="btn btn-danger my-2" onClick={handleDeleteGroup}>
+                                <Button className="btn btn-danger my-2" onClick={() => setShowDeleteConfirm(true)}>
                                     Delete Group
                                 </Button>
+
                                 </Col>
                             </>
                             ) : (
@@ -279,10 +317,62 @@ function GroupInfo() {
                             )}
 
                         </Row>
+                        {invites.length > 0 && userId === captainid && (
+                        <Row className="my-4">
+                            <Col>
+                            <h5 className="mb-3">Invitations Pending Acceptance:</h5>
+                            <ul className="list-unstyled">
+                                {invites.map((invite, i) => (
+                                <li key={i} className="d-flex align-items-center mb-3">
+                                    <img
+                                    src={
+                                        invite.avatar
+                                        ? `${baseURL}/user/uploads/${invite.avatar}`
+                                        : `${baseURL}/user/uploads/defalut_avatar.png`
+                                    }
+                                    alt="Profile"
+                                    className="rounded-circle mb-1 me-2"
+                                    style={{ width: '30px', height: '30px', objectFit: 'cover' }}
+                                    />
+                                    <div>
+                                    <strong>{invite.first_name} {invite.last_name}</strong><br />
+                                    <small className="text-muted">@{invite.username}</small>
+                                    </div>
+                                </li>
+                                ))}
+                            </ul>
+                            </Col>
+                        </Row>
+                        )}
+
                     </div>
                 </Col>
             </Row>
+            
+            
 
+
+            <Modal
+                show={showDeleteConfirm}
+                onHide={() => setShowDeleteConfirm(false)}
+                centered
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Delete</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>Are you sure you want to delete this group? This action cannot be undone.</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowDeleteConfirm(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={confirmDeleteGroup}>
+                        Yes, Delete
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+                
             <Modal
                 show={showExitConfirm}
                 onHide={() => {

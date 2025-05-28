@@ -268,13 +268,15 @@ function UserProfile() {
                 <Modal.Body>
                     <div className='mb-4'>
                         <h6>Pause Play</h6>
-                        <p className="small">Keep my account active but hide from group invites.</p>
+                        <p className="small">
+                         {isPaused ? "Account active, but not visible to other Gamlers - unable to be invited into groups and will not appear in Leaderboards." : " Keep my account active, but hide from group Invitations and Leaderboards."}
+                         </p>
                         <Button 
                         variant={isPaused ? "success" : "warning"} 
                         className="w-100" 
                         onClick={handlePauseToggle}
                         >
-                        {isPaused ? "Pause Play" : "Paused"}
+                        {isPaused ? "Account Paused" : "Pause Account"}
                         </Button>
                     </div>      
                     <div>

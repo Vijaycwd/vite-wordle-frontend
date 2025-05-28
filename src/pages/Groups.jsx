@@ -81,22 +81,32 @@ function Groups() {
                 <Row className="justify-content-center">
                     <Col md={6} className="border p-3 shadow rounded text-center">
                         <h4>Groups Created By Me</h4>
-                        <div className="d-flex flex-wrap justify-content-around">
+                        <div className="row justify-content-center py-3">
                             {groups.length > 0 ? (
                                 groups.map((group, index) => (
-                                    <Button 
-                                        variant="outline-primary" 
-                                        style={{ width: '30%', margin: "10px" }} 
-                                        key={index}
-                                        onClick={() => navigate(`/group/${group.id}/${group.name.toLowerCase().replace(/\s+/g, '-')}`)}
+                                <div key={index} className="col-6 col-sm-4 col-md-3 mb-3 d-flex justify-content-center">
+                                    <Button
+                                    variant="outline-primary"
+                                    className="w-100 text-wrap"
+                                    onClick={() =>
+                                        navigate(
+                                        `/group/${group.id}/me-${group.name
+                                            .toLowerCase()
+                                            .replace(/\//g, '')
+                                            .replace(/\s+/g, '-')
+                                            .replace(/[^a-z0-9-]/g, '')}`
+                                        )
+                                    }
                                     >
-                                        {group.name}
+                                    {group.name}
                                     </Button>
+                                </div>
                                 ))
                             ) : (
                                 <p>No groups available.</p>
                             )}
                         </div>
+
                         <Row>
                             <Col>
                                 <Button className="wordle-btn px-5 mt-3" onClick={handleShowCreateForm}>
@@ -111,22 +121,32 @@ function Groups() {
                 <Row className="justify-content-center pt-4">
                     <Col md={6} className="border p-3 shadow rounded text-center">
                         <h4>Member in Groups</h4>
-                        <div className="d-flex flex-wrap justify-content-around">
+                        <div className="row justify-content-center py-3">
                             {memberGroups.length > 0 ? (
                                 memberGroups.map((group, index) => (
-                                    <Button 
-                                        variant="outline-success" 
-                                        style={{ width: '30%', margin: "10px" }} 
-                                        key={index}
-                                        onClick={() => navigate(`/group/${group.id}/${group.name.toLowerCase().replace(/\s+/g, '-')}`)}
+                                <div key={index} className="col-6 col-sm-4 col-md-3 mb-3 d-flex justify-content-center">
+                                    <Button
+                                    variant="outline-success"
+                                    className="w-100 text-wrap"
+                                    onClick={() =>
+                                        navigate(
+                                        `/group/${group.id}/me-${group.name
+                                            .toLowerCase()
+                                            .replace(/\//g, '')
+                                            .replace(/\s+/g, '-')
+                                            .replace(/[^a-z0-9-]/g, '')}`
+                                        )
+                                    }
                                     >
-                                        {group.name}
+                                    {group.name}
                                     </Button>
+                                </div>
                                 ))
                             ) : (
                                 <p>No groups available.</p>
                             )}
                         </div>
+
                     </Col>
                 </Row>
 
