@@ -146,7 +146,7 @@ function UserProfile() {
                 is_paused: newPausedState ? 1 : 0,
             });
             setIsPaused(newPausedState);
-            toast.success(newPausedState ? "Paused Play" : "Unpaused Play");
+            // toast.success(newPausedState ? "Paused Play" : "Unpaused Play");
         } catch (error) {
             toast.error("Failed to update pause state.");
         }

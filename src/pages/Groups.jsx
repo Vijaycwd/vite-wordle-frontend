@@ -68,7 +68,7 @@ function Groups() {
                 { name: groupname, captain_id: userId, games: selectedGames }
             );
 
-            toast.success(res.data.message);
+            // toast.success(res.data.message);
             setGroups([...groups, { id: res.data.group_id, name: groupname, games: selectedGames.join(", ") }]);
         } catch (err) {
             toast.error(err.response?.data?.message || "An unexpected error occurred.");

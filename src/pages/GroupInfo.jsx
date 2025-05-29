@@ -304,7 +304,7 @@ function GroupInfo() {
                                         Deleting...
                                         </>
                                     ) : (
-                                        'Yes, Delete'
+                                        'Delete Group'
                                     )}
                                     </Button>
 

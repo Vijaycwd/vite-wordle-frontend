@@ -144,102 +144,122 @@ function Registerform() {
     return (
         <Container>
             <Row className='align-content-center justify-content-center'>
-                <Col md={4}>
+                <Col md={6}>
                     <img src={logo} alt="logo" className='d-block m-auto' />
                     <h5>Create New Account</h5>
                     <Form encType="multipart/form-data" onSubmit={signUp}>
-                        <Form.Group>
-                            <Form.Label>First Name <span style={{ color: 'red' }}>*</span></Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={firstName}
-                                onChange={(e) => setfirstName(e.target.value)}
-                                onBlur={() => handleBlur('firstName')}
-                                placeholder='Enter your first name'
-                            />
-                            {touched.firstName && errors.firstName && <p className='form-validation-error'>{errors.firstName}</p>}
-                        </Form.Group>
+                    <Row>
+                        <Col md={6}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>First Name <span style={{ color: 'red' }}>*</span></Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={firstName}
+                                    onChange={(e) => setfirstName(e.target.value)}
+                                    onBlur={() => handleBlur('firstName')}
+                                    placeholder='Enter your first name'
+                                />
+                                {touched.firstName && errors.firstName && <p className='form-validation-error'>{errors.firstName}</p>}
+                            </Form.Group>
+                        </Col>
+                        <Col md={6}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Last Name <span style={{ color: 'red' }}>*</span></Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={lastName}
+                                    onChange={(e) => setlastName(e.target.value)}
+                                    onBlur={() => handleBlur('lastName')}
+                                    placeholder='Enter your last name'
+                                />
+                                {touched.lastName && errors.lastName && <p className='form-validation-error'>{errors.lastName}</p>}
+                            </Form.Group>
+                        </Col>
+                    </Row>
 
-                        <Form.Group>
-                            <Form.Label>Last Name <span style={{ color: 'red' }}>*</span></Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={lastName}
-                                onChange={(e) => setlastName(e.target.value)}
-                                onBlur={() => handleBlur('lastName')}
-                                placeholder='Enter your last name'
-                            />
-                            {touched.lastName && errors.lastName && <p className='form-validation-error'>{errors.lastName}</p>}
-                        </Form.Group>
+                    <Row>
+                        <Col md={6}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Username <span style={{ color: 'red' }}>*</span></Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    onBlur={() => handleBlur('username')}
+                                    placeholder='Enter your username'
+                                />
+                                {touched.username && errors.username && <p className='form-validation-error'>{errors.username}</p>}
+                            </Form.Group>
+                        </Col>
+                        <Col md={6}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Email <span style={{ color: 'red' }}>*</span></Form.Label>
+                                <Form.Control
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    onBlur={() => handleBlur('email')}
+                                    placeholder='Enter your email'
+                                />
+                                {touched.email && errors.email && <p className='form-validation-error'>{errors.email}</p>}
+                            </Form.Group>
+                        </Col>
+                    </Row>
 
-                        <Form.Group>
-                            <Form.Label>Username <span style={{ color: 'red' }}>*</span></Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                onBlur={() => handleBlur('username')}
-                                placeholder='Enter your username'
-                            />
-                            {touched.username && errors.username && <p className='form-validation-error'>{errors.username}</p>}
-                        </Form.Group>
+                    <Row>
+                        <Col md={6}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Password <span style={{ color: 'red' }}>*</span></Form.Label>
+                                <Form.Control
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    onBlur={() => handleBlur('password')}
+                                    placeholder='Enter your password'
+                                />
+                                {touched.password && errors.password && <p className='form-validation-error'>{errors.password}</p>}
+                            </Form.Group>
+                        </Col>
+                        <Col md={6}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Confirm Password <span style={{ color: 'red' }}>*</span></Form.Label>
+                                <Form.Control
+                                    type="password"
+                                    value={confirmpassword}
+                                    onChange={(e) => setConfirmpassword(e.target.value)}
+                                    onBlur={() => handleBlur('confirmpassword')}
+                                    placeholder='Confirm your password'
+                                />
+                                {touched.confirmpassword && errors.confirmpassword && <p className='form-validation-error'>{errors.confirmpassword}</p>}
+                            </Form.Group>
+                        </Col>
+                    </Row>
 
-                        <Form.Group>
-                            <Form.Label>Email <span style={{ color: 'red' }}>*</span></Form.Label>
-                            <Form.Control
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                onBlur={() => handleBlur('email')}
-                                placeholder='Enter your email'
-                            />
-                            {touched.email && errors.email && <p className='form-validation-error'>{errors.email}</p>}
-                        </Form.Group>
+                    <Row>
+                        <Col md={6}>
+                            <Form.Group controlId="formFile" className="mb-3">
+                                <Form.Label>Profile Picture</Form.Label>
+                                <Form.Control
+                                    type="file"
+                                    name="avatar"
+                                    onChange={handleUpload}
+                                />
+                            </Form.Group>
 
-                        <Form.Group>
-                            <Form.Label>Password <span style={{ color: 'red' }}>*</span></Form.Label>
-                            <Form.Control
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                onBlur={() => handleBlur('password')}
-                                placeholder='Enter your password'
-                            />
-                            {touched.password && errors.password && <p className='form-validation-error'>{errors.password}</p>}
-                        </Form.Group>
+                            {previewUrl && (
+                                <div>
+                                    <p>Image Preview:</p>
+                                    <img src={previewUrl} alt="Profile Preview" style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
+                                </div>
+                            )}
+                        </Col>
+                    </Row>
 
-                        <Form.Group>
-                            <Form.Label>Confirm Password <span style={{ color: 'red' }}>*</span></Form.Label>
-                            <Form.Control
-                                type="password"
-                                value={confirmpassword}
-                                onChange={(e) => setConfirmpassword(e.target.value)}
-                                onBlur={() => handleBlur('confirmpassword')}
-                                placeholder='Confirm your password'
-                            />
-                            {touched.confirmpassword && errors.confirmpassword && <p className='form-validation-error'>{errors.confirmpassword}</p>}
-                        </Form.Group>
+                    <Button className="btn btn-block btn-hero-lg btn-hero-success mt-4" type="submit">
+                        <i className="fa fa-fw fa-plus mr-1"></i> Sign Up
+                    </Button>
+                </Form>
 
-                        <Form.Group controlId="formFile" className="mb-3">
-                            <Form.Label>Profile Picture</Form.Label>
-                            <Form.Control
-                                type="file"
-                                name="avatar"
-                                onChange={handleUpload}
-                            />
-                        </Form.Group>
-
-                        {previewUrl && (
-                            <div>
-                                <p>Image Preview:</p>
-                                <img src={previewUrl} alt="Profile Preview" style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
-                            </div>
-                        )}
-
-                        <Button className="btn btn-block btn-hero-lg btn-hero-success mt-4" type="submit">
-                            <i className="fa fa-fw fa-plus mr-1"></i> Sign Up
-                        </Button>
-                    </Form>
                 </Col>
             </Row>
         </Container>
