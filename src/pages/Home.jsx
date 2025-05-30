@@ -4,8 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { toast } from 'react-toastify';
+import Axios from 'axios';
 
 function Home() {
+    const baseURL = import.meta.env.VITE_BASE_URL;
+
     const userAuthData = JSON.parse(localStorage.getItem('auth')) || {};
     const navigate = useNavigate();
     
@@ -44,14 +47,29 @@ function Home() {
     
     const isEmptyObject = userAuthData && Object.keys(userAuthData).length === 0;
 
+    const [homepageText, setHomepageText] = useState({ heading: '', text1: '', text2: '', text3: '' });
+    useEffect(() => {
+    // Fetch homepage text
+    Axios.get(`${baseURL}/user/get-homepage-text.php`)
+            .then((res) => {
+                if (res.status === 200) {
+                    setHomepageText(res.data);
+                } else {
+                    console.warn("No homepage text found");
+                }
+            })
+            .catch((err) => {
+                console.error("Error fetching homepage text:", err);
+            });
+    }, [baseURL]);
     return isAuthenticated ? (
         <Container className="login-section">
             <Row className="align-content-center justify-content-center text-center">
                 <Col md={6} className='bg-white px-3 py-3 text-center'>
                     <Row>
                         <Col>
-                            <p className='fs-4 text-center'>Welcome to <b>WordGAMLE!</b></p>
-                            <p className='text-center'>Welcome to the very first beta version of WordGAMLE! Click on each game to see how to store your results in the site.</p>
+                            <p className='fs-4 text-center' dangerouslySetInnerHTML={{ __html: homepageText.heading }}></p>
+                            <p className='text-center' dangerouslySetInnerHTML={{ __html: homepageText.text1 }}></p>
                         </Col>
                     </Row>
                     <Row>
@@ -67,8 +85,8 @@ function Home() {
                     </Row>
                     <Row>
                         <Col className="py-3">
-                            <p className='text-center'>Invite friends to the site and then create your group(s) by clicking the Group button up top.</p>
-                            <p className='text-center'>Then, when you store results here each day, you’ll see your group’s daily Leaderboards… with more fun to come over time!</p>
+                            <p className='text-center' dangerouslySetInnerHTML={{ __html: homepageText.text2 }}></p>
+                            <p className='text-center' dangerouslySetInnerHTML={{ __html: homepageText.text3 }}></p>
                         </Col>
                     </Row>
                     {!userAuthData || isEmptyObject ? (

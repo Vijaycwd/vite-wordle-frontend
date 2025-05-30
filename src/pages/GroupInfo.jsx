@@ -6,6 +6,9 @@ import { toast } from 'react-toastify';
 import { FaCheck } from "react-icons/fa6";
 import { IoClose } from "react-icons/io5";
 import GroupModal from '../constant/Models/GroupModal';
+import GroupExitConfirmModal from '../constant/Models/GroupExitConfirmModal';
+import GroupDeleteConfirmModal from '../constant/Models/GroupDeleteConfirmModal';
+import MemberProfile from '../constant/Models/MemberProfile';
 import { FaTrash } from 'react-icons/fa';
 
 function GroupInfo() {
@@ -25,6 +28,8 @@ function GroupInfo() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const userId = USER_AUTH_DATA?.id;
     const [invites, setInvites] = useState([]);
+    const [showProfile, setShowProfile] = useState(false);
+    const [selectedMember, setSelectedMember] = useState(null);
 
     useEffect(() => {
         fetchGroupInfo();
@@ -196,7 +201,10 @@ function GroupInfo() {
           console.error('Error fetching invites:', error);
         }
       };
-    
+    const handleShowProfile = (member) => {
+        setSelectedMember(member);
+        setShowProfile(true);
+    };
     if (!group) return null;
     return (
         <Container>
@@ -212,19 +220,21 @@ function GroupInfo() {
                     >
                         {/* Avatar and username */}
                         <Col xs={5} md={4} lg={4} className="text-center text-md-start">
-                            <img
-                            src={
-                                member.avatar
-                                ? `${baseURL}/user/uploads/${member.avatar}`
-                                : `${baseURL}/user/uploads/defalut_avatar.png`
-                            }
-                            alt="Profile"
-                            className="rounded-circle mb-1"
-                            style={{ width: '50px', height: '50px', objectFit: 'cover' }}
-                            />
-                            <h6 className="mt-1 mb-0">
-                            {member.username} {member.member_id === captainid && <strong><sup>*</sup></strong>}
-                            </h6>
+                            <div onClick={() => handleShowProfile(member)} style={{ cursor: 'pointer' }}>
+                                <img
+                                    src={
+                                    member.avatar
+                                        ? `${baseURL}/user/uploads/${member.avatar}`
+                                        : `${baseURL}/user/uploads/defalut_avatar.png`
+                                    }
+                                    alt="Profile"
+                                    className="rounded-circle mb-1"
+                                    style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                                />
+                                <h6 className="mt-1 mb-0">
+                                    {member.username} {member.member_id === captainid && <strong><sup>*</sup></strong>}
+                                </h6>
+                            </div>
                         </Col>
 
                         {/* Selected Games */}
@@ -291,7 +301,7 @@ function GroupInfo() {
                                 </Button>
                                 </Col>
                                 <Col xs={6} md={3}>
-                                    <Button variant="danger" className='my-2' onClick={confirmDeleteGroup} disabled={loading}>
+                                    <Button variant="danger" className='my-2' onClick={() => {setShowDeleteConfirm(true);}} disabled={loading}>
                                     {deleteloading? (
                                         <>
                                         <Spinner
@@ -350,60 +360,31 @@ function GroupInfo() {
                     </div>
                 </Col>
             </Row>
-            
-            
+            <MemberProfile
+            show={showProfile}
+            onHide={() => setShowProfile(false)}
+            selectedMember={selectedMember}
+            baseURL= {baseURL}
+            />
 
-
-            <Modal
-                show={showDeleteConfirm}
-                onHide={() => setShowDeleteConfirm(false)}
-                centered
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title>Confirm Delete</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p>Are you sure you want to delete this group? This action cannot be undone.</p>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowDeleteConfirm(false)}>
-                        Cancel
-                    </Button>
-                    <Button variant="danger" onClick={confirmDeleteGroup}>
-                        Yes, Delete
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-                
-            <Modal
-                show={showExitConfirm}
-                onHide={() => {
-                    setShowExitConfirm(false);
-                }}
-                centered
-                >
-                <Modal.Header closeButton>
-                    <Modal.Title>Confirm Exit</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p>Are you sure you want to exit your account from group?</p>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button
-                    variant="secondary"
-                    onClick={() => {
-                        setShowExitConfirm(false);
-                    }}
-                    >
-                    Cancel
-                    </Button>
-
-                    <Button variant="danger" onClick={handleExitGroup}>
-                    Yes, Exit
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-
+            {/* Group Exit Modal */}            
+            <GroupExitConfirmModal
+            show={showExitConfirm}
+            onHide={() => setShowExitConfirm(false)}
+            onConfirm={() => {
+                handleExitGroup();
+                setShowExitConfirm(false);
+            }}
+            />        
+            {/* Group Delete Modal */}
+            <GroupDeleteConfirmModal
+            show={showDeleteConfirm}
+            onHide={() => setShowDeleteConfirm(false)}
+            onConfirm={() => {
+                handleExitGroup();
+                setShowDeleteConfirm(false);
+            }}
+            />   
             {/* Group Edit Modal */}
             <GroupModal 
                 showForm={showModal} 

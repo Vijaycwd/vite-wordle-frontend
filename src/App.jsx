@@ -25,6 +25,8 @@ import GroupStats from './pages/GroupStats';
 import GroupStatsPage from './pages/GroupStatsPage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import AdminText from './pages/AdminText';
+import AdminRoute from './auth/AdminRoute';
 
 function App() {
   return (
@@ -40,6 +42,9 @@ function App() {
         <Route exact path="/reset-password" element={<Resetpwd />} />
         <Route exact path="/reset-password/:id/:token" element={<Resetpwdform />} />
         <Route  path='/' element={<ProtectedRouter/>}>
+          <Route element={<AdminRoute />}>
+            <Route exact path="/admin-text" element={<AdminText />} />
+          </Route>
           <Route exact path= '/groups' element={<Groups/>}/>
           <Route exact path = '/group-invites' element = {<GroupInvites/>}/>
           <Route exact path="/group/:id/:groupName" element={<Grouppage/>}/>
@@ -54,7 +59,7 @@ function App() {
           <Route exact path= '/edit-profile' element={<UserProfile/>}/>
         </Route>
       </Routes>
-    <ToastContainer position="top-right" />
+    <ToastContainer position="top-right" autoClose={1000}/>
     </Layout>
     
   );

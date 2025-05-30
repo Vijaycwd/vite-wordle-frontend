@@ -7,7 +7,7 @@ import WordlePlayService from '../../components/Games/Wordle/WordlePlayService';
 import ConnectionPlayService from '../../components/Games/Connections/ConnectionPlayService';
 import PhrazlePlayService from '../../components/Games/Phrazle/PhrazlePlayService';
 
-function GroupLeaderboardScores({ setLatestJoinDate }) {
+function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowProfile }) {
     const baseURL = import.meta.env.VITE_BASE_URL;
     const { id, groupName, game } = useParams();
     const [todayLeaderboard, setTodayLeaderboard] = useState([]);
@@ -172,6 +172,10 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                1; // Default to 1 if unknown
     };
 
+    const handleShowProfile = (data) => {
+        setSelectedMember(data);
+        setShowProfile(true);
+    };
     //// console.log('todayLeaderboard',todayLeaderboard);
     return (
         <div>
@@ -266,16 +270,28 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                                                             
                                                             {/* Rank + Avatar */}
                                                             <Col xs={3} className="d-flex align-items-center gap-2">
-                                                                <img 
+                                                                <div onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
+                                                                    <img
+                                                                        src={
+                                                                        data.avatar
+                                                                            ? `${baseURL}/user/uploads/${data.avatar}`
+                                                                            : `${baseURL}/user/uploads/defalut_avatar.png`
+                                                                        }
+                                                                        alt="Profile"
+                                                                        className="rounded-circle mb-1"
+                                                                        style={{ width: '35px', height: '35px', objectFit: 'cover' }}
+                                                                    />
+                                                                </div>
+                                                                {/* <img 
                                                                     src={data.avatar ? `${baseURL}/user/uploads/${data.avatar}` : `${baseURL}/user/uploads/defalut_avatar.png`} 
                                                                     alt="Avatar" 
                                                                     className="rounded-circle border" 
                                                                     style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
-                                                                />
+                                                                /> */}
                                                             </Col>
     
                                                             {/* Username */}
-                                                            <Col xs={4} className="text-start fw-semibold">
+                                                            <Col xs={4} className="text-start fw-semibold" onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
                                                                 {data.username}
                                                             </Col>
     
@@ -395,16 +411,28 @@ function GroupLeaderboardScores({ setLatestJoinDate }) {
                                                             
                                                             {/* Rank + Avatar */}
                                                             <Col xs={3} className="d-flex align-items-center gap-2">
-                                                                <img 
+                                                                <div onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
+                                                                    <img
+                                                                        src={
+                                                                        data.avatar
+                                                                            ? `${baseURL}/user/uploads/${data.avatar}`
+                                                                            : `${baseURL}/user/uploads/defalut_avatar.png`
+                                                                        }
+                                                                        alt="Profile"
+                                                                        className="rounded-circle mb-1"
+                                                                        style={{ width: '35px', height: '35px', objectFit: 'cover' }}
+                                                                    />
+                                                                </div>
+                                                                {/* <img 
                                                                     src={data.avatar ? `${baseURL}/user/uploads/${data.avatar}` : `${baseURL}/user/uploads/defalut_avatar.png`} 
                                                                     alt="Avatar" 
                                                                     className="rounded-circle border" 
                                                                     style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
-                                                                />
+                                                                /> */}
                                                             </Col>
     
                                                             {/* Username */}
-                                                            <Col xs={4} className="text-start fw-semibold">
+                                                            <Col xs={4} className="text-start fw-semibold" onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
                                                                 {data.username}
                                                             </Col>
     
