@@ -1,14 +1,14 @@
 import React, { useEffect, useState, forwardRef } from 'react';
 import { useParams } from "react-router-dom";
 import axios from 'axios';
-import { Button, Alert, Row, Col, ProgressBar } from 'react-bootstrap';
+import { Button, Alert, Row, Col, ProgressBar, Modal  } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment-timezone';
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import dayjs from "dayjs";
 
-function GroupScoreByDate({ latestJoinDate }) {
+function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }) {
     const baseURL = import.meta.env.VITE_BASE_URL;
     const { id, groupName, game } = useParams();
     const [todayLeaderboard, setTodayLeaderboard] = useState([]);
@@ -30,22 +30,27 @@ function GroupScoreByDate({ latestJoinDate }) {
     const loginuserEmail = USER_AUTH_DATA?.email;
     //const formattedDate = latestJoinDate.slice(0, 10);
     const formattedDateStr = latestJoinDate ? latestJoinDate.slice(0, 10) : null;
-    console.log('formattedDateStr',formattedDateStr);
+
+
     let minDate = new Date(); // fallback
 
     if (formattedDateStr && typeof formattedDateStr === 'string') {
-    const parts = formattedDateStr.split('-');
-    if (parts.length === 3) {
-        const [year, month, day] = parts.map(Number);
-        if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
-            minDate = new Date(year, month - 1, day);
+        const parts = formattedDateStr.split('-');
+        if (parts.length === 3) {
+            const [year, month, day] = parts.map(Number);
+            if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
+                minDate = new Date(year, month - 1, day);
+            } else {
+                console.error('Invalid date parts:', { year, month, day });
+            }
         } else {
-            console.error('Invalid date parts:', { year, month, day });
+            console.error('Unexpected date format:', formattedDateStr);
         }
-    } else {
-        console.error('Unexpected date format:', formattedDateStr);
     }
-    }
+
+    const minDateStr = minDate.toISOString().split('T')[0];
+    console.log(minDateStr); // Output: "2025-05-31"
+
 
    
 
@@ -129,36 +134,27 @@ function GroupScoreByDate({ latestJoinDate }) {
 };
 
     
-    const goToNextDay = () => {
-    const now = dayjs(); // ✅ FIXED
-    const today = now.startOf('day');
-    const maxAllowedDate = now.subtract(1, 'day').startOf('day');
-    const nextDate = dayjs(startDate).add(1, 'day').startOf('day');
-    const currentDate = dayjs(startDate).startOf('day');
+const goToNextDay = () => {
+    const today = dayjs().startOf('day'); // Only allow dates before today
+    const nextDate = dayjs(startDate).add(1, 'day');
 
-    if (game === 'phrazle') {
-        if (period === 'AM') {
-            const newPeriod = 'PM';
-            const isToday = currentDate.isSame(today, 'day');
-            const isTodayPMBlocked = isToday && today.hour() < 12;
+    if (period === 'AM') {
+        const newPeriod = 'PM';
+        const isToday = dayjs(startDate).isSame(today, 'day');
+        const isTodayPMBlocked = isToday && today.hour() < 12;
 
-            if (isTodayPMBlocked) return;
+        if (isTodayPMBlocked) return;
 
-            const formattedDateStr = formatDateForBackend(startDate);
-            fetchDataByDate(formattedDateStr, newPeriod);
-            setPeriod(newPeriod);
-        } else {
-            if (nextDate.isAfter(maxAllowedDate)) return;
-
-            const newPeriod = 'AM';
-            const formattedDateStr = formatDateForBackend(nextDate.toDate());
-            fetchDataByDate(formattedDateStr, newPeriod);
-            setStartDate(nextDate.toDate());
-            setPeriod(newPeriod);
-        }
+        const formattedDate = formatDateForBackend(startDate);
+        fetchDataByDate(formattedDate, newPeriod);
+        setPeriod(newPeriod);
     } else {
-        if (nextDate.isAfter(maxAllowedDate)) return;
-        handleDateChange(nextDate.toDate());
+        // if (!nextDate.isBefore(today)) return;
+        const newPeriod = 'AM';
+        const formattedDate = formatDateForBackend(nextDate.toDate());
+        fetchDataByDate(formattedDate, newPeriod);
+        setStartDate(nextDate.toDate());
+        setPeriod(newPeriod);
     }
 };
 
@@ -253,9 +249,9 @@ const getTotalScore = (gameName) => {
 
 const showDayResult = (date, useremail, game) => {
     // console.log('showDayResult');
-    // setSelectedGame(game);
+    setSelectedGame(game);
     const timeZone = moment.tz.guess();
-    axios.get(`${baseURL}/games/${game}/get-group-score.php`, {
+    axios.get(`${baseURL}/games/${game}/get-score.php`, {
         params: { useremail, timeZone, today: date }
     })
     .then((response) => {
@@ -271,7 +267,7 @@ const showDayResult = (date, useremail, game) => {
             scoreData = response.data?.phrazlescore || [];
         }
 
-        // setDayResults(scoreData);
+        setDayResults(scoreData);
         setShowModal(true);
     })
     .catch((error) => {
@@ -304,6 +300,32 @@ if (game === "phrazle") {
     now.getUTCDate() - 1
   ));
 }
+const maxSelectableDateStr = maxSelectableDate.toISOString().split('T')[0];
+
+const handleShowProfile = (data) => {
+    setSelectedMember(data);
+    setShowProfile(true);
+};
+
+function splitIntoRowsByNewline(text) {
+    const cleanedData = text.trim();
+    const rows = cleanedData.split(/\n+/);
+    return rows.map(row => row.replace(/\s+/g, ' ').trim());
+}
+function splitIntoRowsByLength(inputString, rowLength) {
+    const rows = [];
+    const charArray = Array.from(inputString); // Convert string to array of characters
+    for (let i = 0; i < charArray.length; i += rowLength) {
+        rows.push(charArray.slice(i, i + rowLength).join(' '));
+    }
+    return rows;
+}
+
+const noDataMessage = {
+  wordle: "Gamle Score 7",
+  connections: "Gamle Score 4",
+  phrazle: "Gamle Score 7"
+}[game] || "No data available.";
 
     return (
         <>
@@ -319,7 +341,7 @@ if (game === "phrazle") {
                     onChange={handleDateChange}
                     customInput={<ExampleCustomInput />}
                     minDate={minDate}
-                    maxDate={maxSelectableDate}
+                    maxDate={maxSelectableDateStr}
                     />
             </div>
             <Row className="justify-content-center leaderboard mt-4">
@@ -390,12 +412,24 @@ if (game === "phrazle") {
                                             <Row key={index} className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm">
                                                 {/* Avatar */}
                                                 <Col xs={3} className="d-flex align-items-center gap-2">
-                                                    <img 
+                                                    {/* <img 
                                                         src={data.avatar ? `${baseURL}/user/uploads/${data.avatar}` : `${baseURL}/user/uploads/defalut_avatar.png`} 
                                                         alt="Avatar" 
                                                         className="rounded-circle border" 
                                                         style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
-                                                    />
+                                                    /> */}
+                                                    <div onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
+                                                        <img
+                                                            src={
+                                                            data.avatar
+                                                                ? `${baseURL}/user/uploads/${data.avatar}`
+                                                                : `${baseURL}/user/uploads/defalut_avatar.png`
+                                                            }
+                                                            alt="Profile"
+                                                            className="rounded-circle mb-1"
+                                                            style={{ width: '35px', height: '35px', objectFit: 'cover' }}
+                                                        />
+                                                    </div>
                                                 </Col>
 
                                                 {/* Username */}
@@ -513,16 +547,28 @@ if (game === "phrazle") {
                                             <Row key={index} className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm">
                                                 {/* Avatar */}
                                                 <Col xs={3} className="d-flex align-items-center gap-2">
-                                                    <img 
+                                                    {/* <img 
                                                         src={data.avatar ? `${baseURL}/user/uploads/${data.avatar}` : `${baseURL}/user/uploads/defalut_avatar.png`} 
                                                         alt="Avatar" 
                                                         className="rounded-circle border" 
                                                         style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
-                                                    />
+                                                    /> */}
+                                                    <div onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
+                                                        <img
+                                                            src={
+                                                            data.avatar
+                                                                ? `${baseURL}/user/uploads/${data.avatar}`
+                                                                : `${baseURL}/user/uploads/defalut_avatar.png`
+                                                            }
+                                                            alt="Profile"
+                                                            className="rounded-circle mb-1"
+                                                            style={{ width: '35px', height: '35px', objectFit: 'cover' }}
+                                                        />
+                                                    </div>
                                                 </Col>
 
                                                 {/* Username */}
-                                                <Col xs={4} className="text-start fw-semibold">
+                                                <Col xs={4} className="text-start fw-semibold" onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
                                                     {data.username}
                                                 </Col>
 
@@ -621,7 +667,7 @@ if (game === "phrazle") {
                                                     className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
                                                 >
                                                     <Col xs={3} className="d-flex align-items-center gap-2">
-                                                        <img
+                                                        {/* <img
                                                             src={
                                                                 data.avatar
                                                                     ? `${baseURL}/user/uploads/${data.avatar}`
@@ -630,10 +676,22 @@ if (game === "phrazle") {
                                                             alt="Avatar"
                                                             className="rounded-circle border"
                                                             style={{ width: "35px", height: "35px", objectFit: "cover" }}
-                                                        />
+                                                        /> */}
+                                                        <div onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
+                                                            <img
+                                                                src={
+                                                                data.avatar
+                                                                    ? `${baseURL}/user/uploads/${data.avatar}`
+                                                                    : `${baseURL}/user/uploads/defalut_avatar.png`
+                                                                }
+                                                                alt="Profile"
+                                                                className="rounded-circle mb-1"
+                                                                style={{ width: '35px', height: '35px', objectFit: 'cover' }}
+                                                            />
+                                                        </div>
                                                     </Col>
     
-                                                    <Col xs={4} className="text-start fw-semibold">
+                                                    <Col xs={4} className="text-start fw-semibold" onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
                                                         {data.username}
                                                     </Col>
     
@@ -671,13 +729,18 @@ if (game === "phrazle") {
                                 {latestJoinDate && (
                                 <p className="text-center">
                                     Start Date: {(() => {
-                                        const date = new Date(latestJoinDate);
-                                        return date.toLocaleDateString("en-US", {
+                                    const date = new Date(latestJoinDate);
+                                    const dateString = date.toLocaleDateString("en-US", {
                                         year: "numeric",
                                         month: "long",
                                         day: "numeric",
-                                        });
+                                    });
+
+                                    const isPM = date.getHours() >= 12;
+
+                                    return `${dateString} ${isPM ? '- PM' : '- AM'}`;
                                     })()}
+
                                     </p>
                                 )}
                             </>
@@ -789,7 +852,126 @@ if (game === "phrazle") {
                     </Alert>
                 )
             )}
+
+            <Modal show={showModal} onHide={handleCloseModal} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Day Result</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {dayResults && dayResults.length > 0 ? (
+                    dayResults.map((item, index) => {
+                        const date = new Date(item.createdat);
+                        const todayDate = date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        });
+
+                        // Example: You must have something to identify game type
+                        // Could be item.gametype or you pass a prop 'gameType'
+                        // For now, assume `item.gameType` holds 'phrazle', 'wordle', or 'connection'
+                        const gameType = item.gameType || 'phrazle'; // default phrazle
+
+                        if (game === 'phrazle') {
+                        // For phrazle, remove colored squares and tags
+                        const cleanedScore = item.phrazlescore.replace(/[🟨,🟩,🟦,🟪,⬜]/g, "");
+                            const phrazle_score_text = cleanedScore.replace(/#phrazle|https:\/\/solitaired.com\/phrazle/g, '');
+                            const lettersAndNumbersRemoved = item.phrazlescore.replace(/[a-zA-Z0-9,#:./\\]/g, "");
+                            const phrazleScore = splitIntoRowsByNewline(lettersAndNumbersRemoved);
+                            const gamleScore = item.gamlescore;
+
+                        return (
+                             <div className="text-center pb-2" key={index}>
+                               
+                                <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
+                                
+                                <div className="phrazle-score-board-text my-3 fs-5 text-center">{phrazle_score_text}</div>
+                                <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
+                                <div className="phrazle-score m-auto text-center">
+                                    {phrazleScore.map((row, rowIndex) => (
+                                        row.trim() && (
+                                            <div className="phrasle-row-score" key={rowIndex}>
+                                                {row.split(' ').map((part, partIndex) => (
+                                                    <div className="row" key={partIndex}>
+                                                        {part.split(' ').map((symbol, symbolIndex) => (
+                                                            <div className="items" key={symbolIndex}>{symbol}</div>
+                                                        ))}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )
+                                    ))}
+                                </div>
+                            </div>
+                        );
+                        } 
+                        else if (game === 'wordle') {
+                        // Example Wordle display - customize as needed
+                        const cleanedScore = item.wordlescore.replace(/[🟩🟨⬜⬛]/g, "");
+                        const scoreParts = cleanedScore.split(" ");
+                        const lettersAndNumbersRemoved = item.wordlescore.replace(/[a-zA-Z0-9,/\\]/g, "");
+                        const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
+                        const wordleScores = splitIntoRowsByLength(removespace, 5);
+                        const createDate = item.createdat;
+                        const gamleScore = item.gamlescore;
+                        return (
+                            <div key={index}>
+                                <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
+                                <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
+                                <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
+                                <pre className='text-center'>
+                                {wordleScores.map((row, rowIndex) => (
+                                    <div key={rowIndex}>{row}</div>
+                                ))}
+                                </pre>
+                            </div>
+                        );
+                        } 
+                        else if (game === 'connections') {
+                        // Example Connection game display
+                        const cleanedScore = item.connectionsscore.replace(/[🟨,🟩,🟦,🟪]/g, "");
+                        const lettersAndNumbersRemoved = item.connectionsscore.replace(/[a-zA-Z0-9,#:/\\]/g, "");
+                        const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
+                        const connectionsScore = splitIntoRowsByLength(removespace, 4);
+                        const createDate = item.createdat; // Ensure this matches your database field name
+                        const gamleScore = item.gamlescore;
+
+                        return (
+                            <div key={index}>
+                                <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
+                                <>
+                                <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
+                                <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
+                                <pre className='text-center'>
+                                    {connectionsScore.map((row, rowIndex) => (
+                                        <div key={rowIndex}>{row}</div>
+                                    ))}
+                                </pre>
+                                </>                 
+                            </div>
+                        );
+                        }
+                        else {
+                        return (
+                            <div key={index} className="text-center pb-2">
+                            <h5>Unknown Game Type</h5>
+                            </div>
+                        );
+                        }
+                    })
+                    ) : (
+                         <h5 className='text-center'>{noDataMessage}</h5>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                    Close
+                    </Button>
+                </Modal.Footer>
+                </Modal>
+
         </>
+        
     );
 }
 

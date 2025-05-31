@@ -285,9 +285,9 @@ function GroupInfo() {
                         <Row>
                             <Col xs={7} md={4}>
                                 <Button
-                                    className="btn btn-primary my-2 me-md-2"
+                                    className="my-2 me-md-2"
                                     onClick={() =>
-                                    navigate(`/group/${group.id}/${group.name.toLowerCase().replace(/\s+/g, '-')}/stats`)
+                                    navigate(`/group/${group.id}/stats`)
                                     }
                                 >
                                     Group Leaderboards
@@ -381,7 +381,7 @@ function GroupInfo() {
             show={showDeleteConfirm}
             onHide={() => setShowDeleteConfirm(false)}
             onConfirm={() => {
-                handleExitGroup();
+                confirmDeleteGroup();
                 setShowDeleteConfirm(false);
             }}
             />   

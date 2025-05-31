@@ -84,7 +84,7 @@ function GroupStats() {
               <Col key={index} className="text-center mt-4">
                 <Button
                   className="btn-lg btn-block w-100"
-                  onClick={() => navigate(`/group/${id}/${groupName}/stats/${game.toLowerCase()}`)}
+                  onClick={() => navigate(`/group/${id}/stats/${game.toLowerCase()}`)}
                 >
                   {game}
                 </Button>

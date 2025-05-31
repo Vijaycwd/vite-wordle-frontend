@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Row, Col, ProgressBar } from "react-bootstrap";
+import { Row, Col, ProgressBar, Modal, Button } from "react-bootstrap";
+import moment from 'moment-timezone';
 import { toast } from 'react-toastify';
 import WordlePlayService from '../../components/Games/Wordle/WordlePlayService';
 import ConnectionPlayService from '../../components/Games/Connections/ConnectionPlayService';
@@ -28,7 +29,9 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
     const yesterdayDate = new Date(adjustedDate);
     yesterdayDate.setDate(yesterdayDate.getDate() - 1);
     const formattedYesterday = yesterdayDate.toISOString().slice(0, 10); // YYYY-MM-DD
-
+    const [dayResults, setDayResults] = useState(null);
+    const [selectedGame, setSelectedGame] = useState("");
+    const [showModal, setShowModal] = useState(false);
     // useEffect(() => {
     //     // Call the auto-submit PHP script
     //     axios.get(`${baseURL}/games/wordle/auto-submit-wordle-scores.php`, {
@@ -176,6 +179,57 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
         setSelectedMember(data);
         setShowProfile(true);
     };
+    const showDayResult = (date, useremail, game) => {
+    // console.log('showDayResult');
+    setSelectedGame(game);
+    const timeZone = moment.tz.guess();
+    axios.get(`${baseURL}/games/${game}/get-score.php`, {
+        params: { useremail, timeZone, today: date }
+    })
+    .then((response) => {
+        let scoreData = [];
+
+        // Assign correct data based on game type
+        if (game === "wordle") {
+            scoreData = response.data?.wordlescore || [];
+        } else if (game === "connections") {
+            scoreData = response.data?.connectionsscore || [];
+            
+        } else if (game === "phrazle") {
+            scoreData = response.data?.phrazlescore || [];
+        }
+
+        setDayResults(scoreData);
+        setShowModal(true);
+    })
+    .catch((error) => {
+        console.error(`API Error for ${game}:`, error);
+    });
+};
+
+
+const handleCloseModal = () => {
+    setShowModal(false);
+    // if (updated) fetchGroupInfo();
+};
+function splitIntoRowsByNewline(text) {
+    const cleanedData = text.trim();
+    const rows = cleanedData.split(/\n+/);
+    return rows.map(row => row.replace(/\s+/g, ' ').trim());
+}
+function splitIntoRowsByLength(inputString, rowLength) {
+    const rows = [];
+    const charArray = Array.from(inputString); // Convert string to array of characters
+    for (let i = 0; i < charArray.length; i += rowLength) {
+        rows.push(charArray.slice(i, i + rowLength).join(' '));
+    }
+    return rows;
+}
+const noDataMessage = {
+  wordle: "Gamle Score 7",
+  connections: "Gamle Score 4",
+  phrazle: "Gamle Score 7"
+}[game] || "No data available.";
     //// console.log('todayLeaderboard',todayLeaderboard);
     return (
         <div>
@@ -457,6 +511,10 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
                                                                         />
                                                                     </Col>
                                                                     <Col xs={5} className="text-center d-flex fw-bold">
+                                                                    <span 
+                                                                     onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)}
+                                                                style={{ cursor: "pointer" }}
+                                                                >
                                                                         {scoringmethod === "Golf" ? (
                                                                             <> {data.gamlescore} {isSingleWinner && "🏆"} </>
                                                                         ) : scoringmethod === "World Cup" ? (
@@ -466,6 +524,7 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
                                                                         ) : (
                                                                             <> {data.gamlescore} {isSingleWinner && "🏆"} </>
                                                                         )}
+                                                                        </span>
                                                                     </Col>
                                                                 </Row>
                                                             </Col>
@@ -577,9 +636,125 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
                         <div className="text-center text-muted py-4">No data found</div>
                     )*/}
                 
+        <Modal show={showModal} onHide={handleCloseModal} centered>
+            <Modal.Header closeButton>
+                <Modal.Title>Day Result</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                {dayResults && dayResults.length > 0 ? (
+                dayResults.map((item, index) => {
+                    const date = new Date(item.createdat);
+                    const todayDate = date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    });
 
+                    // Example: You must have something to identify game type
+                    // Could be item.gametype or you pass a prop 'gameType'
+                    // For now, assume `item.gameType` holds 'phrazle', 'wordle', or 'connection'
+                    const gameType = item.gameType || 'phrazle'; // default phrazle
+
+                    if (game === 'phrazle') {
+                    // For phrazle, remove colored squares and tags
+                    const cleanedScore = item.phrazlescore.replace(/[🟨,🟩,🟦,🟪,⬜]/g, "");
+                        const phrazle_score_text = cleanedScore.replace(/#phrazle|https:\/\/solitaired.com\/phrazle/g, '');
+                        const lettersAndNumbersRemoved = item.phrazlescore.replace(/[a-zA-Z0-9,#:./\\]/g, "");
+                        const phrazleScore = splitIntoRowsByNewline(lettersAndNumbersRemoved);
+                        const gamleScore = item.gamlescore;
+
+                    return (
+                            <div className="text-center pb-2" key={index}>
+                            
+                            <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
+                            
+                            <div className="phrazle-score-board-text my-3 fs-5 text-center">{phrazle_score_text}</div>
+                            <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
+                            <div className="phrazle-score m-auto text-center">
+                                {phrazleScore.map((row, rowIndex) => (
+                                    row.trim() && (
+                                        <div className="phrasle-row-score" key={rowIndex}>
+                                            {row.split(' ').map((part, partIndex) => (
+                                                <div className="row" key={partIndex}>
+                                                    {part.split(' ').map((symbol, symbolIndex) => (
+                                                        <div className="items" key={symbolIndex}>{symbol}</div>
+                                                    ))}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )
+                                ))}
+                            </div>
+                        </div>
+                    );
+                    } 
+                    else if (game === 'wordle') {
+                    // Example Wordle display - customize as needed
+                    const cleanedScore = item.wordlescore.replace(/[🟩🟨⬜⬛]/g, "");
+                    const scoreParts = cleanedScore.split(" ");
+                    const lettersAndNumbersRemoved = item.wordlescore.replace(/[a-zA-Z0-9,/\\]/g, "");
+                    const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
+                    const wordleScores = splitIntoRowsByLength(removespace, 5);
+                    const createDate = item.createdat;
+                    const gamleScore = item.gamlescore;
+                    return (
+                        <div key={index}>
+                            <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
+                            <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
+                            <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
+                            <pre className='text-center'>
+                            {wordleScores.map((row, rowIndex) => (
+                                <div key={rowIndex}>{row}</div>
+                            ))}
+                            </pre>
+                        </div>
+                    );
+                    } 
+                    else if (game === 'connections') {
+                    // Example Connection game display
+                    const cleanedScore = item.connectionsscore.replace(/[🟨,🟩,🟦,🟪]/g, "");
+                    const lettersAndNumbersRemoved = item.connectionsscore.replace(/[a-zA-Z0-9,#:/\\]/g, "");
+                    const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
+                    const connectionsScore = splitIntoRowsByLength(removespace, 4);
+                    const createDate = item.createdat; // Ensure this matches your database field name
+                    const gamleScore = item.gamlescore;
+
+                    return (
+                        <div key={index}>
+                            <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
+                            <>
+                            <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
+                            <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
+                            <pre className='text-center'>
+                                {connectionsScore.map((row, rowIndex) => (
+                                    <div key={rowIndex}>{row}</div>
+                                ))}
+                            </pre>
+                            </>                 
+                        </div>
+                    );
+                    }
+                    else {
+                    return (
+                        <div key={index} className="text-center pb-2">
+                        <h5>Unknown Game Type</h5>
+                        </div>
+                    );
+                    }
+                })
+                ) : (
+                        <h5 className='text-center'>{noDataMessage}</h5>
+                )}
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={handleCloseModal}>
+                Close
+                </Button>
+            </Modal.Footer>
+            </Modal>
 
         </div>
+        
     );
 }
 

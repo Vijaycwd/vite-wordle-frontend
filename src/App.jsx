@@ -47,11 +47,10 @@ function App() {
           </Route>
           <Route exact path= '/groups' element={<Groups/>}/>
           <Route exact path = '/group-invites' element = {<GroupInvites/>}/>
-          <Route exact path="/group/:id/:groupName" element={<Grouppage/>}/>
           <Route exact path="/group-info/:id" element={<GroupInfo/>} />
-          <Route path="/group/:id/:groupName/stats" element={<GroupStats/>}/>
-          <Route path="/group/:id/:groupName" element={<Grouppage/>}/>
-          <Route exact path="/group/:id/:groupName/stats/:game" element={<GroupStatsPage/>} />
+          <Route path="/group/:id/stats" element={<GroupStats/>}/>
+          <Route path="/group/:id" element={<Grouppage/>}/>
+          <Route exact path="/group/:id/stats/:game" element={<GroupStatsPage/>} />
           <Route exact path= '/gamesstat' element={<GamesStat/>}/>
           <Route exact path= '/wordlestats' element={<Wordlestats/>}/>
           <Route exact path= '/connectionstats' element={<ConnectionStat/>}/>

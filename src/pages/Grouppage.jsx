@@ -90,11 +90,7 @@ function GroupPage() {
             className="px-5 mt-3" 
             onClick={() => 
                 navigate(
-                `/group/${group.id}/${group.name
-                    .toLowerCase()
-                    .replace(/\//g, '')
-                    .replace(/\s+/g, '-') 
-                }/stats`
+                `/group/${group.id}/stats`
                 )
             }
             >
