@@ -173,12 +173,23 @@ const goToNextDay = () => {
             </>
         );
     });
-    // useEffect(() => {
-    //     const formattedDate = formatDateForBackend(startDate);
-    //     fetchDataByDate(formattedDate);
-    // }, []);
-    // Fetch data by selected date
-    const fetchDataByDate = async (date, customPeriod = null) => {
+
+    useEffect(() => {
+    const formattedDate = formatDateForBackend(startDate);
+
+        // Only calculate and pass period if game is 'phrazle'
+        if (game === 'phrazle') {
+            const currentHour = new Date().getHours();
+            const currentPeriod = currentHour < 12 ? 'AM' : 'PM';
+            setPeriod(currentPeriod); 
+            fetchDataByDate(formattedDate, currentPeriod); // ✅ Pass period
+        } else {
+            fetchDataByDate(formattedDate); // No period needed
+        }
+    }, []);
+
+   
+    const fetchDataByDate = async (date, currentPeriod = null) => {
         try {
             const timeZone = moment.tz.guess();
             
@@ -193,7 +204,7 @@ const goToNextDay = () => {
     
             // Add period if game is phrazle
             const params = game === 'phrazle' 
-                ? { ...baseParams, period: customPeriod || period }
+                ? { ...baseParams, period: currentPeriod || period }
                 : baseParams;
     
             const [todayResponse, cumulativeAverageResponse, cumulativeDailyResponse] = await Promise.all([
