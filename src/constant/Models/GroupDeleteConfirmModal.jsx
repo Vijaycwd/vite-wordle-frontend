@@ -8,7 +8,7 @@ function GroupDeleteConfirmModal({ show, onHide, onConfirm }) {
         <Modal.Title>Confirm Detete</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>Are you sure you want to delete your account from the group?</p>
+        <p>Are you sure you want to delete your group?</p>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>

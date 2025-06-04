@@ -84,7 +84,8 @@ function MemberGameSelections() {
             <Row className="justify-content-center pt-4">
                 <Col md={6}>
                     <div className="border p-3 shadow rounded mt-4">
-                        <h5>Select Games to be Tracked:</h5>
+                        <h5>Select Leaderboard Games:</h5>
+                        <p>You will appear in the Leaderboard for each game you select.</p>
                         <Form className="d-flex flex-wrap justify-content-center">
                             {["Wordle", "Connections", "Phrazle"].map((game, index) => (
                                 <div key={index} className="form-check mx-2">

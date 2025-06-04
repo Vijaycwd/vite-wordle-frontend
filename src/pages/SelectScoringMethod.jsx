@@ -86,6 +86,7 @@ function SelectScoringMethod() {
                 <Col md={6}>
                     <div className="border p-3 shadow rounded mt-4">
                         <h5>Select Scoring Method:</h5>
+                        <p>Click on each Method to see how your group Leaderboards will be scored.</p>
                         <Form className="d-flex flex-wrap justify-content-center">
                             {["Golf", "World Cup", "Pesce"].map((method, index) => (
                                 <div key={index} className="form-check mx-2">
@@ -124,7 +125,7 @@ function SelectScoringMethod() {
                     {selectedMethod === "Golf" && (
                         <div>
                             <p>Low score wins.</p>
-                            <p>Leaderboard Score = Game Score.</p>
+                            <p>Leaderboard Score = Gamle Score.</p>
                         </div>
                     )}
                     {selectedMethod === "World Cup" && (

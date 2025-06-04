@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Col, Dropdown, Button, ListGroup, Badge } from 'react-bootstrap';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const GroupInvites = () => {
 
@@ -87,6 +88,9 @@ const handleAcceptInvite = async (inviteId, groupId) => {
     if (invites.length === 1) {
       clearInterval(inviteIntervalRef.current);
     }
+
+    navigate(`/group/${groupId}`);
+    
   } catch (error) {
     console.error('Error accepting invite:', error);
   }

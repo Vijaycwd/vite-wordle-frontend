@@ -49,10 +49,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
     }
 
     const minDateStr = minDate.toISOString().split('T')[0];
-    console.log(minDateStr); // Output: "2025-05-31"
-
-
-   
+    
 
     useEffect(() => {
         const fetchScoringMethod = async () => {
@@ -135,26 +132,33 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
 
     
 const goToNextDay = () => {
-    const today = dayjs().startOf('day'); // Only allow dates before today
-    const nextDate = dayjs(startDate).add(1, 'day');
+    const today = dayjs().startOf('day'); // today at 00:00
+    if (game === 'phrazle') {
+        if (period === 'AM') {
+            const isToday = dayjs(startDate).isSame(today, 'day');
+            const isTodayPMBlocked = isToday && new Date().getHours() < 12;
 
-    if (period === 'AM') {
-        const newPeriod = 'PM';
-        const isToday = dayjs(startDate).isSame(today, 'day');
-        const isTodayPMBlocked = isToday && today.hour() < 12;
+            if (isTodayPMBlocked) return;
 
-        if (isTodayPMBlocked) return;
-
-        const formattedDate = formatDateForBackend(startDate);
-        fetchDataByDate(formattedDate, newPeriod);
-        setPeriod(newPeriod);
+            const formattedDate = formatDateForBackend(startDate);
+            fetchDataByDate(formattedDate, 'PM');
+            setPeriod('PM');
+        } else {
+            const nextDate = dayjs(startDate).add(1, 'day');
+            const formattedDate = formatDateForBackend(nextDate.toDate());
+            fetchDataByDate(formattedDate, 'AM');
+            setStartDate(nextDate.toDate());
+            setPeriod('AM');
+        }
     } else {
-        // if (!nextDate.isBefore(today)) return;
-        const newPeriod = 'AM';
+        // For non-phrazle, only go up to yesterday
+        const nextDate = dayjs(startDate).add(1, 'day');
+        console.log('nextDate',nextDate);
+        if (nextDate.isSame(today) || nextDate.isAfter(today)) return;
+
         const formattedDate = formatDateForBackend(nextDate.toDate());
-        fetchDataByDate(formattedDate, newPeriod);
+        fetchDataByDate(formattedDate);
         setStartDate(nextDate.toDate());
-        setPeriod(newPeriod);
     }
 };
 
@@ -174,19 +178,28 @@ const goToNextDay = () => {
         );
     });
 
-    useEffect(() => {
-    const formattedDate = formatDateForBackend(startDate);
+ useEffect(() => {
+    const now = new Date();
 
-        // Only calculate and pass period if game is 'phrazle'
-        if (game === 'phrazle') {
-            const currentHour = new Date().getHours();
-            const currentPeriod = currentHour < 12 ? 'AM' : 'PM';
-            setPeriod(currentPeriod); 
-            fetchDataByDate(formattedDate, currentPeriod); // ✅ Pass period
-        } else {
-            fetchDataByDate(formattedDate); // No period needed
-        }
-    }, []);
+    if (game === 'phrazle') {
+        const phrazleDate = new Date(now); // clone
+        phrazleDate.setDate(phrazleDate.getDate());
+        setStartDate(phrazleDate);
+        setPeriod('AM');
+        const formattedDate = formatDateForBackend(phrazleDate);
+        fetchDataByDate(formattedDate, 'AM');
+    } else {
+        const nonPhrazleDate = new Date(now); // clone
+        nonPhrazleDate.setDate(nonPhrazleDate.getDate() - 1);
+        setStartDate(nonPhrazleDate); // add this if needed
+        const formattedDate = formatDateForBackend(nonPhrazleDate);
+        fetchDataByDate(formattedDate);
+    }
+}, []);
+
+
+
+
 
    
     const fetchDataByDate = async (date, currentPeriod = null) => {
@@ -258,33 +271,34 @@ const getTotalScore = (gameName) => {
            1; // Default to 1 if unknown
 };
 
-const showDayResult = (date, useremail, game) => {
-    // console.log('showDayResult');
+const showDayResult = (date, useremail, game, period) => {
     setSelectedGame(game);
     const timeZone = moment.tz.guess();
-    axios.get(`${baseURL}/games/${game}/get-score.php`, {
-        params: { useremail, timeZone, today: date }
-    })
-    .then((response) => {
-        let scoreData = [];
+    const params = { useremail, timeZone, today: date };
+    if (game === "phrazle") {
+        params.period = period;
+    }
 
-        // Assign correct data based on game type
-        if (game === "wordle") {
-            scoreData = response.data?.wordlescore || [];
-        } else if (game === "connections") {
-            scoreData = response.data?.connectionsscore || [];
-            
-        } else if (game === "phrazle") {
-            scoreData = response.data?.phrazlescore || [];
-        }
+    axios.get(`${baseURL}/games/${game}/get-score.php`, { params })
+        .then((response) => {
+            let scoreData = [];
 
-        setDayResults(scoreData);
-        setShowModal(true);
-    })
-    .catch((error) => {
-        console.error(`API Error for ${game}:`, error);
-    });
+            if (game === "wordle") {
+                scoreData = response.data?.wordlescore || [];
+            } else if (game === "connections") {
+                scoreData = response.data?.connectionsscore || [];
+            } else if (game === "phrazle") {
+                scoreData = response.data?.phrazlescore || [];
+            }
+
+            setDayResults(scoreData);
+            setShowModal(true);
+        })
+        .catch((error) => {
+            console.error(`API Error for ${game}:`, error);
+        });
 };
+
 
 
 const handleCloseModal = () => {
@@ -352,7 +366,7 @@ const noDataMessage = {
                     onChange={handleDateChange}
                     customInput={<ExampleCustomInput />}
                     minDate={minDate}
-                    maxDate={maxSelectableDateStr}
+                    maxDate={game === 'phrazle' ? maxSelectableDate : dayjs().subtract(1, 'day').toDate()}
                     />
             </div>
             <Row className="justify-content-center leaderboard mt-4">
@@ -390,7 +404,7 @@ const noDataMessage = {
                                         <FaArrowRight />
                                     </button>
                                 </div>
-                                <h4 className="text-center py-3">Daily Leaderboardss</h4>
+                                <h4 className="text-center py-3">Daily Leaderboards</h4>
                                 {
                                     filteredLeaderboard
                                     .slice()
@@ -444,7 +458,7 @@ const noDataMessage = {
                                                 </Col>
 
                                                 {/* Username */}
-                                                <Col xs={4} className="text-start fw-semibold">
+                                                <Col xs={4} className="text-start fw-semibold" >
                                                     {data.username}
                                                 </Col>
 
@@ -470,7 +484,7 @@ const noDataMessage = {
                                                         </Col>
                                                         <Col xs={5} className="text-center d-flex fw-bold">
                                                             <span
-                                                                onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)}
+                                                                onClick={() => showDayResult(data.createdat, data.useremail, data.gamename, period)}
                                                                 style={{ cursor: "pointer" }}
                                                             >
                                                                 {scoringmethod === "Golf"
@@ -897,7 +911,7 @@ const noDataMessage = {
                                 <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
                                 
                                 <div className="phrazle-score-board-text my-3 fs-5 text-center">{phrazle_score_text}</div>
-                                <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
+                                <div className='today text-center fs-6 my-2 fw-bold'>{todayDate} - {period}</div>
                                 <div className="phrazle-score m-auto text-center">
                                     {phrazleScore.map((row, rowIndex) => (
                                         row.trim() && (
@@ -971,7 +985,10 @@ const noDataMessage = {
                         }
                     })
                     ) : (
-                         <h5 className='text-center'>{noDataMessage}</h5>
+                        <div className="text-center">
+                            <h5>{noDataMessage}</h5>
+                            <h6 className="text-muted">No Play</h6>
+                        </div>
                     )}
                 </Modal.Body>
                 <Modal.Footer>

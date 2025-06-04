@@ -151,7 +151,7 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
                 const cumulativeResponse = await axios.get(`${baseURL}/groups/get-cumulative-score.php`, {
                     params: { groupId: id, groupName, game, timeZone }
                 });
-                console.log(cumulativeResponse.data.latestJoinDate);
+               
                 setLatestJoinDate(cumulativeResponse.data.latestJoinDate || []);
                 setCumulativeScore(cumulativeResponse.data.data || []);
             } catch (error) {
@@ -268,7 +268,7 @@ const noDataMessage = {
                                         email: d.useremail
                                     }));
                                 
-                                console.log('missedUsers',missedUsers);
+                                // console.log('missedUsers',missedUsers);
                                 
                                 if (missedUsers.length > 0) {
                                     return (
@@ -395,7 +395,7 @@ const noDataMessage = {
                             {!loading && !error && todayLeaderboard.length > 0 && (() => {
                                 // Filter out "phrazle" and find the lowest score
                                 const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename !== "phrazle");
-                                console.log('filteredLeaderboard',filteredLeaderboard);
+                                
                                 if (filteredLeaderboard.length === 0) return null;
 
                                 const minScore = Math.min(...filteredLeaderboard.map(data => Number(data.gamlescore)));
@@ -743,7 +743,10 @@ const noDataMessage = {
                     }
                 })
                 ) : (
-                        <h5 className='text-center'>{noDataMessage}</h5>
+                        <div className="text-center">
+                            <h5>{noDataMessage}</h5>
+                            <h6 className="text-muted">No Play</h6>
+                        </div>
                 )}
             </Modal.Body>
             <Modal.Footer>
