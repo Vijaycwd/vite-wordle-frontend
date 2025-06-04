@@ -3,6 +3,7 @@ import Axios from 'axios';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
+
 function AdminText() {
   const baseURL = import.meta.env.VITE_BASE_URL;
 
@@ -52,67 +53,67 @@ function AdminText() {
 };
 
 
-  return (
-    <Container className="mt-5">
-      <Row className="justify-content-center">
-        <Col md={6}>
-          <h2 className="mb-4">Homepage Text</h2>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="heading">
-              <Form.Label>Heading</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter Heading"
-                name="heading"
-                value={formData.heading}
-                onChange={handleChange}
-              />
-            </Form.Group>
+return (
+  <Container className="mt-5">
+    <Row className="justify-content-center">
+      <Col md={6}>
+        <h2 className="mb-4">Edit Labels</h2>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group className="mb-3" controlId="heading">
+            <Form.Label>Heading</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter Heading"
+              name="heading"
+              value={formData.heading}
+              onChange={handleChange}
+            />
+          </Form.Group>
 
-            <Form.Group className="mb-3" controlId="text1">
-              <Form.Label>Text 1</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                placeholder="Enter text 1"
-                name="text1"
-                value={formData.text1}
-                onChange={handleChange}
-              />
-            </Form.Group>
+          <Form.Group className="mb-3" controlId="text1">
+            <Form.Label>Text 1</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              placeholder="Enter text 1"
+              name="text1"
+              value={formData.text1}
+              onChange={handleChange}
+            />
+          </Form.Group>
 
-            <Form.Group className="mb-3" controlId="text2">
-              <Form.Label>Text 2</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                placeholder="Enter text 2"
-                name="text2"
-                value={formData.text2}
-                onChange={handleChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="text3">
-              <Form.Label>Text 3</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                placeholder="Enter text 3"
-                name="text3"
-                value={formData.text3}
-                onChange={handleChange}
-              />
-            </Form.Group>
+          <Form.Group className="mb-3" controlId="text2">
+            <Form.Label>Text 2</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              placeholder="Enter text 2"
+              name="text2"
+              value={formData.text2}
+              onChange={handleChange}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="text3">
+            <Form.Label>Text 3</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              placeholder="Enter text 3"
+              name="text3"
+              value={formData.text3}
+              onChange={handleChange}
+            />
+          </Form.Group>
 
 
-            <Button variant="primary" type="submit">
-              {recordExists ? 'Update' : 'Submit'}
-            </Button>
-          </Form>
-        </Col>
-      </Row>
-    </Container>
-  );
+          <Button variant="primary" type="submit">
+            {recordExists ? 'Update' : 'Submit'}
+          </Button>
+        </Form>
+      </Col>
+    </Row>
+  </Container>
+);
 }
 
 export default AdminText;

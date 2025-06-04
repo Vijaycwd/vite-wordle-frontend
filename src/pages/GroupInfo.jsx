@@ -221,20 +221,37 @@ function GroupInfo() {
                         {/* Avatar and username */}
                         <Col xs={5} md={4} lg={4} className="text-center text-md-start">
                             <div onClick={() => handleShowProfile(member)} style={{ cursor: 'pointer' }}>
-                                <img
+                                <div style={{ position: 'relative', display: 'inline-block' }}>
+                                    <img
                                     src={
-                                    member.avatar
+                                        member.avatar
                                         ? `${baseURL}/user/uploads/${member.avatar}`
                                         : `${baseURL}/user/uploads/defalut_avatar.png`
                                     }
                                     alt="Profile"
                                     className="rounded-circle mb-1"
                                     style={{ width: '50px', height: '50px', objectFit: 'cover' }}
-                                />
+                                    />
+                                    <span
+                                    className={`badge ${member.is_paused ? 'bg-danger' : 'bg-success'}`}
+                                    style={{
+                                        position: 'absolute',
+                                        top: '0px',
+                                        left: '45px',
+                                        fontSize: '0.65rem',
+                                        padding: '3px 6px',
+                                        borderRadius: '8px'
+                                    }}
+                                    >
+                                    {member.is_paused ? 'Inactive' : 'Active'}
+                                    </span>
+                                </div>
+
                                 <h6 className="mt-1 mb-0">
                                     {member.username} {member.member_id === captainid && <strong><sup>*</sup></strong>}
                                 </h6>
-                            </div>
+                                </div>
+
                         </Col>
 
                         {/* Selected Games */}

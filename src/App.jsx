@@ -27,6 +27,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AdminText from './pages/AdminText';
 import AdminRoute from './auth/AdminRoute';
+import UsersList from './pages/UsersList';
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
         <Route  path='/' element={<ProtectedRouter/>}>
           <Route element={<AdminRoute />}>
             <Route exact path="/admin-text" element={<AdminText />} />
+            <Route exact path="/users-list" element={<UsersList />} />
           </Route>
           <Route exact path= '/groups' element={<Groups/>}/>
           <Route exact path = '/group-invites' element = {<GroupInvites/>}/>
