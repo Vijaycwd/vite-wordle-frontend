@@ -9,6 +9,7 @@ import GroupModal from '../constant/Models/GroupModal';
 function Groups() {
     const baseURL = import.meta.env.VITE_BASE_URL;
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
+    
     const { id: userId, username: loginUsername, email: loginUserEmail } = USER_AUTH_DATA;
 
     const [groups, setGroups] = useState([]); // Groups created by the user
@@ -16,34 +17,37 @@ function Groups() {
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [groupname, setGroupname] = useState('');
     const [selectedGames, setSelectedGames] = useState([]);
+    const [userData, setUserData] = useState({});
 
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchGroups = async () => {
-
-
             try {
-                // Fetch groups created by the user
-                const resCreated = await Axios.post(
-                    `${baseURL}/groups/get-groups.php`,
-                    { user_id: userId }
-                );
+                const resCreated = await Axios.post(`${baseURL}/groups/get-groups.php`, { user_id: userId });
                 setGroups(resCreated.data.groups || []);
 
-                // Fetch groups where user is a member
-                const resMember = await Axios.post(
-                    `${baseURL}/groups/get-groups.php`,
-                    { member_id: userId } // New API for groups where user is a member
-                );
+                const resMember = await Axios.post(`${baseURL}/groups/get-groups.php`, { member_id: userId });
                 setMemberGroups(resMember.data.groups || []);
             } catch (err) {
                 toast.error("Failed to load groups.");
             }
         };
 
+        const fetchUserData = async () => {
+            try {
+                const res = await Axios.get(`${baseURL}/user/get-user.php`, {
+                    params: { useremail: loginUserEmail }
+                });
+                setUserData(res.data.user || {});
+            } catch (err) {
+                toast.error("Failed to load user data.");
+            }
+        };
+
         fetchGroups();
-    }, [userId]);
+        fetchUserData();
+    }, [userId, loginUserEmail]);
 
     const handleCreateFormClose = () => {
         setShowCreateForm(false);
@@ -75,7 +79,6 @@ function Groups() {
             toast.error(err.response?.data?.message || "An unexpected error occurred.");
         }
     };
-
     return (
         <>
             <Container>
@@ -104,13 +107,16 @@ function Groups() {
                             )}
                         </div>
 
-                        <Row>
-                            <Col>
+                        {userData.is_paused === 0 && (
+                            <Row>
+                                <Col>
                                 <Button className="wordle-btn px-5 mt-3" onClick={handleShowCreateForm}>
                                     Create Group
                                 </Button>
-                            </Col>
-                        </Row>
+                                </Col>
+                            </Row>
+                        )}
+
                     </Col>
                 </Row>
 
