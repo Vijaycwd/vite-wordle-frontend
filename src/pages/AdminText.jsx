@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Axios from 'axios';
 import { Form, Button, Container, Row, Col, Tabs, Tab } from 'react-bootstrap';
 import { toast } from 'react-toastify';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 
 function AdminText() {
@@ -91,37 +93,28 @@ return (
 
               <Form.Group className="mb-3" controlId="text1">
                 <Form.Label>Text 1</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  placeholder="Enter text 1"
-                  name="text1"
+                <ReactQuill
+                  theme="snow"
                   value={formData.text1}
-                  onChange={handleChange}
+                  onChange={(content) => setFormData(prev => ({ ...prev, text1: content }))}
                 />
               </Form.Group>
 
               <Form.Group className="mb-3" controlId="text2">
                 <Form.Label>Text 2</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  placeholder="Enter text 2"
-                  name="text2"
+                <ReactQuill
+                  theme="snow"
                   value={formData.text2}
-                  onChange={handleChange}
+                  onChange={(content) => setFormData(prev => ({ ...prev, text2: content }))}
                 />
               </Form.Group>
 
               <Form.Group className="mb-3" controlId="text3">
                 <Form.Label>Text 3</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  placeholder="Enter text 3"
-                  name="text3"
+                <ReactQuill
+                  theme="snow"
                   value={formData.text3}
-                  onChange={handleChange}
+                  onChange={(content) => setFormData(prev => ({ ...prev, text3: content }))}
                 />
               </Form.Group>
             </Tab>
@@ -129,25 +122,28 @@ return (
             <Tab eventKey="leaderboard" title="Leaderboard">
               <Form.Group className="mb-3" controlId="text4">
                 <Form.Label>Leaderboard Games Description</Form.Label>
-                <Form.Control
+                {/* <Form.Control
                   as="textarea"
                   rows={3}
                   placeholder="Enter Description"
                   name="text4"
                   value={formData.text4}
                   onChange={handleChange}
+                /> */}
+                <ReactQuill
+                  theme="snow"
+                  value={formData.text4}
+                  onChange={(content) => setFormData(prev => ({ ...prev, text4: content }))}
                 />
+
               </Form.Group>
 
               <Form.Group className="mb-3" controlId="text5">
                 <Form.Label>Scoring Method Description</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  placeholder="Enter Description"
-                  name="text5"
+                <ReactQuill
+                  theme="snow"
                   value={formData.text5}
-                  onChange={handleChange}
+                  onChange={(content) => setFormData(prev => ({ ...prev, text5: content }))}
                 />
               </Form.Group>
             </Tab>
@@ -165,13 +161,10 @@ return (
               </Form.Group>
               <Form.Group className="mb-3" controlId="text7">
                 <Form.Label>Method Description</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={8}
-                  placeholder="Enter Description"
-                  name="golf_modal_description"
+                <ReactQuill
+                  theme="snow"
                   value={formData.golf_modal_description}
-                  onChange={handleChange}
+                  onChange={(content) => setFormData(prev => ({ ...prev, golf_modal_description: content }))}
                 />
               </Form.Group>
               <h5 className='my-3'>World Cup Method</h5>
@@ -187,13 +180,10 @@ return (
               </Form.Group>
               <Form.Group className="mb-3" controlId="text9">
                 <Form.Label>World Cup Method Description</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={8}
-                  placeholder="Enter Description"
-                  name="world_cup_modal_description"
+                <ReactQuill
+                  theme="snow"
                   value={formData.world_cup_modal_description}
-                  onChange={handleChange}
+                  onChange={(content) => setFormData(prev => ({ ...prev, world_cup_modal_description: content }))}
                 />
               </Form.Group>
               <h5 className='my-3'>Pesce Method</h5>
@@ -209,13 +199,10 @@ return (
               </Form.Group>
               <Form.Group className="mb-3" controlId="text11">
                 <Form.Label>Pesce Method Description</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={8}
-                  placeholder="Enter Description"
-                  name="pesce_modal_description"
+                <ReactQuill
+                  theme="snow"
                   value={formData.pesce_modal_description}
-                  onChange={handleChange}
+                  onChange={(content) => setFormData(prev => ({ ...prev, pesce_modal_description: content }))}
                 />
               </Form.Group>
             </Tab>
