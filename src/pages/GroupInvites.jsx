@@ -15,7 +15,7 @@ const GroupInvites = () => {
   const inviteIntervalRef = useRef(null);
   const messageIntervalRef = useRef(null);
   const dropdownRef = useRef(null);
-
+  const navigate = useNavigate();
   // Fetch group invites
   const fetchGroupInvites = async () => {
     try {
@@ -66,7 +66,7 @@ const handleAcceptInvite = async (inviteId, groupId) => {
   const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
   try {
-    await axios.post(
+     await axios.post(
       `${baseURL}/groups/accept-invite.php`,
       {
         user_id: userId,

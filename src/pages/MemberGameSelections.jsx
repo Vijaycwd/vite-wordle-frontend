@@ -4,7 +4,7 @@ import Axios from "axios";
 import { useParams } from "react-router-dom";
 import { toast } from 'react-toastify';
 
-function MemberGameSelections() {
+function MemberGameSelections({ leaderboardText }) {
     const baseURL = import.meta.env.VITE_BASE_URL;
     const { id: groupId } = useParams(); // Get group ID from URL
     const [selectedGames, setSelectedGames] = useState([]);
@@ -85,7 +85,7 @@ function MemberGameSelections() {
                 <Col md={6}>
                     <div className="border p-3 shadow rounded mt-4">
                         <h5>Select Leaderboard Games:</h5>
-                        <p>You will appear in the Leaderboard for each game you select.</p>
+                        <p dangerouslySetInnerHTML={{ __html: leaderboardText.text4 }}></p>
                         <Form className="d-flex flex-wrap justify-content-center">
                             {["Wordle", "Connections", "Phrazle"].map((game, index) => (
                                 <div key={index} className="form-check mx-2">

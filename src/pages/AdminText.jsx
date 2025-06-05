@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Axios from 'axios';
-import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, Tabs, Tab } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
 
@@ -12,6 +12,14 @@ function AdminText() {
     text1: '',
     text2: '',
     text3: '',
+    text4: '',
+    text5: '',
+    golf_modal_title: '',
+    golf_modal_description: '',
+    world_cup_modal_title: '',
+    world_modal_cup_description: '',
+    pesce_modal_title: '',
+    pesce_modal_description: ''
   });
 
   const [recordExists, setRecordExists] = useState(false); // new state
@@ -26,7 +34,16 @@ function AdminText() {
             text1: res.data.text1,
             text2: res.data.text2,
             text3: res.data.text3,
+            text4: res.data.text4,
+            text5: res.data.text5,
+            golf_modal_title: res.data.golf_modal_title,
+            golf_modal_description: res.data.golf_modal_description,
+            world_cup_modal_title: res.data.world_cup_modal_title,
+            world_cup_modal_description: res.data.world_cup_modal_description,
+            pesce_modal_title: res.data.pesce_modal_title,
+            pesce_modal_description: res.data.pesce_modal_description
           });
+
           setRecordExists(true);
         }
       })
@@ -56,56 +73,154 @@ function AdminText() {
 return (
   <Container className="mt-5">
     <Row className="justify-content-center">
-      <Col md={6}>
-        <h2 className="mb-4">Edit Labels</h2>
+      <Col md={8}>
         <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3" controlId="heading">
-            <Form.Label>Heading</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter Heading"
-              name="heading"
-              value={formData.heading}
-              onChange={handleChange}
-            />
-          </Form.Group>
+          <Tabs defaultActiveKey="homepage" id="label-tabs" className="mb-3">
+            <Tab eventKey="homepage" title="Homepage">
+              <h2 className="mb-4">Edit Labels</h2>
+              <Form.Group className="mb-3" controlId="heading">
+                <Form.Label>Heading</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter Heading"
+                  name="heading"
+                  value={formData.heading}
+                  onChange={handleChange}
+                />
+              </Form.Group>
 
-          <Form.Group className="mb-3" controlId="text1">
-            <Form.Label>Text 1</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              placeholder="Enter text 1"
-              name="text1"
-              value={formData.text1}
-              onChange={handleChange}
-            />
-          </Form.Group>
+              <Form.Group className="mb-3" controlId="text1">
+                <Form.Label>Text 1</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  placeholder="Enter text 1"
+                  name="text1"
+                  value={formData.text1}
+                  onChange={handleChange}
+                />
+              </Form.Group>
 
-          <Form.Group className="mb-3" controlId="text2">
-            <Form.Label>Text 2</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              placeholder="Enter text 2"
-              name="text2"
-              value={formData.text2}
-              onChange={handleChange}
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="text3">
-            <Form.Label>Text 3</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              placeholder="Enter text 3"
-              name="text3"
-              value={formData.text3}
-              onChange={handleChange}
-            />
-          </Form.Group>
+              <Form.Group className="mb-3" controlId="text2">
+                <Form.Label>Text 2</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  placeholder="Enter text 2"
+                  name="text2"
+                  value={formData.text2}
+                  onChange={handleChange}
+                />
+              </Form.Group>
 
+              <Form.Group className="mb-3" controlId="text3">
+                <Form.Label>Text 3</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  placeholder="Enter text 3"
+                  name="text3"
+                  value={formData.text3}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+            </Tab>
 
+            <Tab eventKey="leaderboard" title="Leaderboard">
+              <Form.Group className="mb-3" controlId="text4">
+                <Form.Label>Leaderboard Games Description</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  placeholder="Enter Description"
+                  name="text4"
+                  value={formData.text4}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3" controlId="text5">
+                <Form.Label>Scoring Method Description</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  placeholder="Enter Description"
+                  name="text5"
+                  value={formData.text5}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+            </Tab>
+            <Tab eventKey="scoring" title="Scoring Methods Modal">
+              <h5 className='my-3'>Golf Method</h5>
+              <Form.Group className="mb-3" controlId="text6">
+                <Form.Label>Modal Title</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter Title"
+                  name="golf_modal_title"
+                  value={formData.golf_modal_title}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="text7">
+                <Form.Label>Method Description</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={8}
+                  placeholder="Enter Description"
+                  name="golf_modal_description"
+                  value={formData.golf_modal_description}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <h5 className='my-3'>World Cup Method</h5>
+              <Form.Group className="mb-3" controlId="text8">
+                <Form.Label>Modal Title</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter Title"
+                  name="world_cup_modal_title"
+                  value={formData.world_cup_modal_title}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="text9">
+                <Form.Label>World Cup Method Description</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={8}
+                  placeholder="Enter Description"
+                  name="world_cup_modal_description"
+                  value={formData.world_cup_modal_description}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <h5 className='my-3'>Pesce Method</h5>
+              <Form.Group className="mb-3" controlId="text10">
+                <Form.Label>Modal Title</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter Title"
+                  name="pesce_modal_title"
+                  value={formData.pesce_modal_title}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="text11">
+                <Form.Label>Pesce Method Description</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={8}
+                  placeholder="Enter Description"
+                  name="pesce_modal_description"
+                  value={formData.pesce_modal_description}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+            </Tab>
+          </Tabs>
+          
           <Button variant="primary" type="submit">
             {recordExists ? 'Update' : 'Submit'}
           </Button>

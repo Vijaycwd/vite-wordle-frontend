@@ -61,6 +61,22 @@ function GroupPage() {
         navigate(`/group-info/${id}`);
     };
 
+    const [leaderboardText, setLeaderboardText] = useState({ text4: '', text5: '' });
+    useEffect(() => {
+    // Fetch homepage text
+    Axios.get(`${baseURL}/user/get-homepage-text.php`)
+            .then((res) => {
+                if (res.status === 200) {
+                    setLeaderboardText(res.data);
+                } else {
+                    console.warn("No homepage text found");
+                }
+            })
+            .catch((err) => {
+                console.error("Error fetching homepage text:", err);
+            });
+    }, [baseURL]);
+    
     if (!group) return null;
     // console.log('existingMembers',existingMembers)
     return (
@@ -97,8 +113,8 @@ function GroupPage() {
             Group Leaderboards
             </Button>
 
-            <MemberGameSelections />
-            {isCaptain && <SelectScoringMethod />}
+            <MemberGameSelections leaderboardText={leaderboardText} />
+            {isCaptain && <SelectScoringMethod  leaderboardText={leaderboardText}/>}
             <AddMembers
                 showForm={showMemberForm}
                 handleFormClose={() => setShowMemberForm(false)}

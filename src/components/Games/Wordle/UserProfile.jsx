@@ -90,6 +90,7 @@ function UserProfile() {
 
     const updateUser = async (e) => {
         e.preventDefault();
+         
         if (password && password !== confirmpassword) {
             toast.error("Passwords do not match");
             return;
@@ -212,14 +213,15 @@ function UserProfile() {
                         <Form.Group className="mt-3">
                             <Form.Label>Last Name <span style={{ color: 'red' }}>*</span></Form.Label>
                             <Form.Control type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} />
-                            {errors.firstName && <div style={{ color: "red" }}>{errors.lastName}</div>}
+                            {errors.lastName && <div style={{ color: "red" }}>{errors.lastName}</div>} {/* ✅ Fix here */}
                         </Form.Group>
 
                         <Form.Group className="mt-3">
                             <Form.Label>Username <span style={{ color: 'red' }}>*</span></Form.Label>
                             <Form.Control type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
-                            {errors.firstName && <div style={{ color: "red" }}>{errors.username}</div>}
+                            {errors.username && <div style={{ color: "red" }}>{errors.username}</div>} {/* ✅ Fix here */}
                         </Form.Group>
+
 
                         <Form.Group className="mt-3">
                             <Form.Label>Password</Form.Label>

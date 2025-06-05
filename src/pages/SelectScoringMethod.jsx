@@ -4,7 +4,7 @@ import Axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-function SelectScoringMethod() {
+function SelectScoringMethod({ leaderboardText }) {
     const baseURL = import.meta.env.VITE_BASE_URL;
     const { id } = useParams();
     const groupId = Number(id);
@@ -86,7 +86,7 @@ function SelectScoringMethod() {
                 <Col md={6}>
                     <div className="border p-3 shadow rounded mt-4">
                         <h5>Select Scoring Method:</h5>
-                        <p>Click on each Method to see how your group Leaderboards will be scored.</p>
+                        <p dangerouslySetInnerHTML={{ __html: leaderboardText.text5 }}></p>
                         <Form className="d-flex flex-wrap justify-content-center">
                             {["Golf", "World Cup", "Pesce"].map((method, index) => (
                                 <div key={index} className="form-check mx-2">
@@ -119,29 +119,53 @@ function SelectScoringMethod() {
             {/* Modal to show method details */}
             <Modal show={showModal} onHide={handleModalClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>{selectedMethod} Method Details</Modal.Title>
+                    <Modal.Title>
+                        {selectedMethod === "Golf" && (
+                            <div
+                            dangerouslySetInnerHTML={{
+                                __html: leaderboardText.golf_modal_title.replace(/\\n/g, '')
+                            }}
+                            ></div>
+                        )}
+                        {selectedMethod === "World Cup" && (
+                            <div
+                            dangerouslySetInnerHTML={{
+                                __html: leaderboardText.world_cup_modal_title.replace(/\\n/g, '')
+                            }}
+                            ></div>
+                        )}
+                        {selectedMethod === "Pesce" && (
+                            <div
+                            dangerouslySetInnerHTML={{
+                                __html: leaderboardText.pesce_modal_title.replace(/\\n/g, '')
+                            }}
+                            ></div>
+                        )}
+                        
+                    </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {selectedMethod === "Golf" && (
-                        <div>
-                            <p>Low score wins.</p>
-                            <p>Leaderboard Score = Gamle Score.</p>
-                        </div>
+                        <div
+                        dangerouslySetInnerHTML={{
+                            __html: leaderboardText.golf_modal_description.replace(/\\n/g, '')
+                        }}
+                        ></div>
                     )}
                     {selectedMethod === "World Cup" && (
-                        <div>
-                            <p>High score wins.</p>
-                            <p>Win = 3 Leaderboard points.</p>
-                            <p>Tie for win = 1 Leaderboard point.</p>
-                            <p>Loss or No Play = 0 Leaderboard points.</p>
-                        </div>
+                        <div
+                        dangerouslySetInnerHTML={{
+                            __html: leaderboardText.world_cup_modal_description.replace(/\\n/g, '')
+                        }}
+                        ></div>
+                       
                     )}
                     {selectedMethod === "Pesce" && (
-                        <div>
-                            <p>High score wins.</p>
-                            <p>Win or Tie for Win = 1 Leaderboard point.</p>
-                            <p>Loss or No Play = 0 Leaderboard points.</p>
-                        </div>
+                        <div
+                        dangerouslySetInnerHTML={{
+                            __html: leaderboardText.pesce_modal_description.replace(/\\n/g, '')
+                        }}
+                        ></div>
                     )}
                 </Modal.Body>
                 <Modal.Footer>

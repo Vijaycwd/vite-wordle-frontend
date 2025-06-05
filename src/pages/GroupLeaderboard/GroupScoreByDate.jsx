@@ -91,20 +91,50 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
 
    
     const handleDateChange = (date) => {
-    if (!date || isNaN(date.getTime())) return;
+        if (!date || isNaN(date.getTime())) return;
 
-    const formattedDateStr = formatDateForBackend(date);
+        const formattedDateStr = formatDateForBackend(date);
 
-    if (game === 'phrazle') {
-        const newPeriod = 'AM';
-        fetchDataByDate(formattedDateStr, newPeriod);
-        setStartDate(date);
-        setPeriod(newPeriod);
-    } else {
-        setStartDate(date);
-        fetchDataByDate(formattedDateStr);
+        if (game === 'phrazle') {
+            const newPeriod = 'AM';
+            fetchDataByDate(formattedDateStr, newPeriod);
+            setStartDate(date);
+            setPeriod(newPeriod);
+        } else {
+            setStartDate(date);
+            fetchDataByDate(formattedDateStr);
+        }
+    };
+
+const showDayResult = (date, useremail, game, period) => {
+    const formattedDate = moment(date).format("YYYY-MM-DD");
+    const timeZone = moment.tz.guess();
+    const params = { useremail, timeZone, today: formattedDate };
+
+    if (game === "phrazle") {
+        params.period = period;
     }
+
+    axios.get(`${baseURL}/games/${game}/get-score.php`, { params })
+        .then((response) => {
+            let scoreData = [];
+
+            if (game === "wordle") {
+                scoreData = response.data?.wordlescore || [];
+            } else if (game === "connections") {
+                scoreData = response.data?.connectionsscore || [];
+            } else if (game === "phrazle") {
+                scoreData = response.data?.phrazlescore || [];
+            }
+
+            setDayResults(scoreData);
+            setShowModal(true);
+        })
+        .catch((error) => {
+            console.error(`API Error for ${game}:`, error);
+        });
 };
+
 
    const goToPreviousDay = () => {
     const prevDate = dayjs(startDate).subtract(1, 'day').toDate();
@@ -132,18 +162,28 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
 
     
 const goToNextDay = () => {
-    const today = dayjs().startOf('day'); // today at 00:00
+    const now = dayjs();
+    const today = now.startOf('day');
+    const currentHour = now.hour();
+
     if (game === 'phrazle') {
+        const isToday = dayjs(startDate).isSame(today, 'day');
+
         if (period === 'AM') {
-            const isToday = dayjs(startDate).isSame(today, 'day');
-            const isTodayPMBlocked = isToday && new Date().getHours() < 12;
+            if (isToday && currentHour < 12) {
+                // Before 12 PM today → block PM
+                return;
+            }
 
-            if (isTodayPMBlocked) return;
-
+            // Move from AM to PM (same date)
             const formattedDate = formatDateForBackend(startDate);
             fetchDataByDate(formattedDate, 'PM');
             setPeriod('PM');
         } else {
+            // Trying to move past today — block it
+            if (isToday) return;
+
+            // Move to next day AM
             const nextDate = dayjs(startDate).add(1, 'day');
             const formattedDate = formatDateForBackend(nextDate.toDate());
             fetchDataByDate(formattedDate, 'AM');
@@ -151,9 +191,8 @@ const goToNextDay = () => {
             setPeriod('AM');
         }
     } else {
-        // For non-phrazle, only go up to yesterday
+        // Non-Phrazle logic: allow only up to yesterday
         const nextDate = dayjs(startDate).add(1, 'day');
-        console.log('nextDate',nextDate);
         if (nextDate.isSame(today) || nextDate.isAfter(today)) return;
 
         const formattedDate = formatDateForBackend(nextDate.toDate());
@@ -180,26 +219,34 @@ const goToNextDay = () => {
 
  useEffect(() => {
     const now = new Date();
+    console.log('now', now);
+    const currentHour = now.getHours();
 
     if (game === 'phrazle') {
-        const phrazleDate = new Date(now); // clone
-        phrazleDate.setDate(phrazleDate.getDate());
-        setStartDate(phrazleDate);
-        setPeriod('AM');
-        const formattedDate = formatDateForBackend(phrazleDate);
-        fetchDataByDate(formattedDate, 'AM');
+        if (currentHour < 12) {
+            // Morning (before noon) → show yesterday's date with AM
+            const amDate = new Date(now);
+            amDate.setDate(amDate.getDate() - 1);
+            setStartDate(amDate);
+            setPeriod('AM');
+            const formattedDate = formatDateForBackend(amDate);
+            fetchDataByDate(formattedDate, 'AM');
+        } else {
+            // Afternoon or later → show today's date with PM
+            const pmDate = new Date(now);
+            setStartDate(pmDate);
+            setPeriod('PM');
+            const formattedDate = formatDateForBackend(pmDate);
+            fetchDataByDate(formattedDate, 'PM');
+        }
     } else {
-        const nonPhrazleDate = new Date(now); // clone
+        const nonPhrazleDate = new Date(now);
         nonPhrazleDate.setDate(nonPhrazleDate.getDate() - 1);
-        setStartDate(nonPhrazleDate); // add this if needed
+        setStartDate(nonPhrazleDate);
         const formattedDate = formatDateForBackend(nonPhrazleDate);
         fetchDataByDate(formattedDate);
     }
 }, []);
-
-
-
-
 
    
     const fetchDataByDate = async (date, currentPeriod = null) => {
@@ -235,7 +282,7 @@ const goToNextDay = () => {
                 setTodayLeaderboard([]);
                 setFetchedError(true);
             }
-            // console.log(cumulativeDailyResponse.data.totalGames);
+            console.log(todayResponse.data);
             // setlatestJoinDate(cumulativeDailyResponse.data.latestJoinDate || []);
             settotalGames(cumulativeDailyResponse.data.totalGames || []);
             setcumulativeAverageScore(cumulativeAverageResponse.data.data || []);
@@ -271,33 +318,6 @@ const getTotalScore = (gameName) => {
            1; // Default to 1 if unknown
 };
 
-const showDayResult = (date, useremail, game, period) => {
-    setSelectedGame(game);
-    const timeZone = moment.tz.guess();
-    const params = { useremail, timeZone, today: date };
-    if (game === "phrazle") {
-        params.period = period;
-    }
-
-    axios.get(`${baseURL}/games/${game}/get-score.php`, { params })
-        .then((response) => {
-            let scoreData = [];
-
-            if (game === "wordle") {
-                scoreData = response.data?.wordlescore || [];
-            } else if (game === "connections") {
-                scoreData = response.data?.connectionsscore || [];
-            } else if (game === "phrazle") {
-                scoreData = response.data?.phrazlescore || [];
-            }
-
-            setDayResults(scoreData);
-            setShowModal(true);
-        })
-        .catch((error) => {
-            console.error(`API Error for ${game}:`, error);
-        });
-};
 
 
 
@@ -307,25 +327,22 @@ const handleCloseModal = () => {
 };
 
 const now = new Date();
+
 let maxSelectableDate;
+
 if (game === "phrazle") {
   const isAfternoon = now.getHours() >= 12;
 
   maxSelectableDate = isAfternoon
-    ? new Date() // allow today
-    : new Date(Date.UTC(
-        now.getUTCFullYear(),
-        now.getUTCMonth(),
-        now.getUTCDate() - 1
-      ));
+    ? new Date() // allow today, local time
+    : new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1); // yesterday local midnight
 } else {
-  maxSelectableDate = new Date(Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate() - 1
-  ));
+  // For other games, only allow up to yesterday local midnight
+  maxSelectableDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
 }
-const maxSelectableDateStr = maxSelectableDate.toISOString().split('T')[0];
+
+console.log("maxSelectableDate", maxSelectableDate);
+
 
 const handleShowProfile = (data) => {
     setSelectedMember(data);
@@ -389,7 +406,7 @@ const noDataMessage = {
                         const winners = filteredLeaderboard.filter(data => 
                             Number(data.gamlescore ?? getTotalScore(data.gamename)) === minScore
                         );
-                        
+                        const isMaxPhrazleDate = (period === 'AM' && dayjs(startDate).isSame(dayjs(), 'day'));
                         return (
                             <>
                         
@@ -400,7 +417,7 @@ const noDataMessage = {
                                     <div>
                                         {dayjs(startDate).format("MMM D, YYYY")} - {period}
                                     </div>
-                                    <button onClick={(e) => { e.stopPropagation(); goToNextDay(); }} className="bg-dark text-white px-3 py-1 rounded">
+                                    <button disabled={isMaxPhrazleDate} onClick={(e) => { e.stopPropagation(); goToNextDay(); }} className="bg-dark text-white px-3 py-1 rounded">
                                         <FaArrowRight />
                                     </button>
                                 </div>

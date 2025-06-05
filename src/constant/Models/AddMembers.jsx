@@ -88,6 +88,7 @@ const AddMembers = ({ showForm, handleFormClose, groupName, groupId, existingMem
       ));
 
       toast.success("Invitations sent successfully!");
+      setSelectedMembers([]);
       handleFormClose();
     } catch (error) {
       toast.error("Failed to send invitations.");
