@@ -271,3 +271,6 @@ span.notification-count.badge.bg-danger {
 .user-avatar{
   border-radius: 50%;
 }
+.ql-editor {
+  font-size: 16px;
+}
