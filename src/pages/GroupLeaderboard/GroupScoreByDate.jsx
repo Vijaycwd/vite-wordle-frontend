@@ -221,23 +221,23 @@ const goToNextDay = () => {
     const now = new Date();
     console.log('now', now);
     const currentHour = now.getHours();
-
+    console.log(currentHour);
     if (game === 'phrazle') {
         if (currentHour < 12) {
             // Morning (before noon) → show yesterday's date with AM
             const amDate = new Date(now);
             amDate.setDate(amDate.getDate() - 1);
             setStartDate(amDate);
-            setPeriod('AM');
+            setPeriod('PM');
             const formattedDate = formatDateForBackend(amDate);
-            fetchDataByDate(formattedDate, 'AM');
+            fetchDataByDate(formattedDate, 'PM');
         } else {
             // Afternoon or later → show today's date with PM
             const pmDate = new Date(now);
             setStartDate(pmDate);
-            setPeriod('PM');
+            setPeriod('AM');
             const formattedDate = formatDateForBackend(pmDate);
-            fetchDataByDate(formattedDate, 'PM');
+            fetchDataByDate(formattedDate, 'AM');
         }
     } else {
         const nonPhrazleDate = new Date(now);
