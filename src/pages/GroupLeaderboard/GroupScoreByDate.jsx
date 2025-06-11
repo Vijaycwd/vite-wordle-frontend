@@ -779,8 +779,12 @@ const noDataMessage = {
                                     });
 
                                     const isPM = date.getHours() >= 12;
-
-                                    return `${dateString} ${isPM ? '- PM' : '- AM'}`;
+                                    if(game === 'phrazle'){
+                                        return `${dateString} ${isPM ? '- PM' : '- AM'}`;
+                                    }
+                                    else{
+                                        return `${dateString}`;
+                                    }
                                     })()}
 
                                     </p>
