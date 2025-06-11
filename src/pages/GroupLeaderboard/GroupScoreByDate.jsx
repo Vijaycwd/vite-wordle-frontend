@@ -475,7 +475,7 @@ const noDataMessage = {
                                                 </Col>
 
                                                 {/* Username */}
-                                                <Col xs={4} className="text-start fw-semibold" >
+                                                <Col xs={4} className="text-start fw-semibold" onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
                                                     {data.username}
                                                 </Col>
 
