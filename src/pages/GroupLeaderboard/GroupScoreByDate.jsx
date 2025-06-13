@@ -91,20 +91,37 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
 
    
     const handleDateChange = (date) => {
-        if (!date || isNaN(date.getTime())) return;
+    if (!date || isNaN(date.getTime())) return;
 
-        const formattedDateStr = formatDateForBackend(date);
+    const formattedDateStr = formatDateForBackend(date); // "YYYY-MM-DD"
 
-        if (game === 'phrazle') {
-            const newPeriod = 'AM';
-            fetchDataByDate(formattedDateStr, newPeriod);
-            setStartDate(date);
-            setPeriod(newPeriod);
+    if (game === 'phrazle') {
+        const selectedDay = dayjs(date).format("YYYY-MM-DD");
+        const joinDay = dayjs(latestJoinDate).format("YYYY-MM-DD");
+        const joinHour = dayjs(latestJoinDate).hour();
+
+        let newPeriod;
+
+        if (selectedDay === joinDay) {
+            // Same day as latest join
+            newPeriod = joinHour >= 12 ? "PM" : "AM";
+        } else if (dayjs(date).isAfter(dayjs(latestJoinDate), 'day')) {
+            // Selected a future date → default to "AM"
+            newPeriod = "AM";
         } else {
-            setStartDate(date);
-            fetchDataByDate(formattedDateStr);
+            // Selected a past date — use custom rule or fallback
+            newPeriod = "PM";
         }
-    };
+
+        fetchDataByDate(formattedDateStr, newPeriod);
+        setStartDate(date);
+        setPeriod(newPeriod);
+    } else {
+        setStartDate(date);
+        fetchDataByDate(formattedDateStr);
+    }
+};
+
 
 const showDayResult = (date, useremail, game, period) => {
     const formattedDate = moment(date).format("YYYY-MM-DD");
@@ -136,30 +153,38 @@ const showDayResult = (date, useremail, game, period) => {
 };
 
 
-   const goToPreviousDay = () => {
-    const prevDate = dayjs(startDate).subtract(1, 'day').toDate();
-    const latestDateLimit = dayjs(latestJoinDate).startOf('day');
-
-    if (dayjs(prevDate).isBefore(latestDateLimit)) return;
-
-    if (game === 'phrazle') {
-        if (period === 'PM') {
-            const newPeriod = 'AM';
-            const formattedDateStr = formatDateForBackend(startDate);
-            fetchDataByDate(formattedDateStr, newPeriod);
-            setPeriod(newPeriod);
-        } else {
-            const newPeriod = 'PM';
-            const formattedDateStr = formatDateForBackend(prevDate);
-            fetchDataByDate(formattedDateStr, newPeriod);
-            setStartDate(prevDate);
-            setPeriod(newPeriod);
-        }
-    } else {
-        handleDateChange(prevDate);
-    }
-};
-
+  const goToPreviousDay = () => {
+      const prevDate = dayjs(startDate).subtract(1, 'day').toDate();
+      const latest = dayjs(latestJoinDate);
+      const latestDateOnly = latest.startOf('day');
+  
+      if (game === 'phrazle') {
+          if (period === 'PM') {
+              // ✅ We're switching from PM ➝ AM of the same day
+              const newPeriod = 'AM';
+              const formattedDateStr = formatDateForBackend(startDate);
+  
+              // Allow same-day AM if latestJoinDate is within that same day
+              if (dayjs(startDate).isBefore(latestDateOnly)) return;
+  
+              setPeriod(newPeriod);
+              setStartDate(startDate);
+              fetchDataByDate(formattedDateStr, newPeriod);
+          } else {
+              // Going from AM ➝ PM of previous day
+              if (dayjs(prevDate).isBefore(latestDateOnly)) return;
+  
+              const newPeriod = 'PM';
+              const formattedDateStr = formatDateForBackend(prevDate);
+              setStartDate(prevDate);
+              setPeriod(newPeriod);
+              fetchDataByDate(formattedDateStr, newPeriod);
+          }
+      } else {
+          if (dayjs(prevDate).isBefore(latestDateOnly)) return;
+          handleDateChange(prevDate);
+      }
+  };
     
 const goToNextDay = () => {
     const now = dayjs();
@@ -259,7 +284,8 @@ const goToNextDay = () => {
                 game,
                 today: date,
                 timeZone,
-                formattedYesterday: date
+                formattedYesterday: date,
+                scoringmethod
             };
     
             // Add period if game is phrazle
@@ -369,6 +395,7 @@ const noDataMessage = {
   phrazle: "Gamle Score 7"
 }[game] || "No data available.";
 
+
     return (
         <>
             <div className='text-center'>
@@ -406,12 +433,19 @@ const noDataMessage = {
                         const winners = filteredLeaderboard.filter(data => 
                             Number(data.gamlescore ?? getTotalScore(data.gamename)) === minScore
                         );
+                        const latest = dayjs(latestJoinDate);
+                        const latestDateOnly = latest.startOf('day');
+
+                        const isMinPhrazleDate =
+                            (period === 'AM' && dayjs(startDate).isSame(latestDateOnly, 'day') && latest.hour() < 12) ||  // Earliest is AM & join was AM
+                            (period === 'PM' && dayjs(startDate).isSame(latestDateOnly, 'day'));                           // Earliest is PM
+
                         const isMaxPhrazleDate = (period === 'AM' && dayjs(startDate).isSame(dayjs(), 'day'));
                         return (
                             <>
                         
                                 <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
-                                    <button onClick={(e) => { e.stopPropagation(); goToPreviousDay(); }} className="bg-dark text-white px-3 py-1 rounded">
+                                    <button onClick={(e) => { e.stopPropagation(); goToPreviousDay(); }}  disabled={isMinPhrazleDate} className="bg-dark text-white px-3 py-1 rounded">
                                         <FaArrowLeft />
                                     </button>
                                     <div>
@@ -421,7 +455,7 @@ const noDataMessage = {
                                         <FaArrowRight />
                                     </button>
                                 </div>
-                                <h4 className="text-center py-3">Daily Leaderboards</h4>
+                                <h4 className="text-center py-3">Daily Leaderboard</h4>
                                 {
                                     filteredLeaderboard
                                     .slice()
@@ -447,8 +481,11 @@ const noDataMessage = {
 
                                         const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
                                         const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
-                                        const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
-                                        const pesceScore = isSingleWinner ? 1 : isSharedWinner ? 1 : 0;
+
+                                        const allLost = minScore === 7;
+                                        console.log('minScore',minScore);
+                                        const worldCupScore = allLost ? 0 : (isSingleWinner ? 3 : isSharedWinner ? 1 : 0);
+                                        const pesceScore = allLost ? 0 : (isSingleWinner || isSharedWinner ? 1 : 0);
 
                                         return (
                                             <Row key={index} className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm">
@@ -582,8 +619,9 @@ const noDataMessage = {
 
                                         const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
                                         const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
-                                        const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
-                                        const pesceScore = isSingleWinner ? 1 : isSharedWinner ? 1 : 0;
+                                        const allLost = minScore === 7;
+                                        const worldCupScore = allLost ? 0 : (isSingleWinner ? 3 : isSharedWinner ? 1 : 0);
+                                        const pesceScore = allLost ? 0 : (isSingleWinner || isSharedWinner ? 1 : 0);
 
                                         return (
                                             <Row key={index} className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm">
@@ -699,7 +737,6 @@ const noDataMessage = {
     
                                             const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
                                             const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
-    
                                             const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
                                             const pesceScore = isSharedWinner ? 1 : 0;
     
@@ -759,7 +796,11 @@ const noDataMessage = {
                                                                 />
                                                             </Col>
                                                             <Col xs={3} className="text-center fw-bold">
-                                                                {data.gamlescore}
+                                                                {scoringmethod === "Golf"
+                                                                    ? (data.gamlescore ?? '') === '' ? totalScore : data.gamlescore
+                                                                    : scoringmethod === "World Cup"
+                                                                    ? data.total_worldcup_points
+                                                                    : data.pesce_score}
                                                             </Col>
                                                         </Row>
                                                     </Col>
