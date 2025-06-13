@@ -619,7 +619,9 @@ const noDataMessage = {
 
                                         const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
                                         const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
-                                        const allLost = minScore === 7;
+                                        const allLost = 
+                                        (data.gamename === 'connections' && minScore === 4) ||
+                                        (data.gamename !== 'connections' && minScore === 7);
                                         const worldCupScore = allLost ? 0 : (isSingleWinner ? 3 : isSharedWinner ? 1 : 0);
                                         const pesceScore = allLost ? 0 : (isSingleWinner || isSharedWinner ? 1 : 0);
 
