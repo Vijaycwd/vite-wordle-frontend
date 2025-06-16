@@ -47,21 +47,22 @@ useEffect(() => {
 }, []);
     // console.log(gameNumber);
     const handlePaste = (event) => {
-        const pastedData = event.clipboardData.getData('Text');
-        const phrazleTextExists = pastedData.includes('Phrazle');
-        const gamenumberExists = pastedData.includes(gameNumber.toLocaleString());
-    
-        if (!phrazleTextExists) {
-          toast.error('This is not a Phrazle game!', { position: 'top-center' });
-        } else if (!gamenumberExists) {
-          toast.error('This is not today\'s game result!', { position: 'top-center' });
-        } else {
-          setIsPasted(true); // Mark that the data has been pasted
-          setScore(pastedData); // Set the pasted value to the score
-        }
-    
-        event.preventDefault(); // Prevent the default paste action
-      };
+      const pastedData = event.clipboardData.getData('Text').trim();
+      const phrazleTextExists = pastedData.includes('Phrazle');
+      const gamenumberExists = pastedData.includes(gameNumber.toString());
+
+      if (!phrazleTextExists) {
+        toast.error('This is not a Phrazle game!', { position: 'top-center' });
+      } else if (!gamenumberExists) {
+        toast.error('This is not today\'s game result!', { position: 'top-center' });
+      } else {
+        setIsPasted(true);
+        setScore(pastedData);
+      }
+
+      event.preventDefault();
+    };
+
 
   // Prevent changes to the pasted data
   const handleChange = (event) => {

@@ -460,15 +460,32 @@ const noDataMessage = {
                                     filteredLeaderboard
                                     .slice()
                                     .sort((a, b) => {
-                                    const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
-                                    const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
+                                        const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
+                                        const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
 
-                                    if (scoringmethod === "Golf") {
-                                        return aScore - bScore; // lower is better
-                                    } else {
-                                        return bScore - aScore; // higher is better (normal)
-                                    }
+                                        const allLost = minScore === 7;
+
+                                        const isSingleWinnerA = winners.length === 1 && winners[0].username === a.username;
+                                        const isSharedWinnerA = winners.length > 1 && winners.some(w => w.username === a.username);
+                                        const worldCupScoreA = allLost ? 0 : (isSingleWinnerA ? 3 : isSharedWinnerA ? 1 : 0);
+                                        const pesceScoreA = allLost ? 0 : (isSingleWinnerA || isSharedWinnerA ? 1 : 0);
+
+                                        const isSingleWinnerB = winners.length === 1 && winners[0].username === b.username;
+                                        const isSharedWinnerB = winners.length > 1 && winners.some(w => w.username === b.username);
+                                        const worldCupScoreB = allLost ? 0 : (isSingleWinnerB ? 3 : isSharedWinnerB ? 1 : 0);
+                                        const pesceScoreB = allLost ? 0 : (isSingleWinnerB || isSharedWinnerB ? 1 : 0);
+
+                                        if (scoringmethod === "Golf") {
+                                            return aScore - bScore; // lower is better
+                                        } else if (scoringmethod === "World Cup") {
+                                            return worldCupScoreB - worldCupScoreA; // higher World Cup score is better
+                                        } else if (scoringmethod === "Pesce") {
+                                            return pesceScoreB - pesceScoreA; // higher Pesce score is better
+                                        } else {
+                                            return bScore - aScore; // default: higher is better
+                                        }
                                     })
+
 
                                     .map((data, index) => {
                                         const totalScore = getTotalScore(data.gamename);
@@ -483,7 +500,6 @@ const noDataMessage = {
                                         const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
 
                                         const allLost = minScore === 7;
-                                        console.log('minScore',minScore);
                                         const worldCupScore = allLost ? 0 : (isSingleWinner ? 3 : isSharedWinner ? 1 : 0);
                                         const pesceScore = allLost ? 0 : (isSingleWinner || isSharedWinner ? 1 : 0);
 
@@ -728,11 +744,33 @@ const noDataMessage = {
     
                                     return filteredScores
                                         .slice()
-                                        .sort((a, b) =>
-                                            scoringmethod === "Golf"
-                                                ? a.gamlescore - b.gamlescore
-                                                : (b.gamlescore ?? 0) - (a.gamlescore ?? 0)
-                                        )
+                                        .sort((a, b) => {
+                                            const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
+                                            const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
+
+                                            const allLost = minScore === 7;
+
+                                            const isSingleWinnerA = winners.length === 1 && winners[0].username === a.username;
+                                            const isSharedWinnerA = winners.length > 1 && winners.some(w => w.username === a.username);
+                                            const worldCupScoreA = allLost ? 0 : (isSingleWinnerA ? 3 : isSharedWinnerA ? 1 : 0);
+                                            const pesceScoreA = allLost ? 0 : (isSingleWinnerA || isSharedWinnerA ? 1 : 0);
+
+                                            const isSingleWinnerB = winners.length === 1 && winners[0].username === b.username;
+                                            const isSharedWinnerB = winners.length > 1 && winners.some(w => w.username === b.username);
+                                            const worldCupScoreB = allLost ? 0 : (isSingleWinnerB ? 3 : isSharedWinnerB ? 1 : 0);
+                                            const pesceScoreB = allLost ? 0 : (isSingleWinnerB || isSharedWinnerB ? 1 : 0);
+
+                                            if (scoringmethod === "Golf") {
+                                                return aScore - bScore; // lower is better
+                                            } else if (scoringmethod === "World Cup") {
+                                                return worldCupScoreB - worldCupScoreA; // higher World Cup score is better
+                                            } else if (scoringmethod === "Pesce") {
+                                                return pesceScoreB - pesceScoreA; // higher Pesce score is better
+                                            } else {
+                                                return bScore - aScore; // default: higher is better
+                                            }
+                                        })
+
                                         .map((data, index) => {
                                             const totalScore = getTotalScore(data.gamename);
                                             const incrementScore = (index + 1) * totalScore;
@@ -741,7 +779,19 @@ const noDataMessage = {
                                             const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
                                             const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
                                             const pesceScore = isSharedWinner ? 1 : 0;
-    
+                                            let nowValue = 0;
+                                            let maxValue = 1; // default to 1 to avoid div-by-zero
+
+                                            if (scoringmethod === "Golf") {
+                                                nowValue = Number(data.gamlescore ?? totalScore);
+                                                maxValue = totalScore > 0 ? totalScore : 1;
+                                            } else if (scoringmethod === "World Cup") {
+                                                nowValue = Number(data.total_worldcup_points ?? 0);
+                                                maxValue = data.totalGamesPlayed * 7; // max world cup points (3 for win)
+                                            } else if (scoringmethod === "Pesce") {
+                                                nowValue = Number(data.total_pesce_points ?? 0);
+                                                maxValue = data.totalGamesPlayed * 7; // max pesce score (1 for win/shared)
+                                            }
                                             return (
                                                 <Row
                                                     key={index}
@@ -778,7 +828,7 @@ const noDataMessage = {
     
                                                     <Col xs={5}>
                                                         <Row className="align-items-center">
-                                                            <Col xs={9}>
+                                                            <Col xs={7}>
                                                                 {/* <ProgressBar
                                                                     className={`${data.gamename}-progressbar`}
                                                                     variant="success"
@@ -790,20 +840,22 @@ const noDataMessage = {
                                                                 {/* {data.gamlescore}({data.totalGamesPlayed * totalScore}) */}
                                                                 
                                                                 <ProgressBar
-                                                                    className={`${data.gamename}-progressbar`}
-                                                                    variant="success"
-                                                                    now={data.gamlescore}
-                                                                    max={totalGames * totalScore}
-                                                                    style={{ height: "8px" }}
+                                                                className={`${data.gamename}-progressbar`}
+                                                                variant="success"
+                                                                now={nowValue}
+                                                                max={maxValue}
+                                                                style={{ height: "8px" }}
                                                                 />
+
                                                             </Col>
                                                             <Col xs={3} className="text-center fw-bold">
-                                                                {scoringmethod === "Golf"
-                                                                    ? (data.gamlescore ?? '') === '' ? totalScore : data.gamlescore
-                                                                    : scoringmethod === "World Cup"
-                                                                    ? data.total_worldcup_points
-                                                                    : data.pesce_score}
+                                                            {scoringmethod === "Golf"
+                                                                ? (data.gamlescore ?? totalScore)
+                                                                : scoringmethod === "World Cup"
+                                                                ? data.total_worldcup_points
+                                                                : data.total_pesce_points}
                                                             </Col>
+
                                                         </Row>
                                                     </Col>
                                                 </Row>
