@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Button } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, InputGroup } from 'react-bootstrap';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -14,6 +15,7 @@ function Home() {
     
     // Password Protection State
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const correctPassword = "Casa"; // Change this
 
@@ -106,16 +108,23 @@ function Home() {
             <Row className="align-content-center justify-content-center">
                 <Col md={6} className='bg-white px-3 py-3 text-center'>
                     <p className='fs-4 text-center'>Enter Password to Access</p>
-                    <form onSubmit={handlePasswordSubmit}>
-                        <input
-                            type="password"
-                            className="form-control my-3"
-                            placeholder="Enter password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                        <Button className="btn btn-primary" type="submit">Submit</Button>
-                    </form>
+                    <Form onSubmit={handlePasswordSubmit}>
+                        <InputGroup className="my-3">
+                            <Form.Control
+                                type={showPassword ? 'text' : 'password'}
+                                placeholder="Enter password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                            <InputGroup.Text
+                                onClick={() => setShowPassword(!showPassword)}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                            </InputGroup.Text>
+                        </InputGroup>
+                        <Button variant="primary" type="submit">Submit</Button>
+                    </Form>
                 </Col>
             </Row>
         </Container>

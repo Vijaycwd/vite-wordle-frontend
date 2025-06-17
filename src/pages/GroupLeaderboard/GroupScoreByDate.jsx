@@ -616,12 +616,7 @@ const noDataMessage = {
                                     .sort((a, b) => {
                                     const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
                                     const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
-
-                                    if (scoringmethod === "Golf") {
-                                        return aScore - bScore; // lower is better
-                                    } else {
-                                        return bScore - aScore; // higher is better (normal)
-                                    }
+                                    return aScore - bScore;
                                     })
 
                                     .map((data, index) => {
