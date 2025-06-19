@@ -19,6 +19,16 @@ function PhrazleScoreByDate() {
 
     const formatDateForBackend = (date) => moment(date).format('YYYY-MM-DD hh:mm A');
 
+    useEffect(() => {
+        const now = new Date();
+        const currentHour = now.getHours();
+        const defaultPeriod = currentHour >= 12 ? 'PM' : 'AM';
+
+        setPeriod(defaultPeriod);
+        const formattedDate = formatDateForBackend(startDate);
+        fetchDataByDate(formattedDate, defaultPeriod);
+    }, []);
+
     const fetchDataByDate = (date, periodValue) => {
         const timeZone = moment.tz.guess();
         const originalDate = moment.tz(date, "YYYY-MM-DD hh:mm A", timeZone);
@@ -81,27 +91,32 @@ function PhrazleScoreByDate() {
     };
     
     const goToNextPeriod = () => {
-    const today = dayjs().startOf('day'); // Only allow dates before today
-    const nextDate = dayjs(startDate).add(1, 'day');
-
-    if (period === 'AM') {
-        const newPeriod = 'PM';
-        const isToday = dayjs(startDate).isSame(today, 'day');
-        const isTodayPMBlocked = isToday && today.hour() < 12;
-
-        if (isTodayPMBlocked) return;
-
-        const formattedDate = formatDateForBackend(startDate);
-        fetchDataByDate(formattedDate, newPeriod);
-        setPeriod(newPeriod);
-    } else {
-        // if (!nextDate.isBefore(today)) return;
-        const newPeriod = 'AM';
-        const formattedDate = formatDateForBackend(nextDate.toDate());
-        fetchDataByDate(formattedDate, newPeriod);
-        setStartDate(nextDate.toDate());
-        setPeriod(newPeriod);
-    }
+    const now = dayjs();
+        const today = now.startOf('day');
+        const currentHour = now.hour();
+        if (game === 'phrazle') {
+            const isToday = dayjs(startDate).isSame(today, 'day');
+    
+            if (period === 'AM') {
+                if (isToday && currentHour < 12) {
+                    // Before 12 PM today → block PM
+                    return;
+                }
+                const formattedDate = formatDateForBackend(startDate);
+                fetchDataByDate(formattedDate, 'PM');
+                setPeriod('PM');
+            } else {
+                // Trying to move past today — block it
+                if (isToday) return;
+    
+                // Move to next day AM
+                const nextDate = dayjs(startDate).add(1, 'day');
+                const formattedDate = formatDateForBackend(nextDate.toDate());
+                fetchDataByDate(formattedDate, 'AM');
+                setStartDate(nextDate.toDate());
+                setPeriod('AM');
+            }
+        }
 };
 
     

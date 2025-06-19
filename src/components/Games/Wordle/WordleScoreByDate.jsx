@@ -1,4 +1,4 @@
-import React, { useState, forwardRef } from 'react';
+import React, { useState, forwardRef, useEffect  } from 'react';
 import axios from 'axios';
 import { Button, Alert } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
@@ -26,7 +26,11 @@ function WordleScoreByDate() {
         const formattedDate = formatDateForBackend(date);
         fetchDataByDate(formattedDate);  // Trigger data fetching after date selection
     };
-
+    useEffect(() => {
+        const formattedDate = formatDateForBackend(startDate);
+        fetchDataByDate(formattedDate);
+    }, []);
+    
     const fetchDataByDate = (date) => {
         const timeZone = moment.tz.guess(); // Automatically get the user's local time zone
     
