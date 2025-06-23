@@ -22,11 +22,21 @@ function PhrazleScoreByDate() {
     useEffect(() => {
         const now = new Date();
         const currentHour = now.getHours();
-        const defaultPeriod = currentHour >= 12 ? 'PM' : 'AM';
 
-        setPeriod(defaultPeriod);
-        const formattedDate = formatDateForBackend(startDate);
-        fetchDataByDate(formattedDate, defaultPeriod);
+        let priorPeriod = 'AM';
+        let defaultDate = new Date(); // today's date
+
+        if (currentHour < 12) {
+            // If it's currently AM, go to yesterday PM
+            priorPeriod = 'PM';
+            defaultDate.setDate(defaultDate.getDate() - 1); // move to yesterday
+        }
+
+        setPeriod(priorPeriod);
+        setStartDate(defaultDate); // update the UI's startDate picker
+
+        const formattedDate = formatDateForBackend(defaultDate); // your helper function
+        fetchDataByDate(formattedDate, priorPeriod);
     }, []);
 
     const fetchDataByDate = (date, periodValue) => {
