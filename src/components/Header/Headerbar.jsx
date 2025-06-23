@@ -112,8 +112,6 @@ const Headerbar = () => {
                 <img 
                   src={`${baseURL}/user/uploads/${userData.avatar}`}
                   alt="User Avatar" 
-                  width="30"
-                  height="30"
                   className="img-fluid user-avatar rounded-circle"
                   onError={(e) => {
                     e.target.onerror = null; // Prevent infinite loop
@@ -180,7 +178,9 @@ const Headerbar = () => {
                           width="30"
                           height="30"
                           className="img-fluid user-avatar rounded-circle mb-2"
-                          onError={(e) => e.target.src = `${baseURL}/user/uploads/default_avatar.png`}
+                          onError={(e) => e.target.src = `<svg xmlns="http://www.w3.org/2000/svg" className="bi bi-bar-chart-fill" width="15" height="15" fill="#00BF63" viewBox="0 0 448 512">
+                  <path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512l388.6 0c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304l-91.4 0z"/>
+                </svg>`}
                         />
                         <p className='fs-4 m-0 cwd-edit-profile' onClick={() => editUser(userData.name, userData.username, userData.email, userData.id, userData.avatar, true)}>
                           {userData.username}
