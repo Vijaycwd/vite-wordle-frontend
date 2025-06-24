@@ -76,11 +76,12 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
 
             try {
                 setLoading(true);
-
+                const params = { groupId: id, groupName, game, timeZone, today: todayDate };
+                if (game === "phrazle") {
+                    params.period = period;
+                }
                 // Fetch Today's Scores
-                const todayResponse = await axios.get(`${baseURL}/groups/get-group-score.php`, {
-                    params: { groupId: id, groupName, game, timeZone, today: todayDate }
-                });
+                const todayResponse = await axios.get(`${baseURL}/groups/get-group-score.php`, {params});
 
                 // console.log("Today's Scores Response:", todayResponse.data);
 
@@ -179,13 +180,16 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
         setSelectedMember(data);
         setShowProfile(true);
     };
-    const showDayResult = (date, useremail, game) => {
+    const showDayResult = (date, useremail, game, period) => {
     // console.log('showDayResult');
     setSelectedGame(game);
     const timeZone = moment.tz.guess();
-    axios.get(`${baseURL}/games/${game}/get-score.php`, {
-        params: { useremail, timeZone, today: date }
-    })
+    const params = { useremail, timeZone, today: date };
+    if (game === "phrazle") {
+        params.period = period;
+    }
+
+    axios.get(`${baseURL}/games/${game}/get-score.php`, {params})
     .then((response) => {
         let scoreData = [];
 
@@ -370,6 +374,10 @@ const noDataMessage = {
                                                                         />
                                                                     </Col>
                                                                     <Col xs={5} className="text-center d-flex fw-bold">
+                                                                    <span 
+                                                                     onClick={() => showDayResult(data.createdat, data.useremail, data.gamename, data.gamename === "phrazle" ? getCurrentPeriod() : null)}
+                                                                style={{ cursor: "pointer" }}
+                                                                >
                                                                         {scoringmethod === "Golf" ? (
                                                                             <> {data.gamlescore} {isSingleWinner && "🏆"} </>
                                                                         ) : scoringmethod === "World Cup" ? (
@@ -379,6 +387,7 @@ const noDataMessage = {
                                                                         ) : (
                                                                             <> {data.gamlescore} {isSingleWinner && "🏆"} </>
                                                                         )}
+                                                                    </span>
                                                                     </Col>
                                                                 </Row>
                                                             </Col>
