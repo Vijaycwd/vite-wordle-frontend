@@ -24,7 +24,7 @@ function UsersList() {
           src={
             row.avatar
               ? `${baseURL}/user/uploads/${row.avatar}`
-              : `${baseURL}/user/uploads/defalut_avatar.png`
+              : `${baseURL}/user/uploads/default_avatar.png`
           }
           alt="avatar"
           width="40"
