@@ -244,9 +244,9 @@ const goToNextDay = () => {
 
  useEffect(() => {
     const now = new Date();
-    console.log('now', now);
+    
     const currentHour = now.getHours();
-    console.log(currentHour);
+    
     if (game === 'phrazle') {
         if (currentHour < 12) {
             // Morning (before noon) → show yesterday's date with AM

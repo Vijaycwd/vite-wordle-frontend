@@ -100,35 +100,34 @@ function PhrazleScoreByDate() {
         }
     };
     
-    const goToNextPeriod = () => {
-    const now = dayjs(); // current time
-    const today = now.startOf('day');
-    const nextDate = dayjs(startDate).add(1, 'day');
-
-    if (period === 'AM') {
-        const newPeriod = 'PM';
+   const goToNextPeriod = () => {
+       const now = dayjs();
+       const today = now.startOf('day');
+       const currentHour = now.hour();
         const isToday = dayjs(startDate).isSame(today, 'day');
-
-        // Block PM if it's today and before 12 PM
-        if (isToday && now.hour() < 12) return;
-
-        const formattedDate = formatDateForBackend(startDate);
-        fetchDataByDate(formattedDate, newPeriod);
-        setPeriod(newPeriod);
-    } else {
-        const newPeriod = 'AM';
-
-        // If nextDate is today and it's before 12 PM, block moving to AM
-        if (nextDate.isSame(today, 'day') && now.hour() < 12) return;
-
-        const formattedDate = formatDateForBackend(nextDate.toDate());
-        fetchDataByDate(formattedDate, newPeriod);
-        setStartDate(nextDate.toDate());
-        setPeriod(newPeriod);
-    }
-};
-
-    
+   
+           if (period === 'AM') {
+               if (isToday && currentHour < 12) {
+                   // Before 12 PM today → block PM
+                   return;
+               }
+   
+               // Move from AM to PM (same date)
+               const formattedDate = formatDateForBackend(startDate);
+               fetchDataByDate(formattedDate, 'PM');
+               setPeriod('PM');
+           } else {
+               // Trying to move past today — block it
+               if (isToday) return;
+   
+               // Move to next day AM
+               const nextDate = dayjs(startDate).add(1, 'day');
+               const formattedDate = formatDateForBackend(nextDate.toDate());
+               fetchDataByDate(formattedDate, 'AM');
+               setStartDate(nextDate.toDate());
+               setPeriod('AM');
+           }
+   };
 
     const splitIntoRows = (text) => {
         const cleanedData = text.trim();
@@ -148,6 +147,15 @@ function PhrazleScoreByDate() {
     const maxSelectableDate = isAfternoon
     ? new Date() // allow today
     : new Date(now.setDate(now.getDate() - 1));
+
+    const latest = dayjs(now);
+    const latestDateOnly = latest.startOf('day');
+
+    const isMinPhrazleDate =
+        (period === 'AM' && dayjs(startDate).isSame(latestDateOnly, 'day') && latest.hour() < 12) ||  // Earliest is AM & join was AM
+        (period === 'PM' && dayjs(startDate).isSame(latestDateOnly, 'day'));                           // Earliest is PM
+
+    const isMaxPhrazleDate = (period === 'AM' && dayjs(startDate).isSame(dayjs(), 'day'));
     return (
         <>
             <div className='text-center'>
@@ -173,7 +181,7 @@ function PhrazleScoreByDate() {
                     <div>
                         {dayjs(startDate).format("MMM D, YYYY")} - {period}
                     </div>
-                    <button onClick={(e) => { e.stopPropagation(); goToNextPeriod(); }} className="bg-dark text-white px-3 py-1 rounded">
+                    <button disabled={isMaxPhrazleDate} onClick={(e) => { e.stopPropagation(); goToNextPeriod(); }} className="bg-dark text-white px-3 py-1 rounded">
                         <FaArrowRight />
                     </button>
                 </div>

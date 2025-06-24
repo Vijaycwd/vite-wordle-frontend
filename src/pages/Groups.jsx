@@ -71,7 +71,7 @@ function Groups() {
                 `${baseURL}/groups/create-group.php`,
                 { name: groupname, captain_id: userId, games: selectedGames }
             );
-            console.log('create response',res);
+           
             // toast.success(res.data.message);
             setGroups([...groups, { id: res.data.group_id, name: groupname, games: selectedGames.join(", ") }]);
             navigate(`/group/${res.data.group_id}`);
