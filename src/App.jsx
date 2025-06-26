@@ -28,12 +28,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import AdminText from './pages/AdminText';
 import AdminRoute from './auth/AdminRoute';
 import UsersList from './pages/UsersList';
+import GamleIntro from './pages/GamleIntro';
 
 function App() {
   return (
     <Layout>
       <Routes>
         <Route exact path="/" element={<Home/>} />
+        <Route exact path="/gamleintro" element={<GamleIntro />} />
         <Route exact path="/login" element={<Userlogin />} />
         <Route exact path="/register" element={<Registerform />} />
         <Route exact path="*" element={<NotFound/>} />

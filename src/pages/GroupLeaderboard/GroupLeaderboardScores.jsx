@@ -333,7 +333,7 @@ const noDataMessage = {
                                                                         src={
                                                                         data.avatar
                                                                             ? `${baseURL}/user/uploads/${data.avatar}`
-                                                                            : `${baseURL}/user/uploads/defalut_avatar.png`
+                                                                            : `${baseURL}/user/uploads/default_avatar.png`
                                                                         }
                                                                         alt="Profile"
                                                                         className="rounded-circle mb-1"
@@ -341,7 +341,7 @@ const noDataMessage = {
                                                                     />
                                                                 </div>
                                                                 {/* <img 
-                                                                    src={data.avatar ? `${baseURL}/user/uploads/${data.avatar}` : `${baseURL}/user/uploads/defalut_avatar.png`} 
+                                                                    src={data.avatar ? `${baseURL}/user/uploads/${data.avatar}` : `${baseURL}/user/uploads/default_avatar.png`} 
                                                                     alt="Avatar" 
                                                                     className="rounded-circle border" 
                                                                     style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
@@ -507,7 +507,7 @@ const noDataMessage = {
                                                             src={
                                                             data.avatar
                                                                 ? `${baseURL}/user/uploads/${data.avatar}`
-                                                                : `${baseURL}/user/uploads/defalut_avatar.png`
+                                                                : `${baseURL}/user/uploads/default_avatar.png`
                                                             }
                                                             alt="Profile"
                                                             className="rounded-circle mb-1"

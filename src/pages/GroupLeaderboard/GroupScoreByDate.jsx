@@ -30,8 +30,6 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
     const loginuserEmail = USER_AUTH_DATA?.email;
     //const formattedDate = latestJoinDate.slice(0, 10);
     const formattedDateStr = latestJoinDate ? latestJoinDate.slice(0, 10) : null;
-
-
     let minDate = new Date(); // fallback
 
     if (formattedDateStr && typeof formattedDateStr === 'string') {
@@ -244,26 +242,15 @@ const goToNextDay = () => {
 
  useEffect(() => {
     const now = new Date();
-    
     const currentHour = now.getHours();
-    
+
     if (game === 'phrazle') {
-        if (currentHour < 12) {
-            // Morning (before noon) → show yesterday's date with AM
-            const amDate = new Date(now);
-            amDate.setDate(amDate.getDate() - 1);
-            setStartDate(amDate);
-            setPeriod('PM');
-            const formattedDate = formatDateForBackend(amDate);
-            fetchDataByDate(formattedDate, 'PM');
-        } else {
-            // Afternoon or later → show today's date with PM
-            const pmDate = new Date(now);
-            setStartDate(pmDate);
-            setPeriod('AM');
-            const formattedDate = formatDateForBackend(pmDate);
-            fetchDataByDate(formattedDate, 'AM');
-        }
+        const period = currentHour < 12 ? 'AM' : 'PM';
+        const today = new Date(now); // Today’s date
+        setStartDate(today);
+        setPeriod(period);
+        const formattedDate = formatDateForBackend(today); // e.g. '2025-06-26'
+        fetchDataByDate(formattedDate, period);
     } else {
         const nonPhrazleDate = new Date(now);
         nonPhrazleDate.setDate(nonPhrazleDate.getDate() - 1);
@@ -271,7 +258,8 @@ const goToNextDay = () => {
         const formattedDate = formatDateForBackend(nonPhrazleDate);
         fetchDataByDate(formattedDate);
     }
-}, []);
+}, [game]);
+
 
    
     const fetchDataByDate = async (date, currentPeriod = null) => {
@@ -508,7 +496,7 @@ const noDataMessage = {
                                                 {/* Avatar */}
                                                 <Col xs={3} className="d-flex align-items-center gap-2">
                                                     {/* <img 
-                                                        src={data.avatar ? `${baseURL}/user/uploads/${data.avatar}` : `${baseURL}/user/uploads/defalut_avatar.png`} 
+                                                        src={data.avatar ? `${baseURL}/user/uploads/${data.avatar}` : `${baseURL}/user/uploads/default_avatar.png`} 
                                                         alt="Avatar" 
                                                         className="rounded-circle border" 
                                                         style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
@@ -518,7 +506,7 @@ const noDataMessage = {
                                                             src={
                                                             data.avatar
                                                                 ? `${baseURL}/user/uploads/${data.avatar}`
-                                                                : `${baseURL}/user/uploads/defalut_avatar.png`
+                                                                : `${baseURL}/user/uploads/default_avatar.png`
                                                             }
                                                             alt="Profile"
                                                             className="rounded-circle mb-1"
@@ -641,7 +629,7 @@ const noDataMessage = {
                                                 {/* Avatar */}
                                                 <Col xs={3} className="d-flex align-items-center gap-2">
                                                     {/* <img 
-                                                        src={data.avatar ? `${baseURL}/user/uploads/${data.avatar}` : `${baseURL}/user/uploads/defalut_avatar.png`} 
+                                                        src={data.avatar ? `${baseURL}/user/uploads/${data.avatar}` : `${baseURL}/user/uploads/default_avatar.png`} 
                                                         alt="Avatar" 
                                                         className="rounded-circle border" 
                                                         style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
@@ -651,7 +639,7 @@ const noDataMessage = {
                                                             src={
                                                             data.avatar
                                                                 ? `${baseURL}/user/uploads/${data.avatar}`
-                                                                : `${baseURL}/user/uploads/defalut_avatar.png`
+                                                                : `${baseURL}/user/uploads/default_avatar.png`
                                                             }
                                                             alt="Profile"
                                                             className="rounded-circle mb-1"
@@ -797,7 +785,7 @@ const noDataMessage = {
                                                             src={
                                                                 data.avatar
                                                                     ? `${baseURL}/user/uploads/${data.avatar}`
-                                                                    : `${baseURL}/user/uploads/defalut_avatar.png`
+                                                                    : `${baseURL}/user/uploads/default_avatar.png`
                                                             }
                                                             alt="Avatar"
                                                             className="rounded-circle border"
@@ -808,7 +796,7 @@ const noDataMessage = {
                                                                 src={
                                                                 data.avatar
                                                                     ? `${baseURL}/user/uploads/${data.avatar}`
-                                                                    : `${baseURL}/user/uploads/defalut_avatar.png`
+                                                                    : `${baseURL}/user/uploads/default_avatar.png`
                                                                 }
                                                                 alt="Profile"
                                                                 className="rounded-circle mb-1"
@@ -862,6 +850,7 @@ const noDataMessage = {
                                 <p className="text-center">
                                     Start Date: {(() => {
                                     const date = new Date(latestJoinDate);
+                                    console.log('joinDate',date);
                                     const dateString = date.toLocaleDateString("en-US", {
                                         year: "numeric",
                                         month: "long",
@@ -936,7 +925,7 @@ const noDataMessage = {
                                                             src={
                                                                 data.avatar
                                                                     ? `${baseURL}/user/uploads/${data.avatar}`
-                                                                    : `${baseURL}/user/uploads/defalut_avatar.png`
+                                                                    : `${baseURL}/user/uploads/default_avatar.png`
                                                             }
                                                             alt="Avatar"
                                                             className="rounded-circle border"

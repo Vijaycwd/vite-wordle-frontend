@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Form, Button, InputGroup } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, InputGroup, Modal } from 'react-bootstrap';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { toast } from 'react-toastify';
 import Axios from 'axios';
+import FeedbackButton from './FeedbackButton';
 
 function Home() {
     const baseURL = import.meta.env.VITE_BASE_URL;
 
     const userAuthData = JSON.parse(localStorage.getItem('auth')) || {};
     const navigate = useNavigate();
-    
+    const [show, setShow] = useState(false);
     // Password Protection State
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -39,6 +40,7 @@ function Home() {
     const handleNavigation = (link) => {
         navigate(`/${link}`);
     };
+    
     const groupClick = (link) => {
         navigate('/groups');
     };
@@ -46,7 +48,9 @@ function Home() {
     const loginformClick = () => {
         navigate('/login');
     };
-    
+     const handleGamleIntro = () => {
+        navigate('/gamleintro');
+    };
     const isEmptyObject = userAuthData && Object.keys(userAuthData).length === 0;
 
     const [homepageText, setHomepageText] = useState({ heading: '', text1: '', text2: '', text3: '' });
@@ -91,6 +95,15 @@ function Home() {
                             <p className='text-center' dangerouslySetInnerHTML={{ __html: homepageText.text3 }}></p>
                         </Col>
                     </Row>
+                    <Row className='justify-content-between'>
+                        <Col md={4}>
+                             <Button className="btn-lg" onClick={handleGamleIntro}>Gamle Intro</Button>
+                        </Col>
+                        <Col md={4}>
+                            <FeedbackButton/>
+                        </Col>
+                        
+                    </Row>
                     {!userAuthData || isEmptyObject ? (
                         <div>
                             <p className='text-center'>Please create your profile and then click the game buttons and go from there!</p>
@@ -98,11 +111,15 @@ function Home() {
                             <Button className="btn-lg mt-3" onClick={loginformClick} style={{ width: "60%" }}>Login</Button>
                         </div>
                     ) : (
-                        <div></div>
+                        <div>
+                            
+                        </div>
                     )}
                 </Col>
             </Row>
+            
         </Container>
+        
     ) : (
         <Container className="login-section">
             <Row className="align-content-center justify-content-center">

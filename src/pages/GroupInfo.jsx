@@ -226,7 +226,7 @@ function GroupInfo() {
                                     src={
                                         member.avatar
                                         ? `${baseURL}/user/uploads/${member.avatar}`
-                                        : `${baseURL}/user/uploads/defalut_avatar.png`
+                                        : `${baseURL}/user/uploads/default_avatar.png`
                                     }
                                     alt="Profile"
                                     className="rounded-circle mb-1"
@@ -357,7 +357,7 @@ function GroupInfo() {
                                     src={
                                         invite.avatar
                                         ? `${baseURL}/user/uploads/${invite.avatar}`
-                                        : `${baseURL}/user/uploads/defalut_avatar.png`
+                                        : `${baseURL}/user/uploads/default_avatar.png`
                                     }
                                     alt="Profile"
                                     className="rounded-circle mb-1 me-2"

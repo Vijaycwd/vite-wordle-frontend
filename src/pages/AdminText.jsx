@@ -6,6 +6,17 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 
+const quillModules = {
+  toolbar: [
+    [{ header: [1, 2, false] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ color: [] }, { background: [] }],
+    [{ list: 'ordered' }, { list: 'bullet' }],
+    ['link'],
+    ['clean']
+  ]
+};
+
 function AdminText() {
   const baseURL = import.meta.env.VITE_BASE_URL;
 
@@ -16,6 +27,7 @@ function AdminText() {
     text3: '',
     text4: '',
     text5: '',
+    gameintro: '',
     golf_modal_title: '',
     golf_modal_description: '',
     world_cup_modal_title: '',
@@ -38,6 +50,7 @@ function AdminText() {
             text3: res.data.text3,
             text4: res.data.text4,
             text5: res.data.text5,
+            gameintro: res.data.gameintro ?? '',
             golf_modal_title: res.data.golf_modal_title,
             golf_modal_description: res.data.golf_modal_description,
             world_cup_modal_title: res.data.world_cup_modal_title,
@@ -118,7 +131,17 @@ return (
                 />
               </Form.Group>
             </Tab>
-
+            <Tab eventKey="gameintro" title="Game Intro">
+              <Form.Group className="mb-3" controlId="gameintro">
+                <Form.Label>Game Intro</Form.Label>
+                <ReactQuill
+                  theme="snow"
+                  value={formData.gameintro}
+                  onChange={(content) => setFormData(prev => ({ ...prev, gameintro: content }))}
+                  modules={quillModules}
+                />
+              </Form.Group>
+            </Tab>
             <Tab eventKey="leaderboard" title="Leaderboard">
               <Form.Group className="mb-3" controlId="text4">
                 <Form.Label>Leaderboard Games Description</Form.Label>
