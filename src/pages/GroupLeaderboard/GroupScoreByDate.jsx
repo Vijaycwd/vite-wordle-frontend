@@ -260,7 +260,6 @@ const goToNextDay = () => {
     }
 }, [game]);
 
-
    
     const fetchDataByDate = async (date, currentPeriod = null) => {
         try {
@@ -382,6 +381,67 @@ const noDataMessage = {
   connections: "Gamle Score 4",
   phrazle: "Gamle Score 7"
 }[game] || "No data available.";
+
+// Get yesterday's sheriff
+const getYesterdaySheriff = () => {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yDate = yesterday.toDateString();
+
+  const yesterdayData = todayLeaderboard.filter(p =>
+    new Date(p.createdat).toDateString() === yDate
+  );
+
+  if (yesterdayData.length === 0) return null;
+
+  const scores = yesterdayData.map(p => Number(p.gamlescore ?? 0));
+  const minScore = Math.min(...scores);
+  const gamename = yesterdayData[0].gamename;
+
+  const allLost = (gamename === 'connections' && minScore === 4) ||
+                  (gamename !== 'connections' && minScore === 7);
+
+  if (allLost) return null;
+
+  const winners = yesterdayData.filter(p => Number(p.gamlescore ?? 0) === minScore);
+  return winners[0]?.username || null; // Take one winner only
+};
+
+const yesterdaySheriff = getYesterdaySheriff();
+
+// Find today’s winners
+const scoresToday = todayLeaderboard.map(p => Number(p.gamlescore ?? 0));
+const minScoreToday = Math.min(...scoresToday);
+const gamename = todayLeaderboard[0]?.gamename;
+
+const allLostToday =
+  (gamename === 'connections' && minScoreToday === 4) ||
+  (gamename !== 'connections' && minScoreToday === 7);
+
+const todayWinners = todayLeaderboard.filter(
+  p => Number(p.gamlescore ?? 0) === minScoreToday
+);
+
+// Sheriff Decision
+let sheriffUsername = null;
+
+if (!allLostToday) {
+  if (todayWinners.length === 1) {
+    sheriffUsername = todayWinners[0].username;
+    console.log(sheriffUsername, 'sheriffUsername');
+  } else {
+    // Tie case
+    const tieSheriff = todayWinners.find(p => p.username === yesterdaySheriff);
+    if (tieSheriff) {
+      sheriffUsername = tieSheriff.username;
+      console.log(sheriffUsername, 'sheriffUsername');
+    } else {
+      // No sheriff from yesterday in tie – just pick any (or show shared)
+      sheriffUsername = todayWinners.length > 0 ? todayWinners[0].username : null;
+      console.log(sheriffUsername, 'sheriffUsername');
+    }
+  }
+}
 
 
     return (
@@ -609,6 +669,7 @@ const noDataMessage = {
 
                                     .map((data, index) => {
                                         const totalScore = getTotalScore(data.gamename);
+                                        const isSheriff = data.username === sheriffUsername;
                                         const progressValue =
                                             totalScore > 0
                                                 ? data.gamename === "connections"
@@ -683,7 +744,8 @@ const noDataMessage = {
                                                                     : scoringmethod === "World Cup"
                                                                     ? worldCupScore
                                                                     : pesceScore}
-                                                                {isSingleWinner && " 🏆"}
+                                                                {scoringmethod === "Pesce" && isSheriff && " 🤠"}
+                                                                {(scoringmethod === "Golf" || scoringmethod === "World Cup") && isSheriff && " 🏆"}
                                                             </span>
                                                         </Col>
                                                                  
