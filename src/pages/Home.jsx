@@ -96,13 +96,12 @@ function Home() {
                         </Col>
                     </Row>
                     <Row className='justify-content-between'>
-                        <Col md={4}>
-                             <Button className="btn-lg" onClick={handleGamleIntro}>Gamle Intro</Button>
+                        <Col className="text-center py-1" md={4} s={12}>
+                            <Button className="btn-lg" onClick={handleGamleIntro}>Gamle Intro</Button>
                         </Col>
-                        <Col md={4}>
+                        <Col className="text-center py-1" md={4} s={12}>
                             <FeedbackButton/>
                         </Col>
-                        
                     </Row>
                     {!userAuthData || isEmptyObject ? (
                         <div>

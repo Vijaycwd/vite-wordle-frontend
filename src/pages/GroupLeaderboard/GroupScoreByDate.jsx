@@ -295,7 +295,7 @@ const goToNextDay = () => {
                 setTodayLeaderboard([]);
                 setFetchedError(true);
             }
-            console.log(todayResponse.data);
+           
             // setlatestJoinDate(cumulativeDailyResponse.data.latestJoinDate || []);
             settotalGames(cumulativeDailyResponse.data.totalGames || []);
             setcumulativeAverageScore(cumulativeAverageResponse.data.data || []);
@@ -354,7 +354,7 @@ if (game === "phrazle") {
   maxSelectableDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
 }
 
-console.log("maxSelectableDate", maxSelectableDate);
+// console.log("maxSelectableDate", maxSelectableDate);
 
 
 const handleShowProfile = (data) => {
@@ -382,66 +382,86 @@ const noDataMessage = {
   phrazle: "Gamle Score 7"
 }[game] || "No data available.";
 
-// Get yesterday's sheriff
-const getYesterdaySheriff = () => {
+// Get yesterday's sheriff info (username + score)
+const getYesterdaySheriffInfo = () => {
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
   const yDate = yesterday.toDateString();
 
   const yesterdayData = todayLeaderboard.filter(p =>
-    new Date(p.createdat).toDateString() === yDate
+    new Date(p.createdat).toDateString() === yDate &&
+    p.gamlescore !== null &&
+    p.gamlescore !== ''
   );
 
   if (yesterdayData.length === 0) return null;
 
-  const scores = yesterdayData.map(p => Number(p.gamlescore ?? 0));
+  const scores = yesterdayData.map(p => Number(p.gamlescore));
   const minScore = Math.min(...scores);
-  const gamename = yesterdayData[0].gamename;
+  const gamename = yesterdayData[0]?.gamename;
 
   const allLost = (gamename === 'connections' && minScore === 4) ||
                   (gamename !== 'connections' && minScore === 7);
-
   if (allLost) return null;
 
-  const winners = yesterdayData.filter(p => Number(p.gamlescore ?? 0) === minScore);
-  return winners[0]?.username || null; // Take one winner only
+  const winners = yesterdayData.filter(p => Number(p.gamlescore) === minScore);
+  return { username: winners[0]?.username || null, score: minScore };
 };
 
-const yesterdaySheriff = getYesterdaySheriff();
+const yesterdaySheriffInfo = getYesterdaySheriffInfo();
+const yesterdaySheriffUsername = yesterdaySheriffInfo?.username ?? null;
+const yesterdaySheriffScore = yesterdaySheriffInfo?.score ?? null;
 
-// Find today’s winners
-const scoresToday = todayLeaderboard.map(p => Number(p.gamlescore ?? 0));
+// Today data: filter valid scores
+const validToday = todayLeaderboard.filter(
+  p => p.gamlescore !== null && p.gamlescore !== ''
+);
+const scoresToday = validToday.map(p => Number(p.gamlescore));
 const minScoreToday = Math.min(...scoresToday);
-const gamename = todayLeaderboard[0]?.gamename;
+const gamename = validToday[0]?.gamename;
 
+// Check if today is an "all lost" scenario
 const allLostToday =
   (gamename === 'connections' && minScoreToday === 4) ||
   (gamename !== 'connections' && minScoreToday === 7);
 
-const todayWinners = todayLeaderboard.filter(
-  p => Number(p.gamlescore ?? 0) === minScoreToday
+// Get today’s winners (those with lowest score)
+const todayWinners = validToday.filter(
+  p => Number(p.gamlescore) === minScoreToday
 );
 
-// Sheriff Decision
+// Sheriff logic
 let sheriffUsername = null;
+let multipleSheriffs = [];
 
 if (!allLostToday) {
   if (todayWinners.length === 1) {
+    // Single winner → new sheriff
     sheriffUsername = todayWinners[0].username;
-    console.log(sheriffUsername, 'sheriffUsername');
   } else {
-    // Tie case
-    const tieSheriff = todayWinners.find(p => p.username === yesterdaySheriff);
-    if (tieSheriff) {
-      sheriffUsername = tieSheriff.username;
-      console.log(sheriffUsername, 'sheriffUsername');
+    // Tie
+    if (
+      yesterdaySheriffScore !== null &&
+      minScoreToday < yesterdaySheriffScore
+    ) {
+      // Tie beat yesterday's sheriff → new sheriffs
+      multipleSheriffs = todayWinners.map(p => p.username);
+      sheriffUsername = multipleSheriffs[0]; // or keep multiple
+    } else if (
+      yesterdaySheriffScore !== null &&
+      minScoreToday === yesterdaySheriffScore &&
+      todayWinners.some(p => p.username === yesterdaySheriffUsername)
+    ) {
+      // Tie equals yesterday and includes yesterday sheriff → they stay
+      sheriffUsername = yesterdaySheriffUsername;
+      multipleSheriffs = [sheriffUsername];
     } else {
-      // No sheriff from yesterday in tie – just pick any (or show shared)
-      sheriffUsername = todayWinners.length > 0 ? todayWinners[0].username : null;
-      console.log(sheriffUsername, 'sheriffUsername');
+      // Tie didn’t beat or include yesterday sheriff → no sheriff
+      sheriffUsername = null;
     }
   }
 }
+
 
 
     return (
@@ -610,7 +630,8 @@ if (!allLostToday) {
                                                                     : scoringmethod === "World Cup"
                                                                     ? worldCupScore
                                                                     : pesceScore}
-                                                                {isSingleWinner && " 🏆"}
+                                                                {/* {scoringmethod === "Pesce" && isSheriff(data.username) && " 🤠"} */}
+                                                                {scoringmethod !== "Pesce" && isSingleWinner && " 🏆"}
                                                             </span>
                                                         </Col>
 
@@ -642,9 +663,15 @@ if (!allLostToday) {
                         const winners = filteredLeaderboard.filter(data => 
                             Number(data.gamlescore ?? getTotalScore(data.gamename)) === minScore
                         );
-                        
+                        const isSheriffUser = (username) =>
+                        sheriffUsername &&
+                        (multipleSheriffs?.length > 0
+                            ? multipleSheriffs.includes(username)
+                            : sheriffUsername === username);
                         return (
+                           
                             <>
+
                         
                                 <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
                                     <button onClick={(e) => { e.stopPropagation(); goToPreviousDay(); }} className="bg-dark text-white px-3 py-1 rounded">
@@ -660,102 +687,107 @@ if (!allLostToday) {
                                 <h4 className="text-center py-3">Daily Leaderboard</h4>
                                 {
                                     filteredLeaderboard
-                                    .slice()
-                                    .sort((a, b) => {
-                                    const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
-                                    const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
-                                    return aScore - bScore;
-                                    })
-
-                                    .map((data, index) => {
+                                        .slice()
+                                        .sort((a, b) => {
+                                        const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
+                                        const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
+                                        return aScore - bScore;
+                                        })
+                                        .map((data, index) => {
                                         const totalScore = getTotalScore(data.gamename);
-                                        const isSheriff = data.username === sheriffUsername;
+
                                         const progressValue =
                                             totalScore > 0
-                                                ? data.gamename === "connections"
-                                                    ? (data.gamlescore / totalScore) * 100
-                                                    : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
-                                                : 0;
+                                            ? data.gamename === "connections"
+                                                ? (data.gamlescore / totalScore) * 100
+                                                : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
+                                            : 0;
 
                                         const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
                                         const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
-                                        const allLost = 
-                                        (data.gamename === 'connections' && minScore === 4) ||
-                                        (data.gamename !== 'connections' && minScore === 7);
+
+                                        const allLost =
+                                            (data.gamename === 'connections' && minScore === 4) ||
+                                            (data.gamename !== 'connections' && minScore === 7);
+
                                         const worldCupScore = allLost ? 0 : (isSingleWinner ? 3 : isSharedWinner ? 1 : 0);
                                         const pesceScore = allLost ? 0 : (isSingleWinner || isSharedWinner ? 1 : 0);
 
                                         return (
-                                            <Row key={index} className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm">
-                                                {/* Avatar */}
-                                                <Col xs={3} className="d-flex align-items-center gap-2">
-                                                    {/* <img 
-                                                        src={data.avatar ? `${baseURL}/user/uploads/${data.avatar}` : `${baseURL}/user/uploads/default_avatar.png`} 
-                                                        alt="Avatar" 
-                                                        className="rounded-circle border" 
-                                                        style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
-                                                    /> */}
-                                                    <div onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
-                                                        <img
-                                                            src={
-                                                            data.avatar
-                                                                ? `${baseURL}/user/uploads/${data.avatar}`
-                                                                : `${baseURL}/user/uploads/default_avatar.png`
-                                                            }
-                                                            alt="Profile"
-                                                            className="rounded-circle mb-1"
-                                                            style={{ width: '35px', height: '35px', objectFit: 'cover' }}
-                                                        />
-                                                    </div>
+                                            <Row
+                                            key={index}
+                                            className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
+                                            >
+                                            {/* Avatar */}
+                                            <Col xs={3} className="d-flex align-items-center gap-2">
+                                                <div onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
+                                                <img
+                                                    src={
+                                                    data.avatar
+                                                        ? `${baseURL}/user/uploads/${data.avatar}`
+                                                        : `${baseURL}/user/uploads/default_avatar.png`
+                                                    }
+                                                    alt="Profile"
+                                                    className="rounded-circle mb-1"
+                                                    style={{ width: '35px', height: '35px', objectFit: 'cover' }}
+                                                />
+                                                </div>
+                                            </Col>
+
+                                            {/* Username */}
+                                            <Col
+                                                xs={4}
+                                                className="text-start fw-semibold"
+                                                onClick={() => handleShowProfile(data)}
+                                                style={{ cursor: 'pointer' }}
+                                            >
+                                                {data.username}
+                                            </Col>
+
+                                            {/* Score + Progress */}
+                                            <Col xs={5}>
+                                                <Row className="align-items-center">
+                                                <Col xs={7}>
+                                                    <ProgressBar
+                                                    className={`${data.gamename}-progressbar`}
+                                                    variant="success"
+                                                    now={
+                                                        scoringmethod === "Golf"
+                                                        ? data.gamlescore ?? totalScore
+                                                        : scoringmethod === "World Cup"
+                                                        ? worldCupScore
+                                                        : scoringmethod === "Pesce"
+                                                        ? pesceScore
+                                                        : (data.gamlescore ?? totalScore)
+                                                    }
+                                                    max={totalScore}
+                                                    style={{ height: '8px' }}
+                                                    />
                                                 </Col>
 
-                                                {/* Username */}
-                                                <Col xs={4} className="text-start fw-semibold" onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
-                                                    {data.username}
-                                                </Col>
+                                                <Col xs={5} className="text-center d-flex fw-bold">
+                                                    <span
+                                                    onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)}
+                                                    style={{ cursor: "pointer" }}
+                                                    >
+                                                    {/* Score */}
+                                                    {scoringmethod === "Golf"
+                                                        ? (data.gamlescore ?? '') === '' ? totalScore : data.gamlescore
+                                                        : scoringmethod === "World Cup"
+                                                        ? worldCupScore
+                                                        : pesceScore}
 
-                                                {/* Score */}
-                                                <Col xs={5}>
-                                                    <Row className="align-items-center">
-                                                        <Col xs={7}>
-                                                            <ProgressBar 
-                                                                className={`${data.gamename}-progressbar`} 
-                                                                variant="success" 
-                                                                now={
-                                                                    scoringmethod === "Golf"
-                                                                        ? data.gamlescore ?? totalScore
-                                                                        : scoringmethod === "World Cup"
-                                                                        ? worldCupScore
-                                                                        : scoringmethod === "Pesce"
-                                                                        ? pesceScore
-                                                                        : (data.gamlescore ?? totalScore)
-                                                                } 
-                                                                max={totalScore} 
-                                                                style={{ height: '8px' }}
-                                                            />
-                                                        </Col>
-                                                        <Col xs={5} className="text-center d-flex fw-bold">
-                                                            <span
-                                                                onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)}
-                                                                style={{ cursor: "pointer" }}
-                                                            >
-                                                                {scoringmethod === "Golf"
-                                                                    ? (data.gamlescore ?? '') === '' ? totalScore : data.gamlescore
-                                                                    : scoringmethod === "World Cup"
-                                                                    ? worldCupScore
-                                                                    : pesceScore}
-                                                                {scoringmethod === "Pesce" && isSheriff && " 🤠"}
-                                                                {(scoringmethod === "Golf" || scoringmethod === "World Cup") && isSheriff && " 🏆"}
-                                                            </span>
-                                                        </Col>
-                                                                 
-                                                        
-                                                    </Row>
+                                                    {/* Emoji Logic */}
+                                                    {scoringmethod === "Pesce" && isSheriffUser(data.username) && " 🤠"}
+                                                    {scoringmethod !== "Pesce" && isSingleWinner && " 🏆"}
+                                                    </span>
                                                 </Col>
+                                                </Row>
+                                            </Col>
                                             </Row>
                                         );
-                                    })
-                                }
+                                        })
+                                    }
                             </>
                         );
                     })()}
@@ -912,7 +944,6 @@ if (!allLostToday) {
                                 <p className="text-center">
                                     Start Date: {(() => {
                                     const date = new Date(latestJoinDate);
-                                    console.log('joinDate',date);
                                     const dateString = date.toLocaleDateString("en-US", {
                                         year: "numeric",
                                         month: "long",

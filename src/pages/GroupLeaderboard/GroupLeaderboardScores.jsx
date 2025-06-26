@@ -439,28 +439,43 @@ const noDataMessage = {
                                         </div>
                                     );
                                 }
-                                else{
-                                    
-                                    const highestScore = Math.max(...filteredLeaderboard.map(d => d.gamlescore ?? 0));
+                                else {
+                                    const today = new Date();
+                                    const yesterday = new Date(today);
+                                    yesterday.setDate(today.getDate() - 1);
+                                    const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+                                    // Find today's top scorers
+                                    const highestScore = Math.min(...filteredLeaderboard.map(d => d.gamlescore ?? 0));
                                     const topScorers = filteredLeaderboard.filter(d => d.gamlescore == highestScore);
-                                    // Prior day's sheriff (pass this from backend/context)
-                                    const priorSheriffUsername = topScorers[0]?.username; // Replace with dynamic value
-                                    console.log(priorSheriffUsername,'priorSheriffUsername');
-                                    // New sheriff logic (Pesce mode): Tie-breaker excludes prior sheriff
+                                    console.log('topScorers', topScorers);
+
+                                    // Get yesterday's scores
+                                    const yesterdayScores = filteredLeaderboard.filter(entry =>
+                                        entry.createdat?.startsWith(yesterdayStr)
+                                    );
+
+                                    const minScoreYesterday = Math.min(...yesterdayScores.map(d => d.gamlescore ?? 0));
+
+                                    const priorSheriffUsernames = yesterdayScores
+                                        .filter(d => d.gamlescore == minScoreYesterday)
+                                        .map(d => d.username);
+
+                                    // Pesce mode sheriff logic
                                     const sheriffWinners =
-                                    topScorers.length === 1
-                                        ? topScorers
-                                        : topScorers.filter(user => user.username !== priorSheriffUsername);
+                                        topScorers.length === 1
+                                            ? topScorers
+                                            : topScorers.filter(user => !priorSheriffUsernames.includes(user.username));
 
                                     const isSheriff = (username) =>
-                                    sheriffWinners.some(w => w.username === username);
+                                        sheriffWinners.some(w => w.username == username);
+
                                     return (
-                                        
                                         <>
                                             <h4 className="text-center py-3">Today's Leaderboard</h4>
                                             {scoringmethod === "Pesce" && (
                                                 <div className="text-center my-3 fw-bold">
-                                                Sheriff: {sheriffWinners.map(u => u.username).join(', ') || "—"}
+                                                    Sheriff: {sheriffWinners.map(u => u.username).join(', ') || "—"}
                                                 </div>
                                             )}
 
@@ -477,99 +492,100 @@ const noDataMessage = {
                                                     return b.gamlescore - a.gamlescore;
                                                 })
                                                 .map((data, index) => {
-                                                const totalScore = getTotalScore(data.gamename);
+                                                    const totalScore = getTotalScore(data.gamename);
 
-                                                const progressValue =
-                                                    totalScore > 0
-                                                    ? data.gamename === "connections"
-                                                        ? (data.gamlescore / totalScore) * 100
-                                                        : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
-                                                    : 0;
+                                                    const progressValue =
+                                                        totalScore > 0
+                                                            ? data.gamename === "connections"
+                                                                ? (data.gamlescore / totalScore) * 100
+                                                                : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
+                                                            : 0;
 
-                                                const isSingleWinner = topScorers.length === 1 && topScorers[0].username === data.username;
-                                                const isSharedWinner = topScorers.length > 1 && topScorers.some(w => w.username === data.username);
-                                                const isTopScorer = isSingleWinner || isSharedWinner;
+                                                    const isSingleWinner = topScorers.length == 1 && topScorers[0].username == data.username;
+                                                    const isSharedWinner = topScorers.length > 1 && topScorers.some(w => w.username == data.username);
+                                                    const isTopScorer = isSingleWinner || isSharedWinner;
 
-                                                const isSheriffToday = isSheriff(data.username);
-                                                const pesceScore = isTopScorer && isSheriffToday ? 1 : 0;
+                                                    const isSheriffToday = isSheriff(data.username);
+                                                    const allLost = highestScore === 7;
+                                                    const worldCupScore = allLost ? 0 : (isSingleWinner ? 3 : isSharedWinner ? 1 : 0);
+                                                    const pesceScore = allLost ? 0 : (isSingleWinner || isSharedWinner ? 1 : 0);
 
-                                                const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
+                                                    return (
+                                                        <Row
+                                                            key={index}
+                                                            className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
+                                                        >
+                                                            {/* Avatar */}
+                                                            <Col xs={3} className="d-flex align-items-center gap-2">
+                                                                <div onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
+                                                                    <img
+                                                                        src={
+                                                                            data.avatar
+                                                                                ? `${baseURL}/user/uploads/${data.avatar}`
+                                                                                : `${baseURL}/user/uploads/default_avatar.png`
+                                                                        }
+                                                                        alt="Profile"
+                                                                        className="rounded-circle mb-1"
+                                                                        style={{ width: '35px', height: '35px', objectFit: 'cover' }}
+                                                                    />
+                                                                </div>
+                                                            </Col>
 
-                                                return (
-                                                    <Row
-                                                    key={index}
-                                                    className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
-                                                    >
-                                                    {/* Avatar */}
-                                                    <Col xs={3} className="d-flex align-items-center gap-2">
-                                                        <div onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
-                                                        <img
-                                                            src={
-                                                            data.avatar
-                                                                ? `${baseURL}/user/uploads/${data.avatar}`
-                                                                : `${baseURL}/user/uploads/default_avatar.png`
-                                                            }
-                                                            alt="Profile"
-                                                            className="rounded-circle mb-1"
-                                                            style={{ width: '35px', height: '35px', objectFit: 'cover' }}
-                                                        />
-                                                        </div>
-                                                    </Col>
-
-                                                    {/* Username */}
-                                                    <Col
-                                                        xs={4}
-                                                        className="text-start fw-semibold"
-                                                        onClick={() => handleShowProfile(data)}
-                                                        style={{ cursor: 'pointer' }}
-                                                    >
-                                                        {data.username}
-                                                    </Col>
-
-                                                    {/* Score + Progress */}
-                                                    <Col xs={5}>
-                                                        <Row className="align-items-center">
-                                                        <Col xs={7}>
-                                                            <ProgressBar
-                                                            className={`${data.gamename}-progressbar`}
-                                                            variant="success"
-                                                            now={
-                                                                scoringmethod === "Golf"
-                                                                ? data.gamlescore
-                                                                : scoringmethod === "World Cup"
-                                                                ? worldCupScore
-                                                                : scoringmethod === "Pesce"
-                                                                ? pesceScore
-                                                                : data.gamlescore
-                                                            }
-                                                            max={scoringmethod === "Pesce" || scoringmethod === "World Cup" ? 3 : totalScore}
-                                                            style={{ height: '8px' }}
-                                                            />
-                                                        </Col>
-                                                        <Col xs={5} className="text-center d-flex fw-bold">
-                                                            <span
-                                                            onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)}
-                                                            style={{ cursor: "pointer" }}
+                                                            {/* Username */}
+                                                            <Col
+                                                                xs={4}
+                                                                className="text-start fw-semibold"
+                                                                onClick={() => handleShowProfile(data)}
+                                                                style={{ cursor: 'pointer' }}
                                                             >
-                                                            {scoringmethod === "Golf" ? (
-                                                                <> {data.gamlescore} {isTopScorer && "🏆"} </>
-                                                            ) : scoringmethod === "World Cup" ? (
-                                                                <> {worldCupScore} {isTopScorer && "🏆"} </>
-                                                            ) : scoringmethod === "Pesce" ? (
-                                                                <> {pesceScore} {isSheriffToday && "🤠"} </>
-                                                            ) : (
-                                                                <> {data.gamlescore} {isTopScorer && "🏆"} </>
-                                                            )}
-                                                            </span>
-                                                        </Col>
+                                                                {data.username}
+                                                            </Col>
+
+                                                            {/* Score + Progress */}
+                                                            <Col xs={5}>
+                                                                <Row className="align-items-center">
+                                                                    <Col xs={7}>
+                                                                        <ProgressBar
+                                                                            className={`${data.gamename}-progressbar`}
+                                                                            variant="success"
+                                                                            now={
+                                                                                scoringmethod === "Golf"
+                                                                                    ? data.gamlescore
+                                                                                    : scoringmethod === "World Cup"
+                                                                                        ? worldCupScore
+                                                                                        : scoringmethod === "Pesce"
+                                                                                            ? pesceScore
+                                                                                            : data.gamlescore
+                                                                            }
+                                                                            max={scoringmethod === "Pesce" || scoringmethod === "World Cup" ? 3 : totalScore}
+                                                                            style={{ height: '8px' }}
+                                                                        />
+                                                                    </Col>
+                                                                    <Col xs={5} className="text-center d-flex fw-bold">
+                                                                        <span
+                                                                            onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)}
+                                                                            style={{ cursor: "pointer" }}
+                                                                        >
+                                                                            {scoringmethod === "Golf" ? (
+                                                                                <> {data.gamlescore} {isSingleWinner && "🏆"} </>
+                                                                            ) : scoringmethod === "World Cup" ? (
+                                                                                <> {worldCupScore} {isSingleWinner && "🏆"} </>
+                                                                            ) : scoringmethod === "Pesce" ? (
+                                                                                <> {pesceScore} {isSheriffToday && "🤠"} </>
+                                                                            ) : (
+                                                                                <> {data.gamlescore} {isSingleWinner && "🏆"} </>
+                                                                            )}
+                                                                        </span>
+                                                                    </Col>
+                                                                </Row>
+                                                            </Col>
                                                         </Row>
-                                                    </Col>
-                                                    </Row>
-                                                );
+                                                    );
                                                 })}
                                         </>
                                     );
                                 }
+
                                 
                             })()}
                         </>
