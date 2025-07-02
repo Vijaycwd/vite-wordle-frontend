@@ -6,11 +6,9 @@ import TitleLogo from '../../WordleTitleLogo.png';
 import { useNavigate } from "react-router-dom";
 import '@fortawesome/fontawesome-free/css/all.min.css'; 
 import axios from 'axios';
-import NotificationBar from './NotificationBar';  // import NotificationBar
-import { Toast } from 'react-bootstrap';
 import GroupInvites from '../../pages/GroupInvites';
 import FeedbackButton from '../../pages/FeedbackButton';
-import { Image } from 'react-bootstrap';
+
 
 const Headerbar = () => {
   const baseURL = import.meta.env.VITE_BASE_URL;
@@ -25,7 +23,19 @@ const Headerbar = () => {
   const [showNotificationPanel, setShowNotificationPanel] = useState(false);
   const ref = useRef(null);
   const navigate = useNavigate();
-  
+  const [expanded, setExpanded] = useState(false);
+  const collapseRef = useRef();
+
+  useEffect(() => {
+  const handleOutsideClick = (e) => {
+    if (collapseRef.current && !collapseRef.current.contains(e.target)) {
+      setExpanded(false);
+    }
+  };
+
+  document.addEventListener('mousedown', handleOutsideClick);
+  return () => document.removeEventListener('mousedown', handleOutsideClick);
+}, []);
 
   useEffect(() => {
   if (userEmail?.trim()) {
@@ -136,20 +146,19 @@ const Headerbar = () => {
             </Link>
             </>
           )}
-          <Navbar expand="lg" className=" py-2" sticky="top">
-              <Navbar.Toggle aria-controls="basic-navbar-nav" />
-
-              <Navbar.Collapse id="basic-navbar-nav">
+          <Navbar expand="lg" expanded={expanded} onToggle={() => setExpanded(!expanded)} className="py-2" sticky="top">
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav" ref={collapseRef}>
                 <Nav className="align-items-center">
                   <div role="button" onClick={handleClick}>
                     <div ref={ref}>
                       {userData.avatar ? (
-                        <Image
+                         <img 
                           src={`${baseURL}/user/uploads/${userData.avatar}`}
-                          alt="Avatar"
-                          roundedCircle
-                          width={36}
-                          height={36}
+                          alt="User Avatar" 
+                          width="30"
+                          height="30"
+                          className="img-fluid user-avatar rounded-circle mb-2"
                           onError={(e) => (e.target.style.display = 'none')}
                         />
 
@@ -172,30 +181,6 @@ const Headerbar = () => {
                 </Nav>
               </Navbar.Collapse>
           </Navbar>
-          {/* <div role="button" onClick={handleClick}>
-            <div ref={ref}>
-              {userData.avatar ? (
-                <img 
-                  src={`${baseURL}/user/uploads/${userData.avatar}`}
-                  alt="User Avatar" 
-                  className="img-fluid user-avatar rounded-circle"
-                  onError={(e) => {
-                    e.target.onerror = null; // Prevent infinite loop
-                    e.target.style.display = 'none'; // Hide broken image
-                  }}
-                />
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" className="bi bi-bar-chart-fill" width="15" height="15" fill="#00BF63" viewBox="0 0 448 512">
-                  <path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512l388.6 0c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304l-91.4 0z"/>
-                </svg>
-              )}
-
-            </div>
-          </div>
-
-          <Button className='game-btn' onClick={gamleIntro}>Gamle Intro</Button>
-          <FeedbackButton/>
-          <Button className='game-btn' onClick={faq}>FAQ</Button> */}
         </Col>
       </Row>
       <Row className="justify-content-center align-items-center py-2">
