@@ -235,6 +235,57 @@ const noDataMessage = {
   phrazle: "Gamle Score 7"
 }[game] || "No data available.";
     //// console.log('todayLeaderboard',todayLeaderboard);
+const today = new Date();
+const yesterday = new Date(today);
+yesterday.setDate(today.getDate() - 1);
+const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+// Helper to get period
+const getPeriod = (createdat) => {
+  const hour = new Date(createdat).getHours();
+  return hour < 12 ? "AM" : "PM";
+};
+
+// Prepare sheriff list
+let sheriffWinners = [];
+
+// Loop through games
+["phrazle", "othergame"].forEach(gameName => {
+  // Handle Phrazle AM and PM separately
+  const periods = gameName === "phrazle" ? ["AM", "PM"] : [null];
+
+  periods.forEach(period => {
+    // Today's scores for this game/period
+    const todayScores = todayLeaderboard.filter(d =>
+      d.gamename === gameName &&
+      (!period || getPeriod(d.createdat) === period)
+    );
+
+    const todayMinScore = Math.min(...todayScores.map(d => d.gamlescore ?? 0));
+    const todayTopScorers = todayScores.filter(d => d.gamlescore === todayMinScore);
+
+    // Yesterday's scores for this game/period
+    const yesterdayScores = todayLeaderboard.filter(d =>
+      d.gamename === gameName &&
+      d.createdat?.startsWith(yesterdayStr) &&
+      (!period || getPeriod(d.createdat) === period)
+    );
+
+    const yesterdayMinScore = Math.min(...yesterdayScores.map(d => d.gamlescore ?? 0));
+    const priorSheriffs = yesterdayScores
+      .filter(d => d.gamlescore === yesterdayMinScore)
+      .map(d => d.username);
+
+    // Determine new sheriffs: exclude prior sheriff(s) in ties
+    const winners =
+      todayTopScorers.length > 0
+        ? todayTopScorers
+        : todayTopScorers.filter(d => !priorSheriffs.includes(d.username));
+
+    sheriffWinners.push(...winners);
+  });
+});
+
     return (
         <div>
             
@@ -292,112 +343,161 @@ const noDataMessage = {
                                         </div>
                                     );
                                 }
-                                else{
-                                    
-                                    return (
+                                else {
+                                    const getDateString = (createdat) => {
+                                        const d = new Date(createdat);
+                                        const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+                                        return local.toISOString().split('T')[0];
+                                    };
+
+                                    const getPeriod = (createdat) => {
+                                        const hour = new Date(createdat).getHours();
+                                        return hour < 12 ? "AM" : "PM";
+                                    };
+
+                                    const getPreviousPhrazlePeriod = () => {
+                                        const now = new Date();
+                                        const isAM = now.getHours() < 12;
+                                        const date = new Date(now);
+
+                                        if (isAM) {
+                                        date.setDate(date.getDate() - 1);
+                                        return { dateStr: getDateString(date), period: "PM" };
+                                        } else {
+                                        return { dateStr: getDateString(date), period: "AM" };
+                                        }
+                                    };
+
+                                    const { dateStr: prevDate, period: prevPeriod } = getPreviousPhrazlePeriod();
+
+                                    // Get yesterday's Phrazle scores from prior period
+                                    const priorPeriodSheriffs = filteredLeaderboard.filter(entry =>
+                                        entry.gamename === "phrazle" &&
+                                        getDateString(entry.createdat) === prevDate &&
+                                        getPeriod(entry.createdat) === prevPeriod
+                                    );
+                                    const sheriffExists = priorPeriodSheriffs.length > 0;
+
+                                        const minScoreYesterday = sheriffExists
+                                        ? Math.min(...priorPeriodSheriffs.map(d => Number(d.gamlescore) ?? 0))
+                                        : null;
+
                                         
+                                    const priorSheriffUsernames = priorPeriodSheriffs
+                                        .filter(d => d.gamlescore === minScoreYesterday)
+                                        .map(d => d.username);
+
+                                    // Today's Phrazle scores
+                                    const todayDateStr = getDateString(new Date());
+                                    const currentPeriod = getPeriod(new Date());
+
+                                    const todayScores = filteredLeaderboard.filter(entry =>
+                                        entry.gamename === "phrazle" &&
+                                        getDateString(entry.createdat) == todayDateStr &&
+                                        getPeriod(entry.createdat) == currentPeriod
+                                    );
+
+                                    const minScoreToday = Math.min(...todayScores.map(d => d.gamlescore ?? 0));
+                                    const topScorers = todayScores.filter(d => d.gamlescore == minScoreToday);
+                                    //console.log("Today Scores:", todayScores);
+                                    //console.log("Min Score Today:", minScoreToday);
+                                    //console.log("Top Scorers:", topScorers);
+                                    //console.log("Prior Sheriffs:", priorSheriffUsernames);  
+                                    const sheriffWinners =
+                                        topScorers.length > 0
+                                        ? topScorers
+                                        : topScorers.filter(d => !priorSheriffUsernames.includes(d.username));
+
+                                    const isSheriff = (username) =>
+                                        sheriffWinners.some(w => w.username === username);
+
+                                    return (
                                         <>
-                                            <h4 className="text-center py-3">Today's Leaderboard</h4>
-                                            {filteredLeaderboard
-                                                .slice()
-                                                .sort((a, b) => a.gamlescore - b.gamlescore)
-                                                .map((data, index) => {
-                                                    const totalScore = getTotalScore(data.gamename);
-                                                    const progressValue =
-                                                        totalScore > 0
-                                                            ? data.gamename === "connections"
-                                                                ? (data.gamlescore / totalScore) * 100
-                                                                : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
-                                                            : 0;
-    
-                                                    // Check if the user is a winner
-                                                    const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
-                                                    const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
-    
-                                                    // Assign points based on scoring method
-                                                    const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
-                                                    const pesceScore = isSingleWinner ? 1 : isSharedWinner ? 1 : 0; // Pesce: all lowest get 1
-    
-                                                    return (
-                                                        <>
-                                                        
-                                                        <Row 
-                                                            key={index} 
-                                                            className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
+                                        <h4 className="text-center py-3">Today's Leaderboard</h4>
+
+                                        {scoringmethod === "Pesce" && (
+                                            <div className="text-center my-3 fw-bold">
+                                            Sheriff: {sheriffWinners.map(u => u.username).join(', ') || "—"}
+                                            </div>
+                                        )}
+
+                                        {filteredLeaderboard
+                                            .slice()
+                                            .sort((a, b) => {
+                                            const isSheriffA = isSheriff(a.username);
+                                            const isSheriffB = isSheriff(b.username);
+
+                                            if (isSheriffA && !isSheriffB) return -1;
+                                            if (!isSheriffA && isSheriffB) return 1;
+
+                                            return a.gamlescore - b.gamlescore;
+                                            })
+                                            .map((data, index) => {
+                                            const totalScore = getTotalScore(data.gamename);
+                                            const progressValue =
+                                                totalScore > 0
+                                                ? data.gamename === "connections"
+                                                    ? (data.gamlescore / totalScore) * 100
+                                                    : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
+                                                : 0;
+
+                                            const isSingleWinner = topScorers.length === 1 && topScorers[0].username === data.username;
+                                            const isSharedWinner = topScorers.length > 1 && topScorers.some(w => w.username === data.username);
+                                            const isTopScorer = isSingleWinner || isSharedWinner;
+                                            const isSheriffToday = isSheriff(data.username);
+                                            const allLost = minScoreToday === 7;
+                                            const pesceScore = allLost ? 0 : (isTopScorer ? 1 : 0);
+
+                                            return (
+                                                <Row key={index} className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm">
+                                                <Col xs={3} className="d-flex align-items-center gap-2">
+                                                    <div onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
+                                                    <img
+                                                        src={
+                                                        data.avatar
+                                                            ? `${baseURL}/user/uploads/${data.avatar}`
+                                                            : `${baseURL}/user/uploads/default_avatar.png`
+                                                        }
+                                                        alt="Profile"
+                                                        className="rounded-circle mb-1"
+                                                        style={{ width: '35px', height: '35px', objectFit: 'cover' }}
+                                                    />
+                                                    </div>
+                                                </Col>
+
+                                                <Col xs={4} className="text-start fw-semibold" onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
+                                                    {data.username}
+                                                </Col>
+
+                                                <Col xs={5}>
+                                                    <Row className="align-items-center">
+                                                    <Col xs={7}>
+                                                        <ProgressBar
+                                                        className={`${data.gamename}-progressbar`}
+                                                        variant="success"
+                                                        now={pesceScore}
+                                                        max={1}
+                                                        style={{ height: '8px' }}
+                                                        />
+                                                    </Col>
+                                                    <Col xs={5} className="text-center d-flex fw-bold">
+                                                        <span
+                                                        onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)}
+                                                        style={{ cursor: "pointer" }}
                                                         >
-                                                            
-                                                            {/* Rank + Avatar */}
-                                                            <Col xs={3} className="d-flex align-items-center gap-2">
-                                                                <div onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
-                                                                    <img
-                                                                        src={
-                                                                        data.avatar
-                                                                            ? `${baseURL}/user/uploads/${data.avatar}`
-                                                                            : `${baseURL}/user/uploads/default_avatar.png`
-                                                                        }
-                                                                        alt="Profile"
-                                                                        className="rounded-circle mb-1"
-                                                                        style={{ width: '35px', height: '35px', objectFit: 'cover' }}
-                                                                    />
-                                                                </div>
-                                                                {/* <img 
-                                                                    src={data.avatar ? `${baseURL}/user/uploads/${data.avatar}` : `${baseURL}/user/uploads/default_avatar.png`} 
-                                                                    alt="Avatar" 
-                                                                    className="rounded-circle border" 
-                                                                    style={{ width: '35px', height: '35px', objectFit: 'cover' }} 
-                                                                /> */}
-                                                            </Col>
-    
-                                                            {/* Username */}
-                                                            <Col xs={4} className="text-start fw-semibold" onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
-                                                                {data.username}
-                                                            </Col>
-    
-                                                            {/* Score & Progress */}
-                                                            <Col xs={5}>
-                                                                <Row className="align-items-center">
-                                                                    <Col xs={7}>
-                                                                        <ProgressBar 
-                                                                            className={`${data.gamename}-progressbar`} 
-                                                                            variant="success" 
-                                                                            now={
-                                                                                scoringmethod === "Golf"
-                                                                                    ? data.gamlescore
-                                                                                    : scoringmethod === "World Cup"
-                                                                                    ? worldCupScore
-                                                                                    : scoringmethod === "Pesce"
-                                                                                    ? pesceScore
-                                                                                    : data.gamlescore
-                                                                            } 
-                                                                            max={totalScore} 
-                                                                            style={{ height: '8px' }}
-                                                                        />
-                                                                    </Col>
-                                                                    <Col xs={5} className="text-center d-flex fw-bold">
-                                                                    <span 
-                                                                     onClick={() => showDayResult(data.createdat, data.useremail, data.gamename, data.gamename === "phrazle" ? getCurrentPeriod() : null)}
-                                                                style={{ cursor: "pointer" }}
-                                                                >
-                                                                        {scoringmethod === "Golf" ? (
-                                                                            <> {data.gamlescore} {isSingleWinner && "🏆"} </>
-                                                                        ) : scoringmethod === "World Cup" ? (
-                                                                            <>  {worldCupScore} {isSingleWinner && "🏆"} </>
-                                                                        ) : scoringmethod === "Pesce" ? (
-                                                                            <> {pesceScore} {isSingleWinner && "🏆"} </>
-                                                                        ) : (
-                                                                            <> {data.gamlescore} {isSingleWinner && "🏆"} </>
-                                                                        )}
-                                                                    </span>
-                                                                    </Col>
-                                                                </Row>
-                                                            </Col>
-                                                        </Row>
-                                                        </>
-                                                    );
-                                                })}
+                                                        {pesceScore} {isSheriffToday && "🤠"}
+                                                        </span>
+                                                    </Col>
+                                                    </Row>
+                                                </Col>
+                                                </Row>
+                                            );
+                                            })}
                                         </>
                                     );
-                                }
+                                    }
+
+
                                 
                             })()}
                            
@@ -448,7 +548,7 @@ const noDataMessage = {
                                     // Find today's top scorers
                                     const highestScore = Math.min(...filteredLeaderboard.map(d => d.gamlescore ?? 0));
                                     const topScorers = filteredLeaderboard.filter(d => d.gamlescore == highestScore);
-                                    console.log('topScorers', topScorers);
+                                    // console.log('topScorers', topScorers);
 
                                     // Get yesterday's scores
                                     const yesterdayScores = filteredLeaderboard.filter(entry =>
@@ -456,14 +556,14 @@ const noDataMessage = {
                                     );
 
                                     const minScoreYesterday = Math.min(...yesterdayScores.map(d => d.gamlescore ?? 0));
-
+                                    
                                     const priorSheriffUsernames = yesterdayScores
                                         .filter(d => d.gamlescore == minScoreYesterday)
                                         .map(d => d.username);
 
                                     // Pesce mode sheriff logic
                                     const sheriffWinners =
-                                        topScorers.length === 1
+                                        topScorers.length > 0
                                             ? topScorers
                                             : topScorers.filter(user => !priorSheriffUsernames.includes(user.username));
 

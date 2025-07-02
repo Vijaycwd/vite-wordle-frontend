@@ -105,28 +105,28 @@ function PhrazleScoreByDate() {
        const today = now.startOf('day');
        const currentHour = now.hour();
         const isToday = dayjs(startDate).isSame(today, 'day');
-   
-           if (period === 'AM') {
-               if (isToday && currentHour < 12) {
-                   // Before 12 PM today → block PM
-                   return;
-               }
-   
-               // Move from AM to PM (same date)
-               const formattedDate = formatDateForBackend(startDate);
-               fetchDataByDate(formattedDate, 'PM');
-               setPeriod('PM');
-           } else {
-               // Trying to move past today — block it
-               if (isToday) return;
-   
-               // Move to next day AM
-               const nextDate = dayjs(startDate).add(1, 'day');
-               const formattedDate = formatDateForBackend(nextDate.toDate());
-               fetchDataByDate(formattedDate, 'AM');
-               setStartDate(nextDate.toDate());
-               setPeriod('AM');
-           }
+
+            if (period === 'AM') {
+                if (isToday && currentHour < 12) {
+                    // Before 12 PM today → block PM
+                    return;
+                }
+
+                // Move from AM to PM (same date)
+                const formattedDate = formatDateForBackend(startDate);
+                fetchDataByDate(formattedDate, 'PM');
+                setPeriod('PM');
+            } else {
+                // Trying to move past today — block it
+                if (isToday) return;
+
+                // Move to next day AM
+                const nextDate = dayjs(startDate).add(1, 'day');
+                const formattedDate = formatDateForBackend(nextDate.toDate());
+                fetchDataByDate(formattedDate, 'AM');
+                setStartDate(nextDate.toDate());
+                setPeriod('AM');
+            }
    };
 
     const splitIntoRows = (text) => {

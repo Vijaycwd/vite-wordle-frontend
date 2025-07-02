@@ -33,7 +33,8 @@ function AdminText() {
     world_cup_modal_title: '',
     world_modal_cup_description: '',
     pesce_modal_title: '',
-    pesce_modal_description: ''
+    pesce_modal_description: '',
+    faqSections: []
   });
 
   const [recordExists, setRecordExists] = useState(false); // new state
@@ -43,6 +44,15 @@ function AdminText() {
     Axios.get(`${baseURL}/user/get-homepage-text.php`)
       .then((res) => {
         if (res.data && res.data.heading) {
+          let parsedFaqs = [];
+
+        try {
+          parsedFaqs = typeof res.data.faq_sections === 'string'
+            ? JSON.parse(res.data.faq_sections)
+            : res.data.faq_sections;
+        } catch (e) {
+          console.error('Failed to parse faqSections:', e);
+        }
           setFormData({
             heading: res.data.heading,
             text1: res.data.text1,
@@ -56,7 +66,8 @@ function AdminText() {
             world_cup_modal_title: res.data.world_cup_modal_title,
             world_cup_modal_description: res.data.world_cup_modal_description,
             pesce_modal_title: res.data.pesce_modal_title,
-            pesce_modal_description: res.data.pesce_modal_description
+            pesce_modal_description: res.data.pesce_modal_description,
+            faqSections: parsedFaqs
           });
 
           setRecordExists(true);
@@ -84,6 +95,46 @@ function AdminText() {
   }
 };
 
+const addFaqSection = () => {
+    if (formData.faqSections.length >= 5) {
+      toast.warn("Limit reached: You can only add up to 5 FAQ categories.");
+      return;
+    }
+    setFormData(prev => ({
+      ...prev,
+      faqSections: [...prev.faqSections, { title: '', faqs: [{ question: '', answer: '' }] }]
+    }));
+  };
+
+  const handleSectionTitleChange = (index, value) => {
+    const updated = [...formData.faqSections];
+    updated[index].title = value;
+    setFormData(prev => ({ ...prev, faqSections: updated }));
+  };
+
+  const addFaqToSection = (sectionIndex) => {
+    const updated = [...formData.faqSections];
+    updated[sectionIndex].faqs.push({ question: '', answer: '' });
+    setFormData(prev => ({ ...prev, faqSections: updated }));
+  };
+
+  const handleFaqChange = (sectionIndex, faqIndex, key, value) => {
+    const updated = [...formData.faqSections];
+    updated[sectionIndex].faqs[faqIndex][key] = value;
+    setFormData(prev => ({ ...prev, faqSections: updated }));
+  };
+
+const removeFaqFromSection = (sectionIndex, faqIndex) => {
+  const updated = [...formData.faqSections];
+  updated[sectionIndex].faqs.splice(faqIndex, 1);
+  setFormData(prev => ({ ...prev, faqSections: updated }));
+};
+
+const removeFaqSection = (sectionIndex) => {
+  const updated = [...formData.faqSections];
+  updated.splice(sectionIndex, 1);
+  setFormData(prev => ({ ...prev, faqSections: updated }));
+};
 
 return (
   <Container className="mt-5">
@@ -229,7 +280,85 @@ return (
                 />
               </Form.Group>
             </Tab>
+            <Tab eventKey="faq" title="FAQ">
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <h5 className="mb-0"><strong>FAQ Sections</strong></h5>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={addFaqSection}
+                    disabled={formData.faqSections.length >= 5}
+                  >
+                    + Add FAQ Section
+                  </Button>
+                </div>
+
+                {formData.faqSections.map((section, sectionIndex) => (
+                  <div key={sectionIndex} className="border p-3 rounded mb-4">
+                    <Form.Group className="mb-3">
+                      <Form.Label>Section Title</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="e.g., USER EXPERIENCE"
+                        value={section.title}
+                        onChange={(e) => handleSectionTitleChange(sectionIndex, e.target.value)}
+                      />
+                    </Form.Group>
+
+                    {section.faqs.map((faq, faqIndex) => (
+                      <div key={faqIndex} className="mb-4 border rounded p-3">
+                        <Form.Group className="mb-2">
+                          <Form.Label>Question</Form.Label>
+                          <Form.Control
+                            type="text"
+                            value={faq.question}
+                            placeholder="Enter question"
+                            onChange={(e) => handleFaqChange(sectionIndex, faqIndex, 'question', e.target.value)}
+                          />
+                        </Form.Group>
+
+                        <Form.Group>
+                          <Form.Label>Answer</Form.Label>
+                          <ReactQuill
+                            theme="snow"
+                            value={faq.answer}
+                            onChange={(content) => handleFaqChange(sectionIndex, faqIndex, 'answer', content)}
+                            modules={quillModules}
+                          />
+                        </Form.Group>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          onClick={() => removeFaqFromSection(sectionIndex, faqIndex)}
+                          className="mt-2"
+                        >
+                          Remove FAQ
+                        </Button>
+                      </div>
+                    ))}
+
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      onClick={() => addFaqToSection(sectionIndex)}
+                    >
+                      + Add FAQ to "{section.title || 'Untitled'}"
+                    </Button>
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
+                      onClick={() => removeFaqSection(sectionIndex)}
+                      className="ms-2"
+                    >
+                      🗑 Remove Section
+                    </Button>
+
+                  </div>
+                ))}
+              </Tab>
           </Tabs>
+          
+
           
           <Button variant="primary" type="submit">
             {recordExists ? 'Update' : 'Submit'}

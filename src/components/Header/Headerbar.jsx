@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Container, Row, Col, Button, Overlay, Popover } from 'react-bootstrap';
+import { Container, Row, Col, Button, Overlay, Popover,  Navbar,Nav, } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Logo from '../../Logo.png';
 import TitleLogo from '../../WordleTitleLogo.png';
@@ -9,6 +9,8 @@ import axios from 'axios';
 import NotificationBar from './NotificationBar';  // import NotificationBar
 import { Toast } from 'react-bootstrap';
 import GroupInvites from '../../pages/GroupInvites';
+import FeedbackButton from '../../pages/FeedbackButton';
+import { Image } from 'react-bootstrap';
 
 const Headerbar = () => {
   const baseURL = import.meta.env.VITE_BASE_URL;
@@ -23,6 +25,7 @@ const Headerbar = () => {
   const [showNotificationPanel, setShowNotificationPanel] = useState(false);
   const ref = useRef(null);
   const navigate = useNavigate();
+  
 
   useEffect(() => {
   if (userEmail?.trim()) {
@@ -80,6 +83,18 @@ const Headerbar = () => {
     navigate('/login');
   };
 
+  const gamleIntro = async (event) => {
+    event.preventDefault();
+    setShow(false);
+    navigate('/gamleintro');
+  };
+
+  const faq = async (event) => {
+    event.preventDefault();
+    setShow(false);
+    navigate('/faq');
+  };
+
   const editUser = (username, email, id, avatar, isEditing) => {
     setShow(false);
     navigate('/edit-profile', {
@@ -88,6 +103,7 @@ const Headerbar = () => {
   };
 
   return (
+
     <Container className='header-section'>
       <Row className="align-items-center py-2 justify-content-end ">
         <Col md={2} xs={3}>
@@ -106,7 +122,57 @@ const Headerbar = () => {
             </svg>
           </Link>
           {userEmail && <GroupInvites />}
-         <div role="button" onClick={handleClick}>
+          {userEmail === "cassandradroogan@gmail.com" && (
+            <>
+            <Link to="/admin-text">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#00BF63" viewBox="0 0 512 512">
+                <path d="M78.6 5C69.1-2.4 55.6-1.5 47 7L7 47c-8.5 8.5-9.4 22-2.1 31.6l80 104c4.5 5.9 11.6 9.4 19 9.4l54.1 0 109 109c-14.7 29-10 65.4 14.3 89.6l112 112c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-112-112c-24.2-24.2-60.6-29-89.6-14.3l-109-109 0-54.1c0-7.5-3.5-14.5-9.4-19L78.6 5zM19.9 396.1C7.2 408.8 0 426.1 0 444.1C0 481.6 30.4 512 67.9 512c18 0 35.3-7.2 48-19.9L233.7 374.3c-7.8-20.9-9-43.6-3.6-65.1l-61.7-61.7L19.9 396.1zM512 144c0-10.5-1.1-20.7-3.2-30.5c-2.4-11.2-16.1-14.1-24.2-6l-63.9 63.9c-3 3-7.1 4.7-11.3 4.7L352 176c-8.8 0-16-7.2-16-16l0-57.4c0-4.2 1.7-8.3 4.7-11.3l63.9-63.9c8.1-8.1 5.2-21.8-6-24.2C388.7 1.1 378.5 0 368 0C288.5 0 224 64.5 224 144l0 .8 85.3 85.3c36-9.1 75.8 .5 104 28.7L429 274.5c49-23 83-72.8 83-130.5zM56 432a24 24 0 1 1 48 0 24 24 0 1 1 -48 0z"/>
+              </svg>
+            </Link>
+            <Link to="/users-list">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#00BF63" viewBox="0 0 640 512">
+                <path d="M144 0a80 80 0 1 1 0 160A80 80 0 1 1 144 0zM512 0a80 80 0 1 1 0 160A80 80 0 1 1 512 0zM0 298.7C0 239.8 47.8 192 106.7 192l42.7 0c15.9 0 31 3.5 44.6 9.7c-1.3 7.2-1.9 14.7-1.9 22.3c0 38.2 16.8 72.5 43.3 96c-.2 0-.4 0-.7 0L21.3 320C9.6 320 0 310.4 0 298.7zM405.3 320c-.2 0-.4 0-.7 0c26.6-23.5 43.3-57.8 43.3-96c0-7.6-.7-15-1.9-22.3c13.6-6.3 28.7-9.7 44.6-9.7l42.7 0C592.2 192 640 239.8 640 298.7c0 11.8-9.6 21.3-21.3 21.3l-213.3 0zM224 224a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zM128 485.3C128 411.7 187.7 352 261.3 352l117.3 0C452.3 352 512 411.7 512 485.3c0 14.7-11.9 26.7-26.7 26.7l-330.7 0c-14.7 0-26.7-11.9-26.7-26.7z"/>
+              </svg>
+            </Link>
+            </>
+          )}
+          <Navbar expand="lg" className=" py-2" sticky="top">
+              <Navbar.Toggle aria-controls="basic-navbar-nav" />
+
+              <Navbar.Collapse id="basic-navbar-nav">
+                <Nav className="align-items-center">
+                  <div role="button" onClick={handleClick}>
+                    <div ref={ref}>
+                      {userData.avatar ? (
+                        <Image
+                          src={`${baseURL}/user/uploads/${userData.avatar}`}
+                          alt="Avatar"
+                          roundedCircle
+                          width={36}
+                          height={36}
+                          onError={(e) => (e.target.style.display = 'none')}
+                        />
+
+                      ) : (
+                         <svg xmlns="http://www.w3.org/2000/svg" className="bi bi-bar-chart-fill" width="18" height="18" fill="#00BF63" viewBox="0 0 448 512">
+                          <path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512l388.6 0c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304l-91.4 0z"/>
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                </Nav>
+                <Nav className="ms-auto align-items-center">
+                  <Button className="game-btn m-2" onClick={() => navigate('/gamleintro')}>
+                    Gamle Intro
+                  </Button>
+                  <FeedbackButton />
+                  <Button className="game-btn m-2" onClick={() => navigate('/faq')}>
+                    FAQ
+                  </Button>
+                </Nav>
+              </Navbar.Collapse>
+          </Navbar>
+          {/* <div role="button" onClick={handleClick}>
             <div ref={ref}>
               {userData.avatar ? (
                 <img 
@@ -126,26 +192,10 @@ const Headerbar = () => {
 
             </div>
           </div>
-          {userEmail === "cassandradroogan@gmail.com" && (
-            <>
-            <Link to="/admin-text">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#00BF63" viewBox="0 0 512 512">
-                <path d="M78.6 5C69.1-2.4 55.6-1.5 47 7L7 47c-8.5 8.5-9.4 22-2.1 31.6l80 104c4.5 5.9 11.6 9.4 19 9.4l54.1 0 109 109c-14.7 29-10 65.4 14.3 89.6l112 112c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-112-112c-24.2-24.2-60.6-29-89.6-14.3l-109-109 0-54.1c0-7.5-3.5-14.5-9.4-19L78.6 5zM19.9 396.1C7.2 408.8 0 426.1 0 444.1C0 481.6 30.4 512 67.9 512c18 0 35.3-7.2 48-19.9L233.7 374.3c-7.8-20.9-9-43.6-3.6-65.1l-61.7-61.7L19.9 396.1zM512 144c0-10.5-1.1-20.7-3.2-30.5c-2.4-11.2-16.1-14.1-24.2-6l-63.9 63.9c-3 3-7.1 4.7-11.3 4.7L352 176c-8.8 0-16-7.2-16-16l0-57.4c0-4.2 1.7-8.3 4.7-11.3l63.9-63.9c8.1-8.1 5.2-21.8-6-24.2C388.7 1.1 378.5 0 368 0C288.5 0 224 64.5 224 144l0 .8 85.3 85.3c36-9.1 75.8 .5 104 28.7L429 274.5c49-23 83-72.8 83-130.5zM56 432a24 24 0 1 1 48 0 24 24 0 1 1 -48 0z"/>
-              </svg>
-            </Link>
-            <Link to="/users-list">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#00BF63" viewBox="0 0 640 512">
-                <path d="M144 0a80 80 0 1 1 0 160A80 80 0 1 1 144 0zM512 0a80 80 0 1 1 0 160A80 80 0 1 1 512 0zM0 298.7C0 239.8 47.8 192 106.7 192l42.7 0c15.9 0 31 3.5 44.6 9.7c-1.3 7.2-1.9 14.7-1.9 22.3c0 38.2 16.8 72.5 43.3 96c-.2 0-.4 0-.7 0L21.3 320C9.6 320 0 310.4 0 298.7zM405.3 320c-.2 0-.4 0-.7 0c26.6-23.5 43.3-57.8 43.3-96c0-7.6-.7-15-1.9-22.3c13.6-6.3 28.7-9.7 44.6-9.7l42.7 0C592.2 192 640 239.8 640 298.7c0 11.8-9.6 21.3-21.3 21.3l-213.3 0zM224 224a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zM128 485.3C128 411.7 187.7 352 261.3 352l117.3 0C452.3 352 512 411.7 512 485.3c0 14.7-11.9 26.7-26.7 26.7l-330.7 0c-14.7 0-26.7-11.9-26.7-26.7z"/>
-              </svg>
-            </Link>
-            </>
-          )}
-          {/* <Link to="/gamesstat">
-            <svg xmlns="http://www.w3.org/2000/svg" className="m-2 bi bi-bar-chart-fill" width="25" height="25" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1z" />
-            </svg>
-          </Link> */}
-          
+
+          <Button className='game-btn' onClick={gamleIntro}>Gamle Intro</Button>
+          <FeedbackButton/>
+          <Button className='game-btn' onClick={faq}>FAQ</Button> */}
         </Col>
       </Row>
       <Row className="justify-content-center align-items-center py-2">

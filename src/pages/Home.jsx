@@ -97,7 +97,7 @@ function Home() {
                     </Row>
                     <Row className='justify-content-between'>
                         <Col className="text-center py-1" md={4} s={12}>
-                            <Button className="btn-lg" onClick={handleGamleIntro}>Gamle Intro</Button>
+                            <Button className='game-btn' onClick={handleGamleIntro}>Gamle Intro</Button>
                         </Col>
                         <Col className="text-center py-1" md={4} s={12}>
                             <FeedbackButton/>

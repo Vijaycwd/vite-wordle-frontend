@@ -29,6 +29,7 @@ import AdminText from './pages/AdminText';
 import AdminRoute from './auth/AdminRoute';
 import UsersList from './pages/UsersList';
 import GamleIntro from './pages/GamleIntro';
+import FAQPage from './pages/FAQPage';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
       <Routes>
         <Route exact path="/" element={<Home/>} />
         <Route exact path="/gamleintro" element={<GamleIntro />} />
+        <Route exact path="/faq" element={<FAQPage />} />
         <Route exact path="/login" element={<Userlogin />} />
         <Route exact path="/register" element={<Registerform />} />
         <Route exact path="*" element={<NotFound/>} />

@@ -6,7 +6,7 @@ function FeedbackButton() {
 
   return (
     <>
-      <Button className="btn-lg" onClick={() => setShow(true)}>
+      <Button className="game-btn m-2" onClick={() => setShow(true)}>
         Feedback
       </Button>
 

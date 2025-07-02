@@ -279,3 +279,16 @@ span.notification-count.badge.bg-danger {
   height: 35px;
   object-fit: cover;
 }
+/* Hide on larger screens */
+@media only screen and (max-width: 600px)  {
+  .navbar-collapse {
+    position: absolute;
+    top: 100%;
+    right: 5%;
+    background-color: white;
+    z-index: 999;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width:200px;
+  }
+}

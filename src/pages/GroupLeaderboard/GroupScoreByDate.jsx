@@ -158,7 +158,6 @@ const showDayResult = (date, useremail, game, period) => {
   
       if (game === 'phrazle') {
           if (period === 'PM') {
-              // ✅ We're switching from PM ➝ AM of the same day
               const newPeriod = 'AM';
               const formattedDateStr = formatDateForBackend(startDate);
   
@@ -189,42 +188,42 @@ const goToNextDay = () => {
     const today = now.startOf('day');
     const currentHour = now.hour();
 
+    const maxAllowedDate = today.subtract(1, 'day'); // Only allow up to yesterday
+    const startDay = dayjs(startDate).startOf('day');
+
     if (game === 'phrazle') {
-        const isToday = dayjs(startDate).isSame(today, 'day');
-
-        if (period === 'AM') {
-            if (isToday && currentHour < 12) {
-                // Before 12 PM today → block PM
-                return;
-            }
-
-            // Move from AM to PM (same date)
-            const formattedDate = formatDateForBackend(startDate);
-            fetchDataByDate(formattedDate, 'PM');
-            setPeriod('PM');
-        } else {
-            // Trying to move past today — block it
-            if (isToday) return;
-
-            // Move to next day AM
-            const nextDate = dayjs(startDate).add(1, 'day');
-            const formattedDate = formatDateForBackend(nextDate.toDate());
-            fetchDataByDate(formattedDate, 'AM');
-            setStartDate(nextDate.toDate());
-            setPeriod('AM');
+        // If you're already at the max date and period is PM — BLOCK
+        if (startDay.isSame(maxAllowedDate, 'day') && period === 'PM') {
+            return; // ⛔ Cannot move forward
         }
+
+        // If currently AM on max allowed date → move to PM
+        if (startDay.isSame(maxAllowedDate, 'day') && period === 'AM') {
+            const formattedDate = formatDateForBackend(startDate);
+            setPeriod('PM');
+            fetchDataByDate(formattedDate, 'PM');
+            return;
+        }
+
+        // Otherwise move to next date AM
+        const nextDate = startDay.add(1, 'day');
+        if (nextDate.isAfter(maxAllowedDate)) return; // ⛔ Exceeds max allowed date
+
+        const formattedDate = formatDateForBackend(nextDate.toDate());
+        setStartDate(nextDate.toDate());
+        setPeriod('AM');
+        fetchDataByDate(formattedDate, 'AM');
     } else {
-        // Non-Phrazle logic: allow only up to yesterday
-        const nextDate = dayjs(startDate).add(1, 'day');
+        // Non-phrazle games → up to yesterday only
+        const nextDate = startDay.add(1, 'day');
         if (nextDate.isSame(today) || nextDate.isAfter(today)) return;
 
         const formattedDate = formatDateForBackend(nextDate.toDate());
-        fetchDataByDate(formattedDate);
         setStartDate(nextDate.toDate());
+        fetchDataByDate(formattedDate);
     }
 };
 
-    
 
     const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
         const parsedDate = dayjs(value, "DD-MM-YYYY");
@@ -239,28 +238,33 @@ const goToNextDay = () => {
             </>
         );
     });
-
- useEffect(() => {
-    const now = new Date();
-    const currentHour = now.getHours();
+useEffect(() => {
+    const now = dayjs();
+    const currentHour = now.hour();
 
     if (game === 'phrazle') {
-        const period = currentHour < 12 ? 'AM' : 'PM';
-        const today = new Date(now); // Today’s date
-        setStartDate(today);
+        let date, period;
+
+        if (currentHour < 12) {
+            // Before noon: show yesterday PM
+            date = now.subtract(1, 'day').toDate();
+            period = 'PM';
+        } else {
+            // After noon: show today AM
+            date = now.toDate();
+            period = 'AM';
+        }
+
+        setStartDate(date);
         setPeriod(period);
-        const formattedDate = formatDateForBackend(today); // e.g. '2025-06-26'
-        fetchDataByDate(formattedDate, period);
+        fetchDataByDate(formatDateForBackend(date), period);
     } else {
-        const nonPhrazleDate = new Date(now);
-        nonPhrazleDate.setDate(nonPhrazleDate.getDate() - 1);
-        setStartDate(nonPhrazleDate);
-        const formattedDate = formatDateForBackend(nonPhrazleDate);
-        fetchDataByDate(formattedDate);
+        const prevDate = now.subtract(1, 'day').toDate();
+        setStartDate(prevDate);
+        fetchDataByDate(formatDateForBackend(prevDate));
     }
 }, [game]);
 
-   
     const fetchDataByDate = async (date, currentPeriod = null) => {
         try {
             const timeZone = moment.tz.guess();
@@ -382,87 +386,74 @@ const noDataMessage = {
   phrazle: "Gamle Score 7"
 }[game] || "No data available.";
 
-// Get yesterday's sheriff info (username + score)
-const getYesterdaySheriffInfo = () => {
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yDate = yesterday.toDateString();
+const today = new Date();
+const yesterday = new Date(today);
+yesterday.setDate(today.getDate() - 1);
+const yesterdayStr = yesterday.toISOString().split('T')[0];
 
-  const yesterdayData = todayLeaderboard.filter(p =>
-    new Date(p.createdat).toDateString() === yDate &&
-    p.gamlescore !== null &&
-    p.gamlescore !== ''
-  );
-
-  if (yesterdayData.length === 0) return null;
-
-  const scores = yesterdayData.map(p => Number(p.gamlescore));
-  const minScore = Math.min(...scores);
-  const gamename = yesterdayData[0]?.gamename;
-
-  const allLost = (gamename === 'connections' && minScore === 4) ||
-                  (gamename !== 'connections' && minScore === 7);
-  if (allLost) return null;
-
-  const winners = yesterdayData.filter(p => Number(p.gamlescore) === minScore);
-  return { username: winners[0]?.username || null, score: minScore };
+// Helper to get period
+const getPeriod = (createdat) => {
+  const hour = new Date(createdat).getHours();
+  return hour < 12 ? "AM" : "PM";
 };
 
-const yesterdaySheriffInfo = getYesterdaySheriffInfo();
-const yesterdaySheriffUsername = yesterdaySheriffInfo?.username ?? null;
-const yesterdaySheriffScore = yesterdaySheriffInfo?.score ?? null;
+// Prepare sheriff list
+let sheriffWinners = [];
 
-// Today data: filter valid scores
-const validToday = todayLeaderboard.filter(
-  p => p.gamlescore !== null && p.gamlescore !== ''
-);
-const scoresToday = validToday.map(p => Number(p.gamlescore));
-const minScoreToday = Math.min(...scoresToday);
-const gamename = validToday[0]?.gamename;
+// Loop through games
+["phrazle", "wordle"].forEach(gameName => {
+  if (gameName === "phrazle") {
+    ["AM", "PM"].forEach(period => {
+      const todayScores = todayLeaderboard.filter(d =>
+        d.gamename === gameName && getPeriod(d.createdat) === period
+      );
 
-// Check if today is an "all lost" scenario
-const allLostToday =
-  (gamename === 'connections' && minScoreToday === 4) ||
-  (gamename !== 'connections' && minScoreToday === 7);
+      const todayMinScore = Math.min(...todayScores.map(d => d.gamlescore ?? 999));
+      const todayTopScorers = todayScores.filter(d => d.gamlescore === todayMinScore);
 
-// Get today’s winners (those with lowest score)
-const todayWinners = validToday.filter(
-  p => Number(p.gamlescore) === minScoreToday
-);
+      const yesterdayScores = todayLeaderboard.filter(d =>
+        d.gamename === gameName &&
+        d.createdat?.startsWith(yesterdayStr) &&
+        getPeriod(d.createdat) === period
+      );
 
-// Sheriff logic
-let sheriffUsername = null;
-let multipleSheriffs = [];
+      const yesterdayMinScore = Math.min(...yesterdayScores.map(d => d.gamlescore ?? 999));
+      const priorSheriffs = yesterdayScores
+        .filter(d => d.gamlescore === yesterdayMinScore)
+        .map(d => d.username);
 
-if (!allLostToday) {
-  if (todayWinners.length === 1) {
-    // Single winner → new sheriff
-    sheriffUsername = todayWinners[0].username;
+      const winners =
+        todayTopScorers.length === 1
+          ? todayTopScorers
+          : todayTopScorers.filter(d => !priorSheriffs.includes(d.username));
+
+      sheriffWinners.push(...winners);
+    });
   } else {
-    // Tie
-    if (
-      yesterdaySheriffScore !== null &&
-      minScoreToday < yesterdaySheriffScore
-    ) {
-      // Tie beat yesterday's sheriff → new sheriffs
-      multipleSheriffs = todayWinners.map(p => p.username);
-      sheriffUsername = multipleSheriffs[0]; // or keep multiple
-    } else if (
-      yesterdaySheriffScore !== null &&
-      minScoreToday === yesterdaySheriffScore &&
-      todayWinners.some(p => p.username === yesterdaySheriffUsername)
-    ) {
-      // Tie equals yesterday and includes yesterday sheriff → they stay
-      sheriffUsername = yesterdaySheriffUsername;
-      multipleSheriffs = [sheriffUsername];
-    } else {
-      // Tie didn’t beat or include yesterday sheriff → no sheriff
-      sheriffUsername = null;
-    }
+    // Non-phrazle game (no AM/PM split)
+    const todayScores = todayLeaderboard.filter(d => d.gamename === gameName);
+
+    const todayMinScore = Math.min(...todayScores.map(d => d.gamlescore ?? 999));
+    const todayTopScorers = todayScores.filter(d => d.gamlescore === todayMinScore);
+
+    const yesterdayScores = todayLeaderboard.filter(d =>
+      d.gamename === gameName &&
+      d.createdat?.startsWith(yesterdayStr)
+    );
+
+    const yesterdayMinScore = Math.min(...yesterdayScores.map(d => d.gamlescore ?? 999));
+    const priorSheriffs = yesterdayScores
+      .filter(d => d.gamlescore === yesterdayMinScore)
+      .map(d => d.username);
+
+    const winners =
+      todayTopScorers.length === 1
+        ? todayTopScorers
+        : todayTopScorers.filter(d => !priorSheriffs.includes(d.username));
+
+    sheriffWinners.push(...winners);
   }
-}
-
-
+});
 
     return (
         <>
@@ -519,7 +510,7 @@ if (!allLostToday) {
                                     <div>
                                         {dayjs(startDate).format("MMM D, YYYY")} - {period}
                                     </div>
-                                    <button disabled={isMaxPhrazleDate} onClick={(e) => { e.stopPropagation(); goToNextDay(); }} className="bg-dark text-white px-3 py-1 rounded">
+                                    <button  onClick={(e) => { e.stopPropagation(); goToNextDay(); }} className="bg-dark text-white px-3 py-1 rounded">
                                         <FaArrowRight />
                                     </button>
                                 </div>
@@ -663,11 +654,39 @@ if (!allLostToday) {
                         const winners = filteredLeaderboard.filter(data => 
                             Number(data.gamlescore ?? getTotalScore(data.gamename)) === minScore
                         );
-                        const isSheriffUser = (username) =>
-                        sheriffUsername &&
-                        (multipleSheriffs?.length > 0
-                            ? multipleSheriffs.includes(username)
-                            : sheriffUsername === username);
+                        
+                        const today = new Date();
+                        const yesterday = new Date(today);
+                        yesterday.setDate(today.getDate() - 1);
+                        const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+                        // Find today's top scorers
+                        const highestScore = Math.min(...filteredLeaderboard.map(d => d.gamlescore ?? 0));
+                        const topScorers = filteredLeaderboard.filter(d => d.gamlescore == highestScore);
+                        // console.log('topScorers', topScorers);
+
+                        // Get yesterday's scores
+                        const yesterdayScores = filteredLeaderboard.filter(entry =>
+                            entry.createdat?.startsWith(yesterdayStr)
+                        );
+
+                        const minScoreYesterday = Math.min(...yesterdayScores.map(d => d.gamlescore ?? 0));
+                        
+                        const priorSheriffUsernames = yesterdayScores
+                            .filter(d => d.gamlescore == minScoreYesterday)
+                            .map(d => d.username);
+
+                        // Pesce mode sheriff logic
+                        const sheriffWinners =
+                        topScorers.length === 1
+                            ? topScorers
+                            : topScorers.filter(user => !priorSheriffUsernames.includes(user.username));
+
+
+                        const isSheriff = (username) =>
+                            sheriffWinners.some(w => w.username == username);
+
+                        console.log('sheriffWinners',sheriffWinners);
                         return (
                            
                             <>
@@ -778,7 +797,7 @@ if (!allLostToday) {
                                                         : pesceScore}
 
                                                     {/* Emoji Logic */}
-                                                    {scoringmethod === "Pesce" && isSheriffUser(data.username) && " 🤠"}
+                                                    {scoringmethod === "Pesce" && isSheriff(data.username) && " 🤠"}
                                                     {scoringmethod !== "Pesce" && isSingleWinner && " 🏆"}
                                                     </span>
                                                 </Col>
