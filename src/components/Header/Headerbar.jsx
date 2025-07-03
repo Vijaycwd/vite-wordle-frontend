@@ -136,7 +136,7 @@ const Headerbar = () => {
             </>
           )}
       <Navbar expand="lg" expanded={expanded} onToggle={setExpanded}>
-        <Navbar.Toggle className='p-0 border-0' aria-controls="basic-navbar-nav" />
+        <Navbar.Toggle className='p-0 border-0 shadow-none' aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav" ref={collapseRef}>
                 <Nav className="align-items-center">
                   <div role="button" onClick={handleClick}>
