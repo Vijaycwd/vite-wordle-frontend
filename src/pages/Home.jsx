@@ -95,14 +95,6 @@ function Home() {
                             <p className='text-center' dangerouslySetInnerHTML={{ __html: homepageText.text3 }}></p>
                         </Col>
                     </Row>
-                    <Row className='justify-content-between'>
-                        <Col className="text-center py-1" md={4} s={12}>
-                            <Button className='game-btn' onClick={handleGamleIntro}>Gamle Intro</Button>
-                        </Col>
-                        <Col className="text-center py-1" md={4} s={12}>
-                            <FeedbackButton/>
-                        </Col>
-                    </Row>
                     {!userAuthData || isEmptyObject ? (
                         <div>
                             <p className='text-center'>Please create your profile and then click the game buttons and go from there!</p>

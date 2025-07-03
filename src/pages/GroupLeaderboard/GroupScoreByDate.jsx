@@ -188,42 +188,40 @@ const goToNextDay = () => {
     const today = now.startOf('day');
     const currentHour = now.hour();
 
-    const maxAllowedDate = today.subtract(1, 'day'); // Only allow up to yesterday
-    const startDay = dayjs(startDate).startOf('day');
-
     if (game === 'phrazle') {
-        // If you're already at the max date and period is PM — BLOCK
-        if (startDay.isSame(maxAllowedDate, 'day') && period === 'PM') {
-            return; // ⛔ Cannot move forward
-        }
+        const isToday = dayjs(startDate).isSame(today, 'day');
 
-        // If currently AM on max allowed date → move to PM
-        if (startDay.isSame(maxAllowedDate, 'day') && period === 'AM') {
+        if (period === 'AM') {
+            if (isToday && currentHour < 12) {
+                // Before 12 PM today → block PM
+                return;
+            }
+
+            // Move from AM to PM (same date)
             const formattedDate = formatDateForBackend(startDate);
-            setPeriod('PM');
             fetchDataByDate(formattedDate, 'PM');
-            return;
+            setPeriod('PM');
+        } else {
+            // Trying to move past today — block it
+            if (isToday) return;
+
+            // Move to next day AM
+            const nextDate = dayjs(startDate).add(1, 'day');
+            const formattedDate = formatDateForBackend(nextDate.toDate());
+            fetchDataByDate(formattedDate, 'AM');
+            setStartDate(nextDate.toDate());
+            setPeriod('AM');
         }
-
-        // Otherwise move to next date AM
-        const nextDate = startDay.add(1, 'day');
-        if (nextDate.isAfter(maxAllowedDate)) return; // ⛔ Exceeds max allowed date
-
-        const formattedDate = formatDateForBackend(nextDate.toDate());
-        setStartDate(nextDate.toDate());
-        setPeriod('AM');
-        fetchDataByDate(formattedDate, 'AM');
     } else {
-        // Non-phrazle games → up to yesterday only
-        const nextDate = startDay.add(1, 'day');
+        // Non-Phrazle logic: allow only up to yesterday
+        const nextDate = dayjs(startDate).add(1, 'day');
         if (nextDate.isSame(today) || nextDate.isAfter(today)) return;
 
         const formattedDate = formatDateForBackend(nextDate.toDate());
-        setStartDate(nextDate.toDate());
         fetchDataByDate(formattedDate);
+        setStartDate(nextDate.toDate());
     }
 };
-
 
     const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
         const parsedDate = dayjs(value, "DD-MM-YYYY");
@@ -386,74 +384,7 @@ const noDataMessage = {
   phrazle: "Gamle Score 7"
 }[game] || "No data available.";
 
-const today = new Date();
-const yesterday = new Date(today);
-yesterday.setDate(today.getDate() - 1);
-const yesterdayStr = yesterday.toISOString().split('T')[0];
 
-// Helper to get period
-const getPeriod = (createdat) => {
-  const hour = new Date(createdat).getHours();
-  return hour < 12 ? "AM" : "PM";
-};
-
-// Prepare sheriff list
-let sheriffWinners = [];
-
-// Loop through games
-["phrazle", "wordle"].forEach(gameName => {
-  if (gameName === "phrazle") {
-    ["AM", "PM"].forEach(period => {
-      const todayScores = todayLeaderboard.filter(d =>
-        d.gamename === gameName && getPeriod(d.createdat) === period
-      );
-
-      const todayMinScore = Math.min(...todayScores.map(d => d.gamlescore ?? 999));
-      const todayTopScorers = todayScores.filter(d => d.gamlescore === todayMinScore);
-
-      const yesterdayScores = todayLeaderboard.filter(d =>
-        d.gamename === gameName &&
-        d.createdat?.startsWith(yesterdayStr) &&
-        getPeriod(d.createdat) === period
-      );
-
-      const yesterdayMinScore = Math.min(...yesterdayScores.map(d => d.gamlescore ?? 999));
-      const priorSheriffs = yesterdayScores
-        .filter(d => d.gamlescore === yesterdayMinScore)
-        .map(d => d.username);
-
-      const winners =
-        todayTopScorers.length === 1
-          ? todayTopScorers
-          : todayTopScorers.filter(d => !priorSheriffs.includes(d.username));
-
-      sheriffWinners.push(...winners);
-    });
-  } else {
-    // Non-phrazle game (no AM/PM split)
-    const todayScores = todayLeaderboard.filter(d => d.gamename === gameName);
-
-    const todayMinScore = Math.min(...todayScores.map(d => d.gamlescore ?? 999));
-    const todayTopScorers = todayScores.filter(d => d.gamlescore === todayMinScore);
-
-    const yesterdayScores = todayLeaderboard.filter(d =>
-      d.gamename === gameName &&
-      d.createdat?.startsWith(yesterdayStr)
-    );
-
-    const yesterdayMinScore = Math.min(...yesterdayScores.map(d => d.gamlescore ?? 999));
-    const priorSheriffs = yesterdayScores
-      .filter(d => d.gamlescore === yesterdayMinScore)
-      .map(d => d.username);
-
-    const winners =
-      todayTopScorers.length === 1
-        ? todayTopScorers
-        : todayTopScorers.filter(d => !priorSheriffs.includes(d.username));
-
-    sheriffWinners.push(...winners);
-  }
-});
 
     return (
         <>
@@ -492,25 +423,58 @@ let sheriffWinners = [];
                         const winners = filteredLeaderboard.filter(data => 
                             Number(data.gamlescore ?? getTotalScore(data.gamename)) === minScore
                         );
+                        
+                        // Get yesterday's phrazle scores
+                        const validYesterdayScores = filteredLeaderboard.filter(d => d.previous_gamlescore !== undefined && d.previous_gamlescore !== null);
+                        const minScoreYesterday = validYesterdayScores.length > 0
+                            ? Math.min(...validYesterdayScores.map(d => Number(d.previous_gamlescore)))
+                            : null;
+
+                        const priorSheriffUsernames = validYesterdayScores
+                            .filter(d => Number(d.previous_gamlescore) === minScoreYesterday)
+                            .map(d => d.username);
+
+                        let sheriffWinners = [];
+                        if (winners.length === 1) {
+                            sheriffWinners = winners;
+                        } else {
+                            const newSheriffs = winners.filter(user =>
+                                !priorSheriffUsernames.includes(user.username) &&
+                                winners.some(p =>
+                                    priorSheriffUsernames.includes(p.username) &&
+                                    Number(user.gamlescore ?? getTotalScore(user.gamename)) < Number(p.gamlescore ?? getTotalScore(p.gamename))
+                                )
+                            );
+                            if (newSheriffs.length > 0) {
+                                sheriffWinners = newSheriffs;
+                            } else {
+                                sheriffWinners = winners.filter(u => priorSheriffUsernames.includes(u.username));
+                            }
+                        }
+
+                        const isSheriff = (username) =>
+                            sheriffWinners.some(winner => winner.username === username);
+
+
                         const latest = dayjs(latestJoinDate);
                         const latestDateOnly = latest.startOf('day');
+                        const joinPeriod = latest.hour() < 12 ? 'AM' : 'PM';
 
                         const isMinPhrazleDate =
-                            (period === 'AM' && dayjs(startDate).isSame(latestDateOnly, 'day') && latest.hour() < 12) ||  // Earliest is AM & join was AM
-                            (period === 'PM' && dayjs(startDate).isSame(latestDateOnly, 'day'));                           // Earliest is PM
-
+                        (period === 'AM' && dayjs(startDate).isSame(latestDateOnly, 'day') && joinPeriod === 'AM') ||
+                        (period === 'PM' && dayjs(startDate).isSame(latestDateOnly, 'day') && joinPeriod === 'PM');                        
                         const isMaxPhrazleDate = (period === 'AM' && dayjs(startDate).isSame(dayjs(), 'day'));
                         return (
                             <>
                         
                                 <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
-                                    <button onClick={(e) => { e.stopPropagation(); goToPreviousDay(); }}  disabled={isMinPhrazleDate} className="bg-dark text-white px-3 py-1 rounded">
+                                    <button onClick={(e) => { e.stopPropagation(); goToPreviousDay(); }} disabled={isMinPhrazleDate}  className="bg-dark text-white px-3 py-1 rounded">
                                         <FaArrowLeft />
                                     </button>
                                     <div>
                                         {dayjs(startDate).format("MMM D, YYYY")} - {period}
                                     </div>
-                                    <button  onClick={(e) => { e.stopPropagation(); goToNextDay(); }} className="bg-dark text-white px-3 py-1 rounded">
+                                    <button  onClick={(e) => { e.stopPropagation(); goToNextDay(); }}  disabled={isMaxPhrazleDate} className="bg-dark text-white px-3 py-1 rounded">
                                         <FaArrowRight />
                                     </button>
                                 </div>
@@ -519,6 +483,10 @@ let sheriffWinners = [];
                                     filteredLeaderboard
                                     .slice()
                                     .sort((a, b) => {
+                                        const aIsSheriff = isSheriff(a.username) ? 1 : 0;
+                                        const bIsSheriff = isSheriff(b.username) ? 1 : 0;
+                                        if (aIsSheriff !== bIsSheriff) return bIsSheriff - aIsSheriff;
+                                        
                                         const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
                                         const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
 
@@ -621,7 +589,13 @@ let sheriffWinners = [];
                                                                     : scoringmethod === "World Cup"
                                                                     ? worldCupScore
                                                                     : pesceScore}
-                                                                {/* {scoringmethod === "Pesce" && isSheriff(data.username) && " 🤠"} */}
+                                                                {data.gamename === 'phrazle' &&
+                                                                scoringmethod === "Pesce" &&
+                                                                isSheriff(data.username) &&
+                                                                data.gamlescore !== null &&
+                                                                data.gamlescore !== '' &&
+                                                                Number(data.gamlescore) !== 7 &&
+                                                                " 🤠"}
                                                                 {scoringmethod !== "Pesce" && isSingleWinner && " 🏆"}
                                                             </span>
                                                         </Col>
@@ -650,63 +624,51 @@ let sheriffWinners = [];
                             gameScoresMap[d.gamename].push({ ...d, score });
                         });
 
-                        // Find best score per game (lowest score wins for Wordle & Connections)
+                        // Prepare best scores per game
                         const gameBestScores = {};
                         Object.entries(gameScoresMap).forEach(([gamename, scores]) => {
-                            const best = Math.min(...scores.map(s => s.score)); // LOWEST always wins for both
+                            const best = Math.min(...scores.map(s => s.score));
                             gameBestScores[gamename] = best;
                         });
 
-                        // Find all top scorers across games
+                        // Find top scorers
                         const topScorers = filteredLeaderboard.filter(d => {
                             const score = Number(d.gamlescore ?? getTotalScore(d.gamename));
                             return score === gameBestScores[d.gamename];
                         });
 
-                        // Yesterday's sheriff check
-                        const today = new Date();
-                        const yesterday = new Date(today);
-                        yesterday.setDate(today.getDate() - 1);
-                        const yesterdayStr = yesterday.toISOString().split('T')[0];
-
-                        const yesterdayScores = filteredLeaderboard.filter(entry =>
-                            entry.createdat?.startsWith(yesterdayStr)
-                        );
-                        
-
-                        const validYesterdayScores = yesterdayScores.filter(d => d.gamlescore !== undefined && d.gamlescore !== null);
+                        // Get yesterday's scores
+                        const validYesterdayScores = filteredLeaderboard.filter(d => d.previous_gamlescore !== undefined && d.previous_gamlescore !== null);
                         const minScoreYesterday = validYesterdayScores.length > 0
-                        ? Math.min(...validYesterdayScores.map(d => Number(d.gamlescore)))
-                        : null;
+                            ? Math.min(...validYesterdayScores.map(d => Number(d.previous_gamlescore)))
+                            : null;
+
                         const priorSheriffUsernames = validYesterdayScores
-                        .filter(d => Number(d.gamlescore) === minScoreYesterday)
-                        .map(d => d.username);
-                       // Sheriff logic
+                            .filter(d => Number(d.previous_gamlescore) === minScoreYesterday)
+                            .map(d => d.username);
+
+                        // Sheriff logic
                         let sheriffWinners = [];
-                        
                         if (topScorers.length === 1) {
-                        // Only one top scorer — auto sheriff
-                        sheriffWinners = topScorers;
+                            sheriffWinners = topScorers;
                         } else {
-                        // Tie case
-                        console.log('topScorers',topScorers);
-                        const newSheriffs = topScorers.filter(user =>
+                            const newSheriffs = topScorers.filter(user =>
                             !priorSheriffUsernames.includes(user.username) &&
-                            topScorers.some(p => 
-                            priorSheriffUsernames.includes(p.username) &&
-                            Number(user.gamlescore ?? getTotalScore(user.gamename)) < Number(p.gamlescore ?? getTotalScore(p.gamename))
+                            topScorers.some(p =>
+                                priorSheriffUsernames.includes(p.username) &&
+                                Number(user.gamlescore ?? getTotalScore(user.gamename)) < Number(p.gamlescore ?? getTotalScore(p.gamename))
                             )
-                        );
-                        
-                        if (newSheriffs.length > 0) {
+                            );
+                            if (newSheriffs.length > 0) {
                             sheriffWinners = newSheriffs;
-                        } else {
-                            // No one beat prior sheriff — retain them if tied
+                            } else {
                             sheriffWinners = topScorers.filter(u => priorSheriffUsernames.includes(u.username));
+                            }
                         }
-                        }
+
+                        // Define sheriff checker before using it
                         const isSheriff = (username) =>
-                        sheriffWinners.some(winner => winner.username === username);
+                            sheriffWinners.some(winner => winner.username === username);
 
                         return (
                             <>
@@ -724,20 +686,18 @@ let sheriffWinners = [];
                             {filteredLeaderboard
                                 .slice()
                                 .sort((a, b) => {
+                                const aIsSheriff = isSheriff(a.username) ? 1 : 0;
+                                const bIsSheriff = isSheriff(b.username) ? 1 : 0;
+                                if (aIsSheriff !== bIsSheriff) return bIsSheriff - aIsSheriff;
+
                                 const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
                                 const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
                                 return aScore - bScore;
                                 })
                                 .map((data, index) => {
                                 const totalScore = getTotalScore(data.gamename);
-                                const progressValue =
-                                    totalScore > 0
-                                    ? data.gamename === "connections"
-                                        ? (data.gamlescore / totalScore) * 100
-                                        : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
-                                    : 0;
-
                                 const minScore = gameBestScores[data.gamename];
+
                                 const isSingleWinner = topScorers.length === 1 && topScorers[0].username === data.username;
                                 const isSharedWinner = topScorers.length > 1 && topScorers.some(w => w.username === data.username);
 
@@ -802,7 +762,20 @@ let sheriffWinners = [];
                                                 : scoringmethod === "World Cup"
                                                 ? worldCupScore
                                                 : pesceScore}
-                                            {scoringmethod === "Pesce" && isSheriff(data.username) && Number(data.gamlescore) !== 0 && " 🤠"}
+                                            {data.gamename === 'wordle' &&
+                                            scoringmethod === "Pesce" &&
+                                            isSheriff(data.username) &&
+                                            data.gamlescore !== null &&
+                                            data.gamlescore !== '' &&
+                                            Number(data.gamlescore) !== 7 &&
+                                            " 🤠"}
+                                            {data.gamename === 'connections' &&
+                                            scoringmethod === "Pesce" &&
+                                            isSheriff(data.username) &&
+                                            data.gamlescore !== null &&
+                                            data.gamlescore !== '' &&
+                                            Number(data.gamlescore) !== 4 &&
+                                            " 🤠"}
                                             {scoringmethod !== "Pesce" && isSingleWinner && " 🏆"}
                                             </span>
                                         </Col>
@@ -814,6 +787,7 @@ let sheriffWinners = [];
                             </>
                         );
                         })()}
+
 
                     </>
                 ) : null}
