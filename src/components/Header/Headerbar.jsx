@@ -23,19 +23,8 @@ const Headerbar = () => {
   const [showNotificationPanel, setShowNotificationPanel] = useState(false);
   const ref = useRef(null);
   const navigate = useNavigate();
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState();
   const collapseRef = useRef();
-
-  useEffect(() => {
-  const handleOutsideClick = (e) => {
-    if (collapseRef.current && !collapseRef.current.contains(e.target)) {
-      setExpanded(false);
-    }
-  };
-
-  document.addEventListener('mousedown', handleOutsideClick);
-  return () => document.removeEventListener('mousedown', handleOutsideClick);
-}, []);
 
   useEffect(() => {
   if (userEmail?.trim()) {
@@ -146,8 +135,8 @@ const Headerbar = () => {
             </Link>
             </>
           )}
-          <Navbar expand="lg" expanded={expanded} onToggle={() => setExpanded(!expanded)} className="py-2" sticky="top">
-          <Navbar.Toggle className='p-0 border-0' aria-controls="basic-navbar-nav" />
+      <Navbar expand="lg" expanded={expanded} onToggle={setExpanded}>
+        <Navbar.Toggle className='p-0 border-0' aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav" ref={collapseRef}>
                 <Nav className="align-items-center">
                   <div role="button" onClick={handleClick}>
@@ -171,13 +160,15 @@ const Headerbar = () => {
                   </div>
                 </Nav>
                 <Nav className="ms-auto align-items-center">
-                  <Button className="game-btn m-2" onClick={() => navigate('/gamleintro')}>
+                  <Button className="game-btn m-2" onClick={() => { setExpanded(false); navigate('/gamleintro'); }}>
                     Gamle Intro
                   </Button>
+
                   <FeedbackButton />
-                  <Button className="game-btn m-2" onClick={() => navigate('/faq')}>
+                  <Button className="game-btn m-2" onClick={() => { setExpanded(false); navigate('/faq'); }}>
                     FAQ
                   </Button>
+
                 </Nav>
               </Navbar.Collapse>
           </Navbar>

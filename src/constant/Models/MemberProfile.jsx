@@ -2,7 +2,6 @@ import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
 
 function MemberProfile({ show, onHide, selectedMember, baseURL }) {
-  console.log("selectedMember:", selectedMember);
   return (
     <Modal show={show} onHide={onHide} centered>
       <Modal.Header closeButton>

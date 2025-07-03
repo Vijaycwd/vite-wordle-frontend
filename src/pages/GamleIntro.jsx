@@ -20,7 +20,7 @@ function GamleIntro() {
         console.error('Error fetching homepage text:', err);
       });
   }, [baseURL]);
-  console.log(gameintroText.gameintro);
+  
   return (
     <Container>
       <Row className='justify-content-center'>
