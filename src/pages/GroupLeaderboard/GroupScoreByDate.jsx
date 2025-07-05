@@ -787,8 +787,6 @@ const noDataMessage = {
                             </>
                         );
                         })()}
-
-
                     </>
                 ) : null}
                 </Col>

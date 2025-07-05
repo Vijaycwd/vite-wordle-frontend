@@ -101,6 +101,29 @@ const Headerbar = () => {
     });
   };
 
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (
+        collapseRef.current &&
+        !collapseRef.current.contains(event.target) &&
+        !event.target.closest('.navbar-toggler')
+      ) {
+        setExpanded(false);
+      }
+    };
+
+    if (expanded) {
+      document.addEventListener('mousedown', handleOutsideClick);
+    } else {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [expanded]);
+
+
   return (
 
     <Container className='header-section'>
@@ -136,7 +159,11 @@ const Headerbar = () => {
             </>
           )}
       <Navbar expand="lg" expanded={expanded} onToggle={setExpanded}>
-        <Navbar.Toggle className='p-0 border-0 shadow-none' aria-controls="basic-navbar-nav" />
+        <Navbar.Toggle
+          className="p-0 border-0 shadow-none"
+          aria-controls="basic-navbar-nav"
+          onClick={() => setExpanded((prev) => !prev)}
+        />
           <Navbar.Collapse id="basic-navbar-nav" ref={collapseRef}>
                 <Nav className="align-items-center">
                   <div role="button" onClick={handleClick}>
