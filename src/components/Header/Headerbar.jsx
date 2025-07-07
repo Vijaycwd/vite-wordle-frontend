@@ -122,23 +122,22 @@ const Headerbar = () => {
       document.removeEventListener('mousedown', handleOutsideClick);
     };
   }, [expanded]);
-
 const handleInviteFriends = async () => {
-  const fullName = USER_AUTH_DATA.firstname && USER_AUTH_DATA.lastname
-  ? `${USER_AUTH_DATA.firstname} ${USER_AUTH_DATA.lastname}`
-  : 'A friend';
+  const fullName = userData.first_name || 'A friend';  // Customize as needed
 
   const message = `${fullName} has invited you to create an account on WordGAMLE.com\n\n👉 Enter ‘Casa’ (case sensitive) to get into the site!`;
 
   const shareData = {
     title: 'Join WordGAMLE!',
     text: message,
-    url: 'https://vite-wordle-frontend.onrender.com',
+    url: baseURL,
   };
 
   if (navigator.share) {
+    console.log(message);
     try {
       await navigator.share(shareData);
+      
     } catch (err) {
       console.error('Share failed:', err);
     }
