@@ -36,10 +36,12 @@ function App() {
     <Layout>
       <Routes>
         <Route exact path="/" element={<Home/>} />
+        <Route exact path="/:group_id" element={<Home/>} />
         <Route exact path="/gamleintro" element={<GamleIntro />} />
         <Route exact path="/faq" element={<FAQPage />} />
         <Route exact path="/login" element={<Userlogin />} />
         <Route exact path="/register" element={<Registerform />} />
+        <Route path="/register/:group_id" element={<Registerform />} />
         <Route exact path="*" element={<NotFound/>} />
         <Route exact path='/wordle' element={<Statistics/>}/>
         <Route exact path= '/connections' element={<Connectionsgame/>}/>

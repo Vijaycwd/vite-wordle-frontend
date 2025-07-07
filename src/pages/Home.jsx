@@ -7,10 +7,10 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import { toast } from 'react-toastify';
 import Axios from 'axios';
 import FeedbackButton from './FeedbackButton';
+import { useLocation } from 'react-router-dom';
 
 function Home() {
     const baseURL = import.meta.env.VITE_BASE_URL;
-
     const userAuthData = JSON.parse(localStorage.getItem('auth')) || {};
     const navigate = useNavigate();
     const [show, setShow] = useState(false);
@@ -19,7 +19,11 @@ function Home() {
     const [showPassword, setShowPassword] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const correctPassword = "Casa"; // Change this
-
+    const location = useLocation();
+    const params = new URLSearchParams(location.search);
+    const encryptedId = params.get('group_id');
+    const groupId = encryptedId ? atob(encryptedId) : null;
+    const registerPath = groupId ? `/register?group_id=${groupId}` : `/register`;
     // Check if the user already entered the password
     useEffect(() => {
         if (localStorage.getItem("pageUnlocked") === "true") {
@@ -141,7 +145,7 @@ function Home() {
                     {!userAuthData || isEmptyObject ? (
                         <div>
                             <p className='text-center'>Please create your profile and then click the game buttons and go from there!</p>
-                            <Link className="btn btn-primary btn-lg my-3" to="/register" style={{ width: "60%" }}>Create Profile</Link>
+                            <Link className="btn btn-primary btn-lg my-3" to={registerPath} style={{ width: "60%" }}>Create Profile</Link>
                             <Button className="btn-lg mt-3" onClick={loginformClick} style={{ width: "60%" }}>Login</Button>
                         </div>
                     ) : (

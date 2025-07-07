@@ -5,7 +5,8 @@ function InviteGroupAndSite({ groupId }) {
     const userAuthData = JSON.parse(localStorage.getItem('auth')) || {};
 
     const inviteFriends = async () => {
-        const frontendURL = `${window.location.origin}?group_id=${groupId}`;
+        const encryptedGroupId = btoa(groupId);
+        const frontendURL = `${window.location.origin}?group_id=${encryptedGroupId}`;
         const fullName = userAuthData.firstname && userAuthData.lastname
         ? `${userAuthData.firstname} ${userAuthData.lastname}`
         : 'A friend';
