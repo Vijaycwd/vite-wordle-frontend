@@ -101,6 +101,56 @@ const Headerbar = () => {
     });
   };
 
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (
+        collapseRef.current &&
+        !collapseRef.current.contains(event.target) &&
+        !event.target.closest('.navbar-toggler')
+      ) {
+        setExpanded(false);
+      }
+    };
+
+    if (expanded) {
+      document.addEventListener('mousedown', handleOutsideClick);
+    } else {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [expanded]);
+
+const handleInviteFriends = async () => {
+  const fullName = userData.name || 'A friend';  // Customize as needed
+
+  const message = `${fullName} has invited you to create an account on WordGAMLE.com\n\n👉 Enter ‘Casa’ (case sensitive) to get into the site!`;
+
+  const shareData = {
+    title: 'Join WordGAMLE!',
+    text: message,
+    url: baseURL,
+  };
+
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+    } catch (err) {
+      console.error('Share failed:', err);
+    }
+  } else {
+    try {
+      await navigator.clipboard.writeText(`${message}\n${shareData.url}`);
+      alert('Invite message copied to clipboard!');
+    } catch (err) {
+      alert('Could not copy. Please share manually.');
+    }
+  }
+};
+
+
   return (
 
     <Container className='header-section'>
@@ -136,7 +186,11 @@ const Headerbar = () => {
             </>
           )}
       <Navbar expand="lg" expanded={expanded} onToggle={setExpanded}>
-        <Navbar.Toggle className='p-0 border-0 shadow-none' aria-controls="basic-navbar-nav" />
+        <Navbar.Toggle
+          className="p-0 border-0 shadow-none"
+          aria-controls="basic-navbar-nav"
+          onClick={() => setExpanded((prev) => !prev)}
+        />
           <Navbar.Collapse id="basic-navbar-nav" ref={collapseRef}>
                 <Nav className="align-items-center">
                   <div role="button" onClick={handleClick}>
@@ -163,7 +217,9 @@ const Headerbar = () => {
                   <Button className="game-btn m-2" onClick={() => { setExpanded(false); navigate('/gamleintro'); }}>
                     Gamle Intro
                   </Button>
-
+                  <Button className="game-btn m-2" onClick={handleInviteFriends}>
+                    Invite Friends
+                  </Button>
                   <FeedbackButton />
                   <Button className="game-btn m-2" onClick={() => { setExpanded(false); navigate('/faq'); }}>
                     FAQ

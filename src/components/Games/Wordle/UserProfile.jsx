@@ -217,7 +217,12 @@ function UserProfile() {
                         </Form.Group>
 
                         <Form.Group className="mt-3">
-                            <Form.Label>Username <span style={{ color: 'red' }}>*</span></Form.Label>
+                            <Form.Label>
+                                Gamle Name<span style={{ color: 'red' }}>*</span>
+                            </Form.Label>
+                            <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
+                                (This is the name that will appear in your Leaderboards)
+                            </div>
                             <Form.Control type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
                             {errors.username && <div style={{ color: "red" }}>{errors.username}</div>} {/* ✅ Fix here */}
                         </Form.Group>
