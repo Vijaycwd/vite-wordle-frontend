@@ -48,7 +48,7 @@ function Home() {
     const loginformClick = () => {
         navigate('/login');
     };
-     const handleGamleIntro = () => {
+    const handleGamleIntro = () => {
         navigate('/gamleintro');
     };
     const isEmptyObject = userAuthData && Object.keys(userAuthData).length === 0;
@@ -68,6 +68,45 @@ function Home() {
                 console.error("Error fetching homepage text:", err);
             });
     }, [baseURL]);
+
+    const cleanText = homepageText.text2
+    .replace(/<[^>]*>/g, '')         // remove HTML tags
+    .replace(/&nbsp;/g, ' ')         // replace &nbsp; with space
+    .replace(/\s+/g, ' ')            // optional: collapse multiple spaces
+    .trim();    
+    const parts = cleanText.split('[Invite Friends]');
+
+    const inviteFriends = async () => {
+        const frontendURL = window.location.origin;
+        const fullName = userAuthData.firstname && userAuthData.lastname
+        ? `${userAuthData.firstname} ${userAuthData.lastname}`
+        : 'A friend';
+
+        const message = `${fullName} has invited you to create an account on WordGAMLE.com\n\n👉 Enter ‘Casa’ (case sensitive) to get into the site!`;
+
+        const shareData = {
+            title: 'Join WordGAMLE!',
+            text: message,
+            url: frontendURL,
+        };
+
+        if (navigator.share) {
+            console.log(message);
+            try {
+            await navigator.share(shareData);
+            
+            } catch (err) {
+            console.error('Share failed:', err);
+            }
+        } else {
+            try {
+            await navigator.clipboard.writeText(`${message}\n${shareData.url}`);
+            alert('Invite message copied to clipboard!');
+            } catch (err) {
+            alert('Could not copy. Please share manually.');
+            }
+        }
+    };
     return isAuthenticated ? (
         <Container className="login-section">
             <Row className="align-content-center justify-content-center text-center">
@@ -91,7 +130,11 @@ function Home() {
                     </Row>
                     <Row>
                         <Col className="py-3">
-                            <p className='text-center' dangerouslySetInnerHTML={{ __html: homepageText.text2 }}></p>
+                            <p className="text-center">
+                                {parts[0]}
+                                <a href="#" onClick={inviteFriends}>Invite Friends</a>
+                                {parts[1]}
+                            </p>
                             <p className='text-center' dangerouslySetInnerHTML={{ __html: homepageText.text3 }}></p>
                         </Col>
                     </Row>

@@ -6,6 +6,7 @@ import AddMembers from '../constant/Models/AddMembers';
 import { toast } from 'react-toastify';
 import MemberGameSelections from './MemberGameSelections';
 import SelectScoringMethod from './SelectScoringMethod';
+import InviteGroupAndSite from './InviteGroupAndSite';
 
 function GroupPage() {
     const baseURL = import.meta.env.VITE_BASE_URL;
@@ -94,6 +95,7 @@ function GroupPage() {
                 </Col>
             </Row>
             {isCaptain && (
+                <>
                 <Row>
                     <Col>
                         <Button className="px-5 mt-3" onClick={() => setShowMemberForm(true)}>
@@ -101,7 +103,15 @@ function GroupPage() {
                         </Button>
                     </Col>
                 </Row>
+                <Row>
+                    <Col>
+                        <InviteGroupAndSite groupId={group.id} />
+                    </Col>
+                </Row>
+                </>
+                
             )}
+            
             <Button 
             className="px-5 mt-3" 
             onClick={() => 
