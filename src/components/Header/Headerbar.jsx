@@ -123,6 +123,7 @@ const Headerbar = () => {
     };
   }, [expanded]);
 const handleInviteFriends = async () => {
+  const frontendURL = window.location.origin;
   const fullName = userData.first_name && userData.last_name
   ? `${userData.first_name} ${userData.last_name}`
   : 'A friend';
@@ -132,7 +133,7 @@ const handleInviteFriends = async () => {
   const shareData = {
     title: 'Join WordGAMLE!',
     text: message,
-    url: baseURL,
+    url: frontendURL,
   };
 
   if (navigator.share) {
