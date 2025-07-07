@@ -22,7 +22,7 @@ function Home() {
     const location = useLocation();
     const params = new URLSearchParams(location.search);
     const encryptedId = params.get('group_id');
-    const groupId = encryptedId ? atob(encryptedId) : null;
+    const groupId = encryptedId;
     const registerPath = groupId ? `/register?group_id=${groupId}` : `/register`;
     // Check if the user already entered the password
     useEffect(() => {

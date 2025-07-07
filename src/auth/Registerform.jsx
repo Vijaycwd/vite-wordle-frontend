@@ -4,6 +4,7 @@ import Axios from "axios";
 import { toast } from 'react-toastify';
 import logo from '../Logo.png';
 import { useNavigate } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
 
 function Registerform() {
     const baseURL = import.meta.env.VITE_BASE_URL;
@@ -18,6 +19,10 @@ function Registerform() {
     const [errors, setErrors] = useState({});
     const [touched, setTouched] = useState({});
     const navigate = useNavigate();
+    const location = useLocation();
+    const params = new URLSearchParams(location.search);
+    const encryptedId = params.get('group_id');
+    const groupId = encryptedId ? atob(encryptedId) : null;
 
     useEffect(() => {
         const defaultFile = new File([""], "default_avatar.png", { type: "image/png" });
@@ -252,6 +257,19 @@ function Registerform() {
                                     <img src={previewUrl} alt="Profile Preview" style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
                                 </div>
                             )}
+                        </Col>
+                        <Col md={6}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>
+                                    Group ID <span style={{ color: 'red' }}>*</span>
+                                </Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="groupid"
+                                    value={groupId}
+                                    disabled
+                                />
+                            </Form.Group>
                         </Col>
                     </Row>
 
