@@ -123,36 +123,30 @@ const Headerbar = () => {
     };
   }, [expanded]);
 
-const [isSharing, setIsSharing] = useState(false);
-
 const handleInviteFriends = async () => {
-  if (isSharing) return; // prevent double taps
-
-  setIsSharing(true);
-
-  const fullName = USER_AUTH_DATA.firstname && USER_AUTH_DATA.lastname
-    ? `${USER_AUTH_DATA.firstname} ${USER_AUTH_DATA.lastname}`
-    : 'A friend';
+  const fullName = userData.name || 'A friend';  // Customize as needed
 
   const message = `${fullName} has invited you to create an account on WordGAMLE.com\n\n👉 Enter ‘Casa’ (case sensitive) to get into the site!`;
 
   const shareData = {
     title: 'Join WordGAMLE!',
     text: message,
-    url: 'https://vite-wordle-frontend.onrender.com',
+    url: baseURL,
   };
 
-  try {
-    if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
+  if (navigator.share) {
+    try {
       await navigator.share(shareData);
-    } else {
+    } catch (err) {
+      console.error('Share failed:', err);
+    }
+  } else {
+    try {
       await navigator.clipboard.writeText(`${message}\n${shareData.url}`);
       alert('Invite message copied to clipboard!');
+    } catch (err) {
+      alert('Could not copy. Please share manually.');
     }
-  } catch (err) {
-    console.error('Share failed:', err);
-  } finally {
-    setIsSharing(false); // reset after share or error
   }
 };
 
