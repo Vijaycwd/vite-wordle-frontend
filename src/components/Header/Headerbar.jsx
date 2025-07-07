@@ -123,32 +123,39 @@ const Headerbar = () => {
     };
   }, [expanded]);
 
+const [isSharing, setIsSharing] = useState(false);
+
 const handleInviteFriends = async () => {
+  if (isSharing) return; // prevent double taps
+
+  setIsSharing(true);
+
   const fullName = USER_AUTH_DATA.firstname && USER_AUTH_DATA.lastname
-  ? `${USER_AUTH_DATA.firstname} ${USER_AUTH_DATA.lastname}`
-  : 'A friend';
-  const message = `${fullName} has invited you to create an account on WordGAMLE.com\n\n👉 Enter 'Casa' (case sensitive) to get into the site!`;
+    ? `${USER_AUTH_DATA.firstname} ${USER_AUTH_DATA.lastname}`
+    : 'A friend';
+
+  const message = `${fullName} has invited you to create an account on WordGAMLE.com\n\n👉 Enter ‘Casa’ (case sensitive) to get into the site!`;
+
   const shareData = {
     title: 'Join WordGAMLE!',
     text: message,
-    url: baseURL,
+    url: 'https://vite-wordle-frontend.onrender.com',
   };
 
-  if (navigator.share) {
-    try {
+  try {
+    if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
       await navigator.share(shareData);
-    } catch (err) {
-      console.error('Share failed:', err);
-    }
-  } else {
-    try {
+    } else {
       await navigator.clipboard.writeText(`${message}\n${shareData.url}`);
       alert('Invite message copied to clipboard!');
-    } catch (err) {
-      alert('Could not copy. Please share manually.');
     }
+  } catch (err) {
+    console.error('Share failed:', err);
+  } finally {
+    setIsSharing(false); // reset after share or error
   }
 };
+
 
   return (
 
@@ -216,8 +223,8 @@ const handleInviteFriends = async () => {
                   <Button className="game-btn m-2" onClick={() => { setExpanded(false); navigate('/gamleintro'); }}>
                     Gamle Intro
                   </Button>
-                  <Button className="game-btn m-2" onClick={handleInviteFriends}>
-                    Invite Friends
+                  <Button className="game-btn m-2" onClick={handleInviteFriends} disabled={isSharing}>
+                    {isSharing ? 'Sharing...' : 'Invite Friends'}
                   </Button>
                   <FeedbackButton />
                   <Button className="game-btn m-2" onClick={() => { setExpanded(false); navigate('/faq'); }}>
