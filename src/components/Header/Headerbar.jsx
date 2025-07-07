@@ -123,8 +123,7 @@ const Headerbar = () => {
     };
   }, [expanded]);
 
-<<<<<<< HEAD
-const handleInviteFriends = async () => {
+  const handleInviteFriends = async () => {
   const fullName = userData.name || 'A friend';  // Customize as needed
 
   const message = `${fullName} has invited you to create an account on WordGAMLE.com\n\n👉 Enter ‘Casa’ (case sensitive) to get into the site!`;
@@ -150,9 +149,6 @@ const handleInviteFriends = async () => {
     }
   }
 };
-
-=======
->>>>>>> 253e1f60951b2118e1f94b0bee911bcf4f599b10
 
   return (
 
