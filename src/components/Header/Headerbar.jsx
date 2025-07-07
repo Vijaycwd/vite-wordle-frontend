@@ -131,7 +131,7 @@ const handleInviteFriends = async () => {
   const shareData = {
     title: 'Join WordGAMLE!',
     text: message,
-    url: baseURL,
+    url: 'https://vite-wordle-frontend.onrender.com',
   };
 
   if (navigator.share) {
@@ -149,7 +149,6 @@ const handleInviteFriends = async () => {
     }
   }
 };
-
 
   return (
 
@@ -217,8 +216,8 @@ const handleInviteFriends = async () => {
                   <Button className="game-btn m-2" onClick={() => { setExpanded(false); navigate('/gamleintro'); }}>
                     Gamle Intro
                   </Button>
-                  <Button className="game-btn m-2" onClick={handleInviteFriends} disabled={isSharing}>
-                    {isSharing ? 'Sharing...' : 'Invite Friends'}
+                  <Button className="game-btn m-2" onClick={handleInviteFriends}>
+                    Invite Friends
                   </Button>
                   <FeedbackButton />
                   <Button className="game-btn m-2" onClick={() => { setExpanded(false); navigate('/faq'); }}>
