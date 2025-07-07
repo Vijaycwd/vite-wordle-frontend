@@ -124,10 +124,9 @@ const Headerbar = () => {
   }, [expanded]);
 
   const handleInviteFriends = async () => {
-  const fullName = userData.first_name && userData.last_name
-  ? `${userData.first_name} ${userData.last_name}`
+  const fullName = USER_AUTH_DATA.first_name && USER_AUTH_DATA.last_name
+  ? `${USER_AUTH_DATA.firstname} ${USER_AUTH_DATA.lastname}`
   : 'A friend';
-
   const message = `${fullName} has invited you to create an account on WordGAMLE.com\n\n👉 Enter ‘Casa’ (case sensitive) to get into the site!`;
 
   const shareData = {
