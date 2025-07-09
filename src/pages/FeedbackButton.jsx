@@ -15,8 +15,13 @@ function FeedbackButton() {
           <Modal.Title>Send Feedback</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          CLICK HERE to send an email to <a href="mailto:contact@pysis.com">contact@pysis.com</a>
+          <p>
+            <a href="mailto:contact@pysis.com">Click here</a> to send your valuable feedback to <a href="mailto:contact@pysis.com">contact@pysis.com</a>.
+            <br />
+            Please include your phone number if you're open to being contacted for further discussion.
+          </p>
         </Modal.Body>
+
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShow(false)}>Close</Button>
         </Modal.Footer>

@@ -104,12 +104,11 @@ function GroupPage() {
                     </Col>
                 </Row>
                 <Row>
-                    <Col>
+                    <Col className="px-5 mt-3">
                         <InviteGroupAndSite groupId={group.id} />
                     </Col>
                 </Row>
                 </>
-                
             )}
             
             <Button 
