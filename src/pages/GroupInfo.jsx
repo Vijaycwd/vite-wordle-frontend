@@ -10,7 +10,7 @@ import GroupExitConfirmModal from '../constant/Models/GroupExitConfirmModal';
 import GroupDeleteConfirmModal from '../constant/Models/GroupDeleteConfirmModal';
 import MemberProfile from '../constant/Models/MemberProfile';
 import { FaTrash } from 'react-icons/fa';
-
+import InviteGroupandSite from './InviteGroupAndSite';
 function GroupInfo() {
     const baseURL = import.meta.env.VITE_BASE_URL;
     const { id } = useParams();
@@ -209,7 +209,7 @@ function GroupInfo() {
     return (
         <Container>
             <Row className="justify-content-center">
-                <Col xs={12} md={6} lg={6} className="border p-3 shadow rounded">
+                <Col xs={12} md={8} lg={8} className="border p-3 shadow rounded">
                     <h3 className="text-center">{group.name} Group Members</h3>
 
                     {members.map((member) => (
@@ -272,7 +272,7 @@ function GroupInfo() {
                         {userId === captainid && (
                             <>
                         
-                            <Col xs={2}  md={2} lg={2}  className="text-center">
+                            <Col xs={2} md={2} lg={2}  className="text-center">
                                 {member.member_id !== captainid && (
                                     <Button
                                     variant="danger"
@@ -301,6 +301,7 @@ function GroupInfo() {
                         <p><strong>*Captain</strong></p>
                         <Row>
                             <Col xs={7} md={4}>
+                                <InviteGroupandSite/>
                                 <Button
                                     className="my-2 me-md-2"
                                     onClick={() =>
@@ -313,12 +314,12 @@ function GroupInfo() {
                             {userId === captainid ? (
                             <>
                                 <Col xs={5} md={3}>
-                                <Button className="btn btn-warning my-2" onClick={handleShowModal}>
-                                    Edit Group
+                                <Button className="btn btn-warning" onClick={handleShowModal}>
+                                    Edit Group Name
                                 </Button>
                                 </Col>
                                 <Col xs={6} md={3}>
-                                    <Button variant="danger" className='my-2' onClick={() => {setShowDeleteConfirm(true);}} disabled={loading}>
+                                    <Button variant="danger" onClick={() => {setShowDeleteConfirm(true);}} disabled={loading}>
                                     {deleteloading? (
                                         <>
                                         <Spinner

@@ -10,8 +10,8 @@ function InviteGroupAndSite({ groupId }) {
         const fullName = userAuthData.firstname && userAuthData.lastname
         ? `${userAuthData.firstname} ${userAuthData.lastname}`
         : 'A friend';
-
-        const message = `${fullName} has invited you to create an account on WordGAMLE.com\n\n👉 Enter ‘Casa’ (case sensitive) to get into the site!`;
+        const groupText = encryptedGroupId ? ` and join a Group` : '';
+        const message = `${fullName} has invited you to create an account on WordGAMLE.com*${groupText}.\n\n👉 *enter ‘Casa’ (case sensitive) to get into the site!`;
 
         const shareData = {
             title: 'Join WordGAMLE!',
@@ -37,7 +37,7 @@ function InviteGroupAndSite({ groupId }) {
         }
     };
     return (
-        <Button className="px-5 mt-3" onClick={inviteFriends}>
+        <Button onClick={inviteFriends}>
             Invite Friends to Site & Group
         </Button>
     )
