@@ -271,6 +271,7 @@ useEffect(() => {
                 groupId: id,
                 groupName,
                 game,
+                groupCreatedDate: formattedDateStr,
                 today: date,
                 timeZone,
                 formattedYesterday: date,
@@ -456,7 +457,7 @@ const noDataMessage = {
                         }
 
                         const isSheriff = (username) =>
-                            sheriffWinners.some(winner => winner.username === username);
+                            todayLeaderboard.some(user => user.username === username && user.sheriff === true);
 
                         const latest = dayjs(latestJoinDate);
                         const latestDateOnly = latest.startOf('day');
