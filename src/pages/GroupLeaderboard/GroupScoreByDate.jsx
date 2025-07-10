@@ -542,7 +542,7 @@ const noDataMessage = {
 
                                         <Col xs={4} className="text-start fw-semibold" onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
                                             {data.username}
-                                            {/* <p>Score is:{data.gamlescore}</p> */}
+                                            <p>Score is:{data.gamlescore}</p>
                                         </Col>
 
                                         <Col xs={5}>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Form, Button } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, InputGroup } from 'react-bootstrap';
 import Axios from "axios";
 import { toast } from 'react-toastify';
 import logo from '../Logo.png';
@@ -23,6 +23,14 @@ function Registerform() {
     const params = new URLSearchParams(location.search);
     const encryptedId = params.get('group_id');
     const groupId = encryptedId ? atob(encryptedId) : null;
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setConfirmShowPassword] = useState(false);
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+    const toggleConfirmPasswordVisibility = () => {
+        setConfirmShowPassword(!showConfirmPassword);
+    };
 
     useEffect(() => {
         const defaultFile = new File([""], "default_avatar.png", { type: "image/png" });
@@ -215,26 +223,38 @@ function Registerform() {
                         <Col md={6}>
                             <Form.Group className="mb-3">
                                 <Form.Label>Password <span style={{ color: 'red' }}>*</span></Form.Label>
-                                <Form.Control
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    onBlur={() => handleBlur('password')}
-                                    placeholder='Enter your password'
-                                />
+                                <InputGroup>
+                                    <Form.Control
+                                        type={showPassword ? 'text' : 'password'}
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        onBlur={() => handleBlur('password')}
+                                        placeholder='Enter your password'
+                                    />
+                                    <InputGroup.Text style={{ cursor: 'pointer' }} onClick={togglePasswordVisibility}>
+                                        <i className={showPassword ? "fa fa-eye-slash" : "fa fa-eye"}></i>
+                                    </InputGroup.Text>
+                                </InputGroup>
+                                
                                 {touched.password && errors.password && <p className='form-validation-error'>{errors.password}</p>}
                             </Form.Group>
+
                         </Col>
                         <Col md={6}>
                             <Form.Group className="mb-3">
                                 <Form.Label>Confirm Password <span style={{ color: 'red' }}>*</span></Form.Label>
-                                <Form.Control
-                                    type="password"
+                                <InputGroup>
+                                    <Form.Control
+                                    type={showConfirmPassword ? 'text' : 'password'}
                                     value={confirmpassword}
                                     onChange={(e) => setConfirmpassword(e.target.value)}
                                     onBlur={() => handleBlur('confirmpassword')}
                                     placeholder='Confirm your password'
-                                />
+                                    />
+                                    <InputGroup.Text style={{ cursor: 'pointer' }} onClick={toggleConfirmPasswordVisibility}>
+                                        <i className={showPassword ? "fa fa-eye-slash" : "fa fa-eye"}></i>
+                                    </InputGroup.Text>
+                                </InputGroup>
                                 {touched.confirmpassword && errors.confirmpassword && <p className='form-validation-error'>{errors.confirmpassword}</p>}
                             </Form.Group>
                         </Col>
@@ -258,19 +278,21 @@ function Registerform() {
                                 </div>
                             )}
                         </Col>
+                        {groupId && (
                         <Col md={6}>
                             <Form.Group className="mb-3">
-                                <Form.Label>
-                                    Group ID <span style={{ color: 'red' }}>*</span>
-                                </Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    name="groupid"
-                                    value={groupId}
-                                    disabled
-                                />
+                            <Form.Label>
+                                Group ID <span style={{ color: 'red' }}>*</span>
+                            </Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="groupid"
+                                value={groupId}
+                                disabled
+                            />
                             </Form.Group>
                         </Col>
+                        )}
                     </Row>
 
                     <Button className="btn btn-block btn-hero-lg btn-hero-success mt-4" type="submit">
