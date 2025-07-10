@@ -542,6 +542,7 @@ const noDataMessage = {
 
                                         <Col xs={4} className="text-start fw-semibold" onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
                                             {data.username}
+                                            {/* <p>Score is:{data.gamlescore}</p> */}
                                         </Col>
 
                                         <Col xs={5}>
@@ -563,7 +564,7 @@ const noDataMessage = {
                                                         style={{ height: '8px' }}
                                                     />
                                                 </Col>
-
+                                                
                                                 <Col xs={5} className="text-center d-flex fw-bold">
                                                     <span
                                                         onClick={() => showDayResult(data.createdat, data.useremail, data.gamename, period)}
@@ -683,6 +684,7 @@ const noDataMessage = {
 
                                     <Col xs={4} className="text-start fw-semibold" onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
                                         {data.username}
+                                        {/* <p>Score is:{data.gamlescore}</p> */}
                                     </Col>
 
                                     <Col xs={5}>
@@ -704,8 +706,9 @@ const noDataMessage = {
                                             style={{ height: '8px' }}
                                             />
                                         </Col>
-
+                                        
                                         <Col xs={5} className="text-center d-flex fw-bold">
+                                            
                                             <span
                                             onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)}
                                             style={{ cursor: "pointer" }}
