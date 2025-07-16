@@ -542,7 +542,7 @@ const noDataMessage = {
 
                                         <Col xs={4} className="text-start fw-semibold" onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
                                             {data.username}
-                                            <p>Score is:{data.gamlescore}</p>
+                                            {/* <p>Score is:{data.gamlescore}</p> */}
                                         </Col>
 
                                         <Col xs={5}>
@@ -684,16 +684,8 @@ const noDataMessage = {
 
                                     <Col xs={4} className="text-start fw-semibold" onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
                                         {data.username}
-                                        <p>Score is:{data.gamlescore}</p>
-                                        {data.beat_prior_sheriff === true && (
-                                        <span style={{ color: 'green' }}>✅ Beat prior sheriff</span>
-                                        )}
-                                        {data.beat_prior_sheriff === false && data.tie_with_prior_sheriff === true && (
-                                        <span style={{ color: 'orange' }}>⚠️ Tied with prior sheriff</span>
-                                        )}
-                                        {data.beat_prior_sheriff === false && data.tie_with_prior_sheriff === false && (
-                                        <span style={{ color: 'red' }}>❌ Did not beat sheriff</span>
-                                        )}
+                                        {/* <p>Score is:{data.gamlescore}</p> */}
+                                        
                                     </Col>
 
                                     <Col xs={5}>
