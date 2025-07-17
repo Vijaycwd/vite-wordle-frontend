@@ -37,7 +37,7 @@ function InviteGroupAndSite({ groupId }) {
         }
     };
     return (
-        <Button onClick={inviteFriends}>
+        <Button className="w-100" onClick={inviteFriends}>
             Invite Friends to Site & Group
         </Button>
     )

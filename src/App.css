@@ -279,6 +279,9 @@ span.notification-count.badge.bg-danger {
   height: 35px;
   object-fit: cover;
 }
+button, input{
+cursor: pointer;
+}
 /* Hide on larger screens */
 @media only screen and (max-width: 600px)  {
   .navbar-collapse {

@@ -103,8 +103,8 @@ function GroupPage() {
                         </Button>
                     </Col>
                 </Row>
-                <Row>
-                    <Col className="px-5 mt-3">
+                <Row className='justify-content-center'>
+                    <Col md={4} className="px-5 mt-3">
                         <InviteGroupAndSite groupId={group.id} />
                     </Col>
                 </Row>

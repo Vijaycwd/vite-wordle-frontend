@@ -300,10 +300,10 @@ function GroupInfo() {
                     <div className="text-md-start">
                         <p><strong>*Captain</strong></p>
                         <Row>
-                            <Col xs={7} md={4}>
+                            <Col xs={6} md={6}>
                                 <InviteGroupandSite/>
                                 <Button
-                                    className="my-2 me-md-2"
+                                    className="my-2 me-md-2 w-100"
                                     onClick={() =>
                                     navigate(`/group/${group.id}/stats`)
                                     }
@@ -313,11 +313,11 @@ function GroupInfo() {
                             </Col>
                             {userId === captainid ? (
                             <>
-                                <Col xs={5} md={8}>
-                                <Button className="btn btn-warning" onClick={handleShowModal}>
+                                <Col xs={6} md={6}>
+                                <Button className="btn btn-warning w-100" onClick={handleShowModal}>
                                     Edit Group Name
                                 </Button>
-                                <Button variant="danger" className="mt-2" onClick={() => {setShowDeleteConfirm(true);}} disabled={loading}>
+                                <Button variant="danger" className="mt-2 w-100" onClick={() => {setShowDeleteConfirm(true);}} disabled={loading}>
                                     {deleteloading? (
                                         <>
                                         <Spinner

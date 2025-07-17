@@ -87,22 +87,27 @@ function SelectScoringMethod({ leaderboardText }) {
                     <div className="border p-3 shadow rounded mt-4">
                         <h5>Select Scoring Method:</h5>
                         <p dangerouslySetInnerHTML={{ __html: leaderboardText.text5 }}></p>
-                        <Form className="d-flex flex-wrap justify-content-center">
-                            {["Golf", "World Cup", "Pesce"].map((method, index) => (
-                                <div key={index} className="form-check mx-2">
-                                    <input
-                                        type="radio"
-                                        className="form-radio-input"
-                                        id={`method-${method}`}
-                                        checked={scoringmethod === method}  // Ensure correct method is checked
-                                        onChange={() => handleMethodSelection(method)}
-                                    />
-                                    <label className="form-check-label px-2" htmlFor={`method-${method}`}>
-                                        {method}
-                                    </label>
-                                </div>
-                            ))}
+                        <Form className="d-flex flex-wrap justify-content-center scoring-method-form">
+                        {["Golf", "World Cup", "Pesce"].map((method, index) => (
+                            <div key={index} className="form-check mx-2">
+                            <input
+                                type="radio"
+                                className="form-radio-input" // hide default radio if desired
+                                id={`method-${method}`}
+                                checked={scoringmethod === method}
+                                onChange={() => handleMethodSelection(method)}
+                            />
+                            <label
+                                className={`form-check-label scoring-label px-2 ${scoringmethod === method ? "text-primary fw-bold" : "text-primary"}`}
+                                htmlFor={`method-${method}`}
+                                style={{ cursor: "pointer" }}
+                            >
+                                {method}
+                            </label>
+                            </div>
+                        ))}
                         </Form>
+
                         <Button className="mt-3" onClick={saveSelectedMethod} disabled={loading} >
                             {loading ? (
                                 <>

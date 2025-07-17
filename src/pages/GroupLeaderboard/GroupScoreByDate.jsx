@@ -20,7 +20,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
     const [dataFetched, setDataFetched] = useState(false);
     const [startDate, setStartDate] = useState(new Date());
     const [dataFetchedError, setFetchedError] = useState(false);
-    const [scoringmethod, setScoringMethod] = useState("");
+    const [scoringMethod, setscoringMethod] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [dayResults, setDayResults] = useState(null);
     const [selectedGame, setSelectedGame] = useState("");
@@ -50,14 +50,15 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
     
 
     useEffect(() => {
-        const fetchScoringMethod = async () => {
+        const fetchscoringMethod = async () => {
             try {
                 const res = await axios.get(`${baseURL}/groups/get-scoring-method.php`, {
                     params: { user_id: userId, group_id: id }
                 });
 
-                if (res.data.status === "success") {
-                    setScoringMethod(res.data.scoring_method || ""); // Default to empty string
+                if (res.data.status == "success") {
+                    
+                    setscoringMethod(res.data.scoring_method); // Default to empty string
                 } else {
                     toast.error("Scoring Method not found.");
                 }
@@ -67,7 +68,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
         };
 
         if (id && userId) {  
-            fetchScoringMethod();
+            fetchscoringMethod();
         }
     }, [id, userId]); 
 
@@ -182,7 +183,7 @@ const showDayResult = (date, useremail, game, period) => {
           handleDateChange(prevDate);
       }
   };
-    
+  
 const goToNextDay = () => {
     const now = dayjs();
     const today = now.startOf('day');
@@ -236,19 +237,20 @@ const goToNextDay = () => {
             </>
         );
     });
-useEffect(() => {
+
+    useEffect(() => {
     const now = dayjs();
     const currentHour = now.hour();
+
+    if (!scoringMethod) return; // Wait for scoringMethod to be loaded
 
     if (game === 'phrazle') {
         let date, period;
 
         if (currentHour < 12) {
-            // Before noon: show yesterday PM
             date = now.subtract(1, 'day').toDate();
             period = 'PM';
         } else {
-            // After noon: show today AM
             date = now.toDate();
             period = 'AM';
         }
@@ -261,12 +263,12 @@ useEffect(() => {
         setStartDate(prevDate);
         fetchDataByDate(formatDateForBackend(prevDate));
     }
-}, [game]);
+}, [game, scoringMethod]);
 
     const fetchDataByDate = async (date, currentPeriod = null) => {
         try {
             const timeZone = moment.tz.guess();
-            
+
             const baseParams = {
                 groupId: id,
                 groupName,
@@ -275,20 +277,29 @@ useEffect(() => {
                 today: date,
                 timeZone,
                 formattedYesterday: date,
-                scoringmethod
+                scoringMethod
             };
-    
-            // Add period if game is phrazle
-            const params = game === 'phrazle' 
+
+            const params = game === 'phrazle'
                 ? { ...baseParams, period: currentPeriod || period }
                 : baseParams;
-    
-            const [todayResponse, cumulativeAverageResponse, cumulativeDailyResponse] = await Promise.all([
-                axios.get(`${baseURL}/groups/get-group-score-new.php`, { params }),
-                axios.get(`${baseURL}/groups/get-cumulative-average-score.php`, { params }),
-                axios.get(`${baseURL}/groups/get-cumulative-score-bydate.php`, { params }),
-            ]);
-    
+
+            let todayResponse, cumulativeAverageResponse, cumulativeDailyResponse;
+            console.log('scoringMethod', scoringMethod);
+            if (scoringMethod === 'Pesce') {
+                [todayResponse, cumulativeAverageResponse, cumulativeDailyResponse] = await Promise.all([
+                    axios.get(`${baseURL}/groups/pesce-get-group-score.php`, { params }),
+                    axios.get(`${baseURL}/groups/get-cumulative-average-score.php`, { params }),
+                    axios.get(`${baseURL}/groups/get-cumulative-score-bydate.php`, { params }),
+                ]);
+            } else {
+                [todayResponse, cumulativeAverageResponse, cumulativeDailyResponse] = await Promise.all([
+                    axios.get(`${baseURL}/groups/get-group-score.php`, { params }),
+                    axios.get(`${baseURL}/groups/get-cumulative-average-score.php`, { params }),
+                    axios.get(`${baseURL}/groups/get-cumulative-score-bydate.php`, { params }),
+                ]);
+            }
+
             if (
                 todayResponse.data.status === "success" &&
                 Array.isArray(todayResponse.data.data)
@@ -298,15 +309,12 @@ useEffect(() => {
                 setTodayLeaderboard([]);
                 setFetchedError(true);
             }
-           
-            // setlatestJoinDate(cumulativeDailyResponse.data.latestJoinDate || []);
+
             settotalGames(cumulativeDailyResponse.data.totalGames || []);
             setcumulativeAverageScore(cumulativeAverageResponse.data.data || []);
             setcumulativeDailyScore(cumulativeDailyResponse.data.data || []);
-           
-    
             setDataFetched(true);
-    
+
         } catch (error) {
             console.error("API Error:", error);
             setTodayLeaderboard([]);
@@ -314,6 +322,7 @@ useEffect(() => {
             setDataFetched(true);
         }
     };
+
     
     
     // console.log('todayLeaderboard',todayLeaderboard);
@@ -503,11 +512,11 @@ const noDataMessage = {
                                 const worldCupScoreB = allLost ? 0 : (isSingleWinnerB ? 3 : isSharedWinnerB ? 1 : 0);
                                 const pesceScoreB = isSheriff(b.username) ? 1 : 0;
 
-                                if (scoringmethod === "Golf") {
+                                if (scoringMethod === "Golf") {
                                     return aScore - bScore;
-                                } else if (scoringmethod === "World Cup") {
+                                } else if (scoringMethod === "World Cup") {
                                     return worldCupScoreB - worldCupScoreA;
-                                } else if (scoringmethod === "Pesce") {
+                                } else if (scoringMethod === "Pesce") {
                                     return pesceScoreB - pesceScoreA;
                                 } else {
                                     return bScore - aScore;
@@ -552,11 +561,11 @@ const noDataMessage = {
                                                         className={`${data.gamename}-progressbar`}
                                                         variant="success"
                                                         now={
-                                                            scoringmethod === "Golf"
+                                                            scoringMethod === "Golf"
                                                                 ? data.gamlescore ?? totalScore
-                                                                : scoringmethod === "World Cup"
+                                                                : scoringMethod === "World Cup"
                                                                 ? worldCupScore
-                                                                : scoringmethod === "Pesce"
+                                                                : scoringMethod === "Pesce"
                                                                 ? pesceScore
                                                                 : (data.gamlescore ?? totalScore)
                                                         }
@@ -570,16 +579,16 @@ const noDataMessage = {
                                                         onClick={() => showDayResult(data.createdat, data.useremail, data.gamename, period)}
                                                         style={{ cursor: "pointer" }}
                                                     >
-                                                        {scoringmethod === "Golf"
+                                                        {scoringMethod === "Golf"
                                                             ? (data.gamlescore ?? '') === '' ? totalScore : data.gamlescore
-                                                            : scoringmethod === "World Cup"
+                                                            : scoringMethod === "World Cup"
                                                             ? worldCupScore
                                                             : pesceScore}
                                                         {data.gamename === 'phrazle' &&
-                                                        scoringmethod === "Pesce" &&
+                                                        scoringMethod === "Pesce" &&
                                                         isSheriff(data.username) &&
                                                         " 🤠"}
-                                                        {scoringmethod !== "Pesce" && isSingleWinner && " 🏆"}
+                                                        {scoringMethod !== "Pesce" && isSingleWinner && " 🏆"}
                                                     </span>
                                                 </Col>
                                             </Row>
@@ -622,7 +631,7 @@ const noDataMessage = {
                         // Define sheriff checker before using it
                         const isSheriff = (username) =>
                             todayLeaderboard.some(user => user.username === username && user.sheriff === true);
-
+                       
                         return (
                             <>
                             <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
@@ -660,8 +669,8 @@ const noDataMessage = {
 
                                 const worldCupScore = allLost ? 0 : (isSingleWinner ? 3 : isSharedWinner ? 1 : 0);
                                 // const pesceScore = allLost ? 0 : (isSingleWinner || isSharedWinner ? 1 : 0);
-                                const pesceScore = isSheriff(data.username) ? 1 : 0;
-
+                                const pesceScore = allLost ? 0 : (isSheriff(data.username) ? 1 : 0);
+                                
                                 return (
                                     <Row
                                     key={index}
@@ -684,7 +693,7 @@ const noDataMessage = {
 
                                     <Col xs={4} className="text-start fw-semibold" onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
                                         {data.username}
-                                        {/* <p>Score is:{data.gamlescore}</p> */}
+                                        <p>Score is:{data.gamlescore}</p>
                                         
                                     </Col>
 
@@ -695,11 +704,11 @@ const noDataMessage = {
                                             className={`${data.gamename}-progressbar`}
                                             variant="success"
                                             now={
-                                                scoringmethod === "Golf"
+                                                scoringMethod === "Golf"
                                                 ? data.gamlescore ?? totalScore
-                                                : scoringmethod === "World Cup"
+                                                : scoringMethod === "World Cup"
                                                     ? worldCupScore
-                                                    : scoringmethod === "Pesce"
+                                                    : scoringMethod === "Pesce"
                                                     ? pesceScore
                                                     : (data.gamlescore ?? totalScore)
                                             }
@@ -714,26 +723,26 @@ const noDataMessage = {
                                             onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)}
                                             style={{ cursor: "pointer" }}
                                             >
-                                            {scoringmethod === "Golf"
+                                            {scoringMethod === "Golf"
                                                 ? (data.gamlescore ?? '') === '' ? totalScore : data.gamlescore
-                                                : scoringmethod === "World Cup"
+                                                : scoringMethod === "World Cup"
                                                 ? worldCupScore
                                                 : pesceScore}
                                             {data.gamename === 'wordle' &&
-                                            scoringmethod === "Pesce" &&
+                                            scoringMethod === "Pesce" &&
                                             isSheriff(data.username) &&
                                             data.gamlescore !== null &&
                                             data.gamlescore !== '' &&
                                             Number(data.gamlescore) !== 7 &&
                                             " 🤠"}
                                             {data.gamename === 'connections' &&
-                                            scoringmethod === "Pesce" &&
+                                            scoringMethod === "Pesce" &&
                                             isSheriff(data.username) &&
                                             data.gamlescore !== null &&
                                             data.gamlescore !== '' &&
                                             Number(data.gamlescore) !== 4 &&
                                             " 🤠"}
-                                            {scoringmethod !== "Pesce" && isSingleWinner && " 🏆"}
+                                            {scoringMethod !== "Pesce" && isSingleWinner && " 🏆"}
                                             </span>
                                         </Col>
                                         </Row>
@@ -792,11 +801,11 @@ const noDataMessage = {
                                             const worldCupScoreB = allLost ? 0 : (isSingleWinnerB ? 3 : isSharedWinnerB ? 1 : 0);
                                             const pesceScoreB = allLost ? 0 : (isSingleWinnerB || isSharedWinnerB ? 1 : 0);
 
-                                            if (scoringmethod === "Golf") {
+                                            if (scoringMethod === "Golf") {
                                                 return aScore - bScore; // lower is better
-                                            } else if (scoringmethod === "World Cup") {
+                                            } else if (scoringMethod === "World Cup") {
                                                 return worldCupScoreB - worldCupScoreA; // higher World Cup score is better
-                                            } else if (scoringmethod === "Pesce") {
+                                            } else if (scoringMethod === "Pesce") {
                                                 return pesceScoreB - pesceScoreA; // higher Pesce score is better
                                             } else {
                                                 return bScore - aScore; // default: higher is better
@@ -814,13 +823,13 @@ const noDataMessage = {
                                             let nowValue = 0;
                                             let maxValue = 1; // default to 1 to avoid div-by-zero
 
-                                            if (scoringmethod === "Golf") {
+                                            if (scoringMethod === "Golf") {
                                                 nowValue = Number(data.gamlescore ?? totalScore);
                                                 maxValue = totalScore > 0 ? totalScore : 1;
-                                            } else if (scoringmethod === "World Cup") {
+                                            } else if (scoringMethod === "World Cup") {
                                                 nowValue = Number(data.total_worldcup_points ?? 0);
                                                 maxValue = data.totalGamesPlayed * 7; // max world cup points (3 for win)
-                                            } else if (scoringmethod === "Pesce") {
+                                            } else if (scoringMethod === "Pesce") {
                                                 nowValue = Number(data.total_pesce_points ?? 0);
                                                 maxValue = data.totalGamesPlayed * 7; // max pesce score (1 for win/shared)
                                             }
@@ -881,9 +890,9 @@ const noDataMessage = {
 
                                                             </Col>
                                                             <Col xs={3} className="text-center fw-bold">
-                                                            {scoringmethod === "Golf"
+                                                            {scoringMethod === "Golf"
                                                                 ? (data.gamlescore ?? totalScore)
-                                                                : scoringmethod === "World Cup"
+                                                                : scoringMethod === "World Cup"
                                                                 ? data.total_worldcup_points
                                                                 : data.total_pesce_points}
                                                             </Col>
@@ -942,11 +951,11 @@ const noDataMessage = {
                                         .slice()
                                         // .sort((a, b) => (a.gamlescore / a.totalGamesPlayed) - (b.gamlescore / b.totalGamesPlayed))
                                         .sort((a, b) => {
-                                            if (scoringmethod === "Golf") {
+                                            if (scoringMethod === "Golf") {
                                                 return (a.gamlescore / a.totalGamesPlayed) - (b.gamlescore / b.totalGamesPlayed);
-                                            } else if (scoringmethod === "World Cup") {
+                                            } else if (scoringMethod === "World Cup") {
                                                 return (b.gamlescore / b.totalGamesPlayed) - (a.gamlescore / a.totalGamesPlayed);
-                                            } else if (scoringmethod === "Pesce") {
+                                            } else if (scoringMethod === "Pesce") {
                                                 return (b.gamlescore / b.totalGamesPlayed) - (a.gamlescore / a.totalGamesPlayed);
                                             }
                                             return 0;

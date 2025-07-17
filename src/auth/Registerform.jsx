@@ -64,6 +64,14 @@ function Registerform() {
             newErrors.confirmpassword = 'Passwords do not match.';
         }
 
+        if (avatar && avatar.name !== 'default_avatar.png') {
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!allowedTypes.includes(avatar.type)) {
+                newErrors.avatar = 'Invalid file type. Only JPEG, PNG, or WEBP allowed.';
+            } else if (avatar.size > 100 * 1024) {
+                newErrors.avatar = 'Profile picture must be less than 100KB.';
+            }
+        }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -74,7 +82,31 @@ function Registerform() {
 
     const handleUpload = (event) => {
         const file = event.target.files[0];
+        setTouched(prev => ({ ...prev, avatar: true }));
+
         if (file) {
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                setErrors(prev => ({
+                    ...prev,
+                    avatar: 'Invalid file type. Only JPEG, PNG, or WEBP allowed.',
+                }));
+                setAvatar(null);
+                setPreviewUrl('');
+                return;
+            } else if (file.size > 100 * 1024) {
+                setErrors(prev => ({
+                    ...prev,
+                    avatar: 'Profile picture must be less than 100KB.',
+                }));
+                setAvatar(null);
+                setPreviewUrl('');
+                return;
+            } else {
+                // Valid file, clear avatar error
+                setErrors(prev => ({ ...prev, avatar: '' }));
+            }
+
             setAvatar(file);
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -110,6 +142,9 @@ function Registerform() {
         formData.append('avatar', avatar);
         formData.append('createdAt', createdAt);
 
+        if (groupId) {
+            formData.append('groupId', groupId);
+        }
         try {
             const res = await Axios.post(`${baseURL}/user/create-user.php`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
@@ -267,8 +302,12 @@ function Registerform() {
                                 <Form.Control
                                     type="file"
                                     name="avatar"
+                                    accept="image/jpeg, image/png, image/webp"
                                     onChange={handleUpload}
                                 />
+                                {touched.avatar && errors.avatar && (
+                                    <p className="form-validation-error">{errors.avatar}</p>
+                                )}
                             </Form.Group>
 
                             {previewUrl && (
@@ -286,7 +325,7 @@ function Registerform() {
                             </Form.Label>
                             <Form.Control
                                 type="text"
-                                name="groupid"
+                                name="groupId"
                                 value={groupId}
                                 disabled
                             />
