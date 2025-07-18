@@ -30,6 +30,10 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
     const loginuserEmail = USER_AUTH_DATA?.email;
     //const formattedDate = latestJoinDate.slice(0, 10);
     const formattedDateStr = latestJoinDate ? latestJoinDate.slice(0, 10) : null;
+    const date = new Date(latestJoinDate);
+    const hours = date.getHours();
+    const groupPeriod = hours < 12 ? "AM" : "PM";
+    
     let minDate = new Date(); // fallback
 
     if (formattedDateStr && typeof formattedDateStr === 'string') {
@@ -274,6 +278,7 @@ const goToNextDay = () => {
                 groupName,
                 game,
                 groupCreatedDate: formattedDateStr,
+                groupPeriod,
                 today: date,
                 timeZone,
                 formattedYesterday: date,
@@ -285,14 +290,23 @@ const goToNextDay = () => {
                 : baseParams;
 
             let todayResponse, cumulativeAverageResponse, cumulativeDailyResponse;
-            console.log('scoringMethod', scoringMethod);
+            
             if (scoringMethod === 'Pesce') {
+                const todayPromise = axios.get(`${baseURL}/groups/pesce-get-group-score.php`, { params });
+
+                // Wait 300ms before firing the other two
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+                const cumulativeAveragePromise = axios.get(`${baseURL}/groups/get-cumulative-average-score.php`, { params });
+                const cumulativeDailyPromise = axios.get(`${baseURL}/groups/get-cumulative-score-bydate.php`, { params });
+
                 [todayResponse, cumulativeAverageResponse, cumulativeDailyResponse] = await Promise.all([
-                    axios.get(`${baseURL}/groups/pesce-get-group-score.php`, { params }),
-                    axios.get(`${baseURL}/groups/get-cumulative-average-score.php`, { params }),
-                    axios.get(`${baseURL}/groups/get-cumulative-score-bydate.php`, { params }),
+                    todayPromise,
+                    cumulativeAveragePromise,
+                    cumulativeDailyPromise
                 ]);
-            } else {
+            }
+            else {
                 [todayResponse, cumulativeAverageResponse, cumulativeDailyResponse] = await Promise.all([
                     axios.get(`${baseURL}/groups/get-group-score.php`, { params }),
                     axios.get(`${baseURL}/groups/get-cumulative-average-score.php`, { params }),
@@ -894,7 +908,7 @@ const noDataMessage = {
                                                                 ? (data.gamlescore ?? totalScore)
                                                                 : scoringMethod === "World Cup"
                                                                 ? data.total_worldcup_points
-                                                                : data.total_pesce_points}
+                                                                : data.sheriffCount}
                                                             </Col>
 
                                                         </Row>
