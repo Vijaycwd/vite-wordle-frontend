@@ -15,7 +15,7 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
     const [cumulativeScore, setCumulativeScore] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [scoringmethod, setScoringMethod] = useState("");
+    const [scoringMethod, setScoringMethod] = useState("");
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     
     const userId = USER_AUTH_DATA?.id;
@@ -32,6 +32,13 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
     const [dayResults, setDayResults] = useState(null);
     const [selectedGame, setSelectedGame] = useState("");
     const [showModal, setShowModal] = useState(false);
+    const [localLatestJoinDate, setLocalLatestJoinDate] = useState(null);
+
+    const formattedDateStr = localLatestJoinDate ? localLatestJoinDate.slice(0, 10) : null;
+    const date = new Date(localLatestJoinDate);
+    const hours = date.getHours();
+    const groupPeriod = hours < 12 ? "AM" : "PM";
+    console.log(groupPeriod);
     // useEffect(() => {
     //     // Call the auto-submit PHP script
     //     axios.get(`${baseURL}/games/wordle/auto-submit-wordle-scores.php`, {
@@ -45,45 +52,59 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
     //       });
     //   }, []);
       
-    useEffect(() => {
-        const fetchScoringMethod = async () => {
-            try {
-                const res = await axios.get(`${baseURL}/groups/get-scoring-method.php`, {
-                    params: { user_id: userId, group_id: id }
-                });
-
-                // console.log("Fetched Scoring Method:", res.data.scoring_method);
-
-                if (res.data.status === "success") {
-                    setScoringMethod(res.data.scoring_method || ""); // Default to empty string
-                } else {
-                    toast.error("Scoring Method not found.");
-                }
-            } catch (err) {
-                toast.error("Failed to load group info.");
-            }
-        };
-
-        if (id && userId) {  
-            fetchScoringMethod();
-        }
-    }, [id, userId]); 
-    
+   useEffect(() => {
+           const fetchscoringMethod = async () => {
+               try {
+                   const res = await axios.get(`${baseURL}/groups/get-scoring-method.php`, {
+                       params: { user_id: userId, group_id: id }
+                   });
+   
+                   if (res.data.status == "success") {
+                       
+                       setScoringMethod(res.data.scoring_method); // Default to empty string
+                   } else {
+                       toast.error("Scoring Method not found.");
+                   }
+               } catch (err) {
+                   toast.error("Failed to load group info.");
+               }
+           };
+   
+           if (id && userId) {  
+               fetchscoringMethod();
+           }
+       }, [id, userId]); 
 
     useEffect(() => {
         const fetchGroupStats = async () => {
-            if (!id || !game) return;
+            if (!id || !game || !scoringMethod) return;
 
             try {
                 setLoading(true);
-                const params = { groupId: id, groupName, game, timeZone, today: todayDate };
-                if (game === "phrazle") {
-                    params.period = period;
-                }
-                // Fetch Today's Scores
-                const todayResponse = await axios.get(`${baseURL}/groups/get-current-date-score.php`, {params});
+                const todayDate = adjustedDate.toISOString().slice(0, 10);
 
-                // console.log("Today's Scores Response:", todayResponse.data);
+                const baseParams = {
+                    groupId: id,
+                    groupName,
+                    game,
+                    groupCreatedDate: formattedDateStr,
+                    groupPeriod,
+                    today: todayDate,
+                    timeZone,
+                    formattedYesterday: formattedYesterday,
+                    scoringMethod
+                };
+                const params = game === 'phrazle'
+                ? { ...baseParams, period: period }
+                : baseParams;
+
+                let todayResponse;
+
+                if (scoringMethod == 'Pesce') {
+                    todayResponse = await axios.get(`${baseURL}/groups/pesce-get-group-score.php`, { params });
+                } else {
+                    todayResponse = await axios.get(`${baseURL}/groups/get-group-score.php`, { params });
+                }
 
                 setTodayLeaderboard(todayResponse.data.data || []);
             } catch (error) {
@@ -94,7 +115,8 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
         };
 
         fetchGroupStats();
-    }, [id, groupName, game, todayDate]);
+    }, [id, groupName, game, todayDate, scoringMethod]);
+
 
     const getCurrentPeriod = () => {
     const hours = new Date().getHours();
@@ -104,41 +126,41 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
     const period = game === 'phrazle' ? getCurrentPeriod() : null;
 
 
-    useEffect(() => {
-        const fetchGroupStats = async () => {
-            if (!id || !game) return;
+    // useEffect(() => {
+    //     const fetchGroupStats = async () => {
+    //         if (!id || !game) return;
     
-            try {
-                setLoading(true);
+    //         try {
+    //             setLoading(true);
     
-                const params = {
-                    groupId: id,
-                    groupName,
-                    game,
-                    timeZone,
-                    today: todayDate,
-                };
+    //             const params = {
+    //                 groupId: id,
+    //                 groupName,
+    //                 game,
+    //                 timeZone,
+    //                 today: todayDate,
+    //             };
     
-                // If the game is Phrazle, include the period
-                if (game === 'phrazle') {
-                    params.period = period; // 'AM' or 'PM'
-                }
+    //             // If the game is Phrazle, include the period
+    //             if (game === 'phrazle') {
+    //                 params.period = period; // 'AM' or 'PM'
+    //             }
     
-                const todayResponse = await axios.get(
-                    `${baseURL}/groups/get-group-score.php`,
-                    { params }
-                );
+    //             const todayResponse = await axios.get(
+    //                 `${baseURL}/groups/get-group-score.php`,
+    //                 { params }
+    //             );
     
-                setTodayLeaderboard(todayResponse.data.data || []);
-            } catch (error) {
-                console.error("Error fetching group stats:", error.response ? error.response.data : error.message);
-            } finally {
-                setLoading(false);
-            }
-        };
+    //             setTodayLeaderboard(todayResponse.data.data || []);
+    //         } catch (error) {
+    //             console.error("Error fetching group stats:", error.response ? error.response.data : error.message);
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     };
     
-        fetchGroupStats();
-    }, [id, groupName, game, todayDate, period]);
+    //     fetchGroupStats();
+    // }, [id, groupName, game, todayDate, period]);
     
 
     useEffect(() => {
@@ -154,6 +176,7 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
                 });
                
                 setLatestJoinDate(cumulativeResponse.data.latestJoinDate || []);
+                setLocalLatestJoinDate(cumulativeResponse.data.latestJoinDate);
                 setCumulativeScore(cumulativeResponse.data.data || []);
             } catch (error) {
                 console.error("Error fetching cumulative stats:", error.response ? error.response.data : error.message);
@@ -415,11 +438,11 @@ let sheriffWinners = [];
                                         <>
                                         <h4 className="text-center py-3">Today's Leaderboard</h4>
 
-                                        {scoringmethod === "Pesce" && (
+                                        {/* {scoringMethod === "Pesce" && (
                                             <div className="text-center my-3 fw-bold">
                                             Sheriff: {sheriffWinners.map(u => u.username).join(', ') || "—"}
                                             </div>
-                                        )}
+                                        )} */}
 
                                         {filteredLeaderboard
                                             .slice()
@@ -496,9 +519,6 @@ let sheriffWinners = [];
                                         </>
                                     );
                                     }
-
-
-                                
                             })()}
                            
                             {!loading && !error && todayLeaderboard.length > 0 && (() => {
@@ -556,28 +576,19 @@ let sheriffWinners = [];
                                     );
 
                                     const minScoreYesterday = Math.min(...yesterdayScores.map(d => d.gamlescore ?? 0));
-                                    
-                                    const priorSheriffUsernames = yesterdayScores
-                                        .filter(d => d.gamlescore == minScoreYesterday)
-                                        .map(d => d.username);
 
                                     // Pesce mode sheriff logic
-                                    const sheriffWinners =
-                                        topScorers.length > 0
-                                            ? topScorers
-                                            : topScorers.filter(user => !priorSheriffUsernames.includes(user.username));
-
                                     const isSheriff = (username) =>
-                                        sheriffWinners.some(w => w.username == username);
-
+                                    todayLeaderboard.some(user => user.username === username && user.sheriff === true);
+                                    
                                     return (
                                         <>
                                             <h4 className="text-center py-3">Today's Leaderboard</h4>
-                                            {scoringmethod === "Pesce" && (
+                                            {/* {scoringMethod === "Pesce" && (
                                                 <div className="text-center my-3 fw-bold">
                                                     Sheriff: {sheriffWinners.map(u => u.username).join(', ') || "—"}
                                                 </div>
-                                            )}
+                                            )} */}
 
                                             {filteredLeaderboard
                                                 .slice()
@@ -605,10 +616,10 @@ let sheriffWinners = [];
                                                     const isSharedWinner = topScorers.length > 1 && topScorers.some(w => w.username == data.username);
                                                     const isTopScorer = isSingleWinner || isSharedWinner;
 
-                                                    const isSheriffToday = isSheriff(data.username);
+                                                    
                                                     const allLost = highestScore === 7;
                                                     const worldCupScore = allLost ? 0 : (isSingleWinner ? 3 : isSharedWinner ? 1 : 0);
-                                                    const pesceScore = allLost ? 0 : (isSingleWinner || isSharedWinner ? 1 : 0);
+                                                    const pesceScore = allLost ? 0 : (isSheriff(data.username) ? 1 : 0);
 
                                                     return (
                                                         <Row
@@ -649,32 +660,44 @@ let sheriffWinners = [];
                                                                             className={`${data.gamename}-progressbar`}
                                                                             variant="success"
                                                                             now={
-                                                                                scoringmethod === "Golf"
+                                                                                scoringMethod === "Golf"
                                                                                     ? data.gamlescore
-                                                                                    : scoringmethod === "World Cup"
+                                                                                    : scoringMethod === "World Cup"
                                                                                         ? worldCupScore
-                                                                                        : scoringmethod === "Pesce"
+                                                                                        : scoringMethod === "Pesce"
                                                                                             ? pesceScore
                                                                                             : data.gamlescore
                                                                             }
-                                                                            max={scoringmethod === "Pesce" || scoringmethod === "World Cup" ? 3 : totalScore}
+                                                                            max={scoringMethod === "Pesce" || scoringMethod === "World Cup" ? 3 : totalScore}
                                                                             style={{ height: '8px' }}
                                                                         />
                                                                     </Col>
                                                                     <Col xs={5} className="text-center d-flex fw-bold">
+                                                                                                                
                                                                         <span
-                                                                            onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)}
-                                                                            style={{ cursor: "pointer" }}
+                                                                        onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)}
+                                                                        style={{ cursor: "pointer" }}
                                                                         >
-                                                                            {scoringmethod === "Golf" ? (
-                                                                                <> {data.gamlescore} {isSingleWinner && "🏆"} </>
-                                                                            ) : scoringmethod === "World Cup" ? (
-                                                                                <> {worldCupScore} {isSingleWinner && "🏆"} </>
-                                                                            ) : scoringmethod === "Pesce" ? (
-                                                                                <> {pesceScore} {isSheriffToday && "🤠"} </>
-                                                                            ) : (
-                                                                                <> {data.gamlescore} {isSingleWinner && "🏆"} </>
-                                                                            )}
+                                                                        {scoringMethod === "Golf"
+                                                                            ? (data.gamlescore ?? '') === '' ? totalScore : data.gamlescore
+                                                                            : scoringMethod === "World Cup"
+                                                                            ? worldCupScore
+                                                                            : pesceScore}
+                                                                        {data.gamename === 'wordle' &&
+                                                                        scoringMethod === "Pesce" &&
+                                                                        isSheriff(data.username) &&
+                                                                        data.gamlescore !== null &&
+                                                                        data.gamlescore !== '' &&
+                                                                        Number(data.gamlescore) !== 7 &&
+                                                                        " 🤠"}
+                                                                        {data.gamename === 'connections' &&
+                                                                        scoringMethod === "Pesce" &&
+                                                                        isSheriff(data.username) &&
+                                                                        data.gamlescore !== null &&
+                                                                        data.gamlescore !== '' &&
+                                                                        Number(data.gamlescore) !== 4 &&
+                                                                        " 🤠"}
+                                                                        {scoringMethod !== "Pesce" && isSingleWinner && " 🏆"}
                                                                         </span>
                                                                     </Col>
                                                                 </Row>

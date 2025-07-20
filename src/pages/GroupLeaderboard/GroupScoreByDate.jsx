@@ -531,7 +531,10 @@ const noDataMessage = {
                                 } else if (scoringMethod === "World Cup") {
                                     return worldCupScoreB - worldCupScoreA;
                                 } else if (scoringMethod === "Pesce") {
-                                    return pesceScoreB - pesceScoreA;
+                                    if (aIsSheriff === 0 && bIsSheriff === 0) {
+                                        return aScore - bScore;
+                                    }
+                                    return 0;
                                 } else {
                                     return bScore - aScore;
                                 }
@@ -707,7 +710,7 @@ const noDataMessage = {
 
                                     <Col xs={4} className="text-start fw-semibold" onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
                                         {data.username}
-                                        <p>Score is:{data.gamlescore}</p>
+                                        {/* <p>Score is:{data.gamlescore}</p> */}
                                         
                                     </Col>
 
@@ -820,7 +823,9 @@ const noDataMessage = {
                                             } else if (scoringMethod === "World Cup") {
                                                 return worldCupScoreB - worldCupScoreA; // higher World Cup score is better
                                             } else if (scoringMethod === "Pesce") {
-                                                return pesceScoreB - pesceScoreA; // higher Pesce score is better
+                                                const sheriffCountA = Number(a.sheriffCount ?? 0);
+                                                const sheriffCountB = Number(b.sheriffCount ?? 0);
+                                                return sheriffCountB - sheriffCountA; // higher sheriff count first
                                             } else {
                                                 return bScore - aScore; // default: higher is better
                                             }
@@ -908,7 +913,7 @@ const noDataMessage = {
                                                                 ? (data.gamlescore ?? totalScore)
                                                                 : scoringMethod === "World Cup"
                                                                 ? data.total_worldcup_points
-                                                                : data.sheriffCount}
+                                                                : (data.sheriffCount ?? 0)}
                                                             </Col>
 
                                                         </Row>
