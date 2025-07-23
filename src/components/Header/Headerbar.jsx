@@ -71,6 +71,7 @@ const Headerbar = () => {
     event.preventDefault();
     setShow(false);
     localStorage.removeItem('auth');
+    setUserData({}); 
     navigate('/login');
     setNotificationMessage('You have successfully logged out.');
     setShowNotification(true);  // Show notification when user logs out
