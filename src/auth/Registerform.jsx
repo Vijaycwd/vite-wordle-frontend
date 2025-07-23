@@ -319,11 +319,8 @@ function Registerform() {
                         {groupId && (
                         <Col md={6}>
                             <Form.Group className="mb-3">
-                            <Form.Label>
-                                Group ID <span style={{ color: 'red' }}>*</span>
-                            </Form.Label>
                             <Form.Control
-                                type="text"
+                                type="hidden"
                                 name="groupId"
                                 value={groupId}
                                 disabled
