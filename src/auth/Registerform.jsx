@@ -179,7 +179,6 @@ function Registerform() {
                     guessDistribution: [0, 0, 0, 0, 0, 0],
                     handleHighlight: [0]
                 });
-
                 navigate('/login');
             } else {
                 toast.error(res.data.message || "Registration failed");
