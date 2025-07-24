@@ -447,13 +447,13 @@ let sheriffWinners = [];
                                         {filteredLeaderboard
                                             .slice()
                                             .sort((a, b) => {
-                                            const isSheriffA = isSheriff(a.username);
-                                            const isSheriffB = isSheriff(b.username);
+                                            const aIsSheriff = isSheriff(a.username) ? 1 : 0;
+                                            const bIsSheriff = isSheriff(b.username) ? 1 : 0;
+                                            if (aIsSheriff !== bIsSheriff) return bIsSheriff - aIsSheriff;
 
-                                            if (isSheriffA && !isSheriffB) return -1;
-                                            if (!isSheriffA && isSheriffB) return 1;
-
-                                            return a.gamlescore - b.gamlescore;
+                                            const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
+                                            const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
+                                            return aScore - bScore;
                                             })
                                             .map((data, index) => {
                                             const totalScore = getTotalScore(data.gamename);
@@ -593,14 +593,13 @@ let sheriffWinners = [];
                                             {filteredLeaderboard
                                                 .slice()
                                                 .sort((a, b) => {
-                                                    const isSheriffA = isSheriff(a.username);
-                                                    const isSheriffB = isSheriff(b.username);
+                                                const aIsSheriff = isSheriff(a.username) ? 1 : 0;
+                                                const bIsSheriff = isSheriff(b.username) ? 1 : 0;
+                                                if (aIsSheriff !== bIsSheriff) return bIsSheriff - aIsSheriff;
 
-                                                    if (isSheriffA && !isSheriffB) return -1;
-                                                    if (!isSheriffA && isSheriffB) return 1;
-
-                                                    // Fallback to sorting by score (high to low)
-                                                    return b.gamlescore - a.gamlescore;
+                                                const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
+                                                const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
+                                                return aScore - bScore;
                                                 })
                                                 .map((data, index) => {
                                                     const totalScore = getTotalScore(data.gamename);
