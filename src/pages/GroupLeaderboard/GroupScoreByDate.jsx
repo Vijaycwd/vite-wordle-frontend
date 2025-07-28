@@ -248,7 +248,7 @@ const goToNextDay = () => {
 
     if (!scoringMethod) return; // Wait for scoringMethod to be loaded
 
-    if (game === 'phrazle') {
+    if (game == 'phrazle') {
         let date, period;
 
         if (currentHour < 12) {
@@ -263,12 +263,8 @@ const goToNextDay = () => {
         setPeriod(period);
         fetchDataByDate(formatDateForBackend(date), period);
     } else {
-        console.log(formattedDateStr);
+      
         const prevDate = now.subtract(1, 'day').toDate();
-        // if (formattedDateStr === prevDate) {
-        //     setStartDate(prevDate);
-        //     fetchDataByDate(formatDateForBackend(prevDate));
-        // }
         setStartDate(prevDate);
         fetchDataByDate(formatDateForBackend(prevDate));
     }

@@ -38,7 +38,6 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
     const date = new Date(localLatestJoinDate);
     const hours = date.getHours();
     const groupPeriod = hours < 12 ? "AM" : "PM";
-    console.log(groupPeriod);
     // useEffect(() => {
     //     // Call the auto-submit PHP script
     //     axios.get(`${baseURL}/games/wordle/auto-submit-wordle-scores.php`, {
@@ -208,7 +207,8 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
     setSelectedGame(game);
     const timeZone = moment.tz.guess();
     const params = { useremail, timeZone, today: date };
-    if (game === "phrazle") {
+ 
+    if (game == "phrazle") {
         params.period = period;
     }
 
@@ -505,7 +505,7 @@ let sheriffWinners = [];
                                                     </Col>
                                                     <Col xs={5} className="text-center d-flex fw-bold">
                                                         <span
-                                                        onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)}
+                                                        onClick={() => showDayResult(data.createdat, data.useremail, data.gamename, period)}
                                                         style={{ cursor: "pointer" }}
                                                         >
                                                         {pesceScore} {isSheriffToday && "🤠"}
@@ -838,11 +838,9 @@ let sheriffWinners = [];
 
                     return (
                             <div className="text-center pb-2" key={index}>
-                            
                             <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
-                            
                             <div className="phrazle-score-board-text my-3 fs-5 text-center">{phrazle_score_text}</div>
-                            <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
+                            <div className='today text-center fs-6 my-2 fw-bold'>{todayDate} - {period}</div>
                             <div className="phrazle-score m-auto text-center">
                                 {phrazleScore.map((row, rowIndex) => (
                                     row.trim() && (
