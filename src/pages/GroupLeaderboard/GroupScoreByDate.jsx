@@ -265,12 +265,12 @@ const goToNextDay = () => {
     } else {
         console.log(formattedDateStr);
         const prevDate = now.subtract(1, 'day').toDate();
-        if (formattedDateStr === prevDate) {
-            setStartDate(prevDate);
-            fetchDataByDate(formatDateForBackend(prevDate));
-        }
-        // setStartDate(prevDate);
-        // fetchDataByDate(formatDateForBackend(prevDate));
+        // if (formattedDateStr === prevDate) {
+        //     setStartDate(prevDate);
+        //     fetchDataByDate(formatDateForBackend(prevDate));
+        // }
+        setStartDate(prevDate);
+        fetchDataByDate(formatDateForBackend(prevDate));
     }
 }, [game, scoringMethod]);
 
