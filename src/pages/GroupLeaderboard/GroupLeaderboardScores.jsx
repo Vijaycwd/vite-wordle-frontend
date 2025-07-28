@@ -101,7 +101,7 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
                 let todayResponse;
 
                 if (scoringMethod == 'Pesce') {
-                    todayResponse = await axios.get(`${baseURL}/groups/pesce-get-group-score.php`, { params });
+                    todayResponse = await axios.get(`${baseURL}/groups/pesce-get-current-group-score.php`, { params });
                 } else {
                     todayResponse = await axios.get(`${baseURL}/groups/get-group-score.php`, { params });
                 }

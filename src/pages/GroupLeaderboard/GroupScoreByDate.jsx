@@ -263,9 +263,14 @@ const goToNextDay = () => {
         setPeriod(period);
         fetchDataByDate(formatDateForBackend(date), period);
     } else {
+        console.log(formattedDateStr);
         const prevDate = now.subtract(1, 'day').toDate();
-        setStartDate(prevDate);
-        fetchDataByDate(formatDateForBackend(prevDate));
+        if (formattedDateStr === prevDate) {
+            setStartDate(prevDate);
+            fetchDataByDate(formatDateForBackend(prevDate));
+        }
+        // setStartDate(prevDate);
+        // fetchDataByDate(formatDateForBackend(prevDate));
     }
 }, [game, scoringMethod]);
 
