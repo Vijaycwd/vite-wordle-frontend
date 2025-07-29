@@ -228,21 +228,21 @@ const goToNextDay = () => {
     }
 };
 
-    const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
-        const parsedDate = dayjs(value, "DD-MM-YYYY");
+const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
+    const parsedDate = dayjs(value, "DD-MM-YYYY");
 
-        return (
-            <>
-                <Button className={`example-custom-input px-5 btn btn-primary ${game}-btn`} onClick={onClick} ref={ref}>
-            Go To Date
-        </Button>
-            
+    return (
+        <>
+            <Button className={`example-custom-input px-5 btn btn-primary ${game}-btn`} onClick={onClick} ref={ref}>
+        Go To Date
+    </Button>
         
-            </>
-        );
-    });
+    
+        </>
+    );
+});
 
-    useEffect(() => {
+useEffect(() => {
     const now = dayjs();
     const currentHour = now.hour();
 
@@ -259,14 +259,23 @@ const goToNextDay = () => {
             period = 'AM';
         }
 
+        console.log(formattedDateStr);
+        console.log(date);
+
         setStartDate(date);
         setPeriod(period);
         fetchDataByDate(formatDateForBackend(date), period);
     } else {
-      
+        
         const prevDate = now.subtract(1, 'day').toDate();
-        setStartDate(prevDate);
-        fetchDataByDate(formatDateForBackend(prevDate));
+        const prevDateStr = formatDateForBackend(prevDate);
+        console.log(prevDateStr);
+        console.log(formattedDateStr);
+        if(prevDateStr >= formattedDateStr){
+            setStartDate(prevDate);
+            fetchDataByDate(formatDateForBackend(prevDate));
+        }
+        
     }
 }, [game, scoringMethod]);
 
