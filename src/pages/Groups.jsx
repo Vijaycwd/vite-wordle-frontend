@@ -5,6 +5,8 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import GroupModal from '../constant/Models/GroupModal';
+import moment from 'moment-timezone';
+import dayjs from 'dayjs';
 
 function Groups() {
     const baseURL = import.meta.env.VITE_BASE_URL;
@@ -65,11 +67,11 @@ function Groups() {
     const onSubmitCreateGroup = async (event) => {
         event.preventDefault();
         handleCreateFormClose();
-
+        const currentDateTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
         try {
             const res = await Axios.post(
                 `${baseURL}/groups/create-group.php`,
-                { name: groupname, captain_id: userId, games: selectedGames }
+                { name: groupname, captain_id: userId, games: selectedGames, created_at: currentDateTime }
             );
            
             // toast.success(res.data.message);
