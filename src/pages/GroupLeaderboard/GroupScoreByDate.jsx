@@ -87,11 +87,15 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
     //     fetchDataByDate(formatDateForBackend(date));  // Fetch data on date change
     // };
 
+    // const formatDateForBackend = (date) => {
+    //     if (!date || isNaN(date.getTime())) return "";
+    //     return moment(date).format("YYYY-MM-DD");
+    // };
     const formatDateForBackend = (date) => {
-        if (!date || isNaN(date.getTime())) return "";
-        return moment(date).format("YYYY-MM-DD");
+        const d = new Date(date); // Ensure it's a Date object
+        if (!d || isNaN(d.getTime())) return "";
+        return moment(d).format("YYYY-MM-DD");
     };
-
    
     const handleDateChange = (date) => {
     if (!date || isNaN(date.getTime())) return;
@@ -193,7 +197,7 @@ const goToNextDay = () => {
     const today = now.startOf('day');
     const currentHour = now.hour();
 
-    if (game === 'phrazle') {
+    if (game == 'phrazle') {
         const isToday = dayjs(startDate).isSame(today, 'day');
 
         if (period === 'AM') {
@@ -499,7 +503,13 @@ const noDataMessage = {
                             (period === 'AM' && dayjs(startDate).isSame(latestDateOnly, 'day') && joinPeriod === 'AM') ||
                             (period === 'PM' && dayjs(startDate).isSame(latestDateOnly, 'day') && joinPeriod === 'PM');
 
-                        const isMaxPhrazleDate = (period === 'AM' && dayjs(startDate).isSame(dayjs(), 'day'));
+                        // Maximum limit for forward navigation (cap at yesterday PM)
+                        const maxPhrazleDate = dayjs().subtract(1, 'day').startOf('day');
+
+                        const isMaxPhrazleDate =
+                            (period === 'PM' && dayjs(startDate).isSame(maxPhrazleDate, 'day')) ||
+                            (period === 'AM' && dayjs(startDate).isSame(maxPhrazleDate, 'day') && joinPeriod === 'AM');
+
                         return (
                             <>
                             <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
