@@ -92,9 +92,10 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
     //     return moment(date).format("YYYY-MM-DD");
     // };
     const formatDateForBackend = (date) => {
-        const d = new Date(date); // Ensure it's a Date object
-        if (!d || isNaN(d.getTime())) return "";
-        return moment(d).format("YYYY-MM-DD");
+        if (!date) return "";
+        const m = moment(date);
+        if (!m.isValid()) return "";
+        return m.format("YYYY-MM-DD");
     };
    
     const handleDateChange = (date) => {
@@ -197,7 +198,7 @@ const goToNextDay = () => {
     const today = now.startOf('day');
     const currentHour = now.hour();
 
-    if (game == 'phrazle') {
+    if (game === 'phrazle') {
         const isToday = dayjs(startDate).isSame(today, 'day');
 
         if (period === 'AM') {
@@ -503,13 +504,28 @@ const noDataMessage = {
                             (period === 'AM' && dayjs(startDate).isSame(latestDateOnly, 'day') && joinPeriod === 'AM') ||
                             (period === 'PM' && dayjs(startDate).isSame(latestDateOnly, 'day') && joinPeriod === 'PM');
 
-                        // Maximum limit for forward navigation (cap at yesterday PM)
-                        const maxPhrazleDate = dayjs().subtract(1, 'day').startOf('day');
+                        const now = dayjs();
+                        const currentHour = now.hour();
 
-                        const isMaxPhrazleDate =
-                            (period === 'PM' && dayjs(startDate).isSame(maxPhrazleDate, 'day')) ||
-                            (period === 'AM' && dayjs(startDate).isSame(maxPhrazleDate, 'day') && joinPeriod === 'AM');
+                        let maxDateKey = '';
+                        if (currentHour < 12) {
+                        // Before noon → max = yesterday PM
+                        const maxDate = now.subtract(1, 'day').format('YYYY-MM-DD');
+                        maxDateKey = `${maxDate}-PM`;
+                        } else {
+                        // After noon → max = today AM
+                        const maxDate = now.format('YYYY-MM-DD');
+                        maxDateKey = `${maxDate}-AM`;
+                        }
 
+                        // Selected key
+                        const selectedDateStr = dayjs(startDate).format('YYYY-MM-DD');
+                        const selectedKey = `${selectedDateStr}-${period}`;
+
+                        // Disable if selected date-period is same or after max allowed
+                        const isMaxPhrazleDate = selectedKey >= maxDateKey;
+
+                        // const isMaxPhrazleDate = (period === 'AM' && dayjs(startDate).isSame(dayjs(), 'day'));
                         return (
                             <>
                             <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
