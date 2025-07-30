@@ -243,12 +243,12 @@ const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
 });
 
 useEffect(() => {
+    if (!scoringMethod || !game) return;
+
     const now = dayjs();
     const currentHour = now.hour();
 
-    if (!scoringMethod) return; // Wait for scoringMethod to be loaded
-
-    if (game == 'phrazle') {
+    if (game === 'phrazle') {
         let date, period;
 
         if (currentHour < 12) {
@@ -258,26 +258,24 @@ useEffect(() => {
             date = now.toDate();
             period = 'AM';
         }
-        const currentDate = formatDateForBackend(date);
-        if(currentDate >= formattedDateStr){
-            setStartDate(date);
+        
+        const currrentDate = formatDateForBackend(date)
+        if (currrentDate >= formattedDateStr) {
+            setStartDate(currrentDate);
             setPeriod(period);
-            fetchDataByDate(formatDateForBackend(date), period);
+            fetchDataByDate(currrentDate, period);
         }
-        
+
     } else {
-        
         const prevDate = now.subtract(1, 'day').toDate();
         const prevDateStr = formatDateForBackend(prevDate);
-        //console.log(prevDateStr);
-        //console.log(formattedDateStr);
-        if(prevDateStr >= formattedDateStr){
+        if (prevDateStr >= formattedDateStr) {
             setStartDate(prevDate);
             fetchDataByDate(formatDateForBackend(prevDate));
         }
-        
     }
-}, [game, scoringMethod]);
+}, [scoringMethod, game]);
+
 
     const fetchDataByDate = async (date, currentPeriod = null) => {
         try {
@@ -490,7 +488,7 @@ const noDataMessage = {
                         }
 
                         const isSheriff = (username) =>
-                            todayLeaderboard.some(user => user.username === username && user.sheriff === true);
+                        todayLeaderboard.some(user => user.username === username && user.sheriff === true);
 
                         const latest = dayjs(latestJoinDate);
                         const latestDateOnly = latest.startOf('day');
@@ -501,14 +499,7 @@ const noDataMessage = {
                             (period === 'AM' && dayjs(startDate).isSame(latestDateOnly, 'day') && joinPeriod === 'AM') ||
                             (period === 'PM' && dayjs(startDate).isSame(latestDateOnly, 'day') && joinPeriod === 'PM');
 
-                        // Maximum limit for forward navigation (cap at yesterday PM)
-                        const maxPhrazleDate = dayjs().subtract(1, 'day').startOf('day');
-
-                        const isMaxPhrazleDate =
-                            (period === 'PM' && dayjs(startDate).isSame(maxPhrazleDate, 'day')) ||
-                            (period === 'AM' && dayjs(startDate).isSame(maxPhrazleDate, 'day') && joinPeriod === 'AM');
-
-
+                        const isMaxPhrazleDate = (period === 'AM' && dayjs(startDate).isSame(dayjs(), 'day'));
                         return (
                             <>
                             <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">

@@ -19,12 +19,27 @@ function ConnectionsStatistics() {
     //     getStatsValue();
     // }, [wordleStatsData]); // Update stats when updateStatsStatistics changes
 
+    // useEffect(() => {
+    //     if (loginuserEmail) {
+    //         getStatsValue();
+    //     }
+    //   }, [connectionsStatsData,loginuserEmail])
+    
     useEffect(() => {
-        if (loginuserEmail) {
-            getStatsValue();
-        }
-      }, [connectionsStatsData,loginuserEmail])
+        if (!loginuserEmail) return;
 
+        // Initial fetch
+        getStatsValue();
+
+        // Interval to fetch every 10 seconds
+        const intervalId = setInterval(() => {
+            getStatsValue();
+        }, 10000); // 10000 ms = 10 sec
+
+        // Cleanup on unmount or dependency change
+        return () => clearInterval(intervalId);
+
+    }, [loginuserEmail]);
     function getStatsValue() {
        
         Axios.get(`${baseURL}/games/connections/get-statistics.php?useremail=${loginuserEmail}`)

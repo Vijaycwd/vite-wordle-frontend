@@ -18,10 +18,16 @@ function phrazleStatistics() {
     // }, [wordleStatsData]); // Update stats when updateStatsStatistics changes
 
     useEffect(() => {
-        if (loginuserEmail) {
+        if (!loginuserEmail) return;
+
+        getStatsValue(); // Initial call
+
+        const interval = setInterval(() => {
             getStatsValue();
-        }
-      }, [])
+        }, 10000); // 10 seconds
+
+        return () => clearInterval(interval); // Cleanup on unmount
+    }, [loginuserEmail]);
 
     function getStatsValue() {
        

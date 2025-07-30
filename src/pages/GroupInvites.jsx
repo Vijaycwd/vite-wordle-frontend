@@ -130,14 +130,14 @@ const handleDeclineInvite = async (inviteId) => {
   // Invite polling effect
   useEffect(() => {
     fetchGroupInvites();
-    inviteIntervalRef.current = setInterval(fetchGroupInvites, 3000);
+    inviteIntervalRef.current = setInterval(fetchGroupInvites, 8000);
     return () => clearInterval(inviteIntervalRef.current);
   }, []);
 
   // Message polling effect
   useEffect(() => {
     fetchGroupMessages();
-    messageIntervalRef.current = setInterval(fetchGroupMessages, 5000);
+    messageIntervalRef.current = setInterval(fetchGroupMessages, 8000);
     return () => clearInterval(messageIntervalRef.current);
   }, []);
 
