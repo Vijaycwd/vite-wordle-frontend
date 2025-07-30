@@ -258,19 +258,19 @@ useEffect(() => {
             date = now.toDate();
             period = 'AM';
         }
-
-        console.log(formattedDateStr);
-        console.log(date);
-
-        setStartDate(date);
-        setPeriod(period);
-        fetchDataByDate(formatDateForBackend(date), period);
+        const currentDate = formatDateForBackend(date);
+        if(currentDate >= formattedDateStr){
+            setStartDate(date);
+            setPeriod(period);
+            fetchDataByDate(formatDateForBackend(date), period);
+        }
+        
     } else {
         
         const prevDate = now.subtract(1, 'day').toDate();
         const prevDateStr = formatDateForBackend(prevDate);
-        console.log(prevDateStr);
-        console.log(formattedDateStr);
+        //console.log(prevDateStr);
+        //console.log(formattedDateStr);
         if(prevDateStr >= formattedDateStr){
             setStartDate(prevDate);
             fetchDataByDate(formatDateForBackend(prevDate));
@@ -496,10 +496,18 @@ const noDataMessage = {
                         const latestDateOnly = latest.startOf('day');
                         const joinPeriod = latest.hour() < 12 ? 'AM' : 'PM';
 
+                        // Minimum limit for backward navigation
                         const isMinPhrazleDate =
                             (period === 'AM' && dayjs(startDate).isSame(latestDateOnly, 'day') && joinPeriod === 'AM') ||
                             (period === 'PM' && dayjs(startDate).isSame(latestDateOnly, 'day') && joinPeriod === 'PM');
-                        const isMaxPhrazleDate = (period === 'AM' && dayjs(startDate).isSame(dayjs(), 'day'));
+
+                        // Maximum limit for forward navigation (cap at yesterday PM)
+                        const maxPhrazleDate = dayjs().subtract(1, 'day').startOf('day');
+
+                        const isMaxPhrazleDate =
+                            (period === 'PM' && dayjs(startDate).isSame(maxPhrazleDate, 'day')) ||
+                            (period === 'AM' && dayjs(startDate).isSame(maxPhrazleDate, 'day') && joinPeriod === 'AM');
+
 
                         return (
                             <>
