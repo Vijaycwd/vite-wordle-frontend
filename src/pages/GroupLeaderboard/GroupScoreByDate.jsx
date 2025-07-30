@@ -519,10 +519,9 @@ const noDataMessage = {
                                 const aIsSheriff = isSheriff(a.username) ? 1 : 0;
                                 const bIsSheriff = isSheriff(b.username) ? 1 : 0;
                                 if (aIsSheriff !== bIsSheriff) return bIsSheriff - aIsSheriff;
-
                                 const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
                                 const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
-
+                                if (aScore !== bScore) return bScore - aScore;
                                 const allLost = minScore === 7;
 
                                 const isSingleWinnerA = winners.length === 1 && winners[0].username === a.username;
@@ -536,17 +535,25 @@ const noDataMessage = {
                                 const pesceScoreB = isSheriff(b.username) ? 1 : 0;
 
                                 if (scoringMethod === "Golf") {
-                                    return aScore - bScore;
+                                    const scoreCompare = aScore - bScore;
+                                    if (scoreCompare !== 0) return scoreCompare;
                                 } else if (scoringMethod === "World Cup") {
-                                    return worldCupScoreB - worldCupScoreA;
+                                    const worldCupCompare = worldCupScoreB - worldCupScoreA;
+                                    if (worldCupCompare !== 0) return worldCupCompare;
                                 } else if (scoringMethod === "Pesce") {
                                     if (aIsSheriff === 0 && bIsSheriff === 0) {
-                                        return aScore - bScore;
+                                        const scoreCompare = aScore - bScore;
+                                        if (scoreCompare !== 0) return scoreCompare;
                                     }
-                                    return 0;
+                                    // If one or both are sheriffs, fallback to name
                                 } else {
-                                    return bScore - aScore;
+                                    const scoreCompare = bScore - aScore;
+                                    if (scoreCompare !== 0) return scoreCompare;
                                 }
+
+                                // Final tie-breaker: alphabetical username
+                                return a.username.localeCompare(b.username);
+                                
                             }).map((data, index) => {
                                 const totalScore = getTotalScore(data.gamename);
                                 const progressValue = totalScore > 0
