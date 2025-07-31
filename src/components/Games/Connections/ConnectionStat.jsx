@@ -119,7 +119,7 @@ function ConnectionStat() {
                     </Row>
                     <Row className='align-items-center justify-content-center'>
                         <Col md={4}>
-                            <Connectionsstatistics/>
+                            <Connectionsstatistics statschart={statschart}/>
                         </Col>
                     </Row>
                     {/* <Row className='align-items-center justify-content-center'>

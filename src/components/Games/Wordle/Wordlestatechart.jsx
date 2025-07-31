@@ -132,7 +132,7 @@ function Wordlestatechart() {
                     </Row>
                     <Row className='align-items-center justify-content-center'>
                         <Col md={4}>
-                            <Wordlestatistics/>
+                            <Wordlestatistics statschart={statschart} />
                         </Col>
                     </Row>
                     {/* <Row className='align-items-center justify-content-center'>

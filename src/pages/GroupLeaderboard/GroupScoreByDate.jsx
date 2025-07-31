@@ -99,187 +99,187 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
     };
    
     const handleDateChange = (date) => {
-    if (!date || isNaN(date.getTime())) return;
+        if (!date || isNaN(date.getTime())) return;
 
-    const formattedDateStr = formatDateForBackend(date); // "YYYY-MM-DD"
+        const formattedDateStr = formatDateForBackend(date); // "YYYY-MM-DD"
 
-    if (game === 'phrazle') {
-        const selectedDay = dayjs(date).format("YYYY-MM-DD");
-        const joinDay = dayjs(latestJoinDate).format("YYYY-MM-DD");
-        const joinHour = dayjs(latestJoinDate).hour();
+        if (game === 'phrazle') {
+            const selectedDay = dayjs(date).format("YYYY-MM-DD");
+            const joinDay = dayjs(latestJoinDate).format("YYYY-MM-DD");
+            const joinHour = dayjs(latestJoinDate).hour();
 
-        let newPeriod;
+            let newPeriod;
 
-        if (selectedDay === joinDay) {
-            // Same day as latest join
-            newPeriod = joinHour >= 12 ? "PM" : "AM";
-        } else if (dayjs(date).isAfter(dayjs(latestJoinDate), 'day')) {
-            // Selected a future date → default to "AM"
-            newPeriod = "AM";
-        } else {
-            // Selected a past date — use custom rule or fallback
-            newPeriod = "PM";
-        }
-
-        fetchDataByDate(formattedDateStr, newPeriod);
-        setStartDate(date);
-        setPeriod(newPeriod);
-    } else {
-        setStartDate(date);
-        fetchDataByDate(formattedDateStr);
-    }
-};
-
-
-const showDayResult = (date, useremail, game, period) => {
-    const formattedDate = moment(date).format("YYYY-MM-DD");
-    const timeZone = moment.tz.guess();
-    const params = { useremail, timeZone, today: formattedDate };
-
-    if (game === "phrazle") {
-        params.period = period;
-    }
-
-    axios.get(`${baseURL}/games/${game}/get-score.php`, { params })
-        .then((response) => {
-            let scoreData = [];
-
-            if (game === "wordle") {
-                scoreData = response.data?.wordlescore || [];
-            } else if (game === "connections") {
-                scoreData = response.data?.connectionsscore || [];
-            } else if (game === "phrazle") {
-                scoreData = response.data?.phrazlescore || [];
+            if (selectedDay === joinDay) {
+                // Same day as latest join
+                newPeriod = joinHour >= 12 ? "PM" : "AM";
+            } else if (dayjs(date).isAfter(dayjs(latestJoinDate), 'day')) {
+                // Selected a future date → default to "AM"
+                newPeriod = "AM";
+            } else {
+                // Selected a past date — use custom rule or fallback
+                newPeriod = "PM";
             }
 
-            setDayResults(scoreData);
-            setShowModal(true);
-        })
-        .catch((error) => {
-            console.error(`API Error for ${game}:`, error);
-        });
-};
-
-
-  const goToPreviousDay = () => {
-      const prevDate = dayjs(startDate).subtract(1, 'day').toDate();
-      const latest = dayjs(latestJoinDate);
-      const latestDateOnly = latest.startOf('day');
-  
-      if (game === 'phrazle') {
-          if (period === 'PM') {
-              const newPeriod = 'AM';
-              const formattedDateStr = formatDateForBackend(startDate);
-  
-              // Allow same-day AM if latestJoinDate is within that same day
-              if (dayjs(startDate).isBefore(latestDateOnly)) return;
-  
-              setPeriod(newPeriod);
-              setStartDate(startDate);
-              fetchDataByDate(formattedDateStr, newPeriod);
-          } else {
-              // Going from AM ➝ PM of previous day
-              if (dayjs(prevDate).isBefore(latestDateOnly)) return;
-  
-              const newPeriod = 'PM';
-              const formattedDateStr = formatDateForBackend(prevDate);
-              setStartDate(prevDate);
-              setPeriod(newPeriod);
-              fetchDataByDate(formattedDateStr, newPeriod);
-          }
-      } else {
-          if (dayjs(prevDate).isBefore(latestDateOnly)) return;
-          handleDateChange(prevDate);
-      }
-  };
-  
-const goToNextDay = () => {
-    const now = dayjs();
-    const today = now.startOf('day');
-    const currentHour = now.hour();
-
-    if (game === 'phrazle') {
-        const isToday = dayjs(startDate).isSame(today, 'day');
-
-        if (period === 'AM') {
-            if (isToday && currentHour < 12) {
-                // Before 12 PM today → block PM
-                return;
-            }
-
-            // Move from AM to PM (same date)
-            const formattedDate = formatDateForBackend(startDate);
-            fetchDataByDate(formattedDate, 'PM');
-            setPeriod('PM');
+            fetchDataByDate(formattedDateStr, newPeriod);
+            setStartDate(date);
+            setPeriod(newPeriod);
         } else {
-            // Trying to move past today — block it
-            if (isToday) return;
-
-            // Move to next day AM
-            const nextDate = dayjs(startDate).add(1, 'day');
-            const formattedDate = formatDateForBackend(nextDate.toDate());
-            fetchDataByDate(formattedDate, 'AM');
-            setStartDate(nextDate.toDate());
-            setPeriod('AM');
+            setStartDate(date);
+            fetchDataByDate(formattedDateStr);
         }
-    } else {
-        // Non-Phrazle logic: allow only up to yesterday
-        const nextDate = dayjs(startDate).add(1, 'day');
-        if (nextDate.isSame(today) || nextDate.isAfter(today)) return;
+    };
 
-        const formattedDate = formatDateForBackend(nextDate.toDate());
-        fetchDataByDate(formattedDate);
-        setStartDate(nextDate.toDate());
-    }
-};
 
-const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
-    const parsedDate = dayjs(value, "DD-MM-YYYY");
+    const showDayResult = (date, useremail, game, period) => {
+        const formattedDate = moment(date).format("YYYY-MM-DD");
+        const timeZone = moment.tz.guess();
+        const params = { useremail, timeZone, today: formattedDate };
 
-    return (
-        <>
-            <Button className={`example-custom-input px-5 btn btn-primary ${game}-btn`} onClick={onClick} ref={ref}>
-        Go To Date
-    </Button>
-        
+        if (game === "phrazle") {
+            params.period = period;
+        }
+
+        axios.get(`${baseURL}/games/${game}/get-score.php`, { params })
+            .then((response) => {
+                let scoreData = [];
+
+                if (game === "wordle") {
+                    scoreData = response.data?.wordlescore || [];
+                } else if (game === "connections") {
+                    scoreData = response.data?.connectionsscore || [];
+                } else if (game === "phrazle") {
+                    scoreData = response.data?.phrazlescore || [];
+                }
+
+                setDayResults(scoreData);
+                setShowModal(true);
+            })
+            .catch((error) => {
+                console.error(`API Error for ${game}:`, error);
+            });
+    };
+
+
+    const goToPreviousDay = () => {
+        const prevDate = dayjs(startDate).subtract(1, 'day').toDate();
+        const latest = dayjs(latestJoinDate);
+        const latestDateOnly = latest.startOf('day');
     
-        </>
-    );
-});
-
-useEffect(() => {
-    if (!scoringMethod || !game) return;
-
-    const now = dayjs();
-    const currentHour = now.hour();
-
-    if (game === 'phrazle') {
-        let date, period;
-
-        if (currentHour < 12) {
-            date = now.subtract(1, 'day').toDate();
-            period = 'PM';
+        if (game === 'phrazle') {
+            if (period === 'PM') {
+                const newPeriod = 'AM';
+                const formattedDateStr = formatDateForBackend(startDate);
+    
+                // Allow same-day AM if latestJoinDate is within that same day
+                if (dayjs(startDate).isBefore(latestDateOnly)) return;
+    
+                setPeriod(newPeriod);
+                setStartDate(startDate);
+                fetchDataByDate(formattedDateStr, newPeriod);
+            } else {
+                // Going from AM ➝ PM of previous day
+                if (dayjs(prevDate).isBefore(latestDateOnly)) return;
+    
+                const newPeriod = 'PM';
+                const formattedDateStr = formatDateForBackend(prevDate);
+                setStartDate(prevDate);
+                setPeriod(newPeriod);
+                fetchDataByDate(formattedDateStr, newPeriod);
+            }
         } else {
-            date = now.toDate();
-            period = 'AM';
+            if (dayjs(prevDate).isBefore(latestDateOnly)) return;
+            handleDateChange(prevDate);
         }
-        
-        const currrentDate = formatDateForBackend(date)
-        if (currrentDate >= formattedDateStr) {
-            setStartDate(currrentDate);
-            setPeriod(period);
-            fetchDataByDate(currrentDate, period);
-        }
+    };
+  
+    const goToNextDay = () => {
+        const now = dayjs();
+        const today = now.startOf('day');
+        const currentHour = now.hour();
 
-    } else {
-        const prevDate = now.subtract(1, 'day').toDate();
-        const prevDateStr = formatDateForBackend(prevDate);
-        if (prevDateStr >= formattedDateStr) {
-            setStartDate(prevDate);
-            fetchDataByDate(formatDateForBackend(prevDate));
+        if (game === 'phrazle') {
+            const isToday = dayjs(startDate).isSame(today, 'day');
+
+            if (period === 'AM') {
+                if (isToday && currentHour < 12) {
+                    // Before 12 PM today → block PM
+                    return;
+                }
+
+                // Move from AM to PM (same date)
+                const formattedDate = formatDateForBackend(startDate);
+                fetchDataByDate(formattedDate, 'PM');
+                setPeriod('PM');
+            } else {
+                // Trying to move past today — block it
+                if (isToday) return;
+
+                // Move to next day AM
+                const nextDate = dayjs(startDate).add(1, 'day');
+                const formattedDate = formatDateForBackend(nextDate.toDate());
+                fetchDataByDate(formattedDate, 'AM');
+                setStartDate(nextDate.toDate());
+                setPeriod('AM');
+            }
+        } else {
+            // Non-Phrazle logic: allow only up to yesterday
+            const nextDate = dayjs(startDate).add(1, 'day');
+            if (nextDate.isSame(today) || nextDate.isAfter(today)) return;
+
+            const formattedDate = formatDateForBackend(nextDate.toDate());
+            fetchDataByDate(formattedDate);
+            setStartDate(nextDate.toDate());
         }
-    }
-}, [scoringMethod, game]);
+    };
+
+    const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
+        const parsedDate = dayjs(value, "DD-MM-YYYY");
+
+        return (
+            <>
+                <Button className={`example-custom-input px-5 btn btn-primary ${game}-btn`} onClick={onClick} ref={ref}>
+            Go To Date
+        </Button>
+            
+        
+            </>
+        );
+    });
+
+    useEffect(() => {
+        if (!scoringMethod || !game) return;
+
+        const now = dayjs();
+        const currentHour = now.hour();
+
+        if (game === 'phrazle') {
+            let date, period;
+
+            if (currentHour < 12) {
+                date = now.subtract(1, 'day').toDate();
+                period = 'PM';
+            } else {
+                date = now.toDate();
+                period = 'AM';
+            }
+            
+            const currrentDate = formatDateForBackend(date)
+            if (currrentDate >= formattedDateStr) {
+                setStartDate(currrentDate);
+                setPeriod(period);
+                fetchDataByDate(currrentDate, period);
+            }
+
+        } else {
+            const prevDate = now.subtract(1, 'day').toDate();
+            const prevDateStr = formatDateForBackend(prevDate);
+            if (prevDateStr >= formattedDateStr) {
+                setStartDate(prevDate);
+                fetchDataByDate(formatDateForBackend(prevDate));
+            }
+        }
+    }, [scoringMethod, game]);
 
 
     const fetchDataByDate = async (date, currentPeriod = null) => {
@@ -361,65 +361,65 @@ useEffect(() => {
     // ));
     
 
-// Function to get the max possible score for a game
-const getTotalScore = (gameName) => {
-    const cleanedName = gameName ? gameName.trim().toLowerCase() : "";
-    return cleanedName === "wordle" ? 7 :
-           cleanedName === "connections" ? 4 :
-           cleanedName === "phrazle" ? 7 :
-           1; // Default to 1 if unknown
-};
+    // Function to get the max possible score for a game
+    const getTotalScore = (gameName) => {
+        const cleanedName = gameName ? gameName.trim().toLowerCase() : "";
+        return cleanedName === "wordle" ? 7 :
+            cleanedName === "connections" ? 4 :
+            cleanedName === "phrazle" ? 7 :
+            1; // Default to 1 if unknown
+    };
 
 
 
 
-const handleCloseModal = () => {
-    setShowModal(false);
-    // if (updated) fetchGroupInfo();
-};
+    const handleCloseModal = () => {
+        setShowModal(false);
+        // if (updated) fetchGroupInfo();
+    };
 
-const now = new Date();
+    const now = new Date();
 
-let maxSelectableDate;
+    let maxSelectableDate;
 
-if (game === "phrazle") {
-  const isAfternoon = now.getHours() >= 12;
+    if (game === "phrazle") {
+    const isAfternoon = now.getHours() >= 12;
 
-  maxSelectableDate = isAfternoon
-    ? new Date() // allow today, local time
-    : new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1); // yesterday local midnight
-} else {
-  // For other games, only allow up to yesterday local midnight
-  maxSelectableDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-}
-
-// console.log("maxSelectableDate", maxSelectableDate);
-
-
-const handleShowProfile = (data) => {
-    setSelectedMember(data);
-    setShowProfile(true);
-};
-
-function splitIntoRowsByNewline(text) {
-    const cleanedData = text.trim();
-    const rows = cleanedData.split(/\n+/);
-    return rows.map(row => row.replace(/\s+/g, ' ').trim());
-}
-function splitIntoRowsByLength(inputString, rowLength) {
-    const rows = [];
-    const charArray = Array.from(inputString); // Convert string to array of characters
-    for (let i = 0; i < charArray.length; i += rowLength) {
-        rows.push(charArray.slice(i, i + rowLength).join(' '));
+    maxSelectableDate = isAfternoon
+        ? new Date() // allow today, local time
+        : new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1); // yesterday local midnight
+    } else {
+    // For other games, only allow up to yesterday local midnight
+    maxSelectableDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
     }
-    return rows;
-}
 
-const noDataMessage = {
-  wordle: "Gamle Score 7",
-  connections: "Gamle Score 4",
-  phrazle: "Gamle Score 7"
-}[game] || "No data available.";
+    // console.log("maxSelectableDate", maxSelectableDate);
+
+
+    const handleShowProfile = (data) => {
+        setSelectedMember(data);
+        setShowProfile(true);
+    };
+
+    function splitIntoRowsByNewline(text) {
+        const cleanedData = text.trim();
+        const rows = cleanedData.split(/\n+/);
+        return rows.map(row => row.replace(/\s+/g, ' ').trim());
+    }
+    function splitIntoRowsByLength(inputString, rowLength) {
+        const rows = [];
+        const charArray = Array.from(inputString); // Convert string to array of characters
+        for (let i = 0; i < charArray.length; i += rowLength) {
+            rows.push(charArray.slice(i, i + rowLength).join(' '));
+        }
+        return rows;
+    }
+
+    const noDataMessage = {
+    wordle: "Gamle Score 7",
+    connections: "Gamle Score 4",
+    phrazle: "Gamle Score 7"
+    }[game] || "No data available.";
 
 
 
@@ -442,551 +442,551 @@ const noDataMessage = {
             </div>
             <Row className="justify-content-center leaderboard mt-4">
                 <Col md={5} className="text-center">
-                {dataFetched && todayLeaderboard.length > 0 ? (
-                    <>
-                    {todayLeaderboard.length > 0 && (() => {
-                        // Filter out only "phrazle" and valid players
-                        const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename === "phrazle" && String(data?.is_paused) === "0");
-                        if (filteredLeaderboard.length === 0) return null;
+                    {dataFetched && todayLeaderboard.length > 0 ? (
+                        <>
+                        {todayLeaderboard.length > 0 && (() => {
+                            // Filter out only "phrazle" and valid players
+                            const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename === "phrazle" && String(data?.is_paused) === "0");
+                            if (filteredLeaderboard.length === 0) return null;
 
-                        const minScore = Math.min(
-                            ...filteredLeaderboard.map(data => 
-                                Number(data.gamlescore ?? getTotalScore(data.gamename))
-                            )
-                        );
+                            const minScore = Math.min(
+                                ...filteredLeaderboard.map(data => 
+                                    Number(data.gamlescore ?? getTotalScore(data.gamename))
+                                )
+                            );
 
-                        const winners = filteredLeaderboard.filter(data => 
-                            Number(data.gamlescore ?? getTotalScore(data.gamename)) === minScore
-                        );
+                            const winners = filteredLeaderboard.filter(data => 
+                                Number(data.gamlescore ?? getTotalScore(data.gamename)) === minScore
+                            );
 
-                        const validYesterdayScores = filteredLeaderboard.filter(d => d.previous_gamlescore !== undefined && d.previous_gamlescore !== null);
-                        const minScoreYesterday = validYesterdayScores.length > 0
-                            ? Math.min(...validYesterdayScores.map(d => Number(d.previous_gamlescore)))
-                            : null;
+                            const validYesterdayScores = filteredLeaderboard.filter(d => d.previous_gamlescore !== undefined && d.previous_gamlescore !== null);
+                            const minScoreYesterday = validYesterdayScores.length > 0
+                                ? Math.min(...validYesterdayScores.map(d => Number(d.previous_gamlescore)))
+                                : null;
 
-                        const priorSheriffUsernames = validYesterdayScores
-                            .filter(d => Number(d.previous_gamlescore) === minScoreYesterday)
-                            .map(d => d.username);
+                            const priorSheriffUsernames = validYesterdayScores
+                                .filter(d => Number(d.previous_gamlescore) === minScoreYesterday)
+                                .map(d => d.username);
 
-                        // Sheriff logic — only 1 sheriff
-                        let sheriffWinners = [];
-                        if (winners.length === 1) {
-                            sheriffWinners = [winners[0]];
-                        } else {
-                            const repeatingSheriffs = winners.filter(w => priorSheriffUsernames.includes(w.username));
-                            if (repeatingSheriffs.length > 0) {
-                                sheriffWinners = [repeatingSheriffs[0]];
+                            // Sheriff logic — only 1 sheriff
+                            let sheriffWinners = [];
+                            if (winners.length === 1) {
+                                sheriffWinners = [winners[0]];
                             } else {
-                                const beatAllSheriffs = winners.filter(w => {
-                                    return priorSheriffUsernames.every(p => {
-                                        const prior = validYesterdayScores.find(x => x.username === p);
-                                        return prior && Number(w.gamlescore ?? 7) < Number(prior.previous_gamlescore ?? 7);
+                                const repeatingSheriffs = winners.filter(w => priorSheriffUsernames.includes(w.username));
+                                if (repeatingSheriffs.length > 0) {
+                                    sheriffWinners = [repeatingSheriffs[0]];
+                                } else {
+                                    const beatAllSheriffs = winners.filter(w => {
+                                        return priorSheriffUsernames.every(p => {
+                                            const prior = validYesterdayScores.find(x => x.username === p);
+                                            return prior && Number(w.gamlescore ?? 7) < Number(prior.previous_gamlescore ?? 7);
+                                        });
                                     });
-                                });
 
-                                if (beatAllSheriffs.length === 1) {
-                                    sheriffWinners = [beatAllSheriffs[0]];
-                                } else if (priorSheriffUsernames.length === 0) {
-                                    sheriffWinners = [winners[0]];
+                                    if (beatAllSheriffs.length === 1) {
+                                        sheriffWinners = [beatAllSheriffs[0]];
+                                    } else if (priorSheriffUsernames.length === 0) {
+                                        sheriffWinners = [winners[0]];
+                                    }
                                 }
                             }
-                        }
 
-                        const isSheriff = (username) =>
-                        todayLeaderboard.some(user => user.username === username && user.sheriff === true);
+                            const isSheriff = (username) =>
+                            todayLeaderboard.some(user => user.username === username && user.sheriff === true);
 
-                        const latest = dayjs(latestJoinDate);
-                        const latestDateOnly = latest.startOf('day');
-                        const joinPeriod = latest.hour() < 12 ? 'AM' : 'PM';
+                            const latest = dayjs(latestJoinDate);
+                            const latestDateOnly = latest.startOf('day');
+                            const joinPeriod = latest.hour() < 12 ? 'AM' : 'PM';
 
-                        // Minimum limit for backward navigation
-                        const isMinPhrazleDate =
-                            (period === 'AM' && dayjs(startDate).isSame(latestDateOnly, 'day') && joinPeriod === 'AM') ||
-                            (period === 'PM' && dayjs(startDate).isSame(latestDateOnly, 'day') && joinPeriod === 'PM');
+                            // Minimum limit for backward navigation
+                            const isMinPhrazleDate =
+                                (period === 'AM' && dayjs(startDate).isSame(latestDateOnly, 'day') && joinPeriod === 'AM') ||
+                                (period === 'PM' && dayjs(startDate).isSame(latestDateOnly, 'day') && joinPeriod === 'PM');
 
-                        const now = dayjs();
-                        const currentHour = now.hour();
+                            const now = dayjs();
+                            const currentHour = now.hour();
 
-                        let maxDateKey = '';
-                        if (currentHour < 12) {
-                        // Before noon → max = yesterday PM
-                        const maxDate = now.subtract(1, 'day').format('YYYY-MM-DD');
-                        maxDateKey = `${maxDate}-PM`;
-                        } else {
-                        // After noon → max = today AM
-                        const maxDate = now.format('YYYY-MM-DD');
-                        maxDateKey = `${maxDate}-AM`;
-                        }
+                            let maxDateKey = '';
+                            if (currentHour < 12) {
+                            // Before noon → max = yesterday PM
+                            const maxDate = now.subtract(1, 'day').format('YYYY-MM-DD');
+                            maxDateKey = `${maxDate}-PM`;
+                            } else {
+                            // After noon → max = today AM
+                            const maxDate = now.format('YYYY-MM-DD');
+                            maxDateKey = `${maxDate}-AM`;
+                            }
 
-                        // Selected key
-                        const selectedDateStr = dayjs(startDate).format('YYYY-MM-DD');
-                        const selectedKey = `${selectedDateStr}-${period}`;
+                            // Selected key
+                            const selectedDateStr = dayjs(startDate).format('YYYY-MM-DD');
+                            const selectedKey = `${selectedDateStr}-${period}`;
 
-                        // Disable if selected date-period is same or after max allowed
-                        const isMaxPhrazleDate = selectedKey >= maxDateKey;
+                            // Disable if selected date-period is same or after max allowed
+                            const isMaxPhrazleDate = selectedKey >= maxDateKey;
 
-                        // const isMaxPhrazleDate = (period === 'AM' && dayjs(startDate).isSame(dayjs(), 'day'));
-                        return (
-                            <>
-                            <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
-                                <button onClick={(e) => { e.stopPropagation(); goToPreviousDay(); }} disabled={isMinPhrazleDate} className="bg-dark text-white px-3 py-1 rounded">
-                                    <FaArrowLeft />
-                                </button>
-                                <div>
-                                    {dayjs(startDate).format("MMM D, YYYY")} - {period}
+                            // const isMaxPhrazleDate = (period === 'AM' && dayjs(startDate).isSame(dayjs(), 'day'));
+                            return (
+                                <>
+                                <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
+                                    <button onClick={(e) => { e.stopPropagation(); goToPreviousDay(); }} disabled={isMinPhrazleDate} className="bg-dark text-white px-3 py-1 rounded">
+                                        <FaArrowLeft />
+                                    </button>
+                                    <div>
+                                        {dayjs(startDate).format("MMM D, YYYY")} - {period}
+                                    </div>
+                                    <button onClick={(e) => { e.stopPropagation(); goToNextDay(); }} disabled={isMaxPhrazleDate} className="bg-dark text-white px-3 py-1 rounded">
+                                        <FaArrowRight />
+                                    </button>
                                 </div>
-                                <button onClick={(e) => { e.stopPropagation(); goToNextDay(); }} disabled={isMaxPhrazleDate} className="bg-dark text-white px-3 py-1 rounded">
-                                    <FaArrowRight />
-                                </button>
-                            </div>
-                            <h4 className="text-center py-3">Daily Leaderboard</h4>
+                                <h4 className="text-center py-3">Daily Leaderboard</h4>
 
-                            {filteredLeaderboard.slice().sort((a, b) => {
-                                const aIsSheriff = isSheriff(a.username) ? 1 : 0;
-                                const bIsSheriff = isSheriff(b.username) ? 1 : 0;
-                                if (aIsSheriff !== bIsSheriff) return bIsSheriff - aIsSheriff;
+                                {filteredLeaderboard.slice().sort((a, b) => {
+                                    const aIsSheriff = isSheriff(a.username) ? 1 : 0;
+                                    const bIsSheriff = isSheriff(b.username) ? 1 : 0;
+                                    if (aIsSheriff !== bIsSheriff) return bIsSheriff - aIsSheriff;
 
-                                const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
-                                const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
+                                    const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
+                                    const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
 
-                                const allLost = minScore === 7;
+                                    const allLost = minScore === 7;
 
-                                const isSingleWinnerA = winners.length === 1 && winners[0].username === a.username;
-                                const isSharedWinnerA = winners.length > 1 && winners.some(w => w.username === a.username);
-                                const worldCupScoreA = allLost ? 0 : (isSingleWinnerA ? 3 : isSharedWinnerA ? 1 : 0);
-                                const pesceScoreA = isSheriff(a.username) ? 1 : 0;
+                                    const isSingleWinnerA = winners.length === 1 && winners[0].username === a.username;
+                                    const isSharedWinnerA = winners.length > 1 && winners.some(w => w.username === a.username);
+                                    const worldCupScoreA = allLost ? 0 : (isSingleWinnerA ? 3 : isSharedWinnerA ? 1 : 0);
+                                    const pesceScoreA = isSheriff(a.username) ? 1 : 0;
 
-                                const isSingleWinnerB = winners.length === 1 && winners[0].username === b.username;
-                                const isSharedWinnerB = winners.length > 1 && winners.some(w => w.username === b.username);
-                                const worldCupScoreB = allLost ? 0 : (isSingleWinnerB ? 3 : isSharedWinnerB ? 1 : 0);
-                                const pesceScoreB = isSheriff(b.username) ? 1 : 0;
+                                    const isSingleWinnerB = winners.length === 1 && winners[0].username === b.username;
+                                    const isSharedWinnerB = winners.length > 1 && winners.some(w => w.username === b.username);
+                                    const worldCupScoreB = allLost ? 0 : (isSingleWinnerB ? 3 : isSharedWinnerB ? 1 : 0);
+                                    const pesceScoreB = isSheriff(b.username) ? 1 : 0;
 
-                                if (scoringMethod === "Golf") {
-                                    return aScore - bScore;
-                                } else if (scoringMethod === "World Cup") {
-                                    return worldCupScoreB - worldCupScoreA;
-                                } else if (scoringMethod === "Pesce") {
-                                    if (aIsSheriff === 0 && bIsSheriff === 0) {
+                                    if (scoringMethod === "Golf") {
                                         return aScore - bScore;
+                                    } else if (scoringMethod === "World Cup") {
+                                        return worldCupScoreB - worldCupScoreA;
+                                    } else if (scoringMethod === "Pesce") {
+                                        if (aIsSheriff === 0 && bIsSheriff === 0) {
+                                            return aScore - bScore;
+                                        }
+                                        return 0;
+                                    } else {
+                                        return bScore - aScore;
                                     }
-                                    return 0;
-                                } else {
-                                    return bScore - aScore;
-                                }
-                            }).map((data, index) => {
-                                const totalScore = getTotalScore(data.gamename);
-                                const progressValue = totalScore > 0
-                                    ? data.gamename === "connections"
-                                        ? (data.gamlescore / totalScore) * 100
-                                        : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
-                                    : 0;
+                                }).map((data, index) => {
+                                    const totalScore = getTotalScore(data.gamename);
+                                    const progressValue = totalScore > 0
+                                        ? data.gamename === "connections"
+                                            ? (data.gamlescore / totalScore) * 100
+                                            : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
+                                        : 0;
 
-                                const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
-                                const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
+                                    const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
+                                    const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
 
-                                const allLost = minScore === 7;
-                                const worldCupScore = allLost ? 0 : (isSingleWinner ? 3 : isSharedWinner ? 1 : 0);
-                                const pesceScore = isSheriff(data.username) ? 1 : 0;
+                                    const allLost = minScore === 7;
+                                    const worldCupScore = allLost ? 0 : (isSingleWinner ? 3 : isSharedWinner ? 1 : 0);
+                                    const pesceScore = isSheriff(data.username) ? 1 : 0;
 
-                                return (
-                                    <Row key={index} className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm">
+                                    return (
+                                        <Row key={index} className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm">
+                                            <Col xs={3} className="d-flex align-items-center gap-2">
+                                                <div onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
+                                                    <img
+                                                        src={data.avatar ? `${baseURL}/user/uploads/${data.avatar}` : `${baseURL}/user/uploads/default_avatar.png`}
+                                                        alt="Profile"
+                                                        className="rounded-circle mb-1"
+                                                        style={{ width: '35px', height: '35px', objectFit: 'cover' }}
+                                                    />
+                                                </div>
+                                            </Col>
+
+                                            <Col xs={4} className="text-start fw-semibold" onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
+                                                {data.username}
+                                                {/* <p>Score is:{data.gamlescore}</p> */}
+                                            </Col>
+
+                                            <Col xs={5}>
+                                                <Row className="align-items-center">
+                                                    <Col xs={7}>
+                                                        <ProgressBar
+                                                            className={`${data.gamename}-progressbar`}
+                                                            variant="success"
+                                                            now={
+                                                                scoringMethod === "Golf"
+                                                                    ? data.gamlescore ?? totalScore
+                                                                    : scoringMethod === "World Cup"
+                                                                    ? worldCupScore
+                                                                    : scoringMethod === "Pesce"
+                                                                    ? pesceScore
+                                                                    : (data.gamlescore ?? totalScore)
+                                                            }
+                                                            max={totalScore}
+                                                            style={{ height: '8px' }}
+                                                        />
+                                                    </Col>
+                                                    
+                                                    <Col xs={5} className="text-center d-flex fw-bold">
+                                                        <span
+                                                            onClick={() => showDayResult(data.createdat, data.useremail, data.gamename, period)}
+                                                            style={{ cursor: "pointer" }}
+                                                        >
+                                                            {scoringMethod === "Golf"
+                                                                ? (data.gamlescore ?? '') === '' ? totalScore : data.gamlescore
+                                                                : scoringMethod === "World Cup"
+                                                                ? worldCupScore
+                                                                : pesceScore}
+                                                            {data.gamename === 'phrazle' &&
+                                                            scoringMethod === "Pesce" &&
+                                                            isSheriff(data.username) &&
+                                                            " 🤠"}
+                                                            {scoringMethod !== "Pesce" && isSingleWinner && " 🏆"}
+                                                        </span>
+                                                    </Col>
+                                                </Row>
+                                            </Col>
+                                        </Row>
+                                    );
+                                })}
+                                </>
+                            );
+                        })()}
+
+
+                        {/* Wordle, Connections */}
+
+                        {todayLeaderboard.length > 0 && (() => {
+                            const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename !== "phrazle" && String(data?.is_paused) === "0");
+                            if (filteredLeaderboard.length === 0) return null;
+
+                            // Group scores by game
+                            const gameScoresMap = {};
+                            filteredLeaderboard.forEach(d => {
+                                const score = Number(d.gamlescore ?? getTotalScore(d.gamename));
+                                if (!gameScoresMap[d.gamename]) gameScoresMap[d.gamename] = [];
+                                gameScoresMap[d.gamename].push({ ...d, score });
+                            });
+
+                            // Prepare best scores per game
+                            const gameBestScores = {};
+                            Object.entries(gameScoresMap).forEach(([gamename, scores]) => {
+                                const best = Math.min(...scores.map(s => s.score));
+                                gameBestScores[gamename] = best;
+                            });
+
+                            // Find top scorers
+                            const topScorers = filteredLeaderboard.filter(d => {
+                                const score = Number(d.gamlescore ?? getTotalScore(d.gamename));
+                                return score === gameBestScores[d.gamename];
+                            });
+
+                            // Define sheriff checker before using it
+                            const isSheriff = (username) =>
+                                todayLeaderboard.some(user => user.username === username && user.sheriff === true);
+                        
+                            return (
+                                <>
+                                <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
+                                    <button onClick={(e) => { e.stopPropagation(); goToPreviousDay(); }} className="bg-dark text-white px-3 py-1 rounded">
+                                    <FaArrowLeft />
+                                    </button>
+                                    <div>{dayjs(startDate).format("MMM D, YYYY")}</div>
+                                    <button onClick={(e) => { e.stopPropagation(); goToNextDay(); }} className="bg-dark text-white px-3 py-1 rounded">
+                                    <FaArrowRight />
+                                    </button>
+                                </div>
+                                <h4 className="text-center py-3">Daily Leaderboard</h4>
+
+                                {filteredLeaderboard
+                                    .slice()
+                                    .sort((a, b) => {
+                                    const aIsSheriff = isSheriff(a.username) ? 1 : 0;
+                                    const bIsSheriff = isSheriff(b.username) ? 1 : 0;
+                                    if (aIsSheriff !== bIsSheriff) return bIsSheriff - aIsSheriff;
+
+                                    const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
+                                    const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
+                                    return aScore - bScore;
+                                    })
+                                    .map((data, index) => {
+                                    const totalScore = getTotalScore(data.gamename);
+                                    const minScore = gameBestScores[data.gamename];
+
+                                    const isSingleWinner = topScorers.length === 1 && topScorers[0].username === data.username;
+                                    const isSharedWinner = topScorers.length > 1 && topScorers.some(w => w.username === data.username);
+
+                                    const allLost =
+                                        (data.gamename === 'connections' && minScore === 4) ||
+                                        (data.gamename !== 'connections' && minScore === 7);
+
+                                    const worldCupScore = allLost ? 0 : (isSingleWinner ? 3 : isSharedWinner ? 1 : 0);
+                                    // const pesceScore = allLost ? 0 : (isSingleWinner || isSharedWinner ? 1 : 0);
+                                    const pesceScore = allLost ? 0 : (isSheriff(data.username) ? 1 : 0);
+                                    
+                                    return (
+                                        <Row
+                                        key={index}
+                                        className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
+                                        >
                                         <Col xs={3} className="d-flex align-items-center gap-2">
                                             <div onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
-                                                <img
-                                                    src={data.avatar ? `${baseURL}/user/uploads/${data.avatar}` : `${baseURL}/user/uploads/default_avatar.png`}
-                                                    alt="Profile"
-                                                    className="rounded-circle mb-1"
-                                                    style={{ width: '35px', height: '35px', objectFit: 'cover' }}
-                                                />
+                                            <img
+                                                src={
+                                                data.avatar
+                                                    ? `${baseURL}/user/uploads/${data.avatar}`
+                                                    : `${baseURL}/user/uploads/default_avatar.png`
+                                                }
+                                                alt="Profile"
+                                                className="rounded-circle mb-1"
+                                                style={{ width: '35px', height: '35px', objectFit: 'cover' }}
+                                            />
                                             </div>
                                         </Col>
 
                                         <Col xs={4} className="text-start fw-semibold" onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
                                             {data.username}
                                             {/* <p>Score is:{data.gamlescore}</p> */}
+                                            
                                         </Col>
 
                                         <Col xs={5}>
                                             <Row className="align-items-center">
-                                                <Col xs={7}>
-                                                    <ProgressBar
-                                                        className={`${data.gamename}-progressbar`}
-                                                        variant="success"
-                                                        now={
-                                                            scoringMethod === "Golf"
-                                                                ? data.gamlescore ?? totalScore
-                                                                : scoringMethod === "World Cup"
-                                                                ? worldCupScore
-                                                                : scoringMethod === "Pesce"
-                                                                ? pesceScore
-                                                                : (data.gamlescore ?? totalScore)
-                                                        }
-                                                        max={totalScore}
-                                                        style={{ height: '8px' }}
-                                                    />
-                                                </Col>
+                                            <Col xs={7}>
+                                                <ProgressBar
+                                                className={`${data.gamename}-progressbar`}
+                                                variant="success"
+                                                now={
+                                                    scoringMethod === "Golf"
+                                                    ? data.gamlescore ?? totalScore
+                                                    : scoringMethod === "World Cup"
+                                                        ? worldCupScore
+                                                        : scoringMethod === "Pesce"
+                                                        ? pesceScore
+                                                        : (data.gamlescore ?? totalScore)
+                                                }
+                                                max={totalScore}
+                                                style={{ height: '8px' }}
+                                                />
+                                            </Col>
+                                            
+                                            <Col xs={5} className="text-center d-flex fw-bold">
                                                 
-                                                <Col xs={5} className="text-center d-flex fw-bold">
-                                                    <span
-                                                        onClick={() => showDayResult(data.createdat, data.useremail, data.gamename, period)}
-                                                        style={{ cursor: "pointer" }}
-                                                    >
-                                                        {scoringMethod === "Golf"
-                                                            ? (data.gamlescore ?? '') === '' ? totalScore : data.gamlescore
-                                                            : scoringMethod === "World Cup"
-                                                            ? worldCupScore
-                                                            : pesceScore}
-                                                        {data.gamename === 'phrazle' &&
-                                                        scoringMethod === "Pesce" &&
-                                                        isSheriff(data.username) &&
-                                                        " 🤠"}
-                                                        {scoringMethod !== "Pesce" && isSingleWinner && " 🏆"}
-                                                    </span>
-                                                </Col>
+                                                <span
+                                                onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)}
+                                                style={{ cursor: "pointer" }}
+                                                >
+                                                {scoringMethod === "Golf"
+                                                    ? (data.gamlescore ?? '') === '' ? totalScore : data.gamlescore
+                                                    : scoringMethod === "World Cup"
+                                                    ? worldCupScore
+                                                    : pesceScore}
+                                                {data.gamename === 'wordle' &&
+                                                scoringMethod === "Pesce" &&
+                                                isSheriff(data.username) &&
+                                                data.gamlescore !== null &&
+                                                data.gamlescore !== '' &&
+                                                Number(data.gamlescore) !== 7 &&
+                                                " 🤠"}
+                                                {data.gamename === 'connections' &&
+                                                scoringMethod === "Pesce" &&
+                                                isSheriff(data.username) &&
+                                                data.gamlescore !== null &&
+                                                data.gamlescore !== '' &&
+                                                Number(data.gamlescore) !== 4 &&
+                                                " 🤠"}
+                                                {scoringMethod !== "Pesce" && isSingleWinner && " 🏆"}
+                                                </span>
+                                            </Col>
                                             </Row>
                                         </Col>
-                                    </Row>
-                                );
-                            })}
-                            </>
-                        );
-                    })()}
-
-
-                    {/* Wordle, Connections */}
-
-                    {todayLeaderboard.length > 0 && (() => {
-                        const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename !== "phrazle" && String(data?.is_paused) === "0");
-                        if (filteredLeaderboard.length === 0) return null;
-
-                        // Group scores by game
-                        const gameScoresMap = {};
-                        filteredLeaderboard.forEach(d => {
-                            const score = Number(d.gamlescore ?? getTotalScore(d.gamename));
-                            if (!gameScoresMap[d.gamename]) gameScoresMap[d.gamename] = [];
-                            gameScoresMap[d.gamename].push({ ...d, score });
-                        });
-
-                        // Prepare best scores per game
-                        const gameBestScores = {};
-                        Object.entries(gameScoresMap).forEach(([gamename, scores]) => {
-                            const best = Math.min(...scores.map(s => s.score));
-                            gameBestScores[gamename] = best;
-                        });
-
-                        // Find top scorers
-                        const topScorers = filteredLeaderboard.filter(d => {
-                            const score = Number(d.gamlescore ?? getTotalScore(d.gamename));
-                            return score === gameBestScores[d.gamename];
-                        });
-
-                        // Define sheriff checker before using it
-                        const isSheriff = (username) =>
-                            todayLeaderboard.some(user => user.username === username && user.sheriff === true);
-                       
-                        return (
-                            <>
-                            <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
-                                <button onClick={(e) => { e.stopPropagation(); goToPreviousDay(); }} className="bg-dark text-white px-3 py-1 rounded">
-                                <FaArrowLeft />
-                                </button>
-                                <div>{dayjs(startDate).format("MMM D, YYYY")}</div>
-                                <button onClick={(e) => { e.stopPropagation(); goToNextDay(); }} className="bg-dark text-white px-3 py-1 rounded">
-                                <FaArrowRight />
-                                </button>
-                            </div>
-                            <h4 className="text-center py-3">Daily Leaderboard</h4>
-
-                            {filteredLeaderboard
-                                .slice()
-                                .sort((a, b) => {
-                                const aIsSheriff = isSheriff(a.username) ? 1 : 0;
-                                const bIsSheriff = isSheriff(b.username) ? 1 : 0;
-                                if (aIsSheriff !== bIsSheriff) return bIsSheriff - aIsSheriff;
-
-                                const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
-                                const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
-                                return aScore - bScore;
-                                })
-                                .map((data, index) => {
-                                const totalScore = getTotalScore(data.gamename);
-                                const minScore = gameBestScores[data.gamename];
-
-                                const isSingleWinner = topScorers.length === 1 && topScorers[0].username === data.username;
-                                const isSharedWinner = topScorers.length > 1 && topScorers.some(w => w.username === data.username);
-
-                                const allLost =
-                                    (data.gamename === 'connections' && minScore === 4) ||
-                                    (data.gamename !== 'connections' && minScore === 7);
-
-                                const worldCupScore = allLost ? 0 : (isSingleWinner ? 3 : isSharedWinner ? 1 : 0);
-                                // const pesceScore = allLost ? 0 : (isSingleWinner || isSharedWinner ? 1 : 0);
-                                const pesceScore = allLost ? 0 : (isSheriff(data.username) ? 1 : 0);
-                                
-                                return (
-                                    <Row
-                                    key={index}
-                                    className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
-                                    >
-                                    <Col xs={3} className="d-flex align-items-center gap-2">
-                                        <div onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
-                                        <img
-                                            src={
-                                            data.avatar
-                                                ? `${baseURL}/user/uploads/${data.avatar}`
-                                                : `${baseURL}/user/uploads/default_avatar.png`
-                                            }
-                                            alt="Profile"
-                                            className="rounded-circle mb-1"
-                                            style={{ width: '35px', height: '35px', objectFit: 'cover' }}
-                                        />
-                                        </div>
-                                    </Col>
-
-                                    <Col xs={4} className="text-start fw-semibold" onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
-                                        {data.username}
-                                        {/* <p>Score is:{data.gamlescore}</p> */}
-                                        
-                                    </Col>
-
-                                    <Col xs={5}>
-                                        <Row className="align-items-center">
-                                        <Col xs={7}>
-                                            <ProgressBar
-                                            className={`${data.gamename}-progressbar`}
-                                            variant="success"
-                                            now={
-                                                scoringMethod === "Golf"
-                                                ? data.gamlescore ?? totalScore
-                                                : scoringMethod === "World Cup"
-                                                    ? worldCupScore
-                                                    : scoringMethod === "Pesce"
-                                                    ? pesceScore
-                                                    : (data.gamlescore ?? totalScore)
-                                            }
-                                            max={totalScore}
-                                            style={{ height: '8px' }}
-                                            />
-                                        </Col>
-                                        
-                                        <Col xs={5} className="text-center d-flex fw-bold">
-                                            
-                                            <span
-                                            onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)}
-                                            style={{ cursor: "pointer" }}
-                                            >
-                                            {scoringMethod === "Golf"
-                                                ? (data.gamlescore ?? '') === '' ? totalScore : data.gamlescore
-                                                : scoringMethod === "World Cup"
-                                                ? worldCupScore
-                                                : pesceScore}
-                                            {data.gamename === 'wordle' &&
-                                            scoringMethod === "Pesce" &&
-                                            isSheriff(data.username) &&
-                                            data.gamlescore !== null &&
-                                            data.gamlescore !== '' &&
-                                            Number(data.gamlescore) !== 7 &&
-                                            " 🤠"}
-                                            {data.gamename === 'connections' &&
-                                            scoringMethod === "Pesce" &&
-                                            isSheriff(data.username) &&
-                                            data.gamlescore !== null &&
-                                            data.gamlescore !== '' &&
-                                            Number(data.gamlescore) !== 4 &&
-                                            " 🤠"}
-                                            {scoringMethod !== "Pesce" && isSingleWinner && " 🏆"}
-                                            </span>
-                                        </Col>
                                         </Row>
-                                    </Col>
-                                    </Row>
-                                );
-                                })}
-                            </>
-                        );
-                        })()}
+                                    );
+                                    })}
+                                </>
+                            );
+                            })()}
 
 
-                    </>
-                ) : null}
+                        </>
+                    ) : null}
                 </Col>
             </Row>
                 {dataFetched && todayLeaderboard.length > 0 ? (
                     <>
                     {/* Cumulative Leaderboard */}
                     <Row className="justify-content-center leaderboard mt-4">
-                    <Col md={5}>
-                    <h4 className="py-3 text-center">
-                        Cumulative Leaderboard
-                    </h4>
-                  
-                        {cumulativeDailyScore &&
-                        cumulativeDailyScore.length > 0 &&
-                        cumulativeDailyScore.some(data => data.gamlescore !== undefined && !isNaN(Number(data.gamlescore)) && data.username ) ? (
-                            <>
-                                {(() => {
-                                    const filteredScores = cumulativeDailyScore.filter(
-                                        data =>
-                                            data.gamlescore !== undefined &&
-                                            !isNaN(Number(data.gamlescore)) &&
-                                            data.username &&
-                                            String(data?.is_paused) === "0"
-                                    );
-                                    const minScore = Math.min(...filteredScores.map(data => Number(data.gamlescore)));
-                                    const winners = filteredScores.filter(data => Number(data.gamlescore) === minScore);
-    
-                                    return filteredScores
-                                        .slice()
-                                        .sort((a, b) => {
-                                            const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
-                                            const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
+                        <Col md={5}>
+                            <h4 className="py-3 text-center">
+                                Cumulative Leaderboard
+                            </h4>
+                    
+                            {cumulativeDailyScore &&
+                            cumulativeDailyScore.length > 0 &&
+                            cumulativeDailyScore.some(data => data.gamlescore !== undefined && !isNaN(Number(data.gamlescore)) && data.username ) ? (
+                                <>
+                                    {(() => {
+                                        const filteredScores = cumulativeDailyScore.filter(
+                                            data =>
+                                                data.gamlescore !== undefined &&
+                                                !isNaN(Number(data.gamlescore)) &&
+                                                data.username &&
+                                                String(data?.is_paused) === "0"
+                                        );
+                                        const minScore = Math.min(...filteredScores.map(data => Number(data.gamlescore)));
+                                        const winners = filteredScores.filter(data => Number(data.gamlescore) === minScore);
+        
+                                        return filteredScores
+                                            .slice()
+                                            .sort((a, b) => {
+                                                const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
+                                                const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
 
-                                            const allLost = minScore === 7;
+                                                const allLost = minScore === 7;
 
-                                            const isSingleWinnerA = winners.length === 1 && winners[0].username === a.username;
-                                            const isSharedWinnerA = winners.length > 1 && winners.some(w => w.username === a.username);
-                                            const worldCupScoreA = allLost ? 0 : (isSingleWinnerA ? 3 : isSharedWinnerA ? 1 : 0);
-                                            const pesceScoreA = allLost ? 0 : (isSingleWinnerA || isSharedWinnerA ? 1 : 0);
+                                                const isSingleWinnerA = winners.length === 1 && winners[0].username === a.username;
+                                                const isSharedWinnerA = winners.length > 1 && winners.some(w => w.username === a.username);
+                                                const worldCupScoreA = allLost ? 0 : (isSingleWinnerA ? 3 : isSharedWinnerA ? 1 : 0);
+                                                const pesceScoreA = allLost ? 0 : (isSingleWinnerA || isSharedWinnerA ? 1 : 0);
 
-                                            const isSingleWinnerB = winners.length === 1 && winners[0].username === b.username;
-                                            const isSharedWinnerB = winners.length > 1 && winners.some(w => w.username === b.username);
-                                            const worldCupScoreB = allLost ? 0 : (isSingleWinnerB ? 3 : isSharedWinnerB ? 1 : 0);
-                                            const pesceScoreB = allLost ? 0 : (isSingleWinnerB || isSharedWinnerB ? 1 : 0);
+                                                const isSingleWinnerB = winners.length === 1 && winners[0].username === b.username;
+                                                const isSharedWinnerB = winners.length > 1 && winners.some(w => w.username === b.username);
+                                                const worldCupScoreB = allLost ? 0 : (isSingleWinnerB ? 3 : isSharedWinnerB ? 1 : 0);
+                                                const pesceScoreB = allLost ? 0 : (isSingleWinnerB || isSharedWinnerB ? 1 : 0);
 
-                                            if (scoringMethod === "Golf") {
-                                                return aScore - bScore; // lower is better
-                                            } else if (scoringMethod === "World Cup") {
-                                                return worldCupScoreB - worldCupScoreA; // higher World Cup score is better
-                                            } else if (scoringMethod === "Pesce") {
-                                                const sheriffCountA = Number(a.sheriffCount ?? 0);
-                                                const sheriffCountB = Number(b.sheriffCount ?? 0);
-                                                return sheriffCountB - sheriffCountA; // higher sheriff count first
-                                            } else {
-                                                return bScore - aScore; // default: higher is better
-                                            }
-                                        })
+                                                if (scoringMethod === "Golf") {
+                                                    return aScore - bScore; // lower is better
+                                                } else if (scoringMethod === "World Cup") {
+                                                    return worldCupScoreB - worldCupScoreA; // higher World Cup score is better
+                                                } else if (scoringMethod === "Pesce") {
+                                                    const sheriffCountA = Number(a.sheriffCount ?? 0);
+                                                    const sheriffCountB = Number(b.sheriffCount ?? 0);
+                                                    return sheriffCountB - sheriffCountA; // higher sheriff count first
+                                                } else {
+                                                    return bScore - aScore; // default: higher is better
+                                                }
+                                            })
 
-                                        .map((data, index) => {
-                                            const totalScore = getTotalScore(data.gamename);
-                                            const incrementScore = (index + 1) * totalScore;
-    
-                                            const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
-                                            const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
-                                            const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
-                                            const pesceScore = isSharedWinner ? 1 : 0;
-                                            let nowValue = 0;
-                                            let maxValue = 1; // default to 1 to avoid div-by-zero
+                                            .map((data, index) => {
+                                                const totalScore = getTotalScore(data.gamename);
+                                                const incrementScore = (index + 1) * totalScore;
+        
+                                                const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
+                                                const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
+                                                const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
+                                                const pesceScore = isSharedWinner ? 1 : 0;
+                                                let nowValue = 0;
+                                                let maxValue = 1; // default to 1 to avoid div-by-zero
 
-                                            if (scoringMethod === "Golf") {
-                                                nowValue = Number(data.gamlescore ?? totalScore);
-                                                maxValue = totalScore > 0 ? totalScore : 1;
-                                            } else if (scoringMethod === "World Cup") {
-                                                nowValue = Number(data.total_worldcup_points ?? 0);
-                                                maxValue = data.totalGamesPlayed * 7; // max world cup points (3 for win)
-                                            } else if (scoringMethod === "Pesce") {
-                                                nowValue = Number(data.total_pesce_points ?? 0);
-                                                maxValue = data.totalGamesPlayed * 7; // max pesce score (1 for win/shared)
-                                            }
-                                            return (
-                                                <Row
-                                                    key={index}
-                                                    className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
-                                                >
-                                                    <Col xs={3} className="d-flex align-items-center gap-2">
-                                                        {/* <img
-                                                            src={
-                                                                data.avatar
-                                                                    ? `${baseURL}/user/uploads/${data.avatar}`
-                                                                    : `${baseURL}/user/uploads/default_avatar.png`
-                                                            }
-                                                            alt="Avatar"
-                                                            className="rounded-circle border"
-                                                            style={{ width: "35px", height: "35px", objectFit: "cover" }}
-                                                        /> */}
-                                                        <div onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
-                                                            <img
+                                                if (scoringMethod === "Golf") {
+                                                    nowValue = Number(data.gamlescore ?? totalScore);
+                                                    maxValue = totalScore > 0 ? totalScore : 1;
+                                                } else if (scoringMethod === "World Cup") {
+                                                    nowValue = Number(data.total_worldcup_points ?? 0);
+                                                    maxValue = data.totalGamesPlayed * 7; // max world cup points (3 for win)
+                                                } else if (scoringMethod === "Pesce") {
+                                                    nowValue = Number(data.total_pesce_points ?? 0);
+                                                    maxValue = data.totalGamesPlayed * 7; // max pesce score (1 for win/shared)
+                                                }
+                                                return (
+                                                    <Row
+                                                        key={index}
+                                                        className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm"
+                                                    >
+                                                        <Col xs={3} className="d-flex align-items-center gap-2">
+                                                            {/* <img
                                                                 src={
-                                                                data.avatar
-                                                                    ? `${baseURL}/user/uploads/${data.avatar}`
-                                                                    : `${baseURL}/user/uploads/default_avatar.png`
+                                                                    data.avatar
+                                                                        ? `${baseURL}/user/uploads/${data.avatar}`
+                                                                        : `${baseURL}/user/uploads/default_avatar.png`
                                                                 }
-                                                                alt="Profile"
-                                                                className="rounded-circle mb-1"
-                                                                style={{ width: '35px', height: '35px', objectFit: 'cover' }}
-                                                            />
-                                                        </div>
-                                                    </Col>
-    
-                                                    <Col xs={4} className="text-start fw-semibold" onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
-                                                        {data.username}
-                                                    </Col>
-    
-                                                    <Col xs={5}>
-                                                        <Row className="align-items-center">
-                                                            <Col xs={7}>
-                                                                {/* <ProgressBar
+                                                                alt="Avatar"
+                                                                className="rounded-circle border"
+                                                                style={{ width: "35px", height: "35px", objectFit: "cover" }}
+                                                            /> */}
+                                                            <div onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
+                                                                <img
+                                                                    src={
+                                                                    data.avatar
+                                                                        ? `${baseURL}/user/uploads/${data.avatar}`
+                                                                        : `${baseURL}/user/uploads/default_avatar.png`
+                                                                    }
+                                                                    alt="Profile"
+                                                                    className="rounded-circle mb-1"
+                                                                    style={{ width: '35px', height: '35px', objectFit: 'cover' }}
+                                                                />
+                                                            </div>
+                                                        </Col>
+        
+                                                        <Col xs={4} className="text-start fw-semibold" onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
+                                                            {data.username}
+                                                        </Col>
+        
+                                                        <Col xs={5}>
+                                                            <Row className="align-items-center">
+                                                                <Col xs={7}>
+                                                                    {/* <ProgressBar
+                                                                        className={`${data.gamename}-progressbar`}
+                                                                        variant="success"
+                                                                        now={data.gamlescore}
+                                                                        max={totalScore + incrementScore}
+                                                                        style={{ height: "8px" }}
+                                                                    /> */}
+                                                                    
+                                                                    {/* {data.gamlescore}({data.totalGamesPlayed * totalScore}) */}
+                                                                    
+                                                                    <ProgressBar
                                                                     className={`${data.gamename}-progressbar`}
                                                                     variant="success"
-                                                                    now={data.gamlescore}
-                                                                    max={totalScore + incrementScore}
+                                                                    now={nowValue}
+                                                                    max={maxValue}
                                                                     style={{ height: "8px" }}
-                                                                /> */}
-                                                                
-                                                                {/* {data.gamlescore}({data.totalGamesPlayed * totalScore}) */}
-                                                                
-                                                                <ProgressBar
-                                                                className={`${data.gamename}-progressbar`}
-                                                                variant="success"
-                                                                now={nowValue}
-                                                                max={maxValue}
-                                                                style={{ height: "8px" }}
-                                                                />
+                                                                    />
 
-                                                            </Col>
-                                                            <Col xs={3} className="text-center fw-bold">
-                                                            {scoringMethod === "Golf"
-                                                                ? (data.gamlescore ?? totalScore)
-                                                                : scoringMethod === "World Cup"
-                                                                ? data.total_worldcup_points
-                                                                : (data.sheriffCount ?? 0)}
-                                                            </Col>
+                                                                </Col>
+                                                                <Col xs={3} className="text-center fw-bold">
+                                                                {scoringMethod === "Golf"
+                                                                    ? (data.gamlescore ?? totalScore)
+                                                                    : scoringMethod === "World Cup"
+                                                                    ? data.total_worldcup_points
+                                                                    : (data.sheriffCount ?? 0)}
+                                                                </Col>
 
-                                                        </Row>
-                                                    </Col>
-                                                </Row>
-                                            );
-                                        });
-                                })()}
-
-                                {latestJoinDate && (
-                                <p className="text-center">
-                                    Start Date: {(() => {
-                                    const date = new Date(latestJoinDate);
-                                    const dateString = date.toLocaleDateString("en-US", {
-                                        year: "numeric",
-                                        month: "long",
-                                        day: "numeric",
-                                    });
-
-                                    const isPM = date.getHours() >= 12;
-                                    if(game === 'phrazle'){
-                                        return `${dateString} ${isPM ? '- PM' : '- AM'}`;
-                                    }
-                                    else{
-                                        return `${dateString}`;
-                                    }
+                                                            </Row>
+                                                        </Col>
+                                                    </Row>
+                                                );
+                                            });
                                     })()}
 
-                                    </p>
-                                )}
-                            </>
-                        ) : (
-                            <Alert variant="info" className="text-center">
-                                😕 No results found for this leaderboard.
-                            </Alert>
-                        )}
-                    </Col>
-                </Row>
+                                    {latestJoinDate && (
+                                    <p className="text-center">
+                                        Start Date: {(() => {
+                                        const date = new Date(latestJoinDate);
+                                        const dateString = date.toLocaleDateString("en-US", {
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                        });
+
+                                        const isPM = date.getHours() >= 12;
+                                        if(game === 'phrazle'){
+                                            return `${dateString} ${isPM ? '- PM' : '- AM'}`;
+                                        }
+                                        else{
+                                            return `${dateString}`;
+                                        }
+                                        })()}
+
+                                        </p>
+                                    )}
+                                </>
+                            ) : (
+                                <Alert variant="info" className="text-center">
+                                    😕 No results found for this leaderboard.
+                                </Alert>
+                            )}
+                        </Col>
+                    </Row>
                 {/* <Row className="justify-content-center leaderboard mt-4">
                     <Col md={5}>
                     <h4 className="py-3 text-center">

@@ -183,7 +183,7 @@ function PhrazleStat() {
                         </Col>
                     </Row>
                     <Row className='align-items-center justify-content-center'>
-                        <Col md={4}><Phrazlestatistics/></Col>
+                        <Col md={4}><Phrazlestatistics statschart={statschart}/></Col>
                     </Row>
                     {/* <Row className='align-items-center justify-content-center'>
                         <Col md={4}><PhrazleGuessDistribution/></Col>

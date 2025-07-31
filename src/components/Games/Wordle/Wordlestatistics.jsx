@@ -3,7 +3,7 @@ import Axios from 'axios';
 import { ProgressBar } from "react-bootstrap";
 
 
-function Wordlestatistics(updateStatistics) {
+function Wordlestatistics({ statschart }) {
     const baseURL = import.meta.env.VITE_BASE_URL;
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA.email;
@@ -14,21 +14,10 @@ function Wordlestatistics(updateStatistics) {
     const [maxStreak, setmaxStreak] = useState();
     const [guessDistribution, setguessDistribution] = useState();
 
-    // useEffect(() => {
-    //     getStatsValue();
-    // }, [wordleStatsData]); // Update stats when updateStatsStatistics changes
-
     useEffect(() => {
-        if (!loginuserEmail) return;
-
-        getStatsValue(); // Initial call
-
-        const interval = setInterval(() => {
-            getStatsValue();
-        }, 10000); // 10 seconds
-
-        return () => clearInterval(interval); // Cleanup on unmount
-    }, [loginuserEmail]);
+        getStatsValue();
+    }, [statschart]); // Update stats when updateStatsStatistics changes
+    
     function getStatsValue() {
        
         Axios.get(`${baseURL}/games/wordle/get-statistics.php?useremail=${loginuserEmail}`)

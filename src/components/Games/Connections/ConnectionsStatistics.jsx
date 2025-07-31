@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Axios from 'axios';
 import { ProgressBar } from "react-bootstrap";
 
-function ConnectionsStatistics() {
+function ConnectionsStatistics({ statschart }) {
     const baseURL = import.meta.env.VITE_BASE_URL;
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA.email;
@@ -15,33 +15,13 @@ function ConnectionsStatistics() {
     const [perfectPuzzles, setperfectPuzzles] = useState();
     const [purpleFirst, setpurpleFirst] = useState();
 
-    // useEffect(() => {
-    //     getStatsValue();
-    // }, [wordleStatsData]); // Update stats when updateStatsStatistics changes
-
-    // useEffect(() => {
-    //     if (loginuserEmail) {
-    //         getStatsValue();
-    //     }
-    //   }, [connectionsStatsData,loginuserEmail])
-    
     useEffect(() => {
-        if (!loginuserEmail) return;
-
-        // Initial fetch
-        getStatsValue();
-
-        // Interval to fetch every 10 seconds
-        const intervalId = setInterval(() => {
+        if (loginuserEmail) {
             getStatsValue();
-        }, 10000); // 10000 ms = 10 sec
+        }
+      }, [statschart])
 
-        // Cleanup on unmount or dependency change
-        return () => clearInterval(intervalId);
-
-    }, [loginuserEmail]);
     function getStatsValue() {
-       
         Axios.get(`${baseURL}/games/connections/get-statistics.php?useremail=${loginuserEmail}`)
             .then((response) => {
                 if (typeof updateStatistics === 'function') {
