@@ -87,11 +87,16 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
     //     fetchDataByDate(formatDateForBackend(date));  // Fetch data on date change
     // };
 
+    // const formatDateForBackend = (date) => {
+    //     if (!date || isNaN(date.getTime())) return "";
+    //     return moment(date).format("YYYY-MM-DD");
+    // };
     const formatDateForBackend = (date) => {
-        if (!date || isNaN(date.getTime())) return "";
-        return moment(date).format("YYYY-MM-DD");
+        if (!date) return "";
+        const m = moment(date);
+        if (!m.isValid()) return "";
+        return m.format("YYYY-MM-DD");
     };
-
    
     const handleDateChange = (date) => {
     if (!date || isNaN(date.getTime())) return;
@@ -499,7 +504,28 @@ const noDataMessage = {
                             (period === 'AM' && dayjs(startDate).isSame(latestDateOnly, 'day') && joinPeriod === 'AM') ||
                             (period === 'PM' && dayjs(startDate).isSame(latestDateOnly, 'day') && joinPeriod === 'PM');
 
-                        const isMaxPhrazleDate = (period === 'AM' && dayjs(startDate).isSame(dayjs(), 'day'));
+                        const now = dayjs();
+                        const currentHour = now.hour();
+
+                        let maxDateKey = '';
+                        if (currentHour < 12) {
+                        // Before noon → max = yesterday PM
+                        const maxDate = now.subtract(1, 'day').format('YYYY-MM-DD');
+                        maxDateKey = `${maxDate}-PM`;
+                        } else {
+                        // After noon → max = today AM
+                        const maxDate = now.format('YYYY-MM-DD');
+                        maxDateKey = `${maxDate}-AM`;
+                        }
+
+                        // Selected key
+                        const selectedDateStr = dayjs(startDate).format('YYYY-MM-DD');
+                        const selectedKey = `${selectedDateStr}-${period}`;
+
+                        // Disable if selected date-period is same or after max allowed
+                        const isMaxPhrazleDate = selectedKey >= maxDateKey;
+
+                        // const isMaxPhrazleDate = (period === 'AM' && dayjs(startDate).isSame(dayjs(), 'day'));
                         return (
                             <>
                             <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
@@ -519,9 +545,10 @@ const noDataMessage = {
                                 const aIsSheriff = isSheriff(a.username) ? 1 : 0;
                                 const bIsSheriff = isSheriff(b.username) ? 1 : 0;
                                 if (aIsSheriff !== bIsSheriff) return bIsSheriff - aIsSheriff;
+
                                 const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
                                 const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
-                                if (aScore !== bScore) return bScore - aScore;
+
                                 const allLost = minScore === 7;
 
                                 const isSingleWinnerA = winners.length === 1 && winners[0].username === a.username;
@@ -535,25 +562,17 @@ const noDataMessage = {
                                 const pesceScoreB = isSheriff(b.username) ? 1 : 0;
 
                                 if (scoringMethod === "Golf") {
-                                    const scoreCompare = aScore - bScore;
-                                    if (scoreCompare !== 0) return scoreCompare;
+                                    return aScore - bScore;
                                 } else if (scoringMethod === "World Cup") {
-                                    const worldCupCompare = worldCupScoreB - worldCupScoreA;
-                                    if (worldCupCompare !== 0) return worldCupCompare;
+                                    return worldCupScoreB - worldCupScoreA;
                                 } else if (scoringMethod === "Pesce") {
                                     if (aIsSheriff === 0 && bIsSheriff === 0) {
-                                        const scoreCompare = aScore - bScore;
-                                        if (scoreCompare !== 0) return scoreCompare;
+                                        return aScore - bScore;
                                     }
-                                    // If one or both are sheriffs, fallback to name
+                                    return 0;
                                 } else {
-                                    const scoreCompare = bScore - aScore;
-                                    if (scoreCompare !== 0) return scoreCompare;
+                                    return bScore - aScore;
                                 }
-
-                                // Final tie-breaker: alphabetical username
-                                return a.username.localeCompare(b.username);
-                                
                             }).map((data, index) => {
                                 const totalScore = getTotalScore(data.gamename);
                                 const progressValue = totalScore > 0
