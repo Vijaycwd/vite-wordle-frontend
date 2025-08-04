@@ -206,6 +206,25 @@ function GroupInfo() {
         setShowProfile(true);
     };
     if (!group) return null;
+
+    const handleDeleteInvite = async (inviteId) => {
+        try {
+        const response = await Axios.post(`${baseURL}/groups/delete-invite.php`, {
+            invite_id: inviteId
+        });
+
+        if (response.data.success) {
+            setInvites((prevInvites) =>
+                prevInvites.filter((invite) => invite.id !== inviteId)
+            );
+        } else {
+            console.log('error');
+        }
+        } catch (error) {
+        console.error("Exit error:", error);
+        
+        }
+    };
     return (
         <Container>
             <Row className="justify-content-center">
@@ -299,8 +318,8 @@ function GroupInfo() {
                     {/* Footer actions */}
                     <div className="text-md-start">
                         <p><strong>*Captain</strong></p>
-                        <Row>
-                            <Col xs={6} md={6}>
+                        <Row className="justify-content-center">
+                            <Col xs={10} md={6}>
                                 <InviteGroupandSite/>
                                 <Button
                                     className="my-2 me-md-2 w-100"
@@ -313,7 +332,7 @@ function GroupInfo() {
                             </Col>
                             {userId === captainid ? (
                             <>
-                                <Col xs={6} md={6}>
+                                <Col xs={10} md={6}>
                                 <Button className="btn btn-warning w-100" onClick={handleShowModal}>
                                     Edit Group Name
                                 </Button>
@@ -348,26 +367,47 @@ function GroupInfo() {
                         <Row className="my-4">
                             <Col>
                             <h5 className="mb-3">Invitations Pending Acceptance:</h5>
-                            <ul className="list-unstyled">
-                                {invites.map((invite, i) => (
-                                <li key={i} className="d-flex align-items-center mb-3">
-                                    <img
+                            {invites.map((invite, i) => (
+                            <Row key={i} className="align-items-center mb-3">
+                                {/* Avatar */}
+                                <Col xs="auto">
+                                <img
                                     src={
-                                        invite.avatar
+                                    invite.avatar
                                         ? `${baseURL}/user/uploads/${invite.avatar}`
                                         : `${baseURL}/user/uploads/default_avatar.png`
                                     }
                                     alt="Profile"
-                                    className="rounded-circle mb-1 me-2"
-                                    style={{ width: '30px', height: '30px', objectFit: 'cover' }}
-                                    />
-                                    <div>
-                                    <strong>{invite.first_name} {invite.last_name}</strong><br />
-                                    <small className="text-muted">@{invite.username}</small>
-                                    </div>
-                                </li>
-                                ))}
-                            </ul>
+                                    className="rounded-circle"
+                                    style={{
+                                    width: "30px",
+                                    height: "30px",
+                                    objectFit: "cover",
+                                    }}
+                                />
+                                </Col>
+
+                                {/* Name & username */}
+                                <Col>
+                                <strong>
+                                    {invite.first_name} {invite.last_name}
+                                </strong>
+                                <br />
+                                <small className="text-muted">@{invite.username}</small>
+                                </Col>
+
+                                {/* Delete Icon */}
+                                <Col xs="auto" >
+                                <Button
+                                    variant="danger"
+                                    size="sm"
+                                    onClick={() => handleDeleteInvite(invite.id)}
+                                    >
+                                    <FaTrash />
+                                    </Button>
+                                </Col>
+                            </Row>
+                            ))}
                             </Col>
                         </Row>
                         )}

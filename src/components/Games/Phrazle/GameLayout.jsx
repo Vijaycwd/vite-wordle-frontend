@@ -160,7 +160,7 @@ function GamesLayout() {
         <Row className="justify-content-center align-items-center">
           <Col md={6} className="py-5">
             <div>
-              <p>Click the “Play” button to go to the Phrazles website and play. Then:</p>
+              <p>Click the “Play” button to go to the Phrazle website and play. Then:</p>
               <ol>
                 <li><strong>PLAY:</strong> Play Phrazle</li>
                 <li><strong>COPY:</strong> Click SHARE, then COPY to copy your Phrazles result</li>

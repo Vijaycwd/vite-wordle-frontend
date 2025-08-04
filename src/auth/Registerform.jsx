@@ -249,7 +249,6 @@ function Registerform() {
                                 </Form.Group>
                             </Col>
                         </Row>
-
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-3">

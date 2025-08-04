@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import GroupLeaderboardScores from './GroupLeaderboard/GroupLeaderboardScores';
 import GroupScoreByDate from './GroupLeaderboard/GroupScoreByDate';
 import MemberProfile from '../constant/Models/MemberProfile';
+import GroupGameChat from './GroupLeaderboard/GroupGameChat';
 
 function GroupStatsPage() {
   const baseURL = import.meta.env.VITE_BASE_URL;
@@ -38,15 +39,31 @@ function GroupStatsPage() {
     fetchGroupDetails();
   }, [id, userId]);
 
+  const getAMPMPeriod = () => {
+    const hour = new Date().getHours();
+    return hour < 12 ? 'AM' : 'PM';
+  };
+
   return (
     <>
     <Container>
-      <Row className='pb-5'>
+      <Row>
         <Col className="text-center mt-4">
           <h2 className='text-capitalize py-3'>{group?.name || ""} - {game}</h2>
           {/* <h3 className='text-capitalize py-3'>{game} Leaderboard</h3> */}
           {/* <h3 className='text-capitalize py-3'>{game.charAt(0).toUpperCase() + game.slice(1)} Stats</h3> */}
           <GroupLeaderboardScores setLatestJoinDate={setLatestJoinDate}  setSelectedMember={setSelectedMember} setShowProfile={setShowProfile}/>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <GroupGameChat
+            groupId={id}
+            gameName={game}
+            periodType={game === 'phrazle' ? getAMPMPeriod() : ''}
+            periodDate={new Date().toISOString().split('T')[0]}
+            userId={userId}
+          />
         </Col>
       </Row>
       <Row>

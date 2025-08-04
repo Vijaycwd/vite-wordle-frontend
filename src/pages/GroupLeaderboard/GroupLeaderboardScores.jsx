@@ -717,8 +717,6 @@ let sheriffWinners = [];
                     </Col>
                 </Row>
             )}
-
-           
             {/* Cumulative Leaderboard */}
             
                     {/*cumulativeScore &&

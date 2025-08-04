@@ -10,8 +10,11 @@ function Connctiongamesection() {
     return (
         <Col sm={6} className='border p-3 shadow rounded text-center '>
             <Row className='justify-content-center align-items-center'>
-            <Col sm={3} className='text-center'><img className='img-fluid shadow p-2 bg-body rounded' src= {Logo}></img></Col>
-            <Col sm={6}><Connectiongame loginUserData = {userData}/></Col>
+                <Col sm={3} className='text-center'>
+                    {/* <img className='img-fluid shadow p-2 bg-body rounded' src= {Logo}></img> */}
+                    <h5 className='shadow p-2 bg-body rounded'>Connections</h5>
+                </Col>
+                <Col sm={6}><Connectiongame loginUserData = {userData}/></Col>
             </Row>
         </Col>
     )

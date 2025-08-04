@@ -7,6 +7,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment-timezone';
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import dayjs from "dayjs";
+import GroupGameMessagesModal from "../../constant/Models/GroupGameMessagesModal";
 
 function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }) {
     const baseURL = import.meta.env.VITE_BASE_URL;
@@ -238,11 +239,9 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
 
         return (
             <>
-                <Button className={`example-custom-input px-5 btn btn-primary ${game}-btn`} onClick={onClick} ref={ref}>
-            Go To Date
-        </Button>
-            
-        
+                <Button className={`example-custom-input px-5 ${game}-btn`} onClick={onClick} ref={ref}>
+                    Go To Date
+                </Button>
             </>
         );
     });
@@ -809,6 +808,18 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
 
                         </>
                     ) : null}
+                </Col>
+            </Row>
+
+            <Row className="justify-content-center">
+                <Col md={4}>
+                    <GroupGameMessagesModal
+                    groupId={id}
+                    gameName={game}
+                    periodType={game === "phrazle" ? getAMPMPeriod() : ""}
+                    periodDate={dayjs(startDate).format("YYYY-MM-DD")}
+                    userId={userId}
+                    />
                 </Col>
             </Row>
                 {dataFetched && todayLeaderboard.length > 0 ? (

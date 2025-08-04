@@ -13,6 +13,7 @@ import FeedbackButton from '../../pages/FeedbackButton';
 const Headerbar = () => {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
+  const userId = USER_AUTH_DATA?.id;
   const userEmail = USER_AUTH_DATA?.email;
   const userAvatar = USER_AUTH_DATA?.avatar; 
   const [userData, setUserData] = useState({});
@@ -125,6 +126,9 @@ const Headerbar = () => {
   }, [expanded]);
 const handleInviteFriends = async () => {
   const frontendURL = window.location.origin;
+  const encryptedUserId = btoa(userId);
+  const useridpath = `/?user_id=${encryptedUserId}`;
+  const fullUrl = `${frontendURL}${useridpath}`;
   const fullName = userData.first_name && userData.last_name
   ? `${userData.first_name} ${userData.last_name}`
   : 'A friend';
@@ -134,7 +138,7 @@ const handleInviteFriends = async () => {
   const shareData = {
     title: 'Join WordGAMLE!',
     text: message,
-    url: frontendURL,
+    url: fullUrl,
   };
 
   if (navigator.share) {
