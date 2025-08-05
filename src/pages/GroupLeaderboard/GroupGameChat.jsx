@@ -4,7 +4,7 @@ import { InputGroup, Form, Button, Row, Col } from "react-bootstrap";
 import { FaPaperPlane } from "react-icons/fa"; // for send icon
 import TextareaAutosize from "react-textarea-autosize";
 
-function GroupGameChat({ groupId, gameName, periodType, periodDate, userId }) {
+function GroupGameChat({ groupId, gameName, createdAt, userId }) {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const [text, setText] = useState("");
 
@@ -13,8 +13,7 @@ function GroupGameChat({ groupId, gameName, periodType, periodDate, userId }) {
     await axios.post(`${baseURL}/groups/send-user-message.php`, {
       group_id: groupId,
       game_name: gameName,
-      period_type: periodType,
-      period_date: periodDate,
+      created_at: createdAt,
       user_id: userId,
       message: text
     });
@@ -25,7 +24,7 @@ function GroupGameChat({ groupId, gameName, periodType, periodDate, userId }) {
   return (
     <Row className="justify-content-center">
       <Col md={4}>
-        <div className="my-3">
+        <div className="my-4">
           <Form onSubmit={(e) => { e.preventDefault(); sendMessage(); }}>
             <InputGroup>
             <TextareaAutosize

@@ -320,7 +320,6 @@ function GroupInfo() {
                         <p><strong>*Captain</strong></p>
                         <Row className="justify-content-center">
                             <Col xs={10} md={6}>
-                                <InviteGroupandSite/>
                                 <Button
                                     className="my-2 me-md-2 w-100"
                                     onClick={() =>
@@ -329,6 +328,7 @@ function GroupInfo() {
                                 >
                                     Group Leaderboards
                                 </Button>
+                                <InviteGroupandSite/>
                             </Col>
                             {userId === captainid ? (
                             <>

@@ -7,7 +7,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment-timezone';
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import dayjs from "dayjs";
-import GroupGameMessagesModal from "../../constant/Models/GroupGameMessagesModal";
+// import GetGroupMessagesModal from '../../constant/Models/GetGroupMessagesModal';
 
 function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }) {
     const baseURL = import.meta.env.VITE_BASE_URL;
@@ -239,7 +239,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
 
         return (
             <>
-                <Button className={`example-custom-input px-5 ${game}-btn`} onClick={onClick} ref={ref}>
+                <Button className={`example-custom-input px-5 my-4 ${game}-btn`} onClick={onClick} ref={ref}>
                     Go To Date
                 </Button>
             </>
@@ -262,10 +262,10 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
                 date = now.toDate();
                 period = 'AM';
             }
-            
-            const currrentDate = formatDateForBackend(date)
+
+            const currrentDate = formatDateForBackend(date);
             if (currrentDate >= formattedDateStr) {
-                setStartDate(currrentDate);
+                setStartDate(date); // Pass Date object
                 setPeriod(period);
                 fetchDataByDate(currrentDate, period);
             }
@@ -274,11 +274,12 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
             const prevDate = now.subtract(1, 'day').toDate();
             const prevDateStr = formatDateForBackend(prevDate);
             if (prevDateStr >= formattedDateStr) {
-                setStartDate(prevDate);
-                fetchDataByDate(formatDateForBackend(prevDate));
+                setStartDate(prevDate); // Pass Date object
+                fetchDataByDate(prevDateStr);
             }
         }
     }, [scoringMethod, game]);
+
 
 
     const fetchDataByDate = async (date, currentPeriod = null) => {
@@ -420,8 +421,6 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
     phrazle: "Gamle Score 7"
     }[game] || "No data available.";
 
-
-
     return (
         <>
             <div className='text-center'>
@@ -439,7 +438,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
                     maxDate={game === 'phrazle' ? maxSelectableDate : dayjs().subtract(1, 'day').toDate()}
                     />
             </div>
-            <Row className="justify-content-center leaderboard mt-4">
+            <Row className="justify-content-center leaderboard">
                 <Col md={5} className="text-center">
                     {dataFetched && todayLeaderboard.length > 0 ? (
                         <>
@@ -811,21 +810,23 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
                 </Col>
             </Row>
 
+            {/* {startDate && (
             <Row className="justify-content-center">
                 <Col md={4}>
-                    <GroupGameMessagesModal
+                <GetGroupMessagesModal 
                     groupId={id}
                     gameName={game}
-                    periodType={game === "phrazle" ? getAMPMPeriod() : ""}
                     periodDate={dayjs(startDate).format("YYYY-MM-DD")}
-                    userId={userId}
-                    />
+                    periodType={game == 'phrazle' ? period : ''}
+                />
                 </Col>
             </Row>
+            )} */}
+
                 {dataFetched && todayLeaderboard.length > 0 ? (
                     <>
                     {/* Cumulative Leaderboard */}
-                    <Row className="justify-content-center leaderboard mt-4">
+                    <Row className="justify-content-center leaderboard">
                         <Col md={5}>
                             <h4 className="py-3 text-center">
                                 Cumulative Leaderboard

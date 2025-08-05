@@ -6,7 +6,8 @@ import { toast } from 'react-toastify';
 import GroupLeaderboardScores from './GroupLeaderboard/GroupLeaderboardScores';
 import GroupScoreByDate from './GroupLeaderboard/GroupScoreByDate';
 import MemberProfile from '../constant/Models/MemberProfile';
-import GroupGameChat from './GroupLeaderboard/GroupGameChat';
+// import GroupGameChat from './GroupLeaderboard/GroupGameChat';
+// import dayjs from "dayjs";
 
 function GroupStatsPage() {
   const baseURL = import.meta.env.VITE_BASE_URL;
@@ -39,10 +40,10 @@ function GroupStatsPage() {
     fetchGroupDetails();
   }, [id, userId]);
 
-  const getAMPMPeriod = () => {
-    const hour = new Date().getHours();
-    return hour < 12 ? 'AM' : 'PM';
-  };
+  // const getAMPMPeriod = () => {
+  //   const hour = new Date().getHours();
+  //   return hour < 12 ? 'AM' : 'PM';
+  // };
 
   return (
     <>
@@ -55,17 +56,16 @@ function GroupStatsPage() {
           <GroupLeaderboardScores setLatestJoinDate={setLatestJoinDate}  setSelectedMember={setSelectedMember} setShowProfile={setShowProfile}/>
         </Col>
       </Row>
-      <Row>
+      {/* <Row>
         <Col>
           <GroupGameChat
             groupId={id}
             gameName={game}
-            periodType={game === 'phrazle' ? getAMPMPeriod() : ''}
-            periodDate={new Date().toISOString().split('T')[0]}
+            createdAt={dayjs().format("YYYY-MM-DD HH:mm:ss")}
             userId={userId}
           />
         </Col>
-      </Row>
+      </Row> */}
       <Row>
         <Col>
           <GroupScoreByDate

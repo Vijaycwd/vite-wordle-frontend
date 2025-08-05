@@ -8,6 +8,11 @@ import { toast } from 'react-toastify';
 import Axios from 'axios';
 import FeedbackButton from './FeedbackButton';
 import { useLocation } from 'react-router-dom';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation } from 'swiper/modules';
+
+import 'swiper/css';
+import 'swiper/css/navigation';
 
 
 function Home() {
@@ -25,6 +30,8 @@ function Home() {
     const encryptedId = params.get('group_id');
     const groupId = encryptedId;
     const registerPath = groupId ? `/register?group_id=${groupId}` : `/register`;
+
+    const items = ['Wordle', 'Connections', 'Phrazle'];
 
     // Check if the user already entered the password
     useEffect(() => {
@@ -139,7 +146,7 @@ function Home() {
                             <p className='text-center' dangerouslySetInnerHTML={{ __html: homepageText.text1 }}></p>
                         </Col>
                     </Row>
-                    <Row>
+                    {/* <Row>
                         <Col className="text-center py-1" md={4} s={12}>
                             <Button className="btn-lg" onClick={() => handleNavigation('wordle')}>Wordle</Button>
                         </Col>
@@ -148,6 +155,28 @@ function Home() {
                         </Col>
                         <Col className="text-center py-1" md={4} s={12}>
                             <Button className="btn-lg" onClick={() => handleNavigation('phrazle')}>Phrazle</Button>
+                        </Col>
+                    </Row> */}
+                    <Row>
+                        <Col>
+                            <Swiper
+                                slidesPerView={2}
+                                spaceBetween={20}
+                                // navigation
+                                modules={[Navigation]}
+                                className="mySwiper"
+                            >
+                                {items.map((item, index) => (
+                                <SwiperSlide key={index}>
+                                    <Button
+                                    className="btn-primary w-100 py-2 rounded"
+                                    onClick={() => handleNavigation(item)}
+                                    >
+                                    {item}
+                                    </Button>
+                                </SwiperSlide>
+                                ))}
+                            </Swiper>
                         </Col>
                     </Row>
                     <Row>
