@@ -207,24 +207,6 @@ function GroupInfo() {
     };
     if (!group) return null;
 
-    const handleDeleteInvite = async (inviteId) => {
-        try {
-        const response = await Axios.post(`${baseURL}/groups/delete-invite.php`, {
-            invite_id: inviteId
-        });
-
-        if (response.data.success) {
-            setInvites((prevInvites) =>
-                prevInvites.filter((invite) => invite.id !== inviteId)
-            );
-        } else {
-            console.log('error');
-        }
-        } catch (error) {
-        console.error("Exit error:", error);
-        
-        }
-    };
     return (
         <Container>
             <Row className="justify-content-center">
@@ -394,17 +376,6 @@ function GroupInfo() {
                                 </strong>
                                 <br />
                                 <small className="text-muted">@{invite.username}</small>
-                                </Col>
-
-                                {/* Delete Icon */}
-                                <Col xs="auto" >
-                                <Button
-                                    variant="danger"
-                                    size="sm"
-                                    onClick={() => handleDeleteInvite(invite.id)}
-                                    >
-                                    <FaTrash />
-                                    </Button>
                                 </Col>
                             </Row>
                             ))}
