@@ -209,12 +209,18 @@ function UserProfile() {
 
                         <Form.Group className="mt-3">
                             <Form.Label>First Name <span style={{ color: 'red' }}>*</span></Form.Label>
+                            <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
+                                Name your Mama gave you
+                            </div>
                             <Form.Control type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
                             {errors.firstName && <div style={{ color: "red" }}>{errors.firstName}</div>}
                         </Form.Group>
 
                         <Form.Group className="mt-3">
                             <Form.Label>Last Name <span style={{ color: 'red' }}>*</span></Form.Label>
+                            <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
+                                What your closest friends call you
+                            </div>
                             <Form.Control type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} />
                             {errors.lastName && <div style={{ color: "red" }}>{errors.lastName}</div>} {/* ✅ Fix here */}
                         </Form.Group>
@@ -224,7 +230,7 @@ function UserProfile() {
                                 Gamle Name<span style={{ color: 'red' }}>*</span>
                             </Form.Label>
                             <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
-                                (This is the name that will appear in your Leaderboards)
+                                For your Leaderboard domination!
                             </div>
                             <Form.Control type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
                             {errors.username && <div style={{ color: "red" }}>{errors.username}</div>} {/* ✅ Fix here */}
@@ -252,6 +258,9 @@ function UserProfile() {
 
                         <Form.Group className="mt-3">
                             <Form.Label>Password</Form.Label>
+                            <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
+                                Make it memorable!
+                            </div>
                             <InputGroup>
                                 <Form.Control
                                     type={showPassword ? "text" : "password"}
@@ -267,6 +276,9 @@ function UserProfile() {
 
                         <Form.Group className="mt-3">
                             <Form.Label>Confirm Password</Form.Label>
+                            <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
+                                The requisite duplicate
+                            </div>
                             <InputGroup>
                                 <Form.Control
                                     type={showConfirmPassword ? "text" : "password"}
