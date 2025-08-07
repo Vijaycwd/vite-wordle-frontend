@@ -15,6 +15,7 @@ function Registerform() {
     const [lastName, setlastName] = useState('');
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const [confirmpassword, setConfirmpassword] = useState('');
     const [avatar, setAvatar] = useState(null);
@@ -38,10 +39,7 @@ function Registerform() {
         setTimeout(() => {
             navigate("/");
         }, 3000);
-        } else {
-        const defaultFile = new File([""], "default_avatar.png", { type: "image/png" });
-        setAvatar(defaultFile);
-        }
+        } 
     }, []);
     
 
@@ -52,10 +50,10 @@ function Registerform() {
         setConfirmShowPassword(!showConfirmPassword);
     };
 
-    useEffect(() => {
-        const defaultFile = new File([""], "default_avatar.png", { type: "image/png" });
-        setAvatar(defaultFile);
-    }, []);
+    // useEffect(() => {
+    //     const defaultFile = new File([""], "default_avatar.png", { type: "image/png" });
+    //     setAvatar(defaultFile);
+    // }, []);
 
     const validateForm = () => {
         const newErrors = {};
@@ -70,6 +68,9 @@ function Registerform() {
             newErrors.email = 'Email is invalid.';
         }
 
+        if (!phone || phone.length !== 10) {
+            newErrors.phone = "Phone number must be 10 digits";
+        }
         if (!password) {
             newErrors.password = 'Password is required.';
         } else if (password.length < 8) {
@@ -84,7 +85,9 @@ function Registerform() {
             newErrors.confirmpassword = 'Passwords do not match.';
         }
 
-        if (avatar && avatar.name !== 'default_avatar.png') {
+        if (!avatar) {
+            newErrors.avatar = 'Profile picture is required.';
+        } else {
             const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
             if (!allowedTypes.includes(avatar.type)) {
                 newErrors.avatar = 'Invalid file type. Only JPEG, PNG, or WEBP allowed.';
@@ -92,6 +95,7 @@ function Registerform() {
                 newErrors.avatar = 'Profile picture must be less than 100KB.';
             }
         }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -144,8 +148,10 @@ function Registerform() {
             lastName: true,
             username: true,
             email: true,
+            phone: true,
             password: true,
-            confirmpassword: true
+            confirmpassword: true,
+            avatar: true
         };
         setTouched(allTouched);
 
@@ -157,6 +163,7 @@ function Registerform() {
         formData.append('lastname', lastName);
         formData.append('username', username);
         formData.append('email', email);
+        formData.append('phone', phone);
         formData.append('password', password);
         formData.append('confirmpassword', confirmpassword);
         formData.append('avatar', avatar);
@@ -225,6 +232,9 @@ function Registerform() {
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label>First Name <span style={{ color: 'red' }}>*</span></Form.Label>
+                                    <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
+                                        Name your Mama gave you
+                                    </div>
                                     <Form.Control
                                         type="text"
                                         value={firstName}
@@ -238,6 +248,9 @@ function Registerform() {
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Last Name <span style={{ color: 'red' }}>*</span></Form.Label>
+                                    <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
+                                        What your closest friends call you
+                                    </div>
                                     <Form.Control
                                         type="text"
                                         value={lastName}
@@ -252,7 +265,10 @@ function Registerform() {
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Username <span style={{ color: 'red' }}>*</span></Form.Label>
+                                    <Form.Label>Gamlename <span style={{ color: 'red' }}>*</span></Form.Label>
+                                    <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
+                                        For your Leaderboard domination!
+                                    </div>
                                     <Form.Control
                                         type="text"
                                         value={username}
@@ -266,6 +282,9 @@ function Registerform() {
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Email <span style={{ color: 'red' }}>*</span></Form.Label>
+                                    <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
+                                        What the interweb calls you
+                                    </div>
                                     <Form.Control
                                         type="email"
                                         value={email}
@@ -281,7 +300,34 @@ function Registerform() {
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
+                                    <Form.Label>Phone Number</Form.Label>
+                                    <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
+                                        Optional, for group contact use only
+                                    </div>
+                                    <Form.Control
+                                    type="tel"
+                                    value={phone}
+                                    onChange={(e) => {
+                                        const value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                                        if (value.length <= 10) {
+                                        setPhone(value);
+                                        }
+                                    }}
+                                    placeholder='Enter your phone number'
+                                    maxLength={10}
+                                    />
+
+                                    {touched.phone && errors.phone && <p className='form-validation-error'>{errors.phone}</p>}
+                                </Form.Group>
+                                
+
+                            </Col>
+                            <Col md={6}>
+                                <Form.Group className="mb-3">
                                     <Form.Label>Password <span style={{ color: 'red' }}>*</span></Form.Label>
+                                    <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
+                                        Make it memorable!
+                                    </div>
                                     <InputGroup>
                                         <Form.Control
                                             type={showPassword ? 'text' : 'password'}
@@ -302,6 +348,9 @@ function Registerform() {
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Confirm Password <span style={{ color: 'red' }}>*</span></Form.Label>
+                                    <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
+                                        The requisite duplicate
+                                    </div>
                                     <InputGroup>
                                         <Form.Control
                                         type={showConfirmPassword ? 'text' : 'password'}
@@ -317,12 +366,12 @@ function Registerform() {
                                     {touched.confirmpassword && errors.confirmpassword && <p className='form-validation-error'>{errors.confirmpassword}</p>}
                                 </Form.Group>
                             </Col>
-                        </Row>
-
-                        <Row>
                             <Col md={6}>
                                 <Form.Group controlId="formFile" className="mb-3">
-                                    <Form.Label>Profile Picture</Form.Label>
+                                    <Form.Label>Profile Picture <span style={{ color: 'red' }}>*</span></Form.Label>
+                                    <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
+                                        For Leaderboard personality!
+                                    </div>
                                     <Form.Control
                                         type="file"
                                         name="avatar"
@@ -353,6 +402,10 @@ function Registerform() {
                                 </Form.Group>
                             </Col>
                             )}
+                        </Row>
+
+                        <Row>
+                            
                         </Row>
 
                         <Button className="btn btn-block btn-hero-lg btn-hero-success mt-4" type="submit">

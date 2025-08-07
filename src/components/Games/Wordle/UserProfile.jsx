@@ -14,6 +14,7 @@ function UserProfile() {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [username, setUsername] = useState("");
+    const [phone, setPhone] = useState("");
     const [avatar, setAvatar] = useState(null); // cropped blob
     const [previewUrl, setPreviewUrl] = useState('');
     const [showCropModal, setShowCropModal] = useState(false);
@@ -45,6 +46,7 @@ function UserProfile() {
                     setFirstName(res.data.user.first_name || "");
                     setLastName(res.data.user.last_name || "");
                     setUsername(res.data.user.username || "");
+                    setPhone(res.data.user.phone || "");
                     setPreviewUrl(res.data.user.avatar || "");
                     setIsPaused(res.data.user.is_paused === 1);
                 }
@@ -114,6 +116,7 @@ function UserProfile() {
             formData.append("firstName", firstName);
             formData.append("lastName", lastName);
             formData.append("username", username);
+            formData.append("phone", phone);
             if (password) formData.append("password", password);
             if (avatar) formData.append("avatar", avatar);
 
@@ -227,6 +230,25 @@ function UserProfile() {
                             {errors.username && <div style={{ color: "red" }}>{errors.username}</div>} {/* ✅ Fix here */}
                         </Form.Group>
 
+                        <Form.Group className="mt-3">
+                        <Form.Label>
+                            Phone Number
+                        </Form.Label>
+                        <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
+                            Optional, for group contact use only
+                        </div>
+                        <Form.Control
+                            type="tel"
+                            value={phone}
+                            onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, ''); // Digits only
+                            if (value.length <= 10) setPhone(value);
+                            }}
+                            placeholder="Enter your phone number"
+                            maxLength={10}
+                        />
+                        {errors.phone && <div style={{ color: "red" }}>{errors.phone}</div>}
+                        </Form.Group>
 
                         <Form.Group className="mt-3">
                             <Form.Label>Password</Form.Label>
