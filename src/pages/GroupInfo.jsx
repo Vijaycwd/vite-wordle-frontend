@@ -117,7 +117,6 @@ function GroupInfo() {
         }
     };
     
-    
 
     const handleShowModal = () => {
         setGroupname(group?.name || ""); // Ensure existing name is set before opening modal
