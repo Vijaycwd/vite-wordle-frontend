@@ -21,6 +21,10 @@ function AdminText() {
   const baseURL = import.meta.env.VITE_BASE_URL;
 
   const [formData, setFormData] = useState({
+    heading_pre: '',
+    text1_pre: '',
+    heading_post: '',
+    text1_post: '',
     heading: '',
     text1: '',
     text2: '',
@@ -28,6 +32,30 @@ function AdminText() {
     text4: '',
     text5: '',
     gameintro: '',
+    firstname_label: '',
+    firstname_desc: '',
+    firstname_placeholder: '',
+    lastname_label: '',
+    lastname_desc: '',
+    lastname_placeholder: '',
+    username_label: '',
+    username_desc: '',
+    username_placeholder: '',
+    email_label: '',
+    email_desc: '',
+    email_placeholder: '',
+    phone_label: '',
+    phone_desc: '',
+    phone_placeholder: '',
+    password_label: '',
+    password_desc: '',
+    password_placeholder: '',
+    confirm_password_label: '',
+    confirm_password_desc: '',
+    confirm_password_placeholder: '',
+    profile_picture_label: '',
+    profile_picture_desc: '',
+    profile_picture_placeholder: '',
     golf_modal_title: '',
     golf_modal_description: '',
     world_cup_modal_title: '',
@@ -54,6 +82,10 @@ function AdminText() {
           console.error('Failed to parse faqSections:', e);
         }
           setFormData({
+            heading_pre: res.data.heading_pre || '',
+            text1_pre: res.data.text1_pre || '',
+            heading_post: res.data.heading_post || '',
+            text1_post: res.data.text1_post || '',
             heading: res.data.heading,
             text1: res.data.text1,
             text2: res.data.text2,
@@ -61,6 +93,30 @@ function AdminText() {
             text4: res.data.text4,
             text5: res.data.text5,
             gameintro: res.data.gameintro ?? '',
+            firstname_label: res.data.firstname_label || '',
+            firstname_desc: res.data.firstname_desc || '',
+            firstname_placeholder: res.data.firstname_placeholder || '',
+            lastname_label: res.data.lastname_label || '',
+            lastname_desc: res.data.lastname_desc || '',
+            lastname_placeholder: res.data.lastname_placeholder || '',
+            username_label: res.data.username_label || '',
+            username_desc: res.data.username_desc || '',
+            username_placeholder: res.data.username_placeholder || '',
+            email_label: res.data.email_label || '',
+            email_desc: res.data.email_desc || '',
+            email_placeholder: res.data.email_placeholder || '',
+            phone_label: res.data.phone_label || '',
+            phone_desc: res.data.phone_desc || '',
+            phone_placeholder: res.data.phone_placeholder || '',
+            password_label: res.data.password_label || '',
+            password_desc: res.data.password_desc || '',
+            password_placeholder: res.data.password_placeholder || '',
+            confirm_password_label: res.data.confirm_password_label || '',
+            confirm_password_desc: res.data.confirm_password_desc || '',
+            confirm_password_placeholder: res.data.confirm_password_placeholder || '',
+            profile_picture_label: res.data.profile_picture_label || '',
+            profile_picture_desc: res.data.profile_picture_desc || '',
+            profile_picture_placeholder: res.data.profile_picture_placeholder || '',
             golf_modal_title: res.data.golf_modal_title,
             golf_modal_description: res.data.golf_modal_description,
             world_cup_modal_title: res.data.world_cup_modal_title,
@@ -142,19 +198,54 @@ return (
       <Col md={8}>
         <Form onSubmit={handleSubmit}>
           <Tabs defaultActiveKey="homepage" id="label-tabs" className="mb-3">
-            <Tab eventKey="homepage" title="Homepage">
-              <h2 className="mb-4">Edit Labels</h2>
-              <Form.Group className="mb-3" controlId="heading">
+            <Tab eventKey="homepage_pre" title="Homepage (Before Account Creation)">
+              <h2 className="mb-4">Edit Pre-Account Homepage</h2>
+              <Form.Group className="mb-3" controlId="heading_pre">
                 <Form.Label>Heading</Form.Label>
                 <Form.Control
                   type="text"
                   placeholder="Enter Heading"
-                  name="heading"
-                  value={formData.heading}
+                  name="heading_pre"
+                  value={formData.heading_pre}
                   onChange={handleChange}
                 />
               </Form.Group>
 
+              <Form.Group className="mb-3" controlId="text1_pre">
+                <Form.Label>Text 1</Form.Label>
+                <ReactQuill
+                  theme="snow"
+                  value={formData.text1_pre}
+                  onChange={(content) => setFormData(prev => ({ ...prev, text1_pre: content }))}
+                />
+              </Form.Group>
+            </Tab>
+
+            <Tab eventKey="homepage_post" title="Homepage (After Account Creation)">
+              <h2 className="mb-4">Edit Post-Account Homepage</h2>
+              <Form.Group className="mb-3" controlId="heading_post">
+                <Form.Label>Heading</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter Heading"
+                  name="heading_post"
+                  value={formData.heading_post}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3" controlId="text1_post">
+                <Form.Label>Text 1</Form.Label>
+                <ReactQuill
+                  theme="snow"
+                  value={formData.text1_post}
+                  onChange={(content) => setFormData(prev => ({ ...prev, text1_post: content }))}
+                />
+              </Form.Group>
+            </Tab>
+
+            <Tab eventKey="homepage" title="Homepage">
+              <h2 className="mb-4">Edit Labels</h2>
               <Form.Group className="mb-3" controlId="text1">
                 <Form.Label>Text 1</Form.Label>
                 <ReactQuill
@@ -173,14 +264,14 @@ return (
                 />
               </Form.Group>
 
-              <Form.Group className="mb-3" controlId="text3">
+              {/* <Form.Group className="mb-3" controlId="text3">
                 <Form.Label>Text 3</Form.Label>
                 <ReactQuill
                   theme="snow"
                   value={formData.text3}
                   onChange={(content) => setFormData(prev => ({ ...prev, text3: content }))}
                 />
-              </Form.Group>
+              </Form.Group> */}
             </Tab>
             <Tab eventKey="gameintro" title="Game Intro">
               <Form.Group className="mb-3" controlId="gameintro">
@@ -193,6 +284,264 @@ return (
                 />
               </Form.Group>
             </Tab>
+            <Tab eventKey="registerform" title="Register Form">
+            {/* First Name */}
+            <Form.Group className="mb-3" controlId="firstname_label">
+              <Form.Label>Firstname Label</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Label"
+                name="firstname_label"
+                value={formData.firstname_label || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="firstname_desc">
+              <Form.Label>Firstname Description</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Description"
+                name="firstname_desc"
+                value={formData.firstname_desc || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="firstname_placeholder">
+              <Form.Label>Firstname Placeholder</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Placeholder"
+                name="firstname_placeholder"
+                value={formData.firstname_placeholder || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+
+            {/* Last Name */}
+            <Form.Group className="mb-3" controlId="lastname_label">
+              <Form.Label>Lastname Label</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Label"
+                name="lastname_label"
+                value={formData.lastname_label || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="lastname_desc">
+              <Form.Label>Lastname Description</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Description"
+                name="lastname_desc"
+                value={formData.lastname_desc || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="lastname_placeholder">
+              <Form.Label>Lastname Placeholder</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Placeholder"
+                name="lastname_placeholder"
+                value={formData.lastname_placeholder || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+
+            {/* Username */}
+            <Form.Group className="mb-3" controlId="username_label">
+              <Form.Label>Username Label</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Label"
+                name="username_label"
+                value={formData.username_label || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="username_desc">
+              <Form.Label>Username Description</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Description"
+                name="username_desc"
+                value={formData.username_desc || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="username_placeholder">
+              <Form.Label>Username Placeholder</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Placeholder"
+                name="username_placeholder"
+                value={formData.username_placeholder || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+
+            {/* Email */}
+            <Form.Group className="mb-3" controlId="email_label">
+              <Form.Label>Email Label</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Label"
+                name="email_label"
+                value={formData.email_label || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="email_desc">
+              <Form.Label>Email Description</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Description"
+                name="email_desc"
+                value={formData.email_desc || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="email_placeholder">
+              <Form.Label>Email Placeholder</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Placeholder"
+                name="email_placeholder"
+                value={formData.email_placeholder || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+
+            {/* Phone */}
+            <Form.Group className="mb-3" controlId="phone_label">
+              <Form.Label>Phone Label</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Label"
+                name="phone_label"
+                value={formData.phone_label || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="phone_desc">
+              <Form.Label>Phone Description</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Description"
+                name="phone_desc"
+                value={formData.phone_desc || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="phone_placeholder">
+              <Form.Label>Phone Placeholder</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Placeholder"
+                name="phone_placeholder"
+                value={formData.phone_placeholder || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+
+            {/* Password */}
+            <Form.Group className="mb-3" controlId="password_label">
+              <Form.Label>Password Label</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Label"
+                name="password_label"
+                value={formData.password_label || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="password_desc">
+              <Form.Label>Password Description</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Description"
+                name="password_desc"
+                value={formData.password_desc || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="password_placeholder">
+              <Form.Label>Password Placeholder</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Placeholder"
+                name="password_placeholder"
+                value={formData.password_placeholder || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+
+            {/* Confirm Password */}
+            <Form.Group className="mb-3" controlId="confirm_password_label">
+              <Form.Label>Confirm Password Label</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Label"
+                name="confirm_password_label"
+                value={formData.confirm_password_label || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="confirm_password_desc">
+              <Form.Label>Confirm Password Description</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Description"
+                name="confirm_password_desc"
+                value={formData.confirm_password_desc || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="confirm_password_placeholder">
+              <Form.Label>Confirm Password Placeholder</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Placeholder"
+                name="confirm_password_placeholder"
+                value={formData.confirm_password_placeholder || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+
+            {/* Profile Picture */}
+            <Form.Group className="mb-3" controlId="profile_picture_label">
+              <Form.Label>Profile Picture Label</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Label"
+                name="profile_picture_label"
+                value={formData.profile_picture_label || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="profile_picture_desc">
+              <Form.Label>Profile Picture Description</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Description"
+                name="profile_picture_desc"
+                value={formData.profile_picture_desc || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="profile_picture_placeholder">
+              <Form.Label>Profile Picture Placeholder</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Placeholder"
+                name="profile_picture_placeholder"
+                value={formData.profile_picture_placeholder || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+          </Tab>
+
             <Tab eventKey="leaderboard" title="Leaderboard">
               <Form.Group className="mb-3" controlId="text4">
                 <Form.Label>Leaderboard Games Description</Form.Label>

@@ -11,6 +11,7 @@ function Registerform() {
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
     const loginuserEmail = USER_AUTH_DATA?.email;
     const [alreadyLoggedIn, setAlreadyLoggedIn] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [firstName, setfirstName] = useState('');
     const [lastName, setlastName] = useState('');
     const [username, setUsername] = useState('');
@@ -29,6 +30,47 @@ function Registerform() {
     const groupId = encryptedId ? atob(encryptedId) : null;
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setConfirmShowPassword] = useState(false);
+    const [registrationformText, setRegistrationFormText] = useState({
+        firstname_label: '',
+        firstname_desc: '',
+        firstname_placeholder: '',
+        lastname_label: '',
+        lastname_desc: '',
+        lastname_placeholder: '',
+        username_label: '',
+        username_desc: '',
+        username_placeholder: '',
+        email_label: '',
+        email_desc: '',
+        email_placeholder: '',
+        phone_label: '',
+        phone_desc: '',
+        phone_placeholder: '',
+        password_label: '',
+        password_desc: '',
+        password_placeholder: '',
+        confirm_password_label: '',
+        confirm_password_desc: '',
+        confirm_password_placeholder: '',
+        profile_picture_label: '',
+        profile_picture_desc: '',
+        profile_picture_placeholder: '',
+        });
+
+    
+      useEffect(() => {
+        Axios.get(`${baseURL}/user/get-homepage-text.php`)
+          .then((res) => {
+            if (res.status === 200) {
+              setRegistrationFormText(res.data);
+            } else {
+              console.warn('No homepage text found');
+            }
+          })
+          .catch((err) => {
+            console.error('Error fetching homepage text:', err);
+          });
+      }, [baseURL]);
     
     useEffect(() => {
         const USER_AUTH_DATA = JSON.parse(localStorage.getItem("auth"));
@@ -39,6 +81,9 @@ function Registerform() {
         setTimeout(() => {
             navigate("/");
         }, 3000);
+        }else {
+        const defaultFile = new File([""], "default_avatar.png", { type: "image/png" });
+        setAvatar(defaultFile);
         } 
     }, []);
     
@@ -50,10 +95,10 @@ function Registerform() {
         setConfirmShowPassword(!showConfirmPassword);
     };
 
-    // useEffect(() => {
-    //     const defaultFile = new File([""], "default_avatar.png", { type: "image/png" });
-    //     setAvatar(defaultFile);
-    // }, []);
+    useEffect(() => {
+        const defaultFile = new File([""], "default_avatar.png", { type: "image/png" });
+        setAvatar(defaultFile);
+    }, []);
 
     const validateForm = () => {
         const newErrors = {};
@@ -68,9 +113,6 @@ function Registerform() {
             newErrors.email = 'Email is invalid.';
         }
 
-        if (!phone || phone.length !== 10) {
-            newErrors.phone = "Phone number must be 10 digits";
-        }
         if (!password) {
             newErrors.password = 'Password is required.';
         } else if (password.length < 8) {
@@ -83,17 +125,6 @@ function Registerform() {
             newErrors.confirmpassword = 'Confirm your password.';
         } else if (password !== confirmpassword) {
             newErrors.confirmpassword = 'Passwords do not match.';
-        }
-
-        if (!avatar) {
-            newErrors.avatar = 'Profile picture is required.';
-        } else {
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-            if (!allowedTypes.includes(avatar.type)) {
-                newErrors.avatar = 'Invalid file type. Only JPEG, PNG, or WEBP allowed.';
-            } else if (avatar.size > 100 * 1024) {
-                newErrors.avatar = 'Profile picture must be less than 100KB.';
-            }
         }
 
         setErrors(newErrors);
@@ -142,7 +173,7 @@ function Registerform() {
 
     const signUp = async (event) => {
         event.preventDefault();
-
+        setLoading(true);
         const allTouched = {
             firstName: true,
             lastName: true,
@@ -155,7 +186,10 @@ function Registerform() {
         };
         setTouched(allTouched);
 
-        if (!validateForm()) return;
+        if (!validateForm()) {
+            setLoading(false); // Stop loading if validation fails
+            return;
+        }
 
         const createdAt = new Date().toISOString();
         const formData = new FormData();
@@ -163,7 +197,7 @@ function Registerform() {
         formData.append('lastname', lastName);
         formData.append('username', username);
         formData.append('email', email);
-        formData.append('phone', phone);
+
         formData.append('password', password);
         formData.append('confirmpassword', confirmpassword);
         formData.append('avatar', avatar);
@@ -206,12 +240,32 @@ function Registerform() {
                     guessDistribution: [0, 0, 0, 0, 0, 0],
                     handleHighlight: [0]
                 });
-                navigate('/login');
+                // ✅ Auto-login after registration
+                try {
+                    const loginRes = await Axios.post(`${baseURL}/auth/login.php`, {
+                        email: email,
+                        password: password
+                    }); 
+                    console.log(loginRes.data);
+                    if (loginRes.data.status === 'success' && loginRes.data) {
+                        localStorage.setItem('auth', JSON.stringify(loginRes.data));
+                        navigate('/');
+                    } else {
+                        toast.error("Auto-login failed. Please log in manually.");
+                        navigate('/login');
+                    }
+
+                } catch (loginErr) {
+                    toast.error("Error logging in automatically.");
+                    navigate('/login');
+                }
             } else {
                 toast.error(res.data.message || "Registration failed");
             }
         } catch (err) {
             toast.error("An error occurred during registration");
+        }finally {
+            setLoading(false); // Stop loading animation
         }
     };
 
@@ -231,32 +285,56 @@ function Registerform() {
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>First Name <span style={{ color: 'red' }}>*</span></Form.Label>
-                                    <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
-                                        Name your Mama gave you
-                                    </div>
+                                    {/* Label with HTML + required star */}
+                                    <Form.Label
+                                        dangerouslySetInnerHTML={{
+                                        __html: `${registrationformText.firstname_label} <span style="color:red">*</span>`
+                                        }}
+                                    />
+
+                                    {/* Description with HTML */}
+                                    <div
+                                        style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}
+                                        dangerouslySetInnerHTML={{
+                                        __html: registrationformText.firstname_desc
+                                        }}
+                                    />
+
+                                    {/* Input with placeholder (placeholders can't use dangerouslySetInnerHTML) */}
                                     <Form.Control
                                         type="text"
                                         value={firstName}
                                         onChange={(e) => setfirstName(e.target.value)}
                                         onBlur={() => handleBlur('firstName')}
-                                        placeholder='Enter your first name'
+                                        placeholder={registrationformText.firstname_placeholder}
                                     />
-                                    {touched.firstName && errors.firstName && <p className='form-validation-error'>{errors.firstName}</p>}
-                                </Form.Group>
+
+                                    {/* Error message */}
+                                    {touched.firstName && errors.firstName && (
+                                        <p className='form-validation-error'>{errors.firstName}</p>
+                                    )}
+                                    </Form.Group>
+
                             </Col>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Last Name <span style={{ color: 'red' }}>*</span></Form.Label>
-                                    <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
-                                        What your closest friends call you
-                                    </div>
+                                    <Form.Label
+                                        dangerouslySetInnerHTML={{
+                                        __html: `${registrationformText.lastname_label} <span style="color:red">*</span>`
+                                        }}
+                                    />
+                                    <div
+                                        style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}
+                                        dangerouslySetInnerHTML={{
+                                        __html: registrationformText.lastname_desc
+                                        }}
+                                    />
                                     <Form.Control
                                         type="text"
                                         value={lastName}
                                         onChange={(e) => setlastName(e.target.value)}
                                         onBlur={() => handleBlur('lastName')}
-                                        placeholder='Enter your last name'
+                                        placeholder={registrationformText.lastname_placeholder}
                                     />
                                     {touched.lastName && errors.lastName && <p className='form-validation-error'>{errors.lastName}</p>}
                                 </Form.Group>
@@ -265,32 +343,46 @@ function Registerform() {
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Gamlename <span style={{ color: 'red' }}>*</span></Form.Label>
-                                    <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
-                                        For your Leaderboard domination!
-                                    </div>
+                                    <Form.Label
+                                        dangerouslySetInnerHTML={{
+                                        __html: `${registrationformText.username_label} <span style="color:red">*</span>`
+                                        }}
+                                    />
+                                     <div
+                                        style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}
+                                        dangerouslySetInnerHTML={{
+                                        __html: registrationformText.username_desc
+                                        }}
+                                    />
                                     <Form.Control
                                         type="text"
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
                                         onBlur={() => handleBlur('username')}
-                                        placeholder='Enter your username'
+                                        placeholder={registrationformText.username_placeholder}
                                     />
                                     {touched.username && errors.username && <p className='form-validation-error'>{errors.username}</p>}
                                 </Form.Group>
                             </Col>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Email <span style={{ color: 'red' }}>*</span></Form.Label>
-                                    <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
-                                        What the interweb calls you
-                                    </div>
+                                    <Form.Label
+                                        dangerouslySetInnerHTML={{
+                                        __html: `${registrationformText.email_label} <span style="color:red">*</span>`
+                                        }}
+                                    />
+                                     <div
+                                        style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}
+                                        dangerouslySetInnerHTML={{
+                                        __html: registrationformText.email_desc
+                                        }}
+                                    />
                                     <Form.Control
                                         type="email"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         onBlur={() => handleBlur('email')}
-                                        placeholder='Enter your email'
+                                        placeholder={registrationformText.email_placeholder}
                                     />
                                     {touched.email && errors.email && <p className='form-validation-error'>{errors.email}</p>}
                                 </Form.Group>
@@ -300,10 +392,18 @@ function Registerform() {
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Phone Number</Form.Label>
-                                    <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
-                                        Optional, for group contact use only
-                                    </div>
+                                    <Form.Label
+                                        dangerouslySetInnerHTML={{
+                                        __html: `${registrationformText.phone_label}`
+                                        }}
+                                    />
+                                     <div
+                                        style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}
+                                        dangerouslySetInnerHTML={{
+                                        __html: registrationformText.phone_desc
+                                        }}
+                                    />
+                                    
                                     <Form.Control
                                     type="tel"
                                     value={phone}
@@ -313,7 +413,7 @@ function Registerform() {
                                         setPhone(value);
                                         }
                                     }}
-                                    placeholder='Enter your phone number'
+                                    placeholder={registrationformText.phone_placeholder}
                                     maxLength={10}
                                     />
 
@@ -324,17 +424,25 @@ function Registerform() {
                             </Col>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Password <span style={{ color: 'red' }}>*</span></Form.Label>
-                                    <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
-                                        Make it memorable!
-                                    </div>
+                                    <Form.Label
+                                        dangerouslySetInnerHTML={{
+                                        __html: `${registrationformText.password_label} <span style="color:red">*</span>`
+                                        }}
+                                    />
+                                     <div
+                                        style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}
+                                        dangerouslySetInnerHTML={{
+                                        __html: registrationformText.password_desc
+                                        }}
+                                    />
+                                    
                                     <InputGroup>
                                         <Form.Control
                                             type={showPassword ? 'text' : 'password'}
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             onBlur={() => handleBlur('password')}
-                                            placeholder='Enter your password'
+                                            placeholder={registrationformText.password_placeholder}
                                         />
                                         <InputGroup.Text style={{ cursor: 'pointer' }} onClick={togglePasswordVisibility}>
                                             <i className={showPassword ? "fa fa-eye-slash" : "fa fa-eye"}></i>
@@ -347,17 +455,24 @@ function Registerform() {
                             </Col>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Confirm Password <span style={{ color: 'red' }}>*</span></Form.Label>
-                                    <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
-                                        The requisite duplicate
-                                    </div>
+                                    <Form.Label
+                                        dangerouslySetInnerHTML={{
+                                        __html: `${registrationformText.confirm_password_label} <span style="color:red">*</span>`
+                                        }}
+                                    />
+                                     <div
+                                        style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}
+                                        dangerouslySetInnerHTML={{
+                                        __html: registrationformText.confirm_password_desc
+                                        }}
+                                    />
                                     <InputGroup>
                                         <Form.Control
                                         type={showConfirmPassword ? 'text' : 'password'}
                                         value={confirmpassword}
                                         onChange={(e) => setConfirmpassword(e.target.value)}
                                         onBlur={() => handleBlur('confirmpassword')}
-                                        placeholder='Confirm your password'
+                                        placeholder={registrationformText.confirm_password_placeholder}
                                         />
                                         <InputGroup.Text style={{ cursor: 'pointer' }} onClick={toggleConfirmPasswordVisibility}>
                                             <i className={showPassword ? "fa fa-eye-slash" : "fa fa-eye"}></i>
@@ -368,10 +483,17 @@ function Registerform() {
                             </Col>
                             <Col md={6}>
                                 <Form.Group controlId="formFile" className="mb-3">
-                                    <Form.Label>Profile Picture <span style={{ color: 'red' }}>*</span></Form.Label>
-                                    <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
-                                        For Leaderboard personality!
-                                    </div>
+                                    <Form.Label
+                                        dangerouslySetInnerHTML={{
+                                        __html: `${registrationformText.profile_picture_label}`
+                                        }}
+                                    />
+                                     <div
+                                        style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}
+                                        dangerouslySetInnerHTML={{
+                                        __html: registrationformText.profile_picture_desc
+                                        }}
+                                    />
                                     <Form.Control
                                         type="file"
                                         name="avatar"
@@ -408,9 +530,23 @@ function Registerform() {
                             
                         </Row>
 
-                        <Button className="btn btn-block btn-hero-lg btn-hero-success mt-4" type="submit">
-                            <i className="fa fa-fw fa-plus mr-1"></i> Sign Up
+                        <Button
+                            className="btn btn-block btn-hero-lg btn-hero-success mt-4"
+                            type="submit"
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <>
+                                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                    Signing Up...
+                                </>
+                            ) : (
+                                <>
+                                    <i className="fa fa-fw fa-plus mr-1"></i> Sign Up
+                                </>
+                            )}
                         </Button>
+
                     </Form>
 
                     </Col>
