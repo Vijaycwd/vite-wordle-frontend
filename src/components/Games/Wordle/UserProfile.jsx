@@ -14,6 +14,7 @@ function UserProfile() {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [username, setUsername] = useState("");
+    const [phone, setPhone] = useState("");
     const [avatar, setAvatar] = useState(null); // cropped blob
     const [previewUrl, setPreviewUrl] = useState('');
     const [showCropModal, setShowCropModal] = useState(false);
@@ -36,6 +37,47 @@ function UserProfile() {
 
     const [showManage, setShowManage] = useState(false);
 
+    const [registrationformText, setRegistrationFormText] = useState({
+            firstname_label: '',
+            firstname_desc: '',
+            firstname_placeholder: '',
+            lastname_label: '',
+            lastname_desc: '',
+            lastname_placeholder: '',
+            username_label: '',
+            username_desc: '',
+            username_placeholder: '',
+            email_label: '',
+            email_desc: '',
+            email_placeholder: '',
+            phone_label: '',
+            phone_desc: '',
+            phone_placeholder: '',
+            password_label: '',
+            password_desc: '',
+            password_placeholder: '',
+            confirm_password_label: '',
+            confirm_password_desc: '',
+            confirm_password_placeholder: '',
+            profile_picture_label: '',
+            profile_picture_desc: '',
+            profile_picture_placeholder: '',
+    });
+
+    useEffect(() => {
+        Axios.get(`${baseURL}/user/get-homepage-text.php`)
+          .then((res) => {
+            if (res.status === 200) {
+              setRegistrationFormText(res.data);
+            } else {
+              console.warn('No homepage text found');
+            }
+          })
+          .catch((err) => {
+            console.error('Error fetching homepage text:', err);
+          });
+    }, [baseURL]);
+        
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -45,6 +87,7 @@ function UserProfile() {
                     setFirstName(res.data.user.first_name || "");
                     setLastName(res.data.user.last_name || "");
                     setUsername(res.data.user.username || "");
+                    setPhone(res.data.user.phone || "");
                     setPreviewUrl(res.data.user.avatar || "");
                     setIsPaused(res.data.user.is_paused === 1);
                 }
@@ -114,6 +157,7 @@ function UserProfile() {
             formData.append("firstName", firstName);
             formData.append("lastName", lastName);
             formData.append("username", username);
+            formData.append("phone", phone);
             if (password) formData.append("password", password);
             if (avatar) formData.append("avatar", avatar);
 
@@ -205,31 +249,100 @@ function UserProfile() {
                         </div>
 
                         <Form.Group className="mt-3">
-                            <Form.Label>First Name <span style={{ color: 'red' }}>*</span></Form.Label>
+                            <Form.Label
+                                dangerouslySetInnerHTML={{
+                                __html: `${registrationformText.firstname_label} <span style="color:red">*</span>`
+                                }}
+                            />
+
+                            {/* Description with HTML */}
+                            <div
+                                style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}
+                                dangerouslySetInnerHTML={{
+                                __html: registrationformText.firstname_desc
+                                }}
+                            />
                             <Form.Control type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
                             {errors.firstName && <div style={{ color: "red" }}>{errors.firstName}</div>}
                         </Form.Group>
 
                         <Form.Group className="mt-3">
-                            <Form.Label>Last Name <span style={{ color: 'red' }}>*</span></Form.Label>
+                           <Form.Label
+                                dangerouslySetInnerHTML={{
+                                __html: `${registrationformText.lastname_label} <span style="color:red">*</span>`
+                                }}
+                            />
+
+                            {/* Description with HTML */}
+                            <div
+                                style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}
+                                dangerouslySetInnerHTML={{
+                                __html: registrationformText.lastname_desc
+                                }}
+                            />
                             <Form.Control type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} />
                             {errors.lastName && <div style={{ color: "red" }}>{errors.lastName}</div>} {/* ✅ Fix here */}
                         </Form.Group>
 
                         <Form.Group className="mt-3">
-                            <Form.Label>
-                                Gamle Name<span style={{ color: 'red' }}>*</span>
-                            </Form.Label>
-                            <div style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}>
-                                (This is the name that will appear in your Leaderboards)
-                            </div>
+                            <Form.Label
+                                dangerouslySetInnerHTML={{
+                                __html: `${registrationformText.username_label} <span style="color:red">*</span>`
+                                }}
+                            />
+
+                            {/* Description with HTML */}
+                            <div
+                                style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}
+                                dangerouslySetInnerHTML={{
+                                __html: registrationformText.username_desc
+                                }}
+                            />
                             <Form.Control type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
                             {errors.username && <div style={{ color: "red" }}>{errors.username}</div>} {/* ✅ Fix here */}
                         </Form.Group>
 
+                        <Form.Group className="mt-3">
+                            <Form.Label
+                                dangerouslySetInnerHTML={{
+                                __html: `${registrationformText.phone_label}`
+                                }}
+                            />
+
+                            {/* Description with HTML */}
+                            <div
+                                style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}
+                                dangerouslySetInnerHTML={{
+                                __html: registrationformText.phone_desc
+                                }}
+                            />
+                        <Form.Control
+                            type="tel"
+                            value={phone}
+                            onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, ''); // Digits only
+                            if (value.length <= 10) setPhone(value);
+                            }}
+                            placeholder="Enter your phone number"
+                            maxLength={10}
+                        />
+                        {errors.phone && <div style={{ color: "red" }}>{errors.phone}</div>}
+                        </Form.Group>
 
                         <Form.Group className="mt-3">
-                            <Form.Label>Password</Form.Label>
+                            <Form.Label
+                                dangerouslySetInnerHTML={{
+                                __html: `${registrationformText.password_label}`
+                                }}
+                            />
+
+                            {/* Description with HTML */}
+                            <div
+                                style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}
+                                dangerouslySetInnerHTML={{
+                                __html: registrationformText.password_desc
+                                }}
+                            />
                             <InputGroup>
                                 <Form.Control
                                     type={showPassword ? "text" : "password"}
@@ -244,7 +357,19 @@ function UserProfile() {
                         </Form.Group>
 
                         <Form.Group className="mt-3">
-                            <Form.Label>Confirm Password</Form.Label>
+                            <Form.Label
+                                dangerouslySetInnerHTML={{
+                                __html: `${registrationformText.confirm_password_label}`
+                                }}
+                            />
+
+                            {/* Description with HTML */}
+                            <div
+                                style={{ fontSize: '0.875rem', color: '#6c757d', marginBottom: '0.5rem' }}
+                                dangerouslySetInnerHTML={{
+                                __html: registrationformText.confirm_password_desc
+                                }}
+                            />
                             <InputGroup>
                                 <Form.Control
                                     type={showConfirmPassword ? "text" : "password"}

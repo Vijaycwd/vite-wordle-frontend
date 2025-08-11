@@ -8,11 +8,6 @@ import { toast } from 'react-toastify';
 import Axios from 'axios';
 import FeedbackButton from './FeedbackButton';
 import { useLocation } from 'react-router-dom';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation } from 'swiper/modules';
-
-import 'swiper/css';
-import 'swiper/css/navigation';
 
 
 function Home() {
@@ -30,8 +25,6 @@ function Home() {
     const encryptedId = params.get('group_id');
     const groupId = encryptedId;
     const registerPath = groupId ? `/register?group_id=${groupId}` : `/register`;
-
-    const items = ['Wordle', 'Connections', 'Phrazle'];
 
     // Check if the user already entered the password
     useEffect(() => {
@@ -82,7 +75,7 @@ function Home() {
             });
     }, [baseURL]);
 
-    const cleanText = homepageText.text2
+    const cleanText = homepageText.text1
     .replace(/<[^>]*>/g, '')         // remove HTML tags
     .replace(/&nbsp;/g, ' ')         // replace &nbsp; with space
     .replace(/\s+/g, ' ')            // optional: collapse multiple spaces
@@ -126,27 +119,32 @@ function Home() {
                 <Col md={6} className='bg-white px-3 py-3 text-center'>
                     <Row>
                         <Col>
-                            <p className='fs-4 text-center' dangerouslySetInnerHTML={{ __html: homepageText.heading }}></p>
-                             {!userAuthData || isEmptyObject ? (
-                                <Row>
-                                    <Col>
-                                        <Link className="btn btn-primary my-3 w-100" to={registerPath}>Create Profile</Link>
-                                        {/* <Button className="btn-lg mt-3" onClick={loginformClick} style={{ width: "60%" }}>Login</Button> */}
-                                    </Col>
-                                    <Col>
-                                        <Button className="mt-3 w-100" onClick={loginformClick}>Login</Button>
-                                    </Col>
-                                </Row>
-                            ) : (
-                                <div>
-                                    
-                                </div>
-                            )}
                             
-                            <p className='text-center' dangerouslySetInnerHTML={{ __html: homepageText.text1 }}></p>
+                            {!userAuthData || isEmptyObject ? (
+                                <>
+                                    {/* Content for users who have NOT created an account */}
+                                    <p className='fs-4 text-center' dangerouslySetInnerHTML={{ __html: homepageText.heading_pre }}></p>
+                                    <Row>
+                                        <Col>
+                                            <Link className="btn btn-primary my-3 w-100" to={registerPath}>Create Profile</Link>
+                                        </Col>
+                                        <Col>
+                                            <Button className="mt-3 w-100" onClick={loginformClick}>Login</Button>
+                                        </Col>
+                                    </Row>
+                                    <div dangerouslySetInnerHTML={{ __html: homepageText.text1_pre }} />
+                                </>
+                            ) : (
+                                <>
+                                    {/* Content for users who HAVE created an account */}
+                                    <p className='fs-4 text-center' dangerouslySetInnerHTML={{ __html: homepageText.heading_post }}></p>
+                                    <div dangerouslySetInnerHTML={{ __html: homepageText.text1_post }} />
+                                </>
+                            )}
+
                         </Col>
                     </Row>
-                    {/* <Row>
+                    <Row>
                         <Col className="text-center py-1" md={4} s={12}>
                             <Button className="btn-lg" onClick={() => handleNavigation('wordle')}>Wordle</Button>
                         </Col>
@@ -156,37 +154,15 @@ function Home() {
                         <Col className="text-center py-1" md={4} s={12}>
                             <Button className="btn-lg" onClick={() => handleNavigation('phrazle')}>Phrazle</Button>
                         </Col>
-                    </Row> */}
-                    <Row>
-                        <Col>
-                            <Swiper
-                                slidesPerView={2}
-                                spaceBetween={20}
-                                // navigation
-                                modules={[Navigation]}
-                                className="mySwiper"
-                            >
-                                {items.map((item, index) => (
-                                <SwiperSlide key={index}>
-                                    <Button
-                                    className="btn-primary w-100 py-2 rounded"
-                                    onClick={() => handleNavigation(item)}
-                                    >
-                                    {item}
-                                    </Button>
-                                </SwiperSlide>
-                                ))}
-                            </Swiper>
-                        </Col>
                     </Row>
                     <Row>
                         <Col className="py-3">
                             <p className="text-center">
                                 {parts[0]}
-                                <a href="#" onClick={inviteFriends}>Invite Friends</a>
+                                <a href="#" onClick={inviteFriends}> Invite Friends</a>
                                 {parts[1]}
                             </p>
-                            <p className='text-center' dangerouslySetInnerHTML={{ __html: homepageText.text3 }}></p>
+                            <p className='text-center' dangerouslySetInnerHTML={{ __html: homepageText.text2 }}></p>
                         </Col>
                     </Row>
 

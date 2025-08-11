@@ -11,6 +11,9 @@ import GroupDeleteConfirmModal from '../constant/Models/GroupDeleteConfirmModal'
 import MemberProfile from '../constant/Models/MemberProfile';
 import { FaTrash } from 'react-icons/fa';
 import InviteGroupandSite from './InviteGroupAndSite';
+import GroupDeletePreference from '../constant/Models/GroupDeletePreference';
+import RemoveMemberConfirmModal from '../constant/Models/RemoveMemberConfirmModal';
+
 function GroupInfo() {
     const baseURL = import.meta.env.VITE_BASE_URL;
     const { id } = useParams();
@@ -30,6 +33,10 @@ function GroupInfo() {
     const [invites, setInvites] = useState([]);
     const [showProfile, setShowProfile] = useState(false);
     const [selectedMember, setSelectedMember] = useState(null);
+    const [showInviteDeleteModal, setShowInviteDeleteModal] = useState(false);
+    const [selectedInviteId, setSelectedInviteId] = useState(null);
+    const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
+    const [selectedMemberId, setSelectedMemberId] = useState(null);
 
     useEffect(() => {
         fetchGroupInfo();
@@ -294,12 +301,16 @@ function GroupInfo() {
                             <Col xs={2} md={2} lg={2}  className="text-center">
                                 {member.member_id !== captainid && (
                                     <Button
-                                    variant="danger"
-                                    size="sm"
-                                    onClick={() => handleRemoveMember(member.member_id)}
+                                        variant="danger"
+                                        size="sm"
+                                        onClick={() => {
+                                            setSelectedMemberId(member.member_id);
+                                            setShowRemoveConfirm(true);
+                                        }}
                                     >
-                                    <FaTrash />
+                                        <FaTrash />
                                     </Button>
+
                                 )}
                             </Col>
                         
@@ -395,15 +406,17 @@ function GroupInfo() {
                                 <br />
                                 <small className="text-muted">@{invite.username}</small>
                                 </Col>
-
                                 {/* Delete Icon */}
                                 <Col xs="auto" >
-                                <Button
-                                    variant="danger"
-                                    size="sm"
-                                    onClick={() => handleDeleteInvite(invite.id)}
-                                    >
-                                    <FaTrash />
+                                    <Button
+                                        variant="danger"
+                                        size="sm"
+                                        onClick={() => {
+                                            setSelectedInviteId(invite.id);
+                                            setShowInviteDeleteModal(true);
+                                        }}
+                                        >
+                                        <FaTrash />
                                     </Button>
                                 </Col>
                             </Row>
@@ -433,13 +446,30 @@ function GroupInfo() {
             />        
             {/* Group Delete Modal */}
             <GroupDeleteConfirmModal
-            show={showDeleteConfirm}
-            onHide={() => setShowDeleteConfirm(false)}
-            onConfirm={() => {
-                confirmDeleteGroup();
-                setShowDeleteConfirm(false);
-            }}
-            />   
+                show={showDeleteConfirm}
+                onHide={() => setShowDeleteConfirm(false)}
+                onConfirm={() => {
+                    confirmDeleteGroup();
+                    setShowDeleteConfirm(false);
+                }}
+            /> 
+            
+            <RemoveMemberConfirmModal
+                show={showRemoveConfirm}
+                onHide={() => setShowRemoveConfirm(false)}
+                onConfirm={() => {
+                    handleRemoveMember(selectedMemberId);
+                    setShowRemoveConfirm(false);
+                }}
+            />
+            <GroupDeletePreference
+                show={showInviteDeleteModal}
+                onHide={() => setShowInviteDeleteModal(false)}
+                onConfirm={() => {
+                    handleDeleteInvite(selectedInviteId);
+                    setShowInviteDeleteModal(false);
+                }}
+            />  
             {/* Group Edit Modal */}
             <GroupModal 
                 showForm={showModal} 
