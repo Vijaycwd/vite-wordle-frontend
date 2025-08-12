@@ -453,7 +453,6 @@ function UserProfile() {
                 >
                 Cancel
                 </Button>
-
                 <Button variant="danger" onClick={handleDeleteAccount}>
                 Yes, Delete
                 </Button>
