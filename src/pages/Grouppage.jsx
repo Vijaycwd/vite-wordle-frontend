@@ -6,7 +6,7 @@ import AddMembers from '../constant/Models/AddMembers';
 import { toast } from 'react-toastify';
 import MemberGameSelections from './MemberGameSelections';
 import SelectScoringMethod from './SelectScoringMethod';
-import InviteGroupAndSite from './InviteGroupAndSite';
+// import InviteGroupAndSite from './InviteGroupAndSite';
 
 function GroupPage() {
     const baseURL = import.meta.env.VITE_BASE_URL;
@@ -103,11 +103,11 @@ function GroupPage() {
                         </Button>
                     </Col>
                 </Row>
-                <Row className='justify-content-center'>
+                {/* <Row className='justify-content-center'>
                     <Col md={4} className="px-5 mt-3">
                         <InviteGroupAndSite groupId={group.id} />
                     </Col>
-                </Row>
+                </Row> */}
                 </>
             )}
             

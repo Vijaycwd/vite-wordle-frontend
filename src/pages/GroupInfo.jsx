@@ -10,7 +10,7 @@ import GroupExitConfirmModal from '../constant/Models/GroupExitConfirmModal';
 import GroupDeleteConfirmModal from '../constant/Models/GroupDeleteConfirmModal';
 import MemberProfile from '../constant/Models/MemberProfile';
 import { FaTrash } from 'react-icons/fa';
-import InviteGroupandSite from './InviteGroupAndSite';
+// import InviteGroupandSite from './InviteGroupAndSite';
 import GroupDeletePreference from '../constant/Models/GroupDeletePreference';
 import RemoveMemberConfirmModal from '../constant/Models/RemoveMemberConfirmModal';
 
@@ -338,14 +338,7 @@ function GroupInfo() {
                                 >
                                     Group Leaderboards
                                 </Button>
-                                <InviteGroupandSite/>
-                            </Col>
-                            {userId === captainid ? (
-                            <>
-                                <Col xs={10} md={6}>
-                                <Button className="btn btn-warning w-100" onClick={handleShowModal}>
-                                    Edit Group Name
-                                </Button>
+                                {/* <InviteGroupandSite/> */}
                                 <Button variant="danger" className="mt-2 w-100" onClick={() => {setShowDeleteConfirm(true);}} disabled={loading}>
                                     {deleteloading? (
                                         <>
@@ -361,7 +354,30 @@ function GroupInfo() {
                                     ) : (
                                         'Delete Group'
                                     )}
-                                    </Button>
+                                </Button>
+                            </Col>
+                            {userId === captainid ? (
+                            <>
+                                <Col xs={10} md={6}>
+                                <Button className="btn btn-warning w-100" onClick={handleShowModal}>
+                                    Edit Group Name
+                                </Button>
+                                {/* <Button variant="danger" className="mt-2 w-100" onClick={() => {setShowDeleteConfirm(true);}} disabled={loading}>
+                                    {deleteloading? (
+                                        <>
+                                        <Spinner
+                                            as="span"
+                                            animation="border"
+                                            size="sm"
+                                            role="status"
+                                            aria-hidden="true"
+                                        />{' '}
+                                        Deleting...
+                                        </>
+                                    ) : (
+                                        'Delete Group'
+                                    )}
+                                </Button> */}
                                 </Col>
                             </>
                             ) : (
