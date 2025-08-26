@@ -331,7 +331,7 @@ function GroupInfo() {
                         <Row className="justify-content-center">
                             <Col xs={10} md={6}>
                                 <Button
-                                    className="my-2 me-md-2 w-100"
+                                    className="me-md-2 w-100"
                                     onClick={() =>
                                     navigate(`/group/${group.id}/stats`)
                                     }
@@ -339,7 +339,7 @@ function GroupInfo() {
                                     Group Leaderboards
                                 </Button>
                                 {/* <InviteGroupandSite/> */}
-                                <Button variant="danger" className="mt-2 w-100" onClick={() => {setShowDeleteConfirm(true);}} disabled={loading}>
+                                <Button variant="danger" className="my-2 w-100" onClick={() => {setShowDeleteConfirm(true);}} disabled={loading}>
                                     {deleteloading? (
                                         <>
                                         <Spinner
