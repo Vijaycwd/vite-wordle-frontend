@@ -6,8 +6,8 @@ import { toast } from 'react-toastify';
 import GroupLeaderboardScores from './GroupLeaderboard/GroupLeaderboardScores';
 import GroupScoreByDate from './GroupLeaderboard/GroupScoreByDate';
 import MemberProfile from '../constant/Models/MemberProfile';
-// import GroupGameChat from './GroupLeaderboard/GroupGameChat';
-// import dayjs from "dayjs";
+import GroupGameChat from './GroupLeaderboard/GroupGameChat';
+import dayjs from "dayjs";
 
 function GroupStatsPage() {
   const baseURL = import.meta.env.VITE_BASE_URL;
@@ -56,7 +56,7 @@ function GroupStatsPage() {
           <GroupLeaderboardScores setLatestJoinDate={setLatestJoinDate}  setSelectedMember={setSelectedMember} setShowProfile={setShowProfile}/>
         </Col>
       </Row>
-      {/* <Row>
+      <Row>
         <Col>
           <GroupGameChat
             groupId={id}
@@ -65,7 +65,7 @@ function GroupStatsPage() {
             userId={userId}
           />
         </Col>
-      </Row> */}
+      </Row>
       <Row>
         <Col>
           <GroupScoreByDate

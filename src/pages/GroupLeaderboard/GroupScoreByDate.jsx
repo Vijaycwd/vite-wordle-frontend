@@ -7,7 +7,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment-timezone';
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import dayjs from "dayjs";
-// import GetGroupMessagesModal from '../../constant/Models/GetGroupMessagesModal';
+import GetGroupMessagesModal from '../../constant/Models/GetGroupMessagesModal';
 
 function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }) {
     const baseURL = import.meta.env.VITE_BASE_URL;
@@ -810,7 +810,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
                 </Col>
             </Row>
 
-            {/* {startDate && (
+            {startDate && (
             <Row className="justify-content-center">
                 <Col md={4}>
                 <GetGroupMessagesModal 
@@ -821,7 +821,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
                 />
                 </Col>
             </Row>
-            )} */}
+            )}
 
                 {dataFetched && todayLeaderboard.length > 0 ? (
                     <>
