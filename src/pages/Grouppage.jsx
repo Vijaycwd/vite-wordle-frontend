@@ -84,7 +84,7 @@ function GroupPage() {
         <Container className="text-center">
             <Row>
                 <Col>
-                    <h4>Group: {group.name}</h4>
+                    <h4>{group.name}</h4>
                 </Col>
             </Row>
             <Row>

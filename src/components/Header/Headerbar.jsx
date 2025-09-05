@@ -238,13 +238,6 @@ const handleInviteFriends = async () => {
           </Navbar>
         </Col>
       </Row>
-      <Row className="justify-content-center align-items-center py-2">
-        <Col xs={8}>
-          <Link to="/">
-            <img className='img-fluid d-block m-auto' src={TitleLogo} alt="WordleGame" />
-          </Link>
-        </Col>
-      </Row>
       <Overlay
         show={show}
         target={target}

@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import Axios from 'axios';
 import FeedbackButton from './FeedbackButton';
 import { useLocation } from 'react-router-dom';
+import TitleLogo from '../../src/WordleTitleLogo.png';
 
 
 function Home() {
@@ -115,6 +116,13 @@ function Home() {
     };
     return isAuthenticated ? (
         <Container className="login-section">
+            <Row className="justify-content-center align-items-center py-2">
+                <Col xs={8}>
+                    <Link to="/">
+                    <img className='img-fluid d-block m-auto' src={TitleLogo} alt="WordleGame" />
+                    </Link>
+                </Col>
+            </Row>
             <Row className="align-content-center justify-content-center text-center">
                 <Col md={6} className='bg-white px-3 py-3 text-center'>
                     <Row>

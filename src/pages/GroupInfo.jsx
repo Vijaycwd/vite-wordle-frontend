@@ -235,7 +235,7 @@ function GroupInfo() {
         <Container>
             <Row className="justify-content-center">
                 <Col xs={12} md={6} lg={6} className="border p-3 shadow rounded">
-                    <h3 className="text-center">{group.name} Group Members</h3>
+                    <h3 className="text-center">{group.name}</h3>
 
                     {members.map((member) => (
                     <Row
