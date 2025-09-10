@@ -42,7 +42,8 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
         if (parts.length === 3) {
             const [year, month, day] = parts.map(Number);
             if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
-                minDate = new Date(year, month - 1, day);
+                // Use UTC to avoid timezone shift issues
+                minDate = new Date(Date.UTC(year, month - 1, day));
             } else {
                 console.error('Invalid date parts:', { year, month, day });
             }
@@ -50,6 +51,8 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
             console.error('Unexpected date format:', formattedDateStr);
         }
     }
+    //console.log('minDate:', minDate.toISOString());
+
 
     const minDateStr = minDate.toISOString().split('T')[0];
     
@@ -152,6 +155,9 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
                 } else if (game === "phrazle") {
                     scoreData = response.data?.phrazlescore || [];
                 }
+                else if (game === "quordle") {
+                    scoreData = response.data?.quordlescore || [];
+                }
 
                 setDayResults(scoreData);
                 setShowModal(true);
@@ -236,7 +242,6 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
 
     const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
         const parsedDate = dayjs(value, "DD-MM-YYYY");
-
         return (
             <>
                 <Button className={`example-custom-input px-5 my-4 ${game}-btn`} onClick={onClick} ref={ref}>
@@ -245,7 +250,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
             </>
         );
     });
-
+    
     useEffect(() => {
         if (!scoringMethod || !game) return;
 
@@ -361,12 +366,38 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
     // ));
     
 
+    // const getTotalScore = (gameName, score) => {
+    //     const cleanedName = gameName ? gameName.trim().toLowerCase() : "";
+
+    //     if (cleanedName === "wordle") return 7;         // max 6
+    //     if (cleanedName === "connections") return 4;    // 4 groups
+    //     if (cleanedName === "phrazle") return 7;        // like Wordle
+
+    //     if (cleanedName === "quordle") {
+    //         // Quordle special logic
+    //         const numScore = Number(score);
+
+    //         if (isNaN(numScore)) return null;
+
+    //         // Valid wins: usually between 4 (best) and ~27
+    //         if (numScore > 0 && numScore < 30) {
+    //         return numScore;
+    //         }
+
+    //         // Scores >= 31 mean loss
+    //         return "LOSS";
+    //     }
+
+    //     return 1; // default
+    // };
+
     // Function to get the max possible score for a game
     const getTotalScore = (gameName) => {
         const cleanedName = gameName ? gameName.trim().toLowerCase() : "";
         return cleanedName === "wordle" ? 7 :
             cleanedName === "connections" ? 4 :
             cleanedName === "phrazle" ? 7 :
+            cleanedName === "quordle" ? 31 :
             1; // Default to 1 if unknown
     };
 
@@ -418,7 +449,8 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
     const noDataMessage = {
     wordle: "Gamle Score 7",
     connections: "Gamle Score 4",
-    phrazle: "Gamle Score 7"
+    phrazle: "Gamle Score 7",
+    quordle: "Gamle Score 31"
     }[game] || "No data available.";
 
     return (
@@ -432,9 +464,10 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
                     maxDate={new Date()}
                 /> */}
                 <DatePicker
+                   
                     onChange={handleDateChange}
                     customInput={<ExampleCustomInput />}
-                    minDate={minDate}
+                    minDate={minDateStr}
                     maxDate={game === 'phrazle' ? maxSelectableDate : dayjs().subtract(1, 'day').toDate()}
                     />
             </div>
@@ -696,8 +729,8 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
                                 <h4 className="text-center py-3">Daily Leaderboard</h4>
 
                                 {filteredLeaderboard
-                                    .slice()
-                                    .sort((a, b) => {
+                                .slice()
+                                .sort((a, b) => {
                                     const aIsSheriff = isSheriff(a.username) ? 1 : 0;
                                     const bIsSheriff = isSheriff(b.username) ? 1 : 0;
                                     if (aIsSheriff !== bIsSheriff) return bIsSheriff - aIsSheriff;
@@ -705,17 +738,31 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
                                     const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
                                     const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
                                     return aScore - bScore;
-                                    })
-                                    .map((data, index) => {
+                                })
+                                .map((data, index) => {
                                     const totalScore = getTotalScore(data.gamename);
+                                    
                                     const minScore = gameBestScores[data.gamename];
+                                   
+                                    const isQuordleValidScore =
+                                        data.gamename === "quordle" ? data.gamlescore >= 10 && data.gamlescore <= 30 : true;
+                                    console.log(topScorers);
+                                    const isSingleWinner =
+                                        isQuordleValidScore &&
+                                        topScorers.length === 1 &&
+                                        topScorers[0].username === data.username;
+                                    // console.log(isSingleWinner);
 
-                                    const isSingleWinner = topScorers.length === 1 && topScorers[0].username === data.username;
-                                    const isSharedWinner = topScorers.length > 1 && topScorers.some(w => w.username === data.username);
+                                    const isSharedWinner =
+                                        isQuordleValidScore &&
+                                        topScorers.length > 1 &&
+                                        topScorers.some(w => w.username === data.username);
 
+                                    // 🔹 Support Wordle (7), Quordle (9), Connections (4)
                                     const allLost =
-                                        (data.gamename === 'connections' && minScore === 4) ||
-                                        (data.gamename !== 'connections' && minScore === 7);
+                                    (data.gamename === "connections" && minScore === 4) ||
+                                    (data.gamename === "wordle" && minScore === 7) ||
+                                    (data.gamename === "quordle" && (minScore === 9 || data.gamlescore < 10 || data.gamlescore > 30));
 
                                     const worldCupScore = allLost ? 0 : (isSingleWinner ? 3 : isSharedWinner ? 1 : 0);
                                     // const pesceScore = allLost ? 0 : (isSingleWinner || isSharedWinner ? 1 : 0);
@@ -768,33 +815,47 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
                                             </Col>
                                             
                                             <Col xs={5} className="text-center d-flex fw-bold">
-                                                
                                                 <span
-                                                onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)}
-                                                style={{ cursor: "pointer" }}
+                                                    onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)}
+                                                    style={{ cursor: "pointer" }}
                                                 >
-                                                {scoringMethod === "Golf"
+                                                    {scoringMethod === "Golf"
                                                     ? (data.gamlescore ?? '') === '' ? totalScore : data.gamlescore
                                                     : scoringMethod === "World Cup"
                                                     ? worldCupScore
                                                     : pesceScore}
-                                                {data.gamename === 'wordle' &&
-                                                scoringMethod === "Pesce" &&
-                                                isSheriff(data.username) &&
-                                                data.gamlescore !== null &&
-                                                data.gamlescore !== '' &&
-                                                Number(data.gamlescore) !== 7 &&
-                                                " 🤠"}
-                                                {data.gamename === 'connections' &&
-                                                scoringMethod === "Pesce" &&
-                                                isSheriff(data.username) &&
-                                                data.gamlescore !== null &&
-                                                data.gamlescore !== '' &&
-                                                Number(data.gamlescore) !== 4 &&
-                                                " 🤠"}
-                                                {scoringMethod !== "Pesce" && isSingleWinner && " 🏆"}
+                                                    {/* Sheriff emoji for Wordle */}
+                                                    {data.gamename === 'wordle' &&
+                                                    scoringMethod === "Pesce" &&
+                                                    isSheriff(data.username) &&
+                                                    data.gamlescore !== null &&
+                                                    data.gamlescore !== '' &&
+                                                    Number(data.gamlescore) !== 7 &&
+                                                    " 🤠"}
+
+                                                    {/* Sheriff emoji for Connections */}
+                                                    {data.gamename === 'connections' &&
+                                                    scoringMethod === "Pesce" &&
+                                                    isSheriff(data.username) &&
+                                                    data.gamlescore !== null &&
+                                                    data.gamlescore !== '' &&
+                                                    Number(data.gamlescore) !== 4 &&
+                                                    " 🤠"}
+
+                                                    {/* Sheriff emoji for Quordle */}
+                                                    {data.gamename === 'quordle' &&
+                                                    scoringMethod === "Pesce" &&
+                                                    isSheriff(data.username) &&
+                                                    data.gamlescore !== null &&
+                                                    data.gamlescore !== '' &&
+                                                    Number(data.gamlescore) !== 9 && // max attempts per word
+                                                    " 🤠"}
+
+                                                    {/* Trophy for top scorer */}
+                                                    {scoringMethod !== "Pesce" && isSingleWinner && " 🏆"}
                                                 </span>
-                                            </Col>
+                                                </Col>
+
                                             </Row>
                                         </Col>
                                         </Row>
@@ -816,8 +877,9 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
                 <GetGroupMessagesModal 
                     groupId={id}
                     gameName={game}
-                    periodDate={dayjs(startDate).format("YYYY-MM-DD")}
+                    periodDate={dayjs(startDate).format("YYYY-MM-DD HH:mm:ss")}
                     periodType={game == 'phrazle' ? period : ''}
+                    userId={userId}
                 />
                 </Col>
             </Row>
@@ -845,16 +907,36 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
                                                 String(data?.is_paused) === "0"
                                         );
                                         const minScore = Math.min(...filteredScores.map(data => Number(data.gamlescore)));
+                                        
                                         const winners = filteredScores.filter(data => Number(data.gamlescore) === minScore);
+                                        
+                                        const maxQuordleScore = 30; // max attempts (or use backend value)
+                                        const minQuordleScore = 10; // minimum valid attempts
+                                        const calculateQuordleScore = (player) => {
+                                            // solvedWords and gamlescore must come from backend
+                                            const solved = player.solvedWords ?? 0;
+                                            const attempts = player.gamlescore ?? maxQuordleScore;
+
+                                            // Invalid or lost game
+                                            if (solved < 4 || attempts < minQuordleScore || attempts > maxQuordleScore) return 0;
+
+                                            // Fewer attempts = higher score
+                                            return solved * 10 + (maxQuordleScore - attempts); // tweak factor as needed
+                                        };
         
                                         return filteredScores
                                             .slice()
                                             .sort((a, b) => {
+                                                if (a.gamename === "quordle" && b.gamename === "quordle") {
+                                                    const scoreA = calculateQuordleScore(a);
+                                                    const scoreB = calculateQuordleScore(b);
+                                                    return scoreB - scoreA; // higher score first
+                                                }
                                                 const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
                                                 const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
 
                                                 const allLost = minScore === 7;
-
+                                                
                                                 const isSingleWinnerA = winners.length === 1 && winners[0].username === a.username;
                                                 const isSharedWinnerA = winners.length > 1 && winners.some(w => w.username === a.username);
                                                 const worldCupScoreA = allLost ? 0 : (isSingleWinnerA ? 3 : isSharedWinnerA ? 1 : 0);
@@ -883,6 +965,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
                                                 const incrementScore = (index + 1) * totalScore;
         
                                                 const isSingleWinner = winners.length === 1 && winners[0].username === data.username;
+                                                
                                                 const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
                                                 const worldCupScore = isSingleWinner ? 3 : isSharedWinner ? 1 : 0;
                                                 const pesceScore = isSharedWinner ? 1 : 0;
@@ -899,6 +982,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
                                                     nowValue = Number(data.total_pesce_points ?? 0);
                                                     maxValue = data.totalGamesPlayed * 7; // max pesce score (1 for win/shared)
                                                 }
+                                                
                                                 return (
                                                     <Row
                                                         key={index}
@@ -1198,6 +1282,40 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
                                 </>                 
                             </div>
                         );
+                        }
+                        else if (game === 'quordle') {
+                        // Example Connection game display
+                        const cleanedScore = item.quordlescore
+                                .replace(/[🟨🟩⬛⬜🙂]/g, "") // remove tiles/emojis
+                                .replace("m-w.com/games/quordle/", ""); // remove link
+
+                            const quordleScore = item.quordlescore
+                            .split("\n")                        // split into lines
+                            .map(l => l.trim())                 // trim spaces
+                            .filter(l => /^[⬛⬜🟨🟩 ]+$/.test(l)) // allow tiles + space
+                            .join("\n");
+                            //const quordleScore = splitIntoRows(lettersAndNumbersRemoved);
+                            const createDate = item.createdat; // Ensure this matches your database field name
+                            const date = new Date(createDate);
+                            const todayDate = date.toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric',
+                                            });
+                            const gamleScore = item.gamlescore;
+                            return (
+                                
+                                <div key={index}>
+                                    <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
+                                    <>
+                                    <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
+                                    <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
+                                    <pre className='text-center'>
+                                        {quordleScore}
+                                    </pre>
+                                    </>                 
+                                </div>
+                            );
                         }
                         else {
                         return (

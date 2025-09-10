@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import Axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -10,13 +10,13 @@ function WordlePlayService({ updateStatsChart }) {
     const baseURL = import.meta.env.VITE_BASE_URL;
     const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
     const { username: loginUsername, email: loginUserEmail } = USER_AUTH_DATA;
-
+    const userId = USER_AUTH_DATA?.id;
     const [showForm, setShowForm] = useState(false);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
     const [score, setScore] = useState('');
     const [guessDistribution, setGuessDistribution] = useState([0, 0, 0, 0, 0, 0]);
     const [gameIsWin, setGameIsWin] = useState(false);
-
+    const [lastGroup, setLastGroup] = useState(null);
     const navigate = useNavigate();
 
     const handleFormClose = () => {
@@ -37,6 +37,25 @@ function WordlePlayService({ updateStatsChart }) {
         setShowForm(true);
     };
 
+    //get latest group intraction
+    useEffect(() => {
+      const fetchLastGroup = async () => {
+        try {
+          const response = await Axios.get(
+            `${baseURL}/games/wordle/get-last-group.php`,
+            { params: { user_id: userId } }
+          );
+          setLastGroup(response.data);
+        } catch (error) {
+          console.error("Error fetching last group:", error);
+        }
+      };
+    
+      if (userId) {
+        fetchLastGroup();
+      }
+    }, [userId]);
+    
     const onSubmit = async (event) => {
         event.preventDefault();
         setShowForm(false);
@@ -112,7 +131,13 @@ function WordlePlayService({ updateStatsChart }) {
                     // console.log(TotalGameObject);
                     await updateTotalGamesPlayed(TotalGameObject);
                     setScore('');
-                    navigate('/wordlestats');
+                    const latest_group_id = lastGroup?.group_id;
+                    if(latest_group_id){
+                    navigate(`/group/${latest_group_id}/stats/wordle`);
+                    }
+                    else{
+                    navigate("/wordlestats");
+                    }
                     
                 }
                 else{

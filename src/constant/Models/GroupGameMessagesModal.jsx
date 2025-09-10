@@ -1,41 +1,107 @@
-import React, { useState } from "react";
-import { Modal, Button } from "react-bootstrap";
-import GroupGameMessages from "../../pages/GroupLeaderboard/GroupGameMessages";
+import React, { useState } from 'react';
+import { Modal, Button } from 'react-bootstrap';
+import axios from 'axios';
+import dayjs from "dayjs";
+import GroupChatInput from "../../pages/GroupLeaderboard/GroupChatInput"; // ✅ import input box
 
-function GroupGameMessagesModal({ groupId, gameName, periodType, periodDate, userId }) {
+const GetGroupMessagesModal = ({ groupId, gameName, periodDate, periodType, userId }) => {
+  const baseURL = import.meta.env.VITE_BASE_URL;
   const [show, setShow] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const periodDateStr = dayjs(periodDate).format("YYYY-MM-DD");
+  const fetchMessages = async () => {
+    try {
+      const baseParams = {
+        group_id: groupId,
+        game_name: gameName,
+        created_at: periodDateStr
+      };
+      const params =
+        gameName === 'phrazle' ? { ...baseParams, period: periodType } : baseParams;
+
+      const response = await axios.get(
+        `${baseURL}/groups/get-user-messages.php`,
+        { params }
+      );
+      setMessages(response.data);
+    } catch (error) {
+      console.error("Failed to fetch messages:", error);
+    }
+  };
+
+  const handleShow = async () => {
+    setShow(true);
+    fetchMessages();
+  };
+
+  const handleClose = () => setShow(false);
+
+  // ✅ Sending a message
+  const handleSend = async (messageText) => {
+    if (!messageText.trim()) return;
+    await axios.post(`${baseURL}/groups/send-user-message.php`, {
+      group_id: groupId,
+      game_name: gameName,
+      created_at: periodDate,
+      user_id: userId,
+      message: messageText,
+    });
+    fetchMessages(); // refresh after sending
+  };
 
   return (
     <>
-      {/* Button to open modal */}
-      <Button className={`${gameName}-btn my-3 d-block m-auto`} onClick={() => setShow(true)}>
-        Messages {periodDate}
-      </Button>
+      <div className='text-center my-4'>
+        <Button className={`${gameName}-btn`} onClick={handleShow}>
+          Messages {dayjs(periodDate).format("MMM, D YYYY")}
+          {gameName === 'phrazle' ? ` - ${periodType}` : ''}
+        </Button>
+      </div>
 
-      {/* Modal */}
-      <Modal show={show} onHide={() => setShow(false)} size="lg" centered>
+      <Modal show={show} onHide={handleClose} centered size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>
-            Messages - ({periodDate} {periodType})
-          </Modal.Title>
+          <Modal.Title>Group Messages</Modal.Title>
         </Modal.Header>
+
         <Modal.Body>
-          <GroupGameMessages
-            groupId={groupId}
-            gameName={gameName}
-            periodType={periodType}
-            periodDate={periodDate}
-            userId={userId}
-          />
+          {messages.length > 0 ? (
+            <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+              <ul className="list-unstyled">
+                {messages.map((msg, index) => (
+                  <li key={index} className="mb-3">
+                    <div className="d-flex align-items-center">
+                      <img
+                        src={
+                          msg.avatar
+                            ? `${baseURL}/user/uploads/${msg.avatar}`
+                            : `${baseURL}/user/uploads/defalut_avatar.png`
+                        }
+                        width={40}
+                        height={40}
+                        className="rounded-circle me-2"
+                      />
+                      <strong>{msg.username}</strong>
+                    </div>
+                    <div className="ms-5">{msg.message}</div>
+                    <small className="ms-5 text-muted">
+                      {dayjs(msg.created_at).format("MMM, D YYY")}
+                    </small>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p>No messages found for the selected date.</p>
+          )}
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShow(false)}>
-            Close
-          </Button>
+
+        {/* ✅ Added input for sending messages */}
+        <Modal.Footer className="w-100 d-block">
+          <GroupChatInput onSend={handleSend} gameName={gameName} />
         </Modal.Footer>
       </Modal>
     </>
   );
-}
+};
 
-export default GroupGameMessagesModal;
+export default GetGroupMessagesModal;

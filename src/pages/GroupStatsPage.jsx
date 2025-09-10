@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import GroupLeaderboardScores from './GroupLeaderboard/GroupLeaderboardScores';
 import GroupScoreByDate from './GroupLeaderboard/GroupScoreByDate';
 import MemberProfile from '../constant/Models/MemberProfile';
-import GroupGameChat from './GroupLeaderboard/GroupGameChat';
+import GroupGameChat  from '../pages/GroupLeaderboard/GroupGameChat';
 import dayjs from "dayjs";
 
 function GroupStatsPage() {

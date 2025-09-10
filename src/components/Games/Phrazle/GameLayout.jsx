@@ -11,7 +11,7 @@ function GamesLayout() {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
   const { username: loginUsername, email: loginUserEmail } = USER_AUTH_DATA;
-  
+  const userId = USER_AUTH_DATA?.id;
   const [showForm, setShowForm] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [score, setScore] = useState('');
@@ -22,7 +22,7 @@ function GamesLayout() {
   const [totalWinGames, setTotalWinGames] = useState(0);
   const [currentStreak, setCurrentStreak] = useState(0);
   const [maxStreak, setMaxStreak] = useState(0);
-  
+   const [lastGroup, setLastGroup] = useState(null);
   const navigate = useNavigate();
 
   const handleFormClose = () => {
@@ -42,6 +42,25 @@ function GamesLayout() {
     }
     setShowForm(true);
   };
+
+  //get latest group intraction
+  useEffect(() => {
+    const fetchLastGroup = async () => {
+      try {
+        const response = await Axios.get(
+          `${baseURL}/games/phrazle/get-last-group.php`,
+          { params: { user_id: userId } }
+        );
+        setLastGroup(response.data);
+      } catch (error) {
+        console.error("Error fetching last group:", error);
+      }
+    };
+  
+    if (userId) {
+      fetchLastGroup();
+    }
+  }, [userId]);
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -128,7 +147,13 @@ function GamesLayout() {
           
           await updateTotalGamesPlayed(TotalGameObject);
           setScore('');
-          navigate('/phrazlestats');
+          const latest_group_id = lastGroup?.group_id;
+          if(latest_group_id){
+            navigate(`/group/${latest_group_id}/stats/phrazle`);
+          }
+          else{
+            navigate("/phrazlestats");
+          }
          
         } else {
           toast.error(res.data.message);

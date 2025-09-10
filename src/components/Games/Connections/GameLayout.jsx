@@ -10,6 +10,7 @@ import ConnectionsModal from './Modals/ConnectionsScoreModal';
 function GamesLayout() {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
+  const userId = USER_AUTH_DATA?.id;
   const { username: loginUsername, email: loginUserEmail } = USER_AUTH_DATA;
   
   const [showForm, setShowForm] = useState(false);
@@ -22,7 +23,7 @@ function GamesLayout() {
   const [totalWinGames, setTotalWinGames] = useState(0);
   const [currentStreak, setCurrentStreak] = useState(0);
   const [maxStreak, setMaxStreak] = useState(0);
-  
+  const [lastGroup, setLastGroup] = useState(null);
   const navigate = useNavigate();
   
   const handleFormClose = () => {
@@ -79,6 +80,25 @@ function GamesLayout() {
       mistakeCount,
     };
   };
+  
+  //get latest group intraction
+  useEffect(() => {
+    const fetchLastGroup = async () => {
+      try {
+        const response = await Axios.get(
+          `${baseURL}/games/connections/get-last-group.php`,
+          { params: { user_id: userId } }
+        );
+        setLastGroup(response.data);
+      } catch (error) {
+        console.error("Error fetching last group:", error);
+      }
+    };
+  
+    if (userId) {
+      fetchLastGroup();
+    }
+  }, [userId]);
   
   
   
@@ -167,7 +187,13 @@ function GamesLayout() {
   
         await updateTotalGamesPlayed(TotalGameObject);
         setScore("");
-        navigate("/connectionstats");
+        const latest_group_id = lastGroup?.group_id;
+        if(latest_group_id){
+          navigate(`/group/${latest_group_id}/stats/connections`);
+        }
+        else{
+          navigate("/connectionstats");
+        }
       } else {
         toast.error(res.data.message);
       }

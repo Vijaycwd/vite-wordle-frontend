@@ -8,6 +8,7 @@ import WordlePlayService from '../../components/Games/Wordle/WordlePlayService';
 import ConnectionPlayService from '../../components/Games/Connections/ConnectionPlayService';
 import PhrazlePlayService from '../../components/Games/Phrazle/PhrazlePlayService';
 
+
 function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowProfile }) {
     const baseURL = import.meta.env.VITE_BASE_URL;
     const { id, groupName, game } = useParams();
@@ -187,7 +188,6 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
         fetchCumulativeScore();
     }, [id, groupName, game]);
 
-    
 
     // Function to get the max possible score for a game
     const getTotalScore = (gameName) => {
@@ -195,6 +195,7 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
         return cleanedName === "wordle" ? 7 :
                cleanedName === "connections" ? 4 :
                cleanedName === "phrazle" ? 7 :
+               cleanedName === "quordle" ? 9 :
                1; // Default to 1 if unknown
     };
 
@@ -207,7 +208,7 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
     setSelectedGame(game);
     const timeZone = moment.tz.guess();
     const params = { useremail, timeZone, today: date };
- 
+
     if (game == "phrazle") {
         params.period = period;
     }
@@ -220,12 +221,12 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
         if (game === "wordle") {
             scoreData = response.data?.wordlescore || [];
         } else if (game === "connections") {
-            scoreData = response.data?.connectionsscore || [];
-            
+            scoreData = response.data?.connectionsscore || [];    
         } else if (game === "phrazle") {
             scoreData = response.data?.phrazlescore || [];
+        }else if (game === "quordle") {
+            scoreData = response.data?.quordlescore || [];
         }
-
         setDayResults(scoreData);
         setShowModal(true);
     })
@@ -255,7 +256,8 @@ function splitIntoRowsByLength(inputString, rowLength) {
 const noDataMessage = {
   wordle: "Gamle Score 7",
   connections: "Gamle Score 4",
-  phrazle: "Gamle Score 7"
+  phrazle: "Gamle Score 7",
+  quordle: "Gamle Score 9"
 }[game] || "No data available.";
     //// console.log('todayLeaderboard',todayLeaderboard);
 const today = new Date();
@@ -308,6 +310,7 @@ let sheriffWinners = [];
     sheriffWinners.push(...winners);
   });
 });
+
 
     return (
         <div>
@@ -524,7 +527,7 @@ let sheriffWinners = [];
                             {!loading && !error && todayLeaderboard.length > 0 && (() => {
                                 // Filter out "phrazle" and find the lowest score
                                 const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename !== "phrazle");
-                                
+                               
                                 if (filteredLeaderboard.length === 0) return null;
 
                                 const minScore = Math.min(...filteredLeaderboard.map(data => Number(data.gamlescore)));
@@ -537,6 +540,7 @@ let sheriffWinners = [];
                                         name: d.username,
                                         email: d.useremail
                                     }));
+                               
                                 if (missedUsers.length > 0) {
                                     const currentUserData = filteredLeaderboard.find(d => d.username === userName);
                                     return (
@@ -550,11 +554,13 @@ let sheriffWinners = [];
                                                 </div>
                                             ))}
                                             {missedUsers.some(user => user.email === userEmail) && currentUserData && (
-                                                currentUserData.gamename === 'connections' ? (
-                                                    <ConnectionPlayService />
-                                                ) : currentUserData.gamename === 'wordle' ? (
-                                                    <WordlePlayService />
-                                                ) : null
+                                            currentUserData.gamename === 'connections' ? (
+                                                <ConnectionPlayService />
+                                            ) : currentUserData.gamename === 'wordle' ? (
+                                                <WordlePlayService />
+                                            ) : currentUserData.gamename === 'quordle' ? (
+                                                <QuordlePlayService />
+                                            ) : null
                                             )}
                                         </div>
                                     );
@@ -583,7 +589,7 @@ let sheriffWinners = [];
                                     
                                     return (
                                         <>
-                                            <h4 className="text-center py-3">Today's Leaderboard</h4>
+                                            <h4 className="text-center py-3">Today's Leaderboards</h4>
                                             {/* {scoringMethod === "Pesce" && (
                                                 <div className="text-center my-3 fw-bold">
                                                     Sheriff: {sheriffWinners.map(u => u.username).join(', ') || "—"}
@@ -593,30 +599,42 @@ let sheriffWinners = [];
                                             {filteredLeaderboard
                                                 .slice()
                                                 .sort((a, b) => {
-                                                const aIsSheriff = isSheriff(a.username) ? 1 : 0;
-                                                const bIsSheriff = isSheriff(b.username) ? 1 : 0;
-                                                if (aIsSheriff !== bIsSheriff) return bIsSheriff - aIsSheriff;
+                                                    const aIsSheriff = isSheriff(a.username) ? 1 : 0;
+                                                    const bIsSheriff = isSheriff(b.username) ? 1 : 0;
+                                                    if (aIsSheriff !== bIsSheriff) return bIsSheriff - aIsSheriff;
 
-                                                const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
-                                                const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
-                                                return aScore - bScore;
+                                                    const aScore = Number(a.gamlescore ?? getTotalScore(a.gamename));
+                                                    const bScore = Number(b.gamlescore ?? getTotalScore(b.gamename));
+                                                    return aScore - bScore;
                                                 })
                                                 .map((data, index) => {
                                                     const totalScore = getTotalScore(data.gamename);
 
                                                     const progressValue =
-                                                        totalScore > 0
-                                                            ? data.gamename === "connections"
-                                                                ? (data.gamlescore / totalScore) * 100
-                                                                : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
-                                                            : 0;
+                                                    totalScore > 0
+                                                        ? data.gamename === "connections"
+                                                        ? (data.gamlescore / totalScore) * 100
+                                                        : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
+                                                        : 0;
 
-                                                    const isSingleWinner = topScorers.length == 1 && topScorers[0].username == data.username;
-                                                    const isSharedWinner = topScorers.length > 1 && topScorers.some(w => w.username == data.username);
+                                                    const isSingleWinner =
+                                                    topScorers.length === 1 && topScorers[0].username === data.username;
+                                                    const isSharedWinner =
+                                                    topScorers.length > 1 && topScorers.some((w) => w.username === data.username);
                                                     const isTopScorer = isSingleWinner || isSharedWinner;
 
-                                                    
-                                                    const allLost = highestScore === 7;
+                                                    // 🔹 pick the right max attempts for the game
+                                                    const maxAttempts =
+                                                    data.gamename === "quordle"
+                                                        ? 9
+                                                        : data.gamename === "wordle"
+                                                        ? 7
+                                                        : data.gamename === "connections"
+                                                        ? 4
+                                                        : 0;
+
+                                                    const allLost = highestScore === maxAttempts;
+
                                                     const worldCupScore = allLost ? 0 : (isSingleWinner ? 3 : isSharedWinner ? 1 : 0);
                                                     const pesceScore = allLost ? 0 : (isSheriff(data.username) ? 1 : 0);
 
@@ -672,16 +690,16 @@ let sheriffWinners = [];
                                                                         />
                                                                     </Col>
                                                                     <Col xs={5} className="text-center d-flex fw-bold">
-                                                                                                                
-                                                                        <span
+                                                                    <span
                                                                         onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)}
                                                                         style={{ cursor: "pointer" }}
-                                                                        >
+                                                                    >
                                                                         {scoringMethod === "Golf"
-                                                                            ? (data.gamlescore ?? '') === '' ? totalScore : data.gamlescore
-                                                                            : scoringMethod === "World Cup"
-                                                                            ? worldCupScore
-                                                                            : pesceScore}
+                                                                        ? (data.gamlescore ?? '') === '' ? totalScore : data.gamlescore
+                                                                        : scoringMethod === "World Cup"
+                                                                        ? worldCupScore
+                                                                        : pesceScore}
+
                                                                         {data.gamename === 'wordle' &&
                                                                         scoringMethod === "Pesce" &&
                                                                         isSheriff(data.username) &&
@@ -689,6 +707,7 @@ let sheriffWinners = [];
                                                                         data.gamlescore !== '' &&
                                                                         Number(data.gamlescore) !== 7 &&
                                                                         " 🤠"}
+
                                                                         {data.gamename === 'connections' &&
                                                                         scoringMethod === "Pesce" &&
                                                                         isSheriff(data.username) &&
@@ -696,9 +715,19 @@ let sheriffWinners = [];
                                                                         data.gamlescore !== '' &&
                                                                         Number(data.gamlescore) !== 4 &&
                                                                         " 🤠"}
+
+                                                                        {data.gamename === 'quordle' &&
+                                                                        scoringMethod === "Pesce" &&
+                                                                        isSheriff(data.username) &&
+                                                                        data.gamlescore !== null &&
+                                                                        data.gamlescore !== '' &&
+                                                                        Number(data.gamlescore) !== 9 &&
+                                                                        " 🤠"}
+
                                                                         {scoringMethod !== "Pesce" && isSingleWinner && " 🏆"}
-                                                                        </span>
+                                                                    </span>
                                                                     </Col>
+
                                                                 </Row>
                                                             </Col>
                                                         </Row>
@@ -898,6 +927,40 @@ let sheriffWinners = [];
                                 {connectionsScore.map((row, rowIndex) => (
                                     <div key={rowIndex}>{row}</div>
                                 ))}
+                            </pre>
+                            </>                 
+                        </div>
+                    );
+                    }
+                    else if (game === 'quordle') {
+                    // Example Connection game display
+                    const cleanedScore = char.quordlescore
+                        .replace(/[🟨🟩⬛⬜🙂]/g, "") // remove tiles/emojis
+                        .replace("m-w.com/games/quordle/", ""); // remove link
+
+                    const quordleScore = char.quordlescore
+                    .split("\n")                        // split into lines
+                    .map(l => l.trim())                 // trim spaces
+                    .filter(l => /^[⬛⬜🟨🟩 ]+$/.test(l)) // allow tiles + space
+                    .join("\n");
+                    //const quordleScore = splitIntoRows(lettersAndNumbersRemoved);
+                    const createDate = char.createdat; // Ensure this matches your database field name
+                    const date = new Date(createDate);
+                    const todayDate = date.toLocaleDateString('en-US', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                    });
+                    const gamleScore = char.gamlescore;
+                    return (
+                        
+                        <div key={index}>
+                            <h5 className='text-center'>Gamle Score: {gamleScore}</h5>
+                            <>
+                            <div className={`wordle-score-board-text my-3 fs-5 text-center`}>{cleanedScore}</div>
+                            <div className='today text-center fs-6 my-2 fw-bold'>{todayDate}</div>
+                            <pre className='text-center'>
+                                {quordleScore}
                             </pre>
                             </>                 
                         </div>
