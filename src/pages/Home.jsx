@@ -115,10 +115,10 @@ function Home() {
     };
     return isAuthenticated ? (
         <Container className="login-section">
-            <Row className="justify-content-center align-items-center py-2">
+            <Row className="justify-content-center align-items-center py-2 text-center">
                 <Col xs={8}>
                     <Link to="/">
-                    <img className='img-fluid d-block m-auto' src={TitleLogo} alt="WordleGame" />
+                    <img className='img-fluid' src={TitleLogo} alt="WordleGame" />
                     </Link>
                 </Col>
             </Row>
