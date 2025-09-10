@@ -142,45 +142,44 @@ const handleDeclineInvite = async (inviteId) => {
     return () => clearInterval(messageIntervalRef.current);
   }, []);
 
-  const handleClickGroup = async(e, groupId, game, userId) => {
-    e.preventDefault(); 
+  const handleClickGroup = async (e, groupId, game, userId, msgId) => {
+    e.preventDefault();
     setGroupMessages([]);
-    setShowDropdown(!showDropdown)
-    try {
-      await axios.post(`${baseURL}/groups/update-seen-ids.php`, {
-        group_id: groupId,
-        msg_from:'group',
-        game_name: game,
-        user_id: userId, // current user
-      });
-      // After updating seen_ids, navigate to the link
-     navigate(`/group/${groupId}/`);
-    } catch (error) {
-      console.error("Axios error:", error);
-      
-    }
-  
-  }
-
-  const handleClick = async (e, groupId, game, userId) => {
-    e.preventDefault(); // stop immediate navigation
-    setGroupMessages(''); // optional: clear messages
-    setShowDropdown(!showDropdown)
+    setShowDropdown(false);
 
     try {
       await axios.post(`${baseURL}/groups/update-seen-ids.php`, {
         group_id: groupId,
-        msg_from:'game',
+        msg_from: 'group',
         game_name: game,
-        user_id: userId, // current user
+        user_id: userId,
       });
 
-      // After updating seen_ids, navigate to the link
-      navigate(`/group/${groupId}/stats/${game}`);
+      navigate(`/group/${groupId}?msg_id=${msgId}`);
     } catch (error) {
       console.error("Axios error:", error);
     }
   };
+
+  const handleClick = async (e, groupId, game, userId, msgId) => {
+    e.preventDefault();
+    setGroupMessages([]);
+    setShowDropdown(false);
+
+    try {
+      await axios.post(`${baseURL}/groups/update-seen-ids.php`, {
+        group_id: groupId,
+        msg_from: 'game',
+        game_name: game,
+        user_id: userId,
+      });
+
+      navigate(`/group/${groupId}/stats/${game}?msg_id=${msgId}`);
+    } catch (error) {
+      console.error("Axios error:", error);
+    }
+  };
+   console.log(groupMessages);
   return (
     <Dropdown show={showDropdown} onToggle={() => setShowDropdown(!showDropdown)}>
       <Dropdown.Toggle variant="light" id="group-invites">
@@ -233,11 +232,10 @@ const handleDeclineInvite = async (inviteId) => {
                       <>
                     
                     <p>
-                      
                       {msg.message}{" "}
                       <Link
-                        to={`/group/${msg.group_id}`}
-                        onClick={(e) => handleClickGroup(e, msg.group_id, msg.game_name, userId)}
+                        to={`/group/${msg.group_id}?msg_id=${msg.msg_id}`}
+                        onClick={(e) => handleClickGroup(e, msg.group_id, msg.game_name, userId, msg.msg_id)}
                       >
                         View
                       </Link>
@@ -248,8 +246,8 @@ const handleDeclineInvite = async (inviteId) => {
                     <p>
                       {msg.message}{" "}
                       <Link
-                        to={`/group/${msg.group_id}/stats/${msg.game_name}`}
-                        onClick={(e) => handleClick(e, msg.group_id, msg.game_name, userId)}
+                        to={`/group/${msg.group_id}/stats/${msg.game_name}?msg_id=${msg.msg_id}`}
+                        onClick={(e) => handleClick(e, msg.group_id, msg.game_name, userId, msg.msg_id)}
                       >
                         View
                       </Link>

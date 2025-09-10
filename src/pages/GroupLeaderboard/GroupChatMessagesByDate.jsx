@@ -1,16 +1,27 @@
 import React, { useRef, useEffect } from "react";
 import dayjs from "dayjs";
 
-function GroupChatMessagesByDate({ messages, userId, baseURL }) {
+function GroupChatMessagesByDate({ messages, userId, baseURL, highlightMsgId }) {
   const chatEndRef = useRef(null);
 
-  // Auto-scroll
-  const scrollToBottom = () => {
+  // Auto-scroll to bottom on new messages
+  useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-  useEffect(scrollToBottom, [messages]);
+  }, [messages]);
 
-  if (messages.length === 0) {
+  // Highlight specific message by ID
+  useEffect(() => {
+    if (highlightMsgId && messages.length > 0) {
+      const el = document.getElementById(`msg-${highlightMsgId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.classList.add("highlight");
+        setTimeout(() => el.classList.remove("highlight"), 3000);
+      }
+    }
+  }, [highlightMsgId, messages]);
+
+  if (!messages || messages.length === 0) {
     return (
       <div className="text-center text-muted my-3">
         <p className="mb-0">No messages yet today.</p>
@@ -21,21 +32,18 @@ function GroupChatMessagesByDate({ messages, userId, baseURL }) {
 
   return (
     <>
-      {messages.map((msg, index) => {
+      {messages.map((msg) => {
         const isMe = msg.user_id === userId;
+        const time = msg.created_at ? dayjs(msg.created_at).format("hh:mm A") : "";
+
         return (
           <div
-            key={index}
-            className={`d-flex flex-column mb-3 ${
-              isMe ? "align-items-end" : "align-items-start"
-            }`}
+            key={msg.id}
+            id={`msg-${msg.id}`} // important for highlight
+            className={`d-flex flex-column mb-3 ${isMe ? "align-items-end" : "align-items-start"}`}
           >
             {/* Username */}
-            <div
-              className={`small fw-bold mb-1 ${
-                isMe ? "text-end me-1" : "ms-1"
-              }`}
-            >
+            <div className={`small fw-bold mb-1 ${isMe ? "text-end me-1" : "ms-1"}`}>
               {msg.username || `User ${msg.user_id}`}
             </div>
 
@@ -43,11 +51,7 @@ function GroupChatMessagesByDate({ messages, userId, baseURL }) {
             <div className={`d-flex ${isMe ? "flex-row-reverse" : ""}`}>
               {/* Avatar */}
               <img
-                src={
-                  msg.avatar
-                    ? `${baseURL}/user/uploads/${msg.avatar}`
-                    : "https://via.placeholder.com/30"
-                }
+                src={msg.avatar ? `${baseURL}/user/uploads/${msg.avatar}` : "https://via.placeholder.com/30"}
                 alt="avatar"
                 className={`rounded-circle ${isMe ? "ms-2" : "me-2"}`}
                 width="30"
@@ -57,9 +61,7 @@ function GroupChatMessagesByDate({ messages, userId, baseURL }) {
 
               {/* Message bubble */}
               <div
-                className={`p-2 rounded-3 ${
-                  isMe ? "bg-primary text-white" : "bg-white border text-dark"
-                }`}
+                className={`p-2 rounded-3 ${isMe ? "bg-primary text-white" : "bg-white border text-dark"}`}
                 style={{
                   wordWrap: "break-word",
                   overflowWrap: "break-word",
@@ -77,7 +79,7 @@ function GroupChatMessagesByDate({ messages, userId, baseURL }) {
                     color: isMe ? "rgba(255,255,255,0.7)" : "#6c757d",
                   }}
                 >
-                  {dayjs(msg.created_at).format("hh:mm A")}
+                  {time}
                 </div>
               </div>
             </div>

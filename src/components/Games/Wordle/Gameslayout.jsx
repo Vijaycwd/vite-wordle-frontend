@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import LoginModal from './Modals/LoginModal';
 import WordleModal from './Modals/WordleScoreModal';
 
-function Gameslayout() {
+function GamesLayout() {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
   const { username, email } = USER_AUTH_DATA;
@@ -279,4 +279,4 @@ const updateTotalGamesPlayed = async (TotalGameObject) => {
   );
 }
 
-export default Gameslayout;
+export default GamesLayout;

@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import GroupChatMessagesByDate from "./GroupChatMessagesByDate";
 import GroupChatInput from "./GroupChatInput";
 
-function GroupGameChat({ groupId, gameName, createdAt, periodType, userId }) {
+function GroupGameChat({ groupId, gameName, createdAt, periodType, userId, highlightMsgId }) {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const [messages, setMessages] = useState([]);
   
@@ -56,6 +56,7 @@ function GroupGameChat({ groupId, gameName, createdAt, periodType, userId }) {
             messages={messages}
             userId={userId}
             baseURL={baseURL}
+            highlightMsgId={highlightMsgId}
           />
         </div>
 

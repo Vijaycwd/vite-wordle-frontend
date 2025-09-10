@@ -280,8 +280,13 @@ span.notification-count.badge.bg-danger {
   object-fit: cover;
 }
 button, input{
-cursor: pointer;
+  cursor: pointer;
 }
+.chat-message.own {
+  background-color: #fff3b0; /* light yellow */
+  transition: background-color 1s ease;
+}
+
 /* Hide on larger screens */
 @media only screen and (max-width: 600px)  {
   .navbar-collapse {
