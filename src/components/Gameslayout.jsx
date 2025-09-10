@@ -7,13 +7,12 @@ import { toast } from 'react-toastify';
 import LoginModal from './Games/Wordle/Modals/LoginModal';
 import WordleModal from './Games/Wordle/Modals/WordleScoreModal';
 
-function Gameslayout() {
+function GamesLayout() {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
   const { username, email } = USER_AUTH_DATA;
   const loginUsername = username;
   const loginUserEmail = email;
-  
   const [showForm, setShowForm] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [score, setScore] = useState('');
@@ -22,6 +21,8 @@ function Gameslayout() {
   const [userData, setUserData] = useState('');
   const navigate = useNavigate();
   const userEmail = USER_AUTH_DATA.email;
+  const userId = USER_AUTH_DATA?.id;
+
   useEffect(() => {
     if (userEmail) {
       Axios.get(`${baseURL}/user/get-user.php`, {
@@ -106,6 +107,25 @@ function Gameslayout() {
       setShowForm(true);
   };
 
+  //get latest group intraction
+  useEffect(() => {
+    const fetchLastGroup = async () => {
+      try {
+        const response = await Axios.get(
+          `${baseURL}/games/wordle/get-last-group.php`,
+          { params: { user_id: userId } }
+        );
+        setLastGroup(response.data);
+      } catch (error) {
+        console.error("Error fetching last group:", error);
+      }
+    };
+  
+    if (userId) {
+      fetchLastGroup();
+    }
+  }, [userId]);
+  
   const onSubmit = async (event) => {
     event.preventDefault();
     setShowForm(false);
@@ -180,7 +200,13 @@ function Gameslayout() {
                 
                 await updateTotalGamesPlayed(TotalGameObject);
                 setScore('');
-                navigate('/wordlestats');
+                const latest_group_id = lastGroup?.group_id;
+                if(latest_group_id){
+                navigate(`/group/${latest_group_id}/stats/wordle`);
+                }
+                else{
+                navigate("/wordlestats");
+                }
             }
             else{
                 toast.error(res.data.message );
@@ -253,4 +279,4 @@ const updateTotalGamesPlayed = async (TotalGameObject) => {
   );
 }
 
-export default Gameslayout;
+export default GamesLayout;

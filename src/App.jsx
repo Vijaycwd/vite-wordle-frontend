@@ -6,16 +6,17 @@ import Userlogin from './auth/Userlogin';
 import Registerform from './auth/Registerform';
 import ProtectedRouter from './auth/Protect';
 import NotFound from './pages/NotFound';
+import Statistics from './pages/Statistics';
 import Resetpwd from './auth/Resetpwd';
 import Resetpwdform from './auth/Resetpwdform';
 import UserProfile from './components/Games/Wordle/UserProfile';
 import Home from './pages/Home';
 import Connectionsgame from './components/Games/Connections/GameLayout';
 import Phrazlegame from './components/Games/Phrazle/GameLayout';
-import Wordlegame from './components/Games/Wordle/GamesLayout';
 import Wordlestats from './components/Games/Wordle/Wordlestats';
 import ConnectionStat from './components/Games/Connections/ConnectionStat';
 import PhrazleStat from './components/Games/Phrazle/PhrazleStat';
+
 import GamesStat from './components/Games/GamesStat';
 import Groups from './pages/Groups';
 import Grouppage from './pages/Grouppage';
@@ -31,6 +32,7 @@ import UsersList from './pages/UsersList';
 import GamleIntro from './pages/GamleIntro';
 import FAQPage from './pages/FAQPage';
 
+
 function App() {
   return (
     <Layout>
@@ -43,7 +45,7 @@ function App() {
         <Route exact path="/register" element={<Registerform />} />
         <Route path="/register/:group_id" element={<Registerform />} />
         <Route exact path="*" element={<NotFound/>} />
-        <Route exact path='/wordle' element={<Wordlegame/>}/>
+        <Route exact path='/wordle' element={<Statistics/>}/>
         <Route exact path= '/connections' element={<Connectionsgame/>}/>
         <Route exact path= '/phrazle' element={<Phrazlegame/>}/>
         <Route exact path="/reset-password" element={<Resetpwd />} />
@@ -71,4 +73,5 @@ function App() {
     
   );
 }
+
 export default App;
