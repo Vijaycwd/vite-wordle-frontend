@@ -1,5 +1,5 @@
 import React from 'react';
-import Gameslayout from '../components/GamesLayout';
+import Gameslayout from '../components/Gameslayout';
 function Statistics() {
   return (
     <>
