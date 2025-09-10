@@ -19,7 +19,9 @@ function GroupStatsPage() {
   const userId = userAuthData.id;
   const [showProfile, setShowProfile] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
-
+  const now = new Date();
+  const period = now.getHours() < 12 ? "AM" : "PM";
+  
   useEffect(() => {
     const fetchGroupDetails = async () => {
         try {
@@ -62,6 +64,7 @@ function GroupStatsPage() {
             groupId={id}
             gameName={game}
             createdAt={dayjs().format("YYYY-MM-DD HH:mm:ss")}
+            periodType={game === "phrazle" ? period : ""}
             userId={userId}
           />
         </Col>

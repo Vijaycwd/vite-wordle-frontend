@@ -10,7 +10,6 @@ import FeedbackButton from './FeedbackButton';
 import { useLocation } from 'react-router-dom';
 import TitleLogo from '../../src/WordleTitleLogo.png';
 
-
 function Home() {
     const baseURL = import.meta.env.VITE_BASE_URL;
     const userAuthData = JSON.parse(localStorage.getItem('auth')) || {};

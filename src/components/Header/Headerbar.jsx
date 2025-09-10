@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Container, Row, Col, Button, Overlay, Popover,  Navbar,Nav, } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Logo from '../../Logo.png';
-import TitleLogo from '../../WordleTitleLogo.png';
 import { useNavigate } from "react-router-dom";
 import '@fortawesome/fontawesome-free/css/all.min.css'; 
 import axios from 'axios';
