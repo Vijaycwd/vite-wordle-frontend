@@ -4,7 +4,7 @@ import axios from 'axios';
 import dayjs from "dayjs";
 import GroupChatInput from "../../pages/GroupLeaderboard/GroupChatInput"; // ✅ import input box
 
-const GetGroupMessagesModal = ({ groupId, gameName, periodDate, periodType, userId }) => {
+const GetGroupMessagesModal = ({ groupId, gameName, periodDate, periodType, userId, archive }) => {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const periodDateStr = dayjs(periodDate).format("YYYY-MM-DD");
   const [show, setShow] = useState(false);
@@ -54,6 +54,7 @@ const GetGroupMessagesModal = ({ groupId, gameName, periodDate, periodType, user
       created_at: periodDate,
       user_id: userId,
       message: messageText,
+      archive
     });
     fetchMessages(); // refresh after sending
   };
@@ -108,7 +109,7 @@ const GetGroupMessagesModal = ({ groupId, gameName, periodDate, periodType, user
 
         {/* ✅ Added input for sending messages */}
         <Modal.Footer className="w-100 d-block">
-          <GroupChatInput onSend={handleSend} gameName={gameName} />
+          <GroupChatInput onSend={handleSend} gameName={gameName}  />
         </Modal.Footer>
       </Modal>
     </>

@@ -556,11 +556,11 @@ let sheriffWinners = [];
                                             ))}
                                             {missedUsers.some(user => user.email === userEmail) && currentUserData && (
                                             currentUserData.gamename === 'connections' ? (
-                                                <ConnectionPlayService />
+                                                <ConnectionPlayService groupId={id} gameName={game} userId={userId}/>
                                             ) : currentUserData.gamename === 'wordle' ? (
-                                                <WordlePlayService />
+                                                <WordlePlayService groupId={id} gameName={game} userId={userId}/>
                                             ) : currentUserData.gamename === 'quordle' ? (
-                                                <QuordlePlayService />
+                                                <QuordlePlayService groupId={id} gameName={game} userId={userId}/>
                                             ) : null
                                             )}
                                         </div>

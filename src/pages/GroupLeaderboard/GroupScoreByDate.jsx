@@ -865,6 +865,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
                     periodDate={dayjs(startDate).format("YYYY-MM-DD HH:mm:ss")}
                     periodType={game == 'phrazle' ? period : ''}
                     userId={userId}
+                    archive = 'true'
                 />
                 </Col>
             </Row>

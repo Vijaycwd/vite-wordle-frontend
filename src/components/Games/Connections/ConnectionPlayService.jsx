@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import LoginModal from './Modals/LoginModal';
 import ConnectionsModal from './Modals/ConnectionsScoreModal';
 
-function ConnectionPlayService({ updateStatsChart }) {
+function ConnectionPlayService({ updateStatsChart, groupId, gameName }) {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
   const userId = USER_AUTH_DATA?.id;
@@ -144,6 +144,9 @@ const onSubmit = async (event) => {
     guessDistribution: updatedDistribution,
     handleHighlight: mistakeCount,
     timeZone,
+    groupId,
+    gameName,
+    userId
   };
 
   try {
