@@ -3,6 +3,7 @@ import { Container, Row, Col, Form, Button, Modal, Spinner } from 'react-bootstr
 import Axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import dayjs from "dayjs";
 
 function SelectScoringMethod({ leaderboardText }) {
     const baseURL = import.meta.env.VITE_BASE_URL;
@@ -63,7 +64,8 @@ function SelectScoringMethod({ leaderboardText }) {
             const res = await Axios.post(`${baseURL}/groups/update-scoring-method.php`, {
                 userId,
                 groupId,
-                scoringMethod: selectedMethod
+                scoringMethod: selectedMethod,
+                createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss")
             });
 
             if (res.data.status === "success") {

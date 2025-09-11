@@ -24,7 +24,7 @@ const GroupInvites = ({enable_invitation}) => {
       const response = await axios.get(
         `${baseURL}/groups/get-invites.php?user_id=${userId}`
       );
-
+      console.log('axios response',response.data);
       const newInvites = Array.isArray(response.data.invitations)
         ? response.data.invitations
         : [];
@@ -128,12 +128,11 @@ const handleDeclineInvite = async (inviteId) => {
 };
   // Invite polling effect
   useEffect(() => {
-    if (enable_invitation == 1) {
       fetchGroupInvites();
       inviteIntervalRef.current = setInterval(fetchGroupInvites, 8000);
       return () => clearInterval(inviteIntervalRef.current);
-    }
-  }, [enable_invitation]);
+    
+  }, []);
 
   // Message polling effect
   useEffect(() => {
@@ -154,7 +153,7 @@ const handleDeclineInvite = async (inviteId) => {
         game_name: game,
         user_id: userId,
       });
-
+      console.log(msgId);
       navigate(`/group/${groupId}?msg_id=${msgId}`);
     } catch (error) {
       console.error("Axios error:", error);
@@ -179,7 +178,7 @@ const handleDeclineInvite = async (inviteId) => {
       console.error("Axios error:", error);
     }
   };
-   console.log(groupMessages);
+
   return (
     <Dropdown show={showDropdown} onToggle={() => setShowDropdown(!showDropdown)}>
       <Dropdown.Toggle variant="light" id="group-invites">
@@ -228,33 +227,41 @@ const handleDeclineInvite = async (inviteId) => {
               {Array.isArray(groupMessages) && groupMessages.length > 0 &&
                 groupMessages.map((msg) => (
                   <ListGroup.Item key={`msg-${msg.id}`}>
-                    {msg.msg_from == 'group' ? (
-                      <>
-                    
-                    <p>
-                      {msg.message}{" "}
-                      <Link
-                        to={`/group/${msg.group_id}?msg_id=${msg.msg_id}`}
-                        onClick={(e) => handleClickGroup(e, msg.group_id, msg.game_name, userId, msg.msg_id)}
-                      >
-                        View
-                      </Link>
-                    </p>
-                    </>
-                  ) : (
-                    <>
-                    <p>
-                      {msg.message}{" "}
-                      <Link
-                        to={`/group/${msg.group_id}/stats/${msg.game_name}?msg_id=${msg.msg_id}`}
-                        onClick={(e) => handleClick(e, msg.group_id, msg.game_name, userId, msg.msg_id)}
-                      >
-                        View
-                      </Link>
-                    </p>
-                    </>
-                  )}
+                    {msg.msg_from === 'group' ? (
+                      <p>
+                        {msg.message}{" "}
+                        <Link
+                          to={
+                            msg.msg_id
+                              ? `/group/${msg.group_id}?msg_id=${msg.msg_id}`
+                              : `/group/${msg.group_id}`
+                          }
+                          onClick={(e) =>
+                            handleClickGroup(e, msg.group_id, msg.game_name, userId, msg.msg_id)
+                          }
+                        >
+                          View
+                        </Link>
+                      </p>
+                    ) : (
+                      <p>
+                        {msg.message}{" "}
+                        <Link
+                          to={
+                            msg.msg_id
+                              ? `/group/${msg.group_id}/stats/${msg.game_name}?msg_id=${msg.msg_id}`
+                              : `/group/${msg.group_id}/stats/${msg.game_name}`
+                          }
+                          onClick={(e) =>
+                            handleClick(e, msg.group_id, msg.game_name, userId, msg.msg_id)
+                          }
+                        >
+                          View
+                        </Link>
+                      </p>
+                    )}
                   </ListGroup.Item>
+
                 ))
               }
             </ListGroup>

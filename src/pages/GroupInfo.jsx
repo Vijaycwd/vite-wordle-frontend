@@ -10,7 +10,7 @@ import GroupExitConfirmModal from '../constant/Models/GroupExitConfirmModal';
 import GroupDeleteConfirmModal from '../constant/Models/GroupDeleteConfirmModal';
 import MemberProfile from '../constant/Models/MemberProfile';
 import { FaTrash } from 'react-icons/fa';
-// import InviteGroupandSite from './InviteGroupAndSite';
+import InviteGroupandSite from './InviteGroupAndSite';
 import GroupDeletePreference from '../constant/Models/GroupDeletePreference';
 import RemoveMemberConfirmModal from '../constant/Models/RemoveMemberConfirmModal';
 
@@ -331,30 +331,14 @@ function GroupInfo() {
                         <Row className="justify-content-center">
                             <Col xs={10} md={6}>
                                 <Button
-                                    className="me-md-2 w-100"
+                                    className="mb-2 me-md-2 w-100"
                                     onClick={() =>
                                     navigate(`/group/${group.id}/stats`)
                                     }
                                 >
                                     Group Leaderboards
                                 </Button>
-                                {/* <InviteGroupandSite/> */}
-                                <Button variant="danger" className="my-2 w-100" onClick={() => {setShowDeleteConfirm(true);}} disabled={loading}>
-                                    {deleteloading? (
-                                        <>
-                                        <Spinner
-                                            as="span"
-                                            animation="border"
-                                            size="sm"
-                                            role="status"
-                                            aria-hidden="true"
-                                        />{' '}
-                                        Deleting...
-                                        </>
-                                    ) : (
-                                        'Delete Group'
-                                    )}
-                                </Button>
+                                <InviteGroupandSite/>
                             </Col>
                             {userId === captainid ? (
                             <>
@@ -362,7 +346,7 @@ function GroupInfo() {
                                 <Button className="btn btn-warning w-100" onClick={handleShowModal}>
                                     Edit Group Name
                                 </Button>
-                                {/* <Button variant="danger" className="mt-2 w-100" onClick={() => {setShowDeleteConfirm(true);}} disabled={loading}>
+                                <Button variant="danger" className="w-100" onClick={() => {setShowDeleteConfirm(true);}} disabled={loading}>
                                     {deleteloading? (
                                         <>
                                         <Spinner
@@ -377,12 +361,12 @@ function GroupInfo() {
                                     ) : (
                                         'Delete Group'
                                     )}
-                                </Button> */}
+                                    </Button>
                                 </Col>
                             </>
                             ) : (
-                            <Col xs={6} md={3}>
-                                <Button className="btn btn-danger my-2" onClick={() => {setShowExitConfirm(true);}}>
+                            <Col xs={10} md={6}>
+                                <Button className="btn-danger w-100" onClick={() => {setShowExitConfirm(true);}}>
                                 Exit Group
                                 </Button>
                             </Col>

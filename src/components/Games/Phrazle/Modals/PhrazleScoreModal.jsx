@@ -3,7 +3,7 @@ import { Modal, Button, Form, FloatingLabel } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { DateTime, Duration } from 'luxon';
 
-const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore, loginUsername }) => {
+const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore, loginUsername}) => {
   const [isPasted, setIsPasted] = useState(false);
   const [gameNumber, setPhrazleGameNumber] = useState();
   

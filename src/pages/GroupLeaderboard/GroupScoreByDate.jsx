@@ -80,21 +80,6 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
         }
     }, [id, userId]); 
 
-
-
-    // Function to format date for backend
-    //const formatDateForBackend = (date) => moment(date).format('YYYY-MM-DD');
-
-    // Handle date selection
-    // const handleDateChange = (date) => {
-    //     setStartDate(date);
-    //     fetchDataByDate(formatDateForBackend(date));  // Fetch data on date change
-    // };
-
-    // const formatDateForBackend = (date) => {
-    //     if (!date || isNaN(date.getTime())) return "";
-    //     return moment(date).format("YYYY-MM-DD");
-    // };
     const formatDateForBackend = (date) => {
         if (!date) return "";
         const m = moment(date);
