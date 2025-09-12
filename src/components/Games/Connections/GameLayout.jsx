@@ -145,6 +145,9 @@ function GamesLayout() {
       guessDistribution: updatedDistribution,
       handleHighlight: mistakeCount,
       timeZone,
+      groupId:lastGroup?.group_id,
+      gameName:"connections",
+      userId
     };
    // console.log(scoreObject);
     try {

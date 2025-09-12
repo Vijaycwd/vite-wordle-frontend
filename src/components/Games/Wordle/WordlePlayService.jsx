@@ -107,8 +107,8 @@ function WordlePlayService({ updateStatsChart, groupId, gameName  }) {
                 createdAt: adjustedCreatedAt,
                 currentUserTime: adjustedCreatedAt,
                 timeZone,
-                groupId,
-                gameName,
+                groupId:lastGroup?.group_id,
+                gameName:"wordle",
                 userId
             };
             // console.log(wordleObject);

@@ -101,6 +101,8 @@ useEffect(() => {
 }, [userId]);
 
 
+console.log('lastGroup', lastGroup);
+
 const onSubmit = async (event) => {
   event.preventDefault();
   
@@ -144,8 +146,8 @@ const onSubmit = async (event) => {
     guessDistribution: updatedDistribution,
     handleHighlight: mistakeCount,
     timeZone,
-    groupId,
-    gameName,
+    groupId:lastGroup?.group_id,
+    gameName:"connections",
     userId
   };
 

@@ -3,8 +3,8 @@ import { Row, Col, Button} from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import PhrazlePlayService from './PhrazlePlayService';
 
-const Phrazlegame = () => {
-    
+const Phrazlegame = ({ groupId, gameName, userId }) => {
+    console.log('groupId', groupId);
     const navigate = useNavigate();
 
     const handleConnectionstate = async (event) => {
@@ -16,7 +16,8 @@ const Phrazlegame = () => {
         <>
             <Row>
                 <Col>
-                    <PhrazlePlayService/>
+                    
+                    <PhrazlePlayService groupId={groupId} gameName={gameName} userId={userId} />
                 </Col>
                 <Col>
                     <div className="my-3">

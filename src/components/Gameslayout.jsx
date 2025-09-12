@@ -175,7 +175,10 @@ function GamesLayout() {
             gamleScore: guessesUsed,
             createdAt: adjustedCreatedAt,
             currentUserTime: adjustedCreatedAt,
-            timeZone
+            timeZone,
+            groupId:lastGroup?.group_id,
+            gameName:"wordle",
+            userId
         };
        
         try {

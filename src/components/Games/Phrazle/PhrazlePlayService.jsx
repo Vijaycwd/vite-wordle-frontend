@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import LoginModal from './Modals/LoginModal';
 import PhrazlesModal from './Modals/PhrazleScoreModal';
 
-function PhrazlePlayService({ updateStatsChart, groupId, gameName }) {
+function PhrazlePlayService({ updateStatsChart}) {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth')) || {};
   const { username: loginUsername, email: loginUserEmail } = USER_AUTH_DATA;
@@ -63,7 +63,6 @@ useEffect(() => {
 
 const onSubmit = async (event) => {
   event.preventDefault();
-  console.log('gameName',gameName);
   setShowForm(false);
 
   if (typeof updateStatsChart === 'function') {
@@ -112,8 +111,8 @@ const onSubmit = async (event) => {
       createdAt:adjustedCreatedAt,
       currentUserTime: adjustedCreatedAt,
       timeZone,
-      groupId,
-      gameName,
+      groupId:lastGroup?.group_id,
+      gameName:"phrazle",
       userId
     };
     // console.log(phrazleObject);

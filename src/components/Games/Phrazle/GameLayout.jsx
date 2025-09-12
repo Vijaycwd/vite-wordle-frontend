@@ -122,6 +122,9 @@ function GamesLayout() {
         createdAt:adjustedCreatedAt,
         currentUserTime: adjustedCreatedAt,
         timeZone,
+        groupId:lastGroup?.group_id,
+        gameName:"phrazle",
+        userId
       };
       try {
         const res = await Axios.post(`${baseURL}/games/phrazle/create-score.php`, phrazleObject);
