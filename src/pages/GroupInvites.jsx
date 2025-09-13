@@ -24,7 +24,7 @@ const GroupInvites = ({enable_invitation}) => {
       const response = await axios.get(
         `${baseURL}/groups/get-invites.php?user_id=${userId}`
       );
-      console.log('axios response',response.data);
+      
       const newInvites = Array.isArray(response.data.invitations)
         ? response.data.invitations
         : [];
@@ -153,7 +153,7 @@ const handleDeclineInvite = async (inviteId) => {
         game_name: game,
         user_id: userId,
       });
-      console.log(msgId);
+      
       navigate(`/group/${groupId}?msg_id=${msgId}`);
     } catch (error) {
       console.error("Axios error:", error);

@@ -5,12 +5,13 @@ import dayjs from "dayjs";
 import GroupChatInput from "../../pages/GroupLeaderboard/GroupChatInput"; // ✅ import input box
 
 const GetGroupMessagesModal = ({ groupId, gameName, periodDate, periodType, userId, archive }) => {
+  console.log(periodType)
   const baseURL = import.meta.env.VITE_BASE_URL;
   const periodDateStr = dayjs(periodDate).format("YYYY-MM-DD");
   const [show, setShow] = useState(false);
   const [messages, setMessages] = useState([]);
   const messagesEndRef = useRef(null);
-
+  const [latestCreatedAt,setLatestCreatedAt] = useState(null);
   // auto scroll when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -49,18 +50,51 @@ const GetGroupMessagesModal = ({ groupId, gameName, periodDate, periodType, user
   const handleSend = async (messageText) => {
     if (!messageText.trim()) return;
     await axios.post(`${baseURL}/groups/send-user-message.php`, {
-      group_id: groupId,
+      group_id: groupId,  
       game_name: gameName,
-      created_at: periodDate,
+      created_at: archive ? latestCreatedAt : periodDate,
       user_id: userId,
       message: messageText,
-      archive
+      
     });
     fetchMessages(); // refresh after sending
   };
 
+  useEffect(() => {
+  const fetchLatestDate = async () => {
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      const baseParams = {
+        group_id: groupId,
+        game_name: gameName,
+        created_at: periodDateStr,
+        archive: archive
+      };
+
+      const params = gameName === "phrazle"
+        ? { ...baseParams, period: periodType }
+        : baseParams;
+
+      const response = await axios.get(`${baseURL}/groups/get-latest-created-at.php`, { params });
+
+      if (response.data?.created_at) {
+        setLatestCreatedAt(response.data.created_at);
+      }
+    } catch (error) {
+      console.error("Failed to fetch latest created_at:", error);
+    }
+  };
+
+  if (groupId && gameName && userId) {
+    fetchLatestDate();
+  }
+}, [groupId, archive, userId]);
+
+console.log('latestCreatedAt',latestCreatedAt);
   return (
     <>
+    
       <div className='text-center my-4'>
         <Button className={`${gameName}-btn`} onClick={handleShow}>
           Messages {dayjs(periodDate).format("MMM, D YYYY")}

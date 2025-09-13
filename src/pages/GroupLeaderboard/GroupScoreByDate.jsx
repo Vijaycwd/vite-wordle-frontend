@@ -731,7 +731,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
                                    
                                     const isQuordleValidScore =
                                         data.gamename === "quordle" ? data.gamlescore >= 10 && data.gamlescore <= 30 : true;
-                                    console.log(topScorers);
+                                    
                                     const isSingleWinner =
                                         isQuordleValidScore &&
                                         topScorers.length === 1 &&

@@ -100,9 +100,6 @@ useEffect(() => {
   }
 }, [userId]);
 
-
-console.log('lastGroup', lastGroup);
-
 const onSubmit = async (event) => {
   event.preventDefault();
   
