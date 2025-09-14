@@ -4,10 +4,10 @@ import dayjs from "dayjs";
 function GroupChatMessagesByDate({ messages, userId, baseURL, highlightMsgId }) {
   const chatEndRef = useRef(null);
 
-  // Auto-scroll to bottom on new messages
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+   // Auto-scroll to bottom on new messages
+  // useEffect(() => {
+  //   chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // }, [messages]);
 
   // Highlight specific message by ID
   useEffect(() => {
