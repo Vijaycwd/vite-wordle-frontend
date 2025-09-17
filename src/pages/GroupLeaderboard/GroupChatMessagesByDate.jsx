@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 function GroupChatMessagesByDate({ gameName, messages, userId, baseURL, highlightMsgId }) {
   const chatEndRef = useRef(null);
 
-   // Auto-scroll to bottom on new messages
+  // Auto-scroll to bottom on new messages
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -30,67 +30,108 @@ function GroupChatMessagesByDate({ gameName, messages, userId, baseURL, highligh
     );
   }
 
+  // ✅ Group messages by date
+  const groupedMessages = messages.reduce((groups, msg) => {
+    const dateKey = dayjs(msg.created_at).format("YYYY-MM-DD");
+    if (!groups[dateKey]) groups[dateKey] = [];
+    groups[dateKey].push(msg);
+    return groups;
+  }, {});
+
+  // ✅ Helper to display human-friendly date (Today, Yesterday, etc.)
+  const getDateLabel = (dateKey) => {
+    const date = dayjs(dateKey);
+    if (date.isSame(dayjs(), "day")) return "Today";
+    if (date.isSame(dayjs().subtract(1, "day"), "day")) return "Yesterday";
+    return date.format("MMM D, YYYY");
+  };
+
   return (
     <>
-      {messages.map((msg) => {
-        const isMe = msg.user_id === userId;
-        const time = msg.created_at
-        ? gameName
-          ? dayjs(msg.created_at).format("hh:mm A")
-          : dayjs(msg.created_at).format("MMM, D YYYY hh:mm") // 12-hour
-        : "";
-        
-        return (
-          <div
-            key={msg.id}
-            id={`msg-${msg.id}`} // important for highlight
-            className={`d-flex flex-column mb-3 ${isMe ? "align-items-end" : "align-items-start"}`}
-          >
-            {/* Username */}
-            <div className={`small fw-bold mb-1 ${isMe ? "text-end me-1" : "ms-1"}`}>
-              {msg.username || `User ${msg.user_id}`}
-            </div>
+      {Object.keys(groupedMessages).map((dateKey) => (
+        <div key={dateKey}>
 
-            {/* Message row */}
-            <div className={`d-flex ${isMe ? "flex-row-reverse" : ""}`}>
-              {/* Avatar */}
-              <img
-                src={msg.avatar ? `${baseURL}/user/uploads/${msg.avatar}` : "https://via.placeholder.com/30"}
-                alt="avatar"
-                className={`rounded-circle ${isMe ? "ms-2" : "me-2"}`}
-                width="30"
-                height="30"
-                onError={(e) => (e.target.style.display = "none")}
-              />
-
-              {/* Message bubble */}
-              <div
-                className={`p-2 rounded-3 ${isMe ? "bg-primary text-white" : "bg-white border text-dark"}`}
+          {!gameName && (
+            <div className="d-flex align-items-center my-3">
+              <div style={{ flex: 1, height: "1px", backgroundColor: "#ccc" }}></div>
+              <span
                 style={{
-                  wordWrap: "break-word",
-                  overflowWrap: "break-word",
-                  whiteSpace: "pre-wrap",
-                  position: "relative",
+                  background: "#e5e5e5",
+                  padding: "3px 10px",
+                  borderRadius: "10px",
+                  fontSize: "0.75rem",
+                  color: "#555",
+                  margin: "0 10px",
+                  whiteSpace: "nowrap",
                 }}
               >
-                <div style={{ paddingRight: "45px", marginBottom:"5px" }}>{msg.message}</div>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: "3px",
-                    right: "5px",
-                    fontSize: "0.6rem",
-                    color: isMe ? "rgba(255,255,255,0.7)" : "#6c757d",
-                  }}
-                >
-                  {time}
-                  
+                {getDateLabel(dateKey)}
+              </span>
+              <div style={{ flex: 1, height: "1px", backgroundColor: "#ccc" }}></div>
+            </div>
+          )}
+
+          {/* Messages for this date */}
+          {groupedMessages[dateKey].map((msg) => {
+            const isMe = msg.user_id === userId;
+            const time = msg.created_at
+              ? gameName
+                ? dayjs(msg.created_at).format("HH:mm A") // 24hr
+                : dayjs(msg.created_at).format("hh:mm A") // 12hr
+              : "";
+
+            return (
+              <div
+                key={msg.id}
+                id={`msg-${msg.id}`} // for highlight
+                className={`d-flex flex-column mb-3 ${isMe ? "align-items-end" : "align-items-start"}`}
+              >
+                {/* Username */}
+                <div className={`small fw-bold mb-1 ${isMe ? "text-end me-1" : "ms-1"}`}>
+                  {msg.username || `User ${msg.user_id}`}
+                </div>
+
+                {/* Message row */}
+                <div className={`d-flex ${isMe ? "flex-row-reverse" : ""}`}>
+                  {/* Avatar */}
+                  <img
+                    src={msg.avatar ? `${baseURL}/user/uploads/${msg.avatar}` : "https://via.placeholder.com/30"}
+                    alt="avatar"
+                    className={`rounded-circle ${isMe ? "ms-2" : "me-2"}`}
+                    width="30"
+                    height="30"
+                    onError={(e) => (e.target.style.display = "none")}
+                  />
+
+                  {/* Message bubble */}
+                  <div
+                    className={`p-2 rounded-3 ${isMe ? "bg-primary text-white" : "bg-white border text-dark"}`}
+                    style={{
+                      wordWrap: "break-word",
+                      overflowWrap: "break-word",
+                      whiteSpace: "pre-wrap",
+                      position: "relative",
+                    }}
+                  >
+                    <div style={{ paddingRight: "45px", marginBottom: "5px" }}>{msg.message}</div>
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: "3px",
+                        right: "5px",
+                        fontSize: "0.6rem",
+                        color: isMe ? "rgba(255,255,255,0.7)" : "#6c757d",
+                      }}
+                    >
+                      {time}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        );
-      })}
+            );
+          })}
+        </div>
+      ))}
       <div ref={chatEndRef} />
     </>
   );
