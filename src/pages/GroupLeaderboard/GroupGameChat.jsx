@@ -6,7 +6,6 @@ import GroupChatMessagesByDate from "./GroupChatMessagesByDate";
 import GroupChatInput from "./GroupChatInput";
 
 function GroupGameChat({ groupId, gameName, createdAt, periodType, userId, highlightMsgId, generalChat }) {
-  console.log(groupId);
   const baseURL = import.meta.env.VITE_BASE_URL;
   const [messages, setMessages] = useState([]);
   
@@ -79,7 +78,7 @@ function GroupGameChat({ groupId, gameName, createdAt, periodType, userId, highl
       fetchMessages();
     }
   };
-
+console.log(generalChat)
 
   return (
         <>
@@ -88,6 +87,7 @@ function GroupGameChat({ groupId, gameName, createdAt, periodType, userId, highl
           style={{ height: "350px", overflowY: "auto", background: "#e8f3fb" }}
         >
           <GroupChatMessagesByDate
+            gameName={gameName}
             messages={messages}
             userId={userId}
             baseURL={baseURL}

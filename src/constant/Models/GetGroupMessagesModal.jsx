@@ -7,7 +7,6 @@ import GroupChatInput from "../../pages/GroupLeaderboard/GroupChatInput"; // ✅
 const GetGroupMessagesModal = ({ groupId, gameName, periodDate, periodType, userId, archive }) => {
   const baseURL = import.meta.env.VITE_BASE_URL;
   const periodDateStr = dayjs(periodDate).format("YYYY-MM-DD");
-  console.log('periodDateStr',periodDateStr);
   const [show, setShow] = useState(false);
   const [messages, setMessages] = useState([]);
   const messagesEndRef = useRef(null);

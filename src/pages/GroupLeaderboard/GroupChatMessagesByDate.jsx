@@ -1,13 +1,13 @@
 import React, { useRef, useEffect } from "react";
 import dayjs from "dayjs";
 
-function GroupChatMessagesByDate({ messages, userId, baseURL, highlightMsgId }) {
+function GroupChatMessagesByDate({ gameName, messages, userId, baseURL, highlightMsgId }) {
   const chatEndRef = useRef(null);
 
    // Auto-scroll to bottom on new messages
-  // useEffect(() => {
-  //   chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  // }, [messages]);
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   // Highlight specific message by ID
   useEffect(() => {
@@ -34,8 +34,12 @@ function GroupChatMessagesByDate({ messages, userId, baseURL, highlightMsgId }) 
     <>
       {messages.map((msg) => {
         const isMe = msg.user_id === userId;
-        const time = msg.created_at ? dayjs(msg.created_at).format("hh:mm A") : "";
-
+        const time = msg.created_at
+        ? gameName
+          ? dayjs(msg.created_at).format("hh:mm A")
+          : dayjs(msg.created_at).format("MMM, D YYYY hh:mm") // 12-hour
+        : "";
+        
         return (
           <div
             key={msg.id}
@@ -69,7 +73,7 @@ function GroupChatMessagesByDate({ messages, userId, baseURL, highlightMsgId }) 
                   position: "relative",
                 }}
               >
-                <div style={{ paddingRight: "45px" }}>{msg.message}</div>
+                <div style={{ paddingRight: "45px", marginBottom:"5px" }}>{msg.message}</div>
                 <div
                   style={{
                     position: "absolute",
@@ -80,6 +84,7 @@ function GroupChatMessagesByDate({ messages, userId, baseURL, highlightMsgId }) 
                   }}
                 >
                   {time}
+                  
                 </div>
               </div>
             </div>
