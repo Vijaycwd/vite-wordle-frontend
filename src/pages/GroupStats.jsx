@@ -4,7 +4,8 @@ import { Container, Row, Col, Button } from 'react-bootstrap';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import GroupGameChat from './GroupLeaderboard/GroupGameChat';
+import dayjs from "dayjs";
 
 function GroupStats() {
   const baseURL = import.meta.env.VITE_BASE_URL;
@@ -65,13 +66,6 @@ function GroupStats() {
     }
 }, [userId]);
 
-
-  // List of available games
-  const games = [
-    { key: 'wordle', label: 'Wordle' },
-    { key: 'connections', label: 'Connections' },
-    { key: 'phrazle', label: 'Phrazle' }
-  ];
   // console.log('selectedGames',selectedGames);
   return (
     <Container>
@@ -90,6 +84,17 @@ function GroupStats() {
                 </Button>
               </Col>
             ))}
+          </Row>
+          <Row>
+            <Col className="mt-4">
+              <GroupGameChat
+                groupId={id}
+                createdAt={dayjs().format("YYYY-MM-DD HH:mm:ss")}
+                generalChat = "true"
+                userId={userId}
+                // highlightMsgId={msgId}
+              />
+            </Col>
           </Row>
         </Col>
       </Row>

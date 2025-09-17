@@ -201,6 +201,11 @@ span.notification-count.badge.bg-danger {
   background-color: #218838!important;
   
 }
+.quordle-progressbar .progress-bar, .quordle-progress-bar .progress-bar
+{
+  background-color: #02a34a!important;
+  
+}
 .fas{
   font-size: 15px;
 }
@@ -280,13 +285,11 @@ span.notification-count.badge.bg-danger {
   object-fit: cover;
 }
 button, input{
-  cursor: pointer;
+cursor: pointer;
 }
-.chat-message.own {
-  background-color: #fff3b0; /* light yellow */
-  transition: background-color 1s ease;
+.cwd-swiper-animation .swiper-wrapper{
+  justify-content: center !important;
 }
-
 /* Hide on larger screens */
 @media only screen and (max-width: 600px)  {
   .navbar-collapse {
@@ -303,6 +306,11 @@ button, input{
 .navbar-toggler-icon {
   background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%2300BF63' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 }
-
+.cwd-game-btn{
+  font-size: 14px !important;
+}
+.cwd-swiper-animation .swiper-wrapper{
+  justify-content: start !important;
+}
 
 }

@@ -64,8 +64,8 @@ function GroupStatsPage() {
           <GroupLeaderboardScores setLatestJoinDate={setLatestJoinDate}  setSelectedMember={setSelectedMember} setShowProfile={setShowProfile}/>
         </Col>
       </Row>
-      <Row>
-        <Col>
+      <Row className="justify-content-center"> 
+        <Col md={6}>
           <GroupGameChat
             groupId={id}
             gameName={game}
