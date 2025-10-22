@@ -290,6 +290,14 @@ cursor: pointer;
 .cwd-swiper-animation .swiper-wrapper{
   justify-content: center !important;
 }
+.white-btn{
+  background-color: #ffffff !important;
+  border: none;
+  color:#000000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+}
+
 /* Hide on larger screens */
 @media only screen and (max-width: 600px)  {
   .navbar-collapse {
@@ -312,5 +320,9 @@ cursor: pointer;
 .cwd-swiper-animation .swiper-wrapper{
   justify-content: start !important;
 }
-
+.custom-button-row{
+  display: block;
+  margin: auto;
+  width: 70%;
+}
 }
