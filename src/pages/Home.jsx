@@ -138,10 +138,10 @@ function Home() {
                                     <p className='fs-4 text-center' dangerouslySetInnerHTML={{ __html: homepageText.heading_pre }}></p>
                                     <Row className='custom-button-row'>
                                         <Col>
-                                            <Link className="btn btn-primary my-2 w-100" to={registerPath}>Create Profile</Link>
+                                            <Link className="btn btn-primary my-2 w-100" to={registerPath}>Create Account</Link>
                                         </Col>
                                         <Col>
-                                            <Button className="my-2 w-100 white-btn" onClick={loginformClick}>Login</Button>
+                                            <Button className="my-2 w-100 white-btn" onClick={loginformClick}>Log In</Button>
                                         </Col>
                                     </Row>
                                     <div dangerouslySetInnerHTML={{ __html: homepageText.text1_pre }} />
