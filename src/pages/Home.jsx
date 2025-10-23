@@ -136,16 +136,15 @@ function Home() {
                                 <>
                                     {/* Content for users who have NOT created an account */}
                                     <p className='fs-4 text-center' dangerouslySetInnerHTML={{ __html: homepageText.heading_pre }}></p>
-                                    <div dangerouslySetInnerHTML={{ __html: homepageText.text1_pre }} />
-                                    <Row className="custom-button-row">
+                                    <Row className='custom-button-row'>
                                         <Col>
-                                            <Link className="btn btn-primary w-100 my-2" to={registerPath}>Create Account</Link>
+                                            <Link className="btn btn-primary my-2 w-100" to={registerPath}>Create Profile</Link>
                                         </Col>
                                         <Col>
-                                            <Button className="white-btn w-100 my-2" onClick={loginformClick}>Log In</Button>
+                                            <Button className="my-2 w-100 white-btn" onClick={loginformClick}>Login</Button>
                                         </Col>
                                     </Row>
-                                    
+                                    <div dangerouslySetInnerHTML={{ __html: homepageText.text1_pre }} />
                                 </>
                             ) : (
                                 <>
@@ -157,16 +156,7 @@ function Home() {
 
                         </Col>
                     </Row>
-                    <Row>
-                        <Col className="py-3">
-                            <p className="text-center">
-                                {parts[0]}
-                                <a href="#" onClick={inviteFriends}> Invite Friends</a>
-                                {parts[1]}
-                            </p>
-                        </Col>
-                    </Row>
-                    <Row className="cwd-swiper-animation custom-button-row">
+                    <Row className="cwd-swiper-animation">
                         {/* <Swiper
                             modules={[FreeMode]}
                             spaceBetween={10}
@@ -197,21 +187,25 @@ function Home() {
                             </SwiperSlide>
                         </Swiper> */}
                         <Col className="text-center py-1" md={4} s={12}>
-                            <Button className="wordle-btn w-100" onClick={() => handleNavigation('wordle')}>Wordle</Button>
+                            <Button className="wordle-btn" onClick={() => handleNavigation('wordle')}>Wordle</Button>
                         </Col>
                         <Col className="text-center py-1" md={4} s={12}>
-                            <Button className="connections-btn w-100" onClick={() => handleNavigation('connections')}>Connections</Button>
+                            <Button className="connections-btn" onClick={() => handleNavigation('connections')}>Connections</Button>
                         </Col>
                         <Col className="text-center py-1" md={4} s={12}>
-                            <Button className="phrazle-btn w-100" onClick={() => handleNavigation('phrazle')}>Phrazle</Button>
+                            <Button className="phrazle-btn" onClick={() => handleNavigation('phrazle')}>Phrazle</Button>
                         </Col>
                     </Row>
                     <Row>
-                        <Col className='py-3'>
+                        <Col className="py-3">
+                            <p className="text-center">
+                                {parts[0]}
+                                <a href="#" onClick={inviteFriends}> Invite Friends</a>
+                                {parts[1]}
+                            </p>
                             <p className='text-center' dangerouslySetInnerHTML={{ __html: homepageText.text2 }}></p>
                         </Col>
                     </Row>
-                    
 
                     {/* {!userAuthData || isEmptyObject ? (
                         <div>
