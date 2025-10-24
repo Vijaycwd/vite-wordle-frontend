@@ -133,9 +133,11 @@ function Home() {
                         <Col>
                             
                             {!userAuthData || isEmptyObject ? (
+
                                 <>
                                     {/* Content for users who have NOT created an account */}
                                     <p className='fs-4 text-center' dangerouslySetInnerHTML={{ __html: homepageText.heading_pre }}></p>
+                                    <div dangerouslySetInnerHTML={{ __html: homepageText.text1_pre }} />
                                     <Row className='custom-button-row'>
                                         <Col>
                                             <Link className="btn btn-primary my-2 w-100" to={registerPath}>Create Account</Link>
@@ -144,80 +146,58 @@ function Home() {
                                             <Button className="my-2 w-100 white-btn" onClick={loginformClick}>Log In</Button>
                                         </Col>
                                     </Row>
-                                    <div dangerouslySetInnerHTML={{ __html: homepageText.text1_pre }} />
+                                    <Row>
+                                        <Col className="py-3">
+                                            <p className="text-center">
+                                                {parts[0]}
+                                                <a href="#" onClick={inviteFriends}> Invite Friends</a>
+                                                {parts[1]}
+                                            </p>
+                                        </Col>
+                                    </Row>
+                                    <Row className="cwd-swiper-animation custom-button-row">
+                                        <Col className="text-center py-1" md={4} s={12}>
+                                            <Button className="wordle-btn w-100" onClick={() => handleNavigation('wordle')}>Wordle</Button>
+                                        </Col>
+                                        <Col className="text-center py-1" md={4} s={12}>
+                                            <Button className="connections-btn w-100" onClick={() => handleNavigation('connections')}>Connections</Button>
+                                        </Col>
+                                        <Col className="text-center py-1" md={4} s={12}>
+                                            <Button className="phrazle-btn w-100" onClick={() => handleNavigation('phrazle')}>Phrazle</Button>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col className="py-3">
+                                            <p className='text-center' dangerouslySetInnerHTML={{ __html: homepageText.text2 }}></p>
+                                        </Col>
+                                    </Row>
                                 </>
                             ) : (
                                 <>
                                     {/* Content for users who HAVE created an account */}
                                     <p className='fs-4 text-center' dangerouslySetInnerHTML={{ __html: homepageText.heading_post }}></p>
                                     <div dangerouslySetInnerHTML={{ __html: homepageText.text1_post }} />
+                                    <Row className="cwd-swiper-animation custom-button-row">
+                                        <Col className="text-center py-1" md={4} s={12}>
+                                            <Button className="wordle-btn w-100" onClick={() => handleNavigation('wordle')}>Wordle</Button>
+                                        </Col>
+                                        <Col className="text-center py-1" md={4} s={12}>
+                                            <Button className="connections-btn w-100" onClick={() => handleNavigation('connections')}>Connections</Button>
+                                        </Col>
+                                        <Col className="text-center py-1" md={4} s={12}>
+                                            <Button className="phrazle-btn w-100" onClick={() => handleNavigation('phrazle')}>Phrazle</Button>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col className="py-3">
+                                            <p className='text-center' dangerouslySetInnerHTML={{ __html: homepageText.text2 }}></p>
+                                        </Col>
+                                    </Row>
                                 </>
                             )}
 
                         </Col>
                     </Row>
-                    <Row className="cwd-swiper-animation custom-button-row">
-                        {/* <Swiper
-                            modules={[FreeMode]}
-                            spaceBetween={10}
-                            slidesPerView="auto"
-                            freeMode
-                            >
-                            <SwiperSlide style={{ width: "auto" }}>
-                                <Button className="btn-lg w-100" onClick={() => handleNavigation('wordle')}>
-                                Wordle
-                                </Button>      
-                            </SwiperSlide>
-
-                            <SwiperSlide style={{ width: "auto" }}>
-                                <Button className="btn-lg w-100" onClick={() => handleNavigation('connections')}>
-                                Connections
-                                </Button>
-                            </SwiperSlide>
-
-                            <SwiperSlide style={{ width: "auto" }}>
-                               <Button className="btn-lg w-100" onClick={() => handleNavigation('phrazle')}>
-                                Phrazle
-                                </Button>
-                            </SwiperSlide>
-                            <SwiperSlide style={{ width: "auto" }}>
-                               <Button className="btn-lg w-100" onClick={() => handleNavigation('quordle')}>
-                                Quordle
-                                </Button>
-                            </SwiperSlide>
-                        </Swiper> */}
-                        <Col className="text-center py-1" md={4} s={12}>
-                            <Button className="wordle-btn w-100" onClick={() => handleNavigation('wordle')}>Wordle</Button>
-                        </Col>
-                        <Col className="text-center py-1" md={4} s={12}>
-                            <Button className="connections-btn w-100" onClick={() => handleNavigation('connections')}>Connections</Button>
-                        </Col>
-                        <Col className="text-center py-1" md={4} s={12}>
-                            <Button className="phrazle-btn w-100" onClick={() => handleNavigation('phrazle')}>Phrazle</Button>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col className="py-3">
-                            <p className="text-center">
-                                {parts[0]}
-                                <a href="#" onClick={inviteFriends}> Invite Friends</a>
-                                {parts[1]}
-                            </p>
-                            <p className='text-center' dangerouslySetInnerHTML={{ __html: homepageText.text2 }}></p>
-                        </Col>
-                    </Row>
-
-                    {/* {!userAuthData || isEmptyObject ? (
-                        <div>
-                            <p className='text-center'>Please create your profile and then click the game buttons and go from there!</p>
-                            <Link className="btn btn-primary btn-lg my-3" to={registerPath} style={{ width: "60%" }}>Create Profile</Link>
-                            <Button className="btn-lg mt-3" onClick={loginformClick} style={{ width: "60%" }}>Login</Button>
-                        </div>
-                    ) : (
-                        <div>
-                            
-                        </div>
-                    )} */}
                 </Col>
             </Row>
             
