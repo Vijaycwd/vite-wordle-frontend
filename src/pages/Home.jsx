@@ -138,7 +138,7 @@ function Home() {
                                     {/* Content for users who have NOT created an account */}
                                     <p className='fs-4 text-center' dangerouslySetInnerHTML={{ __html: homepageText.heading_pre }}></p>
                                     <div dangerouslySetInnerHTML={{ __html: homepageText.text1_pre }} />
-                                    <Row className='custom-button-row'>
+                                    <Row className='custom-button-row pb-3'>
                                         <Col>
                                             <Link className="btn btn-primary my-2 w-100" to={registerPath}>Create Account</Link>
                                         </Col>
@@ -146,9 +146,9 @@ function Home() {
                                             <Button className="my-2 w-100 white-btn" onClick={loginformClick}>Log In</Button>
                                         </Col>
                                     </Row>
-                                    <Row>
-                                        <Col className="py-3">
-                                            <p className="text-center">
+                                    <Row className="pb-3">
+                                        <Col className="">
+                                            <p className="text-center m-0">
                                                 {parts[0]}
                                                 <a href="#" onClick={inviteFriends}> Invite Friends</a>
                                                 {parts[1]}
@@ -168,7 +168,7 @@ function Home() {
                                     </Row>
                                     <Row>
                                         <Col className="py-3">
-                                            <p className='text-center' dangerouslySetInnerHTML={{ __html: homepageText.text2 }}></p>
+                                            <p className='text-center m-0' dangerouslySetInnerHTML={{ __html: homepageText.text2 }}></p>
                                         </Col>
                                     </Row>
                                 </>
@@ -188,8 +188,17 @@ function Home() {
                                             <Button className="phrazle-btn w-100" onClick={() => handleNavigation('phrazle')}>Phrazle</Button>
                                         </Col>
                                     </Row>
+                                    <Row className='mt-3'>
+                                        <Col className="">
+                                            <p className="text-center">
+                                                {parts[0]}
+                                                <a href="#" onClick={inviteFriends}> Invite Friends</a>
+                                                {parts[1]}
+                                            </p>
+                                        </Col>
+                                    </Row>
                                     <Row>
-                                        <Col className="py-3">
+                                        <Col className="">
                                             <p className='text-center' dangerouslySetInnerHTML={{ __html: homepageText.text2 }}></p>
                                         </Col>
                                     </Row>
