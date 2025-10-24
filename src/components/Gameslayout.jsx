@@ -22,6 +22,7 @@ function GamesLayout() {
   const navigate = useNavigate();
   const userEmail = USER_AUTH_DATA.email;
   const userId = USER_AUTH_DATA?.id;
+  const [lastGroup, setLastGroup] = useState(null);
 
   useEffect(() => {
     if (userEmail) {
