@@ -102,7 +102,7 @@ function Home() {
         };
 
         if (navigator.share) {
-            console.log(message);
+            
             try {
             await navigator.share(shareData);
             
@@ -156,7 +156,7 @@ function Home() {
 
                         </Col>
                     </Row>
-                    <Row className="cwd-swiper-animation">
+                    <Row className="cwd-swiper-animation custom-button-row">
                         {/* <Swiper
                             modules={[FreeMode]}
                             spaceBetween={10}
@@ -187,13 +187,13 @@ function Home() {
                             </SwiperSlide>
                         </Swiper> */}
                         <Col className="text-center py-1" md={4} s={12}>
-                            <Button className="wordle-btn" onClick={() => handleNavigation('wordle')}>Wordle</Button>
+                            <Button className="wordle-btn w-100" onClick={() => handleNavigation('wordle')}>Wordle</Button>
                         </Col>
                         <Col className="text-center py-1" md={4} s={12}>
-                            <Button className="connections-btn" onClick={() => handleNavigation('connections')}>Connections</Button>
+                            <Button className="connections-btn w-100" onClick={() => handleNavigation('connections')}>Connections</Button>
                         </Col>
                         <Col className="text-center py-1" md={4} s={12}>
-                            <Button className="phrazle-btn" onClick={() => handleNavigation('phrazle')}>Phrazle</Button>
+                            <Button className="phrazle-btn w-100" onClick={() => handleNavigation('phrazle')}>Phrazle</Button>
                         </Col>
                     </Row>
                     <Row>
