@@ -624,7 +624,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
 
                                             <Col xs={5}>
                                                 <Row className="align-items-center">
-                                                    <Col xs={7}>
+                                                    <Col md={7} xs={6} >
                                                         <ProgressBar
                                                             className={`${data.gamename}-progressbar`}
                                                             variant="success"
@@ -642,7 +642,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
                                                         />
                                                     </Col>
                                                     
-                                                    <Col xs={5} className="text-center d-flex fw-bold">
+                                                    <Col md={5} xs={6} className="text-center d-flex fw-bold">
                                                         <span
                                                             onClick={() => showDayResult(data.createdat, data.useremail, data.gamename, period)}
                                                             style={{ cursor: "pointer" }}
@@ -781,7 +781,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
 
                                         <Col xs={5}>
                                             <Row className="align-items-center">
-                                            <Col xs={7}>
+                                            <Col md={7} xs={6}>
                                                 <ProgressBar
                                                 className={`${data.gamename}-progressbar`}
                                                 variant="success"
@@ -799,7 +799,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
                                                 />
                                             </Col>
                                             
-                                            <Col xs={5} className="text-center d-flex fw-bold">
+                                            <Col md={5} xs={6} className="text-center d-flex fw-bold">
                                                 <span
                                                     onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)}
                                                     style={{ cursor: "pointer" }}
