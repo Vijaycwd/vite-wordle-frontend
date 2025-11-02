@@ -343,7 +343,7 @@ function GroupInfo() {
                             {userId === captainid ? (
                             <>
                                 <Col xs={10} md={6}>
-                                <Button className="btn btn-warning w-100" onClick={handleShowModal}>
+                                <Button className="btn btn-warning w-100 mb-2 me-md-2" onClick={handleShowModal}>
                                     Edit Group Name
                                 </Button>
                                 <Button variant="danger" className="w-100" onClick={() => {setShowDeleteConfirm(true);}} disabled={loading}>

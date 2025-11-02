@@ -475,6 +475,7 @@ let sheriffWinners = [];
                                             const isTopScorer = isSingleWinner || isSharedWinner;
                                             const isSheriffToday = isSheriff(data.username);
                                             const allLost = minScoreToday === 7;
+                                            const worldCupScore = allLost ? 0 : (isSingleWinner ? 3 : isSharedWinner ? 1 : 0);
                                             const pesceScore = allLost ? 0 : (isTopScorer ? 1 : 0);
 
                                             return (
@@ -510,13 +511,27 @@ let sheriffWinners = [];
                                                         />
                                                     </Col>
                                                     <Col xs={5} className="text-center d-flex fw-bold">
+                                                    <span
+                                                        onClick={() => showDayResult(data.createdat, data.useremail, data.gamename)}
+                                                        style={{ cursor: "pointer" }}
+                                                    >
+                                                        {scoringMethod === "Golf"
+                                                        ? (data.gamlescore ?? '') === '' ? totalScore : data.gamlescore
+                                                        : scoringMethod === "World Cup"
+                                                        ? worldCupScore
+                                                        : pesceScore}
+                                                        {scoringMethod !== "Pesce" && isSingleWinner && " 🏆"}
+                                                        {scoringMethod == "Pesce" && isSheriffToday && "🤠"}
+                                                    </span>
+                                                    </Col>
+                                                    {/* <Col xs={5} className="text-center d-flex fw-bold">
                                                         <span
                                                         onClick={() => showDayResult(data.createdat, data.useremail, data.gamename, period)}
                                                         style={{ cursor: "pointer" }}
                                                         >
                                                         {pesceScore} {isSheriffToday && "🤠"}
                                                         </span>
-                                                    </Col>
+                                                    </Col> */}
                                                     </Row>
                                                 </Col>
                                                 </Row>
@@ -592,7 +607,7 @@ let sheriffWinners = [];
                                     
                                     return (
                                         <>
-                                            <h4 className="text-center py-3">Today's Leaderboards</h4>
+                                            <h4 className="text-center py-3">Today's Leaderboard</h4>
                                             {/* {scoringMethod === "Pesce" && (
                                                 <div className="text-center my-3 fw-bold">
                                                     Sheriff: {sheriffWinners.map(u => u.username).join(', ') || "—"}
