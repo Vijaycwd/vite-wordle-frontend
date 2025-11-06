@@ -78,7 +78,6 @@ function GroupGameChat({ groupId, gameName, createdAt, periodType, userId, highl
       fetchMessages();
     }
   };
-console.log(generalChat)
 
   return (
         <>

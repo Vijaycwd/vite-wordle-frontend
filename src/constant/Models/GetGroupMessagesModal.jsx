@@ -11,7 +11,7 @@ const GetGroupMessagesModal = ({ groupId, gameName, periodDate, periodType, user
   const [messages, setMessages] = useState([]);
   const messagesEndRef = useRef(null);
   const [latestCreatedAt,setLatestCreatedAt] = useState(null);
-  console.log("GetGroupMessagesModal props -> periodDate:", periodDate, "periodType:", periodType, "archive:", archive);
+  
   useEffect(() => {
     // don't run until these required props are available
     if (!groupId || !gameName || !userId || !periodDate) return;
@@ -25,7 +25,7 @@ const GetGroupMessagesModal = ({ groupId, gameName, periodDate, periodType, user
 
         // compute formatted periodDate inside effect (prevents dayjs(undefined) or stale capture)
         const periodDateStr = dayjs(periodDate).format("YYYY-MM-DD");
-        console.log("fetchLatestDate -> periodDateStr:", periodDateStr);
+       
 
         // normalize archive (handles boolean or 'true'/'false' strings)
         const archiveBool = archive === true || archive === "true";
@@ -43,17 +43,17 @@ const GetGroupMessagesModal = ({ groupId, gameName, periodDate, periodType, user
           ? { ...baseParams, period: periodType }
           : baseParams;
 
-        console.log("fetchLatestDate -> params:", params);
+        
 
         const response = await axios.get(`${baseURL}/groups/get-latest-created-at.php`, { params });
 
         if (!mounted) return; // avoid state update if unmounted
 
         if (response?.data?.created_at) {
-          console.log("fetchLatestDate -> server returned created_at:", response.data.created_at);
+          
           setLatestCreatedAt(response.data.created_at);
         } else {
-          console.log("fetchLatestDate -> server returned no created_at, clearing latestCreatedAt");
+          
           setLatestCreatedAt(null);
         }
       } catch (err) {
@@ -69,8 +69,6 @@ const GetGroupMessagesModal = ({ groupId, gameName, periodDate, periodType, user
       mounted = false;
     };
   }, [groupId, gameName, periodDate, periodType, userId, archive, baseURL]);
-
-console.log('latestCreatedAt',latestCreatedAt);
 
   // auto scroll when messages change
   useEffect(() => {

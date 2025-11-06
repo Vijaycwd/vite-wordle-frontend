@@ -1,9 +1,13 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState  } from "react";
 import dayjs from "dayjs";
+import EmojiPicker from "emoji-picker-react";
+import axios from "axios";
 
 function GroupChatMessagesByDate({ gameName, messages, userId, baseURL, highlightMsgId }) {
   const chatEndRef = useRef(null);
-
+  const [showPickerFor, setShowPickerFor] = useState(null);
+  const [msgreaction, setMsgReaction] = useState(null);
+  
   // Auto-scroll to bottom on new messages
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -46,6 +50,32 @@ function GroupChatMessagesByDate({ gameName, messages, userId, baseURL, highligh
     return date.format("MMM D, YYYY");
   };
 
+  // ✅ Handle emoji reaction
+  const handleEmojiSelect = async (emojiData, messageId) => {
+    try {
+      const response = await axios.post(`${baseURL}/groups/react-message.php`, {
+        message_id: messageId,
+        user_id: userId,
+        emoji: emojiData.emoji,
+      });
+      setMsgReaction(emojiData.emoji)
+      
+
+      // 👇 Optionally show popup or inline confirmation
+      if (response.data.success) {
+        //alert(`Reaction ${response.data.action}: ${emojiData.emoji}`);
+      } else {
+        alert("Something went wrong while reacting!");
+      }
+      setShowPickerFor(null);
+
+      // 🔄 Optional: refresh messages to show updated counts
+      // fetchMessages();
+    } catch (error) {
+      alert("Failed to send reaction. Please try again.");
+    }
+  };
+
   return (
     <>
       {Object.keys(groupedMessages).map((dateKey) => (
@@ -79,7 +109,6 @@ function GroupChatMessagesByDate({ gameName, messages, userId, baseURL, highligh
                 ? dayjs(msg.created_at).format("HH:mm A") // 24hr
                 : dayjs(msg.created_at).format("hh:mm A") // 12hr
               : "";
-
             return (
               <div
                 key={msg.id}
@@ -92,16 +121,20 @@ function GroupChatMessagesByDate({ gameName, messages, userId, baseURL, highligh
                 </div>
 
                 {/* Message row */}
-                <div className={`d-flex ${isMe ? "flex-row-reverse" : ""}`}>
-                  {/* Avatar */}
-                  <img
-                    src={msg.avatar ? `${baseURL}/user/uploads/${msg.avatar}` : "https://via.placeholder.com/30"}
-                    alt="avatar"
-                    className={`rounded-circle ${isMe ? "ms-2" : "me-2"}`}
-                    width="30"
-                    height="30"
-                    onError={(e) => (e.target.style.display = "none")}
-                  />
+                
+                <div className={`d-flex align-items-end ${isMe ? "flex-row-reverse" : ""}`} style={{ position: "relative" }}>
+                  {/* Avatar + Reactions */}
+                  <div style={{ position: "relative" }}>  
+                    <img
+                      src={msg.avatar ? `${baseURL}/user/uploads/${msg.avatar}` : "https://via.placeholder.com/30"}
+                      alt="avatar"
+                      className={`rounded-circle ${isMe ? "ms-2" : "me-2"}`}
+                      width="30"
+                      height="30"
+                      onError={(e) => (e.target.style.display = "none")}
+                    />
+                    
+                  </div>
 
                   {/* Message bubble */}
                   <div
@@ -111,9 +144,10 @@ function GroupChatMessagesByDate({ gameName, messages, userId, baseURL, highligh
                       overflowWrap: "break-word",
                       whiteSpace: "pre-wrap",
                       position: "relative",
+                      maxWidth: "75%",
                     }}
                   >
-                    <div style={{ paddingRight: "45px", marginBottom: "5px" }}>{msg.message}</div>
+                    <div style={{ paddingRight: "40px", marginBottom: "5px"}}>{msg.message}</div>
                     <div
                       style={{
                         position: "absolute",
@@ -123,9 +157,81 @@ function GroupChatMessagesByDate({ gameName, messages, userId, baseURL, highligh
                         color: isMe ? "rgba(255,255,255,0.7)" : "#6c757d",
                       }}
                     >
+                      
                       {time}
                     </div>
+                    {/* 💖 Reaction (bottom-left corner like WhatsApp) */}
+                    
+                    {msg.emoji && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          bottom: "-12px",
+                          left: "0px",
+                          background: isMe ? "#ffffff" : "#ffffff",
+                          border: isMe ? "1px solid rgba(255,255,255,0.3)" : "1px solid #ddd",
+                          borderRadius: "50%",
+                          padding: "1px 5px",
+                          fontSize: "0.8rem",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "3px",
+                          boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+                        }}
+                      >
+                        {msg.emoji}
+                      </div>
+                    )}
+                    
                   </div>
+                  {/* Add Reaction button and Emoji Picker — only show for others' messages */}
+                  {!isMe && (
+                    <div>
+                      <button
+                        className="btn btn-sm text-muted p-0 mt-1"
+                        onClick={() =>
+                          setShowPickerFor(showPickerFor === msg.id ? null : msg.id)
+                        }
+                      >
+                        😊
+                      </button>
+                      {showPickerFor === msg.id && (
+                        <div
+                          style={{
+                            position: "fixed",
+                            top: 0,
+                            left: 0,
+                            width: "100%",
+                            height: "100%",
+                            backgroundColor: "rgba(0,0,0,0.5)",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            zIndex: 9999,
+                          }}
+                          onClick={() => setShowPickerFor(null)} // Close on background tap
+                        >
+                          <div
+                            onClick={(e) => e.stopPropagation()} // Prevent background close
+                            style={{
+                              background: "#fff",
+                              borderRadius: "12px",
+                              padding: "15px",
+                              width: "90%",
+                              maxWidth: "350px",
+                              boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+                            }}
+                          >
+                            <EmojiPicker
+                              onEmojiClick={(emojiData) => handleEmojiSelect(emojiData, msg.id)}
+                              autoFocusSearch={false}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                    </div>
+                  )}
                 </div>
               </div>
             );
