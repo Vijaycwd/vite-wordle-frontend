@@ -139,13 +139,14 @@ const onSubmit = async (event) => {
        
         await updateTotalGamesPlayed(TotalGameObject);
         setScore('');
-        const latest_group_id = lastGroup?.group_id;
-        if(latest_group_id){
-          navigate(`/group/${latest_group_id}/stats/phrazle`);
-        }
-        else{
-          navigate("/phrazlestats");
-        }
+        navigate("/phrazlestats");
+        // const latest_group_id = lastGroup?.group_id;
+        // if(latest_group_id){
+        //   navigate(`/group/${latest_group_id}/stats/phrazle`);
+        // }
+        // else{
+        //   navigate("/phrazlestats");
+        // }
       } else {
         toast.error(res.data.message);
       }

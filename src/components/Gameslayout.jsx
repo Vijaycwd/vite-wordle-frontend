@@ -204,13 +204,14 @@ function GamesLayout() {
                 
                 await updateTotalGamesPlayed(TotalGameObject);
                 setScore('');
-                const latest_group_id = lastGroup?.group_id;
-                if(latest_group_id){
-                navigate(`/group/${latest_group_id}/stats/wordle`);
-                }
-                else{
                 navigate("/wordlestats");
-                }
+                // const latest_group_id = lastGroup?.group_id;
+                // if(latest_group_id){
+                // navigate(`/group/${latest_group_id}/stats/wordle`);
+                // }
+                // else{
+                // navigate("/wordlestats");
+                // }
             }
             else{
                 toast.error(res.data.message );
