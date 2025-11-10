@@ -53,6 +53,31 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
     //       });
     //   }, []);
       
+
+    const [winners, setWinners] = useState([]);
+    useEffect(() => {
+        const fetchGameWinners = async () => {
+            try {
+                const res = await axios.get(`${baseURL}/groups/winner-notification.php`, {
+                    params: { user_id: userId, group_id: id, game, todayDate }
+                });
+
+                if (res.data.status == "success") {
+                    
+                    setWinners(res.data.winners); // Default to empty string
+                } else {
+                    toast.error("Scoring Method not found.",{ autoClose: 3000 });
+                }
+            } catch (err) {
+                // toast.error("Failed to load group info.",{ autoClose: 3000 });
+            }
+        };
+
+        if (id && userId) {  
+            fetchGameWinners();
+        }
+    }, [id, userId]); 
+    
    useEffect(() => {
            const fetchscoringMethod = async () => {
                try {
@@ -64,10 +89,10 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
                        
                        setScoringMethod(res.data.scoring_method); // Default to empty string
                    } else {
-                       toast.error("Scoring Method not found.");
+                       toast.error("Scoring Method not found.",{ autoClose: 3000 });
                    }
                } catch (err) {
-                   toast.error("Failed to load group info.");
+                   toast.error("Failed to load group info.",{ autoClose: 3000 });
                }
            };
    
@@ -204,6 +229,7 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
         setSelectedMember(data);
         setShowProfile(true);
     };
+
     const showDayResult = (date, useremail, game, period) => {
     // console.log('showDayResult');
     setSelectedGame(game);
@@ -234,83 +260,84 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
     .catch((error) => {
         console.error(`API Error for ${game}:`, error);
     });
-};
+    };
 
 
-const handleCloseModal = () => {
-    setShowModal(false);
-    // if (updated) fetchGroupInfo();
-};
-function splitIntoRowsByNewline(text) {
-    const cleanedData = text.trim();
-    const rows = cleanedData.split(/\n+/);
-    return rows.map(row => row.replace(/\s+/g, ' ').trim());
-}
-function splitIntoRowsByLength(inputString, rowLength) {
-    const rows = [];
-    const charArray = Array.from(inputString); // Convert string to array of characters
-    for (let i = 0; i < charArray.length; i += rowLength) {
-        rows.push(charArray.slice(i, i + rowLength).join(' '));
+    const handleCloseModal = () => {
+        setShowModal(false);
+        // if (updated) fetchGroupInfo();
+    };
+    function splitIntoRowsByNewline(text) {
+        const cleanedData = text.trim();
+        const rows = cleanedData.split(/\n+/);
+        return rows.map(row => row.replace(/\s+/g, ' ').trim());
     }
-    return rows;
-}
-const noDataMessage = {
-  wordle: "Gamle Score 7",
-  connections: "Gamle Score 4",
-  phrazle: "Gamle Score 7",
-  quordle: "Gamle Score 9"
-}[game] || "No data available.";
-    //// console.log('todayLeaderboard',todayLeaderboard);
-const today = new Date();
-const yesterday = new Date(today);
-yesterday.setDate(today.getDate() - 1);
-const yesterdayStr = yesterday.toISOString().split('T')[0];
+    function splitIntoRowsByLength(inputString, rowLength) {
+        const rows = [];
+        const charArray = Array.from(inputString); // Convert string to array of characters
+        for (let i = 0; i < charArray.length; i += rowLength) {
+            rows.push(charArray.slice(i, i + rowLength).join(' '));
+        }
+        return rows;
+    }
+    const noDataMessage = {
+    wordle: "Gamle Score 7",
+    connections: "Gamle Score 4",
+    phrazle: "Gamle Score 7",
+    quordle: "Gamle Score 9"
+    }[game] || "No data available.";
+        //// console.log('todayLeaderboard',todayLeaderboard);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
 
-// Helper to get period
-const getPeriod = (createdat) => {
-  const hour = new Date(createdat).getHours();
-  return hour < 12 ? "AM" : "PM";
-};
+    // Helper to get period
+    const getPeriod = (createdat) => {
+    const hour = new Date(createdat).getHours();
+    return hour < 12 ? "AM" : "PM";
+    };
 
-// Prepare sheriff list
-let sheriffWinners = [];
+    // Prepare sheriff list
+    let sheriffWinners = [];
 
-// Loop through games
-["phrazle", "othergame"].forEach(gameName => {
-  // Handle Phrazle AM and PM separately
-  const periods = gameName === "phrazle" ? ["AM", "PM"] : [null];
+    // Loop through games
+    ["phrazle", "othergame"].forEach(gameName => {
+    // Handle Phrazle AM and PM separately
+    const periods = gameName === "phrazle" ? ["AM", "PM"] : [null];
 
-  periods.forEach(period => {
-    // Today's scores for this game/period
-    const todayScores = todayLeaderboard.filter(d =>
-      d.gamename === gameName &&
-      (!period || getPeriod(d.createdat) === period)
-    );
+    periods.forEach(period => {
+        // Today's scores for this game/period
+        const todayScores = todayLeaderboard.filter(d =>
+        d.gamename === gameName &&
+        (!period || getPeriod(d.createdat) === period)
+        );
 
-    const todayMinScore = Math.min(...todayScores.map(d => d.gamlescore ?? 0));
-    const todayTopScorers = todayScores.filter(d => d.gamlescore === todayMinScore);
+        const todayMinScore = Math.min(...todayScores.map(d => d.gamlescore ?? 0));
+        const todayTopScorers = todayScores.filter(d => d.gamlescore === todayMinScore);
 
-    // Yesterday's scores for this game/period
-    const yesterdayScores = todayLeaderboard.filter(d =>
-      d.gamename === gameName &&
-      d.createdat?.startsWith(yesterdayStr) &&
-      (!period || getPeriod(d.createdat) === period)
-    );
+        // Yesterday's scores for this game/period
+        const yesterdayScores = todayLeaderboard.filter(d =>
+        d.gamename === gameName &&
+        d.createdat?.startsWith(yesterdayStr) &&
+        (!period || getPeriod(d.createdat) === period)
+        );
 
-    const yesterdayMinScore = Math.min(...yesterdayScores.map(d => d.gamlescore ?? 0));
-    const priorSheriffs = yesterdayScores
-      .filter(d => d.gamlescore === yesterdayMinScore)
-      .map(d => d.username);
+        const yesterdayMinScore = Math.min(...yesterdayScores.map(d => d.gamlescore ?? 0));
+        const priorSheriffs = yesterdayScores
+        .filter(d => d.gamlescore === yesterdayMinScore)
+        .map(d => d.username);
 
-    // Determine new sheriffs: exclude prior sheriff(s) in ties
-    const winners =
-      todayTopScorers.length > 0
-        ? todayTopScorers
-        : todayTopScorers.filter(d => !priorSheriffs.includes(d.username));
+        // Determine new sheriffs: exclude prior sheriff(s) in ties
+        const winners =
+        todayTopScorers.length > 0
+            ? todayTopScorers
+            : todayTopScorers.filter(d => !priorSheriffs.includes(d.username));
 
-    sheriffWinners.push(...winners);
-  });
-});
+        sheriffWinners.push(...winners);
+    });
+    });
+
 
 
     return (
@@ -332,7 +359,6 @@ let sheriffWinners = [];
                         <>
                             {/* Separate Phrazle AM and PM */}
                         
-
                             {!loading && !error && todayLeaderboard.length > 0 && (() => {
                                 // Filter out "phrazle" and find the lowest score
                                 const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename === "phrazle");

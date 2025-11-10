@@ -23,6 +23,7 @@ function GamesLayout() {
   const userEmail = USER_AUTH_DATA.email;
   const userId = USER_AUTH_DATA?.id;
   const [lastGroup, setLastGroup] = useState(null);
+  const [allGroup, setAllGroup] = useState(null);
 
   useEffect(() => {
     if (userEmail) {
@@ -127,6 +128,23 @@ function GamesLayout() {
     }
   }, [userId]);
   
+  //get all group id
+  useEffect(() => {
+  const fetchUserGroups = async () => {
+      try {
+      const response = await Axios.get(`${baseURL}/groups/get-user-groups.php`, {
+          params: { user_id: userId },
+      });
+      setAllGroup(response.data);
+      console.log("User joined groups:", response.data);
+      } catch (error) {
+      console.error("Error fetching user joined groups:", error);
+      }
+  };
+
+  if (userId) fetchUserGroups();
+  }, [userId]);
+  
   const onSubmit = async (event) => {
     event.preventDefault();
     setShowForm(false);
@@ -166,7 +184,7 @@ function GamesLayout() {
             updatedGuessDistribution[guessesUsed - 1] += 1;
         }
         setGuessDistribution(updatedGuessDistribution);
-
+        const userGroupIds = allGroup.map(group => group.id); 
         const wordleObject = {
             username: loginUsername,
             useremail: loginUserEmail,
@@ -177,7 +195,8 @@ function GamesLayout() {
             createdAt: adjustedCreatedAt,
             currentUserTime: adjustedCreatedAt,
             timeZone,
-            groupId:lastGroup?.group_id,
+            // groupId:lastGroup?.group_id,
+            groupIds: userGroupIds,
             gameName:"wordle",
             userId
         };
@@ -214,10 +233,10 @@ function GamesLayout() {
                 // }
             }
             else{
-                toast.error(res.data.message );
+                toast.error(res.data.message,{ autoClose: 3000 });
             }
         } catch (err) {
-            toast.error(err.res?.data?.message || 'An unexpected error occurred.');
+            toast.error(err.res?.data?.message || 'An unexpected error occurred.',{ autoClose: 3000 });
         }
     }
 };
@@ -226,7 +245,7 @@ const updateTotalGamesPlayed = async (TotalGameObject) => {
     try {
         await Axios.post(`${baseURL}/games/wordle/update-statistics.php`, TotalGameObject);
     } catch (err) {
-        toast.error('Failed to update total games played');
+        toast.error('Failed to update total games played',{ autoClose: 3000 });
     }
 };
 

@@ -251,19 +251,19 @@ function Registerform() {
                         localStorage.setItem('auth', JSON.stringify(loginRes.data));
                         navigate('/');
                     } else {
-                        toast.error("Auto-login failed. Please log in manually.");
+                        toast.error("Auto-login failed. Please log in manually.",{ autoClose: 3000 });
                         navigate('/login');
                     }
 
                 } catch (loginErr) {
-                    toast.error("Error logging in automatically.");
+                    toast.error("Error logging in automatically.",{ autoClose: 3000 });
                     navigate('/login');
                 }
             } else {
-                toast.error(res.data.message || "Registration failed");
+                toast.error(res.data.message || "Registration failed",{ autoClose: 3000 });
             }
         } catch (err) {
-            toast.error("An error occurred during registration");
+            toast.error("An error occurred during registration",{ autoClose: 3000 });
         }finally {
             setLoading(false); // Stop loading animation
         }

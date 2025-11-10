@@ -16,6 +16,7 @@ function WordlePlayService({ updateStatsChart, groupId, gameName  }) {
     const [score, setScore] = useState('');
     const [guessDistribution, setGuessDistribution] = useState([0, 0, 0, 0, 0, 0]);
     const [gameIsWin, setGameIsWin] = useState(false);
+    const [allGroup, setAllGroup] = useState(null);
     const [lastGroup, setLastGroup] = useState(null);
     const navigate = useNavigate();
 
@@ -55,7 +56,25 @@ function WordlePlayService({ updateStatsChart, groupId, gameName  }) {
         fetchLastGroup();
       }
     }, [userId]);
-    
+
+    //get all group id
+    useEffect(() => {
+    const fetchUserGroups = async () => {
+        try {
+        const response = await Axios.get(`${baseURL}/groups/get-user-groups.php`, {
+            params: { user_id: userId },
+        });
+        setAllGroup(response.data);
+        console.log("User joined groups:", response.data);
+        } catch (error) {
+        console.error("Error fetching user joined groups:", error);
+        }
+    };
+
+    if (userId) fetchUserGroups();
+    }, [userId]);
+
+
     const onSubmit = async (event) => {
         event.preventDefault();
         setShowForm(false);
@@ -79,8 +98,6 @@ function WordlePlayService({ updateStatsChart, groupId, gameName  }) {
     
         // console.log(adjustedCreatedAt);  // Output: Local time in 24-hour format (without 'Z')
     
-    
-    
         const wordleScore = score.replace(/[🟩🟨⬜⬛]/g, "");
         const match = wordleScore.match(/(\d+|X)\/(\d+)/);
         // console.log(match);
@@ -97,6 +114,8 @@ function WordlePlayService({ updateStatsChart, groupId, gameName  }) {
             }
             setGuessDistribution(updatedGuessDistribution);
     
+            const userGroupIds = allGroup.map(group => group.id);
+
             const wordleObject = {
                 username: loginUsername,
                 useremail: loginUserEmail,
@@ -107,7 +126,8 @@ function WordlePlayService({ updateStatsChart, groupId, gameName  }) {
                 createdAt: adjustedCreatedAt,
                 currentUserTime: adjustedCreatedAt,
                 timeZone,
-                groupId:lastGroup?.group_id,
+                // groupId:lastGroup?.group_id,
+                groupIds: userGroupIds,
                 gameName:"wordle",
                 userId
             };
@@ -135,21 +155,13 @@ function WordlePlayService({ updateStatsChart, groupId, gameName  }) {
                     await updateTotalGamesPlayed(TotalGameObject);
                     setScore('');
                     navigate("/wordlestats");
-                    // const latest_group_id = lastGroup?.group_id;
-                    // if(latest_group_id){
-                    // navigate(`/group/${latest_group_id}/stats/wordle`);
-                    // }
-                    // else{
-                    // navigate("/wordlestats");
-                    // }
-                    
-                    
+
                 }
                 else{
-                    toast.error(res.data.message );
+                    toast.error(res.data.message,{ autoClose: 3000 } );
                 }
             } catch (err) {
-                toast.error(err.res?.data?.message || 'An unexpected error occurred.');
+                toast.error(err.res?.data?.message || 'An unexpected error occurred.',{ autoClose: 3000 });
             }
         }
     };
@@ -158,7 +170,7 @@ function WordlePlayService({ updateStatsChart, groupId, gameName  }) {
         try {
             await Axios.post(`${baseURL}/games/wordle/update-statistics.php`, TotalGameObject);
         } catch (err) {
-            toast.error('Failed to update total games played');
+            toast.error('Failed to update total games played',{ autoClose: 3000 });
         }
     };
 

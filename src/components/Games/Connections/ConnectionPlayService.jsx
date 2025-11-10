@@ -23,7 +23,7 @@ function ConnectionPlayService({ updateStatsChart, groupId, gameName }) {
   const [currentStreak, setCurrentStreak] = useState(0);
   const [maxStreak, setMaxStreak] = useState(0);
   const [lastGroup, setLastGroup] = useState(null);
-
+  const [allGroup, setAllGroup] = useState(null);
   const navigate = useNavigate();
 
   const handleFormClose = () => {
@@ -100,6 +100,23 @@ useEffect(() => {
   }
 }, [userId]);
 
+//get all group id
+useEffect(() => {
+	const fetchUserGroups = async () => {
+	  try {
+	  const response = await Axios.get(`${baseURL}/groups/get-user-groups.php`, {
+	      params: { user_id: userId },
+	  });
+	  setAllGroup(response.data);
+	  console.log("User joined groups:", response.data);
+	  } catch (error) {
+	  console.error("Error fetching user joined groups:", error);
+	  }
+	};
+
+if (userId) fetchUserGroups();
+}, [userId]);
+
 const onSubmit = async (event) => {
   event.preventDefault();
   
@@ -130,12 +147,12 @@ const onSubmit = async (event) => {
   const adjustedCreatedAt = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
 
   
-
+  const userGroupIds = allGroup.map(group => group.id); 
 
   const scoreObject = {
     username: loginUsername,
     useremail: loginUserEmail,
-    connectionscore: score,
+    connectionsscore: score,
     gamleScore: mistakeCount,
     createdAt: adjustedCreatedAt,
     currentUserTime: adjustedCreatedAt,
@@ -143,7 +160,8 @@ const onSubmit = async (event) => {
     guessDistribution: updatedDistribution,
     handleHighlight: mistakeCount,
     timeZone,
-    groupId:lastGroup?.group_id,
+    // groupId:lastGroup?.group_id,
+    groupIds: userGroupIds,
     gameName:"connections",
     userId
   };
@@ -198,7 +216,7 @@ const onSubmit = async (event) => {
       // }
       
     } else {
-      toast.error(res.data.message);
+      toast.error(res.data.message,{ autoClose: 3000 });
     }
   } catch (err) {
     toast.error(
@@ -213,7 +231,7 @@ const onSubmit = async (event) => {
       const res = await Axios.post(`${baseURL}/games/connections/update-statistics.php`, TotalGameObject);
      
     } catch (err) {
-      toast.error('Failed to update total games played');
+      toast.error('Failed to update total games played',{ autoClose: 3000 });
     }
   };
     return (

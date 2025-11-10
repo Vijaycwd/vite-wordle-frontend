@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 
 
-const GroupInvites = ({enable_invitation}) => {
+const GroupInvites = () => {
 
   const baseURL = import.meta.env.VITE_BASE_URL;
   const USER_AUTH_DATA = JSON.parse(localStorage.getItem('auth'));
@@ -15,8 +15,10 @@ const GroupInvites = ({enable_invitation}) => {
   
   const inviteIntervalRef = useRef(null);
   const messageIntervalRef = useRef(null);
+  const messageCountRef = useRef(null);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const [unreadcount, setunReadCount]= useState(0);
   // Fetch group invites
 
   const fetchGroupInvites = async () => {
@@ -37,6 +39,15 @@ const GroupInvites = ({enable_invitation}) => {
     }
   };
 
+
+const fetchGroupCount = async () => {
+  try {
+    const response = await axios.get(`${baseURL}/groups/get-unseen-count.php?user_id=${userId}`);
+    setunReadCount(response.data.unread_count);
+  } catch (error) {
+    console.error('Error fetching group messages:', error);
+  }
+};
 
 const fetchGroupMessages = async () => {
   try {
@@ -136,10 +147,17 @@ const handleDeclineInvite = async (inviteId) => {
 
   // Message polling effect
   useEffect(() => {
+    fetchGroupCount();
+    messageCountRef.current = setInterval(fetchGroupCount, 8000);
+    return () => clearInterval(messageCountRef.current);
+  }, []);
+
+  useEffect(() => {
     fetchGroupMessages();
     messageIntervalRef.current = setInterval(fetchGroupMessages, 8000);
     return () => clearInterval(messageIntervalRef.current);
   }, []);
+
 
   const handleClickGroup = async (e, groupId, game, userId, msgId) => {
     e.preventDefault();
@@ -178,15 +196,26 @@ const handleDeclineInvite = async (inviteId) => {
       console.error("Axios error:", error);
     }
   };
-
   return (
-    <Dropdown show={showDropdown} onToggle={() => setShowDropdown(!showDropdown)}>
+    <Dropdown show={showDropdown} onToggle={async (isOpen) => {
+        setShowDropdown(isOpen);
+        if (isOpen) {
+          setunReadCount(0);
+          await axios.post(`${baseURL}/groups/mark-all-seen.php`, { user_id: userId });
+        }
+      }}
+    >
       <Dropdown.Toggle variant="light" id="group-invites">
         <i className="fas fa-bell"></i>
-        {((Array.isArray(invites) && invites.length > 0) ||
+        {/* {((Array.isArray(invites) && invites.length > 0) ||
           (Array.isArray(groupMessages) && groupMessages.length > 0)) && (
           <Badge bg="danger" className="notification-count">
-            { (invites?.length || 0) + (groupMessages?.length || 0) }
+            {unreadvount}
+          </Badge>
+        )} */}
+        {unreadcount > 0 && (
+          <Badge bg="danger" className="notification-count">
+            {unreadcount}
           </Badge>
         )}
       </Dropdown.Toggle>
@@ -195,79 +224,89 @@ const handleDeclineInvite = async (inviteId) => {
         <Dropdown.Header>Group Messages</Dropdown.Header>
 
           {(Array.isArray(invites) && invites.length > 0) || (Array.isArray(groupMessages) && groupMessages.length > 0) ? (
-            <ListGroup variant="flush">
-              {/* Invites */}
-              {Array.isArray(invites) && invites.length > 0 &&
-                invites.map((invite) => (
-                  <ListGroup.Item key={`invite-${invite.id}`}>
-                    <p>You have received an invitation from "{invite.group_name}"</p>
-                    <p><strong>Group Name:</strong> {invite.group_name}</p>
-                    <p>
-                      <strong>Group Captain:</strong> {`${invite.first_name} ${invite.last_name} (${invite.captain_name})`}
-                    </p>
-                    <Button
-                      size="sm"
-                      variant="success"
-                      onClick={() => handleAcceptInvite(invite.id, invite.group_id)}
-                    >
-                      Accept
-                    </Button>{' '}
-                    <Button
-                      size="sm"
-                      variant="danger"
-                      onClick={() => handleDeclineInvite(invite.id)}
-                    >
-                      Decline
-                    </Button>
-                  </ListGroup.Item>
-                ))
-              }
+  <div
+    style={{
+      maxHeight: "300px",        // adjust height as needed
+      overflowY: "auto",
+      overflowX: "hidden",
+      scrollbarWidth: "thin",
+      scrollbarColor: "#ccc #f9f9f9",
+    }}
+  >
+    <ListGroup variant="flush" style={{ minWidth: "300px" }}>
+      {/* Invites */}
+      {Array.isArray(invites) && invites.length > 0 &&
+        invites.map((invite) => (
+          <ListGroup.Item key={`invite-${invite.id}`}>
+            <p>You have received an invitation from "{invite.group_name}"</p>
+            <p><strong>Group Name:</strong> {invite.group_name}</p>
+            <p>
+              <strong>Group Captain:</strong> {`${invite.first_name} ${invite.last_name} (${invite.captain_name})`}
+            </p>
+            <Button
+              size="sm"
+              variant="success"
+              onClick={() => handleAcceptInvite(invite.id, invite.group_id)}
+            >
+              Accept
+            </Button>{" "}
+            <Button
+              size="sm"
+              variant="danger"
+              onClick={() => handleDeclineInvite(invite.id)}
+            >
+              Decline
+            </Button>
+          </ListGroup.Item>
+        ))
+      }
 
-              {/* Group Messages */}
-              {Array.isArray(groupMessages) && groupMessages.length > 0 &&
-                groupMessages.map((msg) => (
-                  <ListGroup.Item key={`msg-${msg.id}`}>
-                    {msg.msg_from === 'group' ? (
-                      <p>
-                        {msg.message}{" "}
-                        <Link
-                          to={
-                            msg.msg_id
-                              ? `/group/${msg.group_id}?msg_id=${msg.msg_id}`
-                              : `/group/${msg.group_id}`
-                          }
-                          onClick={(e) =>
-                            handleClickGroup(e, msg.group_id, msg.game_name, userId, msg.msg_id)
-                          }
-                        >
-                          View
-                        </Link>
-                      </p>
-                    ) : (
-                      <p>
-                        {msg.message}{" "}
-                        <Link
-                          to={
-                            msg.msg_id
-                              ? `/group/${msg.group_id}/stats/${msg.game_name}?msg_id=${msg.msg_id}`
-                              : `/group/${msg.group_id}/stats/${msg.game_name}`
-                          }
-                          onClick={(e) =>
-                            handleClick(e, msg.group_id, msg.game_name, userId, msg.msg_id)
-                          }
-                        >
-                          View
-                        </Link>
-                      </p>
-                    )}
-                  </ListGroup.Item>
+      {/* Group Messages */}
+      {Array.isArray(groupMessages) && groupMessages.length > 0 &&
+        groupMessages.map((msg) => (
+          <ListGroup.Item key={`msg-${msg.id}`}>
+            {msg.msg_from === "group" ? (
+              <p>
+                {msg.message}{" "}
+                <Link
+                  to={
+                    msg.msg_id
+                      ? `/group/${msg.group_id}?msg_id=${msg.msg_id}`
+                      : `/group/${msg.group_id}`
+                  }
+                  onClick={(e) =>
+                    handleClickGroup(e, msg.group_id, msg.game_name, userId, msg.msg_id)
+                  }
+                >
+                  View
+                </Link>
+              </p>
+            ) : (
+              <p className='cwd-group-message'>
+                {msg.message}{" "}
+                <Link
+                  to={
+                    msg.msg_id
+                      ? `/group/${msg.group_id}/stats/${msg.game_name}?msg_id=${msg.msg_id}`
+                      : `/group/${msg.group_id}/stats/${msg.game_name}`
+                  }
+                  onClick={(e) =>
+                    handleClick(e, msg.group_id, msg.game_name, userId, msg.msg_id)
+                  }
+                >
+                  View
+                </Link>
+              </p>
+            )}
+          </ListGroup.Item>
+        ))
+      }
+    </ListGroup>
+  </div>
+) : (
+  <Dropdown.Item disabled>No invites or messages</Dropdown.Item>
+)}
 
-                ))
-              }
-            </ListGroup>
-          ) : (
-            <Dropdown.Item disabled>No invites or messages</Dropdown.Item>
-          )}
       </Dropdown.Menu>
     </Dropdown>
   );

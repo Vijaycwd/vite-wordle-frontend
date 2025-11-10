@@ -297,7 +297,11 @@ cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 
 }
+.cwd-group-message{
+  font-size:16px !important;
+  margin: 0px !important;
 
+}
 /* Hide on larger screens */
 @media only screen and (max-width: 600px)  {
   .navbar-collapse {
