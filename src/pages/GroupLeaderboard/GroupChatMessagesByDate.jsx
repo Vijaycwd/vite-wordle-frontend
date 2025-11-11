@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import EmojiPicker from "emoji-picker-react";
 import axios from "axios";
 
-function GroupChatMessagesByDate({ gameName, messages, userId, baseURL, highlightMsgId }) {
+function GroupChatMessagesByDate({ gameName, messages, userId, baseURL, highlightMsgId, generalChat }) {
   const chatEndRef = useRef(null);
   const [showPickerFor, setShowPickerFor] = useState(null);
   const [msgreaction, setMsgReaction] = useState(null);
@@ -57,6 +57,7 @@ function GroupChatMessagesByDate({ gameName, messages, userId, baseURL, highligh
         message_id: messageId,
         user_id: userId,
         emoji: emojiData.emoji,
+        generalChat
       });
       setMsgReaction(emojiData.emoji)
       
