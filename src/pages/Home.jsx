@@ -30,7 +30,35 @@ function Home() {
     const encryptedId = params.get('group_id');
     const groupId = encryptedId;
     const registerPath = groupId ? `/register?group_id=${groupId}` : `/register`;
+    const [joinedGroups, setJoinedGroups] = useState([]);
 
+
+    const localDate = new Date();
+    
+    // Get time zone offset in minutes
+    const offsetMinutes = localDate.getTimezoneOffset();  // Offset in minutes (positive for behind UTC, negative for ahead)
+
+    // Now adjust the time by adding the time zone offset (this does not affect UTC, it gives the correct local time)
+    const adjustedDate = new Date(localDate.getTime() - offsetMinutes * 60 * 1000); // Adjust time by the offset in milliseconds
+
+    // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
+    const adjustedCreatedAt = adjustedDate.toISOString().slice(0, 19).replace('T', ' ');;
+    
+    useEffect(() => {
+        if (!userAuthData?.id) return;
+        Axios.get(`${baseURL}/user/get-user-groups.php`, {
+            params: { user_id: userAuthData.id, createdat:adjustedCreatedAt }
+        })
+        .then((res) => {
+            if (res.data.success) {
+                setJoinedGroups(res.data.groups);
+            }
+        })
+        .catch((err) => console.error("Error fetching groups:", err));
+    }, []);
+
+
+    
     // Check if the user already entered the password
     useEffect(() => {
         if (localStorage.getItem("pageUnlocked") === "true") {

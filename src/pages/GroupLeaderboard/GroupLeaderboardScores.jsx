@@ -55,11 +55,12 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
       
 
     const [winners, setWinners] = useState([]);
+
     useEffect(() => {
         const fetchGameWinners = async () => {
             try {
                 const res = await axios.get(`${baseURL}/groups/winner-notification.php`, {
-                    params: { user_id: userId, group_id: id, game, todayDate }
+                    params: { user_id: userId, group_id: id, game, todayDate, }
                 });
 
                 if (res.data.status == "success") {
@@ -131,7 +132,6 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
                 } else {
                     todayResponse = await axios.get(`${baseURL}/groups/get-group-score.php`, { params });
                 }
-
                 setTodayLeaderboard(todayResponse.data.data || []);
             } catch (error) {
                 console.error("Error fetching group stats:", error.response ? error.response.data : error.message);
@@ -337,7 +337,6 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
         sheriffWinners.push(...winners);
     });
     });
-
 
 
     return (
