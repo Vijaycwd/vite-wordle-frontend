@@ -283,7 +283,9 @@ const handleDeclineInvite = async (inviteId) => {
               </p>
             ) : (
               <p className='cwd-group-message'>
-                {msg.message}{" "}
+                <div
+                dangerouslySetInnerHTML={{ __html: msg.message }}
+                />{" "}
                 <Link
                   to={
                     msg.msg_id

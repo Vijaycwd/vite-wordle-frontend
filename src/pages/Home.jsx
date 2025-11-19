@@ -45,7 +45,7 @@ function Home() {
     useEffect(() => {
         if (!userAuthData?.id) return;
         Axios.get(`${baseURL}/user/get-day-winner.php`, {
-            params: { user_id: userAuthData.id, createdat:adjustedCreatedAt }
+            params: { user_id: userAuthData.id, createdat:adjustedCreatedAt, baseURL:baseURL }
         })
         .then((res) => {
             if (res.data.success) {
