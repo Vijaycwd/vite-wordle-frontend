@@ -6,7 +6,7 @@ import axios from "axios";
 function GroupChatMessagesByDate({ gameName, messages, userId, baseURL, highlightMsgId, generalChat }) {
   const chatEndRef = useRef(null);
   const [showPickerFor, setShowPickerFor] = useState(null);
-  const [msgreaction, setMsgReaction] = useState(null);
+  const [msgReactions, setMsgReactions] = useState({});
   
   // Auto-scroll to bottom on new messages
   useEffect(() => {
@@ -59,7 +59,10 @@ function GroupChatMessagesByDate({ gameName, messages, userId, baseURL, highligh
         emoji: emojiData.emoji,
         generalChat
       });
-      setMsgReaction(emojiData.emoji)
+      setMsgReactions(prev => ({
+        ...prev,
+        [messageId]: emojiData.emoji
+      }));
       
 
       // 👇 Optionally show popup or inline confirmation
@@ -163,7 +166,7 @@ function GroupChatMessagesByDate({ gameName, messages, userId, baseURL, highligh
                     </div>
                     {/* 💖 Reaction (bottom-left corner like WhatsApp) */}
                     
-                    {msg.emoji && (
+                    {(msgReactions[msg.id] || msg.emoji) && (
                       <div
                         style={{
                           position: "absolute",
@@ -180,9 +183,10 @@ function GroupChatMessagesByDate({ gameName, messages, userId, baseURL, highligh
                           boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
                         }}
                       >
-                        {msg.emoji}
+                        {msgReactions[msg.id] || msg.emoji}
                       </div>
                     )}
+
                     
                   </div>
                   {/* Add Reaction button and Emoji Picker — only show for others' messages */}
