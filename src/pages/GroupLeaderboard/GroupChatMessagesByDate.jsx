@@ -120,13 +120,13 @@ function GroupChatMessagesByDate({ gameName, messages, userId, baseURL, highligh
                 className={`d-flex flex-column mb-3 ${isMe ? "align-items-end" : "align-items-start"}`}
               >
                 {/* Username */}
-                <div className={`small fw-bold mb-1 ${isMe ? "text-end me-1" : "ms-1"}`}>
+                <div className={`small fw-bold mb-1 ${isMe ? "text-start me-1" : "ms-1"}`}>
                   {msg.username || `User ${msg.user_id}`}
                 </div>
 
                 {/* Message row */}
                 
-                <div className={`d-flex align-items-end ${isMe ? "flex-row-reverse" : ""}`} style={{ position: "relative" }}>
+                <div className={`d-flex align-items-end`} style={{ position: "relative" }}>
                   {/* Avatar + Reactions */}
                   <div style={{ position: "relative" }}>  
                     <img

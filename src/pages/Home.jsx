@@ -33,20 +33,18 @@ function Home() {
     const [joinedGroups, setJoinedGroups] = useState([]);
 
 
-    const localDate = new Date();
-    
-    // Get time zone offset in minutes
-    const offsetMinutes = localDate.getTimezoneOffset();  // Offset in minutes (positive for behind UTC, negative for ahead)
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
 
-    // Now adjust the time by adding the time zone offset (this does not affect UTC, it gives the correct local time)
-    const adjustedDate = new Date(localDate.getTime() - offsetMinutes * 60 * 1000); // Adjust time by the offset in milliseconds
+    const adjustedCreatedAt =
+    yesterday.toISOString().slice(0, 19).replace('T', ' ');
 
-    // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
-    const adjustedCreatedAt = adjustedDate.toISOString().slice(0, 19).replace('T', ' ');;
+    console.log(adjustedCreatedAt);
     
     useEffect(() => {
         if (!userAuthData?.id) return;
-        Axios.get(`${baseURL}/user/get-user-groups.php`, {
+        Axios.get(`${baseURL}/user/get-day-winner.php`, {
             params: { user_id: userAuthData.id, createdat:adjustedCreatedAt }
         })
         .then((res) => {
