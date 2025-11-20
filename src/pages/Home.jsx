@@ -32,30 +32,6 @@ function Home() {
     const registerPath = groupId ? `/register?group_id=${groupId}` : `/register`;
     const [joinedGroups, setJoinedGroups] = useState([]);
 
-
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-
-    const adjustedCreatedAt =
-    yesterday.toISOString().slice(0, 19).replace('T', ' ');
-
-    console.log(adjustedCreatedAt);
-    
-    useEffect(() => {
-        if (!userAuthData?.id) return;
-        Axios.get(`${baseURL}/user/get-day-winner.php`, {
-            params: { user_id: userAuthData.id, createdat:adjustedCreatedAt, baseURL:baseURL }
-        })
-        .then((res) => {
-            if (res.data.success) {
-                setJoinedGroups(res.data.groups);
-            }
-        })
-        .catch((err) => console.error("Error fetching groups:", err));
-    }, []);
-
-
     
     // Check if the user already entered the password
     useEffect(() => {

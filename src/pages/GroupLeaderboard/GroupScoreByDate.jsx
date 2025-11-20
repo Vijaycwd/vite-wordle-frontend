@@ -438,6 +438,60 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
     quordle: "Gamle Score 31"
     }[game] || "No data available.";
 
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+
+    // Format function (LOCAL TIME)
+    const formatLocalDateTime = (date) => {
+        const pad = (n) => n.toString().padStart(2, '0');
+
+        const year = date.getFullYear();
+        const month = pad(date.getMonth() + 1);
+        const day = pad(date.getDate());
+        const hours = pad(date.getHours());
+        const minutes = pad(date.getMinutes());
+        const seconds = pad(date.getSeconds());
+
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    };
+
+    // Final formatted values
+    const todayFormatted = formatLocalDateTime(today);
+    const yesterdayFormatted = formatLocalDateTime(yesterday);
+
+console.log(todayFormatted);
+console.log(yesterdayFormatted);
+
+
+    
+    useEffect(() => {
+        if (!USER_AUTH_DATA?.id) return;
+
+        const params = { 
+            baseURL: baseURL,
+            user_id: USER_AUTH_DATA.id,  
+            today: todayFormatted, 
+            yesterday: yesterdayFormatted 
+        };
+
+        // Phrazle → MUST send AM / PM
+        if (game === "phrazle") {
+            params.period = period;   // AM / PM
+        }
+
+        axios.get(`${baseURL}/user/get-day-winner.php`, { params })
+            .then((res) => {
+                if (res.data.success) {
+                    console.log(res.data.groups);
+                }
+            })
+            .catch((err) => console.error("Error fetching groups:", err));
+
+    }, [USER_AUTH_DATA?.id, game, period, todayFormatted, yesterdayFormatted]);
+
+
+    
     return (
         <>
             <div className='text-center'>
