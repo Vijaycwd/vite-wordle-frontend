@@ -8,8 +8,8 @@ const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScor
   const [gameNumber, setPhrazleGameNumber] = useState();
   
   const calculatePhrazleGameNumber = () => {
-    // First Phrasle game date (Feb 2, 2024)
-    const firstGameDate = new Date(2024, 1, 2); // local time, midnight
+    // First Phrasle game date (oct 18, 2025)
+    const firstGameDate = new Date(2025, 10, 18); // local time, midnight
     firstGameDate.setHours(0, 0, 0, 0);
 
     const now = new Date();
