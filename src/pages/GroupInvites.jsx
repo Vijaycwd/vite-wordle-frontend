@@ -194,10 +194,10 @@ const handleDeclineInvite = async (inviteId) => {
   return (
     <Dropdown show={showDropdown} onToggle={async (isOpen) => {
         setShowDropdown(isOpen);
-        if (isOpen) {
-          // setunReadCount(0);
-          await axios.post(`${baseURL}/groups/mark-all-seen.php`, { user_id: userId });
-        }
+        // if (isOpen) {
+        //   // setunReadCount(0);
+        //   await axios.post(`${baseURL}/groups/mark-all-seen.php`, { user_id: userId });
+        // }
       }}
     >
       <Dropdown.Toggle variant="light" id="group-invites">
