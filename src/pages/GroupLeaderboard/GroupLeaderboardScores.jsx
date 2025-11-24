@@ -40,6 +40,25 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
     const date = new Date(localLatestJoinDate);
     const hours = date.getHours();
     const groupPeriod = hours < 12 ? "AM" : "PM";
+    const [missedUsers, setMissedUsers] = useState([]);
+
+    useEffect(() => {
+        if (!todayLeaderboard || todayLeaderboard.length === 0) return;
+
+        const filtered = todayLeaderboard; 
+
+        const missed = filtered
+            .filter(d => d?.missed && String(d?.is_paused) === "0")
+            .map(d => ({
+                name: d.username,
+                email: d.useremail
+            }));
+
+        setMissedUsers(missed);
+    }, [todayLeaderboard]);
+    
+    console.log('vvvmissedUsers',missedUsers);
+    
     // useEffect(() => {
     //     // Call the auto-submit PHP script
     //     axios.get(`${baseURL}/games/wordle/auto-submit-wordle-scores.php`, {
@@ -375,7 +394,7 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
                                         email: d.useremail
                                     }));
                                 
-                                // console.log('missedUsers',missedUsers);
+                                //console.log('missedUsers',missedUsers);
                                 
                                 if (missedUsers.length > 0) {
                                     return (

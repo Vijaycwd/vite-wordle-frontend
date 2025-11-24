@@ -40,20 +40,22 @@ const GroupInvites = () => {
   };
 
 
-const fetchGroupCount = async () => {
-  try {
-    const response = await axios.get(`${baseURL}/groups/get-unseen-count.php?user_id=${userId}`);
-    setunReadCount(response.data.unread_count);
-  } catch (error) {
-    console.error('Error fetching group messages:', error);
-  }
-};
+// const fetchGroupCount = async () => {
+//   try {
+//     const response = await axios.get(`${baseURL}/groups/get-unseen-count.php?user_id=${userId}`);
+//     console.log('read-count',response.data.unread_count);
+//     setunReadCount(response.data.unread_count);
+//   } catch (error) {
+//     console.error('Error fetching group messages:', error);
+//   }
+// };
 
 const fetchGroupMessages = async () => {
   try {
     const response = await axios.get(`${baseURL}/groups/get-group-messages.php?user_id=${userId}`);
     const newMessages = Array.isArray(response.data.messages) ? response.data.messages : [];
     setGroupMessages(newMessages);
+    setunReadCount(response.data.total_unread);
   } catch (error) {
     console.error('Error fetching group messages:', error);
   }
@@ -145,13 +147,6 @@ const handleDeclineInvite = async (inviteId) => {
     
   }, []);
 
-  // Message polling effect
-  useEffect(() => {
-    fetchGroupCount();
-    messageCountRef.current = setInterval(fetchGroupCount, 8000);
-    return () => clearInterval(messageCountRef.current);
-  }, []);
-
   useEffect(() => {
     fetchGroupMessages();
     messageIntervalRef.current = setInterval(fetchGroupMessages, 8000);
@@ -200,19 +195,13 @@ const handleDeclineInvite = async (inviteId) => {
     <Dropdown show={showDropdown} onToggle={async (isOpen) => {
         setShowDropdown(isOpen);
         if (isOpen) {
-          setunReadCount(0);
+          // setunReadCount(0);
           await axios.post(`${baseURL}/groups/mark-all-seen.php`, { user_id: userId });
         }
       }}
     >
       <Dropdown.Toggle variant="light" id="group-invites">
         <i className="fas fa-bell"></i>
-        {/* {((Array.isArray(invites) && invites.length > 0) ||
-          (Array.isArray(groupMessages) && groupMessages.length > 0)) && (
-          <Badge bg="danger" className="notification-count">
-            {unreadvount}
-          </Badge>
-        )} */}
         {unreadcount > 0 && (
           <Badge bg="danger" className="notification-count">
             {unreadcount}
@@ -264,7 +253,14 @@ const handleDeclineInvite = async (inviteId) => {
       {/* Group Messages */}
       {Array.isArray(groupMessages) && groupMessages.length > 0 &&
         groupMessages.map((msg) => (
-          <ListGroup.Item key={`msg-${msg.id}`}>
+         <ListGroup.Item
+            key={`msg-${msg.id}`}
+            className={
+              msg.seen_ids && msg.seen_ids.split(",").includes(String(userId))
+                ? "read-msg"
+                : "unread-msg"
+            }
+          >
             {msg.msg_from === "group" ? (
               <p>
                 {msg.message}{" "}

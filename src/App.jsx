@@ -33,10 +33,12 @@ import UsersList from './pages/UsersList';
 import GamleIntro from './pages/GamleIntro';
 import FAQPage from './pages/FAQPage';
 // import Games from './pages/Games';
+import { LeaderboardProvider } from "./context/LeaderboardContext";
 
 function App() {
   return (
     <Layout>
+      <LeaderboardProvider>
       <Routes>
         <Route exact path="/" element={<Home/>} />
         <Route exact path="/:group_id" element={<Home/>} />
@@ -72,6 +74,7 @@ function App() {
           <Route exact path= '/edit-profile' element={<UserProfile/>}/>
         </Route>
       </Routes>
+      </LeaderboardProvider>
     <ToastContainer position="top-right" autoClose={1000}/>
     </Layout>
     
