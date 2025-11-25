@@ -1,5 +1,5 @@
 import React, { useEffect, useState, forwardRef } from 'react';
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams  } from "react-router-dom";
 import axios from 'axios';
 import { Button, Alert, Row, Col, ProgressBar, Modal  } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
@@ -34,7 +34,11 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
     const date = new Date(latestJoinDate);
     const hours = date.getHours();
     const groupPeriod = hours < 12 ? "AM" : "PM";
-    
+    const [searchParams, setSearchParams] = useSearchParams();
+    const msgId = searchParams.get("msg_id");
+    const msgFrom = searchParams.get("msg_from");
+    const msgReportDate = searchParams.get("msgReportDate");
+    const msgPeriod = searchParams.get("msgPeriod");
     let minDate = new Date(); // fallback
 
     if (formattedDateStr && typeof formattedDateStr === 'string') {
@@ -88,6 +92,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
     };
    
     const handleDateChange = (date) => {
+       
         if (!date || isNaN(date.getTime())) return;
 
         const formattedDateStr = formatDateForBackend(date); // "YYYY-MM-DD"
@@ -152,12 +157,19 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
             });
     };
 
+    const removeMsgPeriod = () => {
+        const params = new URLSearchParams(searchParams);
+        params.delete("msgReportDate");
+        params.delete("msgPeriod");
+        setSearchParams(params);
+    };
 
     const goToPreviousDay = () => {
+       
         const prevDate = dayjs(startDate).subtract(1, 'day').toDate();
         const latest = dayjs(latestJoinDate);
         const latestDateOnly = latest.startOf('day');
-    
+        removeMsgPeriod();
         if (game === 'phrazle') {
             if (period === 'PM') {
                 const newPeriod = 'AM';
@@ -172,7 +184,6 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
             } else {
                 // Going from AM ➝ PM of previous day
                 if (dayjs(prevDate).isBefore(latestDateOnly)) return;
-    
                 const newPeriod = 'PM';
                 const formattedDateStr = formatDateForBackend(prevDate);
                 setStartDate(prevDate);
@@ -181,6 +192,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
             }
         } else {
             if (dayjs(prevDate).isBefore(latestDateOnly)) return;
+            removeMsgPeriod(); 
             handleDateChange(prevDate);
         }
     };
@@ -189,7 +201,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
         const now = dayjs();
         const today = now.startOf('day');
         const currentHour = now.hour();
-
+        removeMsgPeriod();
         if (game === 'phrazle') {
             const isToday = dayjs(startDate).isSame(today, 'day');
 
@@ -255,8 +267,14 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
 
             const currrentDate = formatDateForBackend(date);
             if (currrentDate >= formattedDateStr) {
-                setStartDate(date); // Pass Date object
-                setPeriod(period);
+                if(msgReportDate){
+                    setStartDate(msgReportDate); // Pass Date object
+                    setPeriod(msgPeriod);
+                }
+                else{
+                    setStartDate(date); // Pass Date object
+                    setPeriod(period);
+                }
                 fetchDataByDate(currrentDate, period);
             }
 
@@ -264,7 +282,12 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
             const prevDate = now.subtract(1, 'day').toDate();
             const prevDateStr = formatDateForBackend(prevDate);
             if (prevDateStr >= formattedDateStr) {
-                setStartDate(prevDate); // Pass Date object
+                if(msgReportDate){
+                    setStartDate(msgReportDate);
+                }
+                else{
+                    setStartDate(prevDate);
+                }
                 fetchDataByDate(prevDateStr);
             }
         }
@@ -281,8 +304,8 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
                 groupName,
                 game,
                 groupCreatedDate: formattedDateStr,
-                groupPeriod,
-                today: date,
+                groupPeriod: msgPeriod || groupPeriod,
+                today: msgReportDate || date,
                 timeZone,
                 formattedYesterday: date,
                 scoringMethod
@@ -438,46 +461,48 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
     quordle: "Gamle Score 31"
     }[game] || "No data available.";
 
+    
+   // COMMON date/time
     const today = new Date();
     const yesterday = new Date();
     yesterday.setDate(today.getDate() - 1);
 
-    // Format function (LOCAL TIME)
+    // Helper
     const formatLocalDateTime = (date) => {
         const pad = (n) => n.toString().padStart(2, '0');
-
-        const year = date.getFullYear();
-        const month = pad(date.getMonth() + 1);
-        const day = pad(date.getDate());
-        const hours = pad(date.getHours());
-        const minutes = pad(date.getMinutes());
-        const seconds = pad(date.getSeconds());
-
-        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} `
+            + `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
     };
 
-    // Final formatted values
-    const todayFormatted = formatLocalDateTime(today);
-    const yesterdayFormatted = formatLocalDateTime(yesterday);
+    let todayFormatted = "";
+    let yesterdayFormatted = "";
 
-console.log(todayFormatted);
-console.log(yesterdayFormatted);
+    // ⭐ CORRECT GAME LOGIC
+    if (game === "phrazle") {
+        // Phrazle needs ONLY the selected date (YYYY-MM-DD)
+        todayFormatted = dayjs(startDate).format("YYYY-MM-DD");
+        yesterdayFormatted = ""; // Not used
+    } else {
+        // Wordle / Connections use yesterday
+        todayFormatted = formatLocalDateTime(today);
+        yesterdayFormatted = formatLocalDateTime(yesterday);
+    }
 
-
-    
     useEffect(() => {
         if (!USER_AUTH_DATA?.id) return;
 
         const params = { 
             baseURL: baseURL,
             user_id: USER_AUTH_DATA.id,  
-            today: todayFormatted, 
-            yesterday: yesterdayFormatted 
+            today: todayFormatted,
         };
 
-        // Phrazle → MUST send AM / PM
+        if (game !== "phrazle") {
+            params.yesterday = yesterdayFormatted;
+        }
+
         if (game === "phrazle") {
-            params.period = period;   // AM / PM
+            params.period = period; // AM / PM
         }
 
         axios.get(`${baseURL}/user/get-day-winner.php`, { params })
@@ -489,6 +514,7 @@ console.log(yesterdayFormatted);
             .catch((err) => console.error("Error fetching groups:", err));
 
     }, [USER_AUTH_DATA?.id, game, period, todayFormatted, yesterdayFormatted]);
+
 
 
     

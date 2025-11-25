@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Col, Dropdown, Button, ListGroup, Badge } from 'react-bootstrap';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
-
+import { FaTrashRestore } from "react-icons/fa";
+import dayjs from "dayjs";
 
 const GroupInvites = () => {
 
@@ -158,6 +159,7 @@ const handleDeclineInvite = async (inviteId) => {
     e.preventDefault();
     setGroupMessages([]);
     setShowDropdown(false);
+    
 
     try {
       await axios.post(`${baseURL}/groups/update-seen-ids.php`, {
@@ -166,18 +168,20 @@ const handleDeclineInvite = async (inviteId) => {
         game_name: game,
         user_id: userId,
       });
+
       
       navigate(`/group/${groupId}?msg_id=${msgId}`);
+
     } catch (error) {
       console.error("Axios error:", error);
     }
   };
 
-  const handleClick = async (e, groupId, game, userId, msgId) => {
+  const handleClick = async (e, groupId, game, userId, msgId, msgFrom, msgReportDate, msgPeriod) => {
     e.preventDefault();
     setGroupMessages([]);
     setShowDropdown(false);
-
+  
     try {
       await axios.post(`${baseURL}/groups/update-seen-ids.php`, {
         group_id: groupId,
@@ -186,11 +190,51 @@ const handleDeclineInvite = async (inviteId) => {
         user_id: userId,
       });
 
-      navigate(`/group/${groupId}/stats/${game}?msg_id=${msgId}`);
+      navigate(`/group/${groupId}/stats/${game}?msg_id=${msgId}&msg_from=${msgFrom}&msgReportDate=${msgReportDate}&msgPeriod=${msgPeriod}`);
     } catch (error) {
       console.error("Axios error:", error);
     }
   };
+
+  function timeAgo(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+
+    const intervals = {
+      year: 31536000,
+      month: 2592000,
+      week: 604800,
+      day: 86400,
+      hour: 3600,
+      minute: 60
+    };
+
+    for (const key in intervals) {
+      const value = Math.floor(seconds / intervals[key]);
+      if (value > 0) {
+        return value + key.charAt(0);   // 1d, 2h, 5m, 3w
+      }
+    }
+
+    return "Just now";
+  }
+
+  const handleDeleteMessage = async (msgId) => {
+    try {
+      await fetch(`${baseURL}/groups/delete-notification.php`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ msg_id: msgId })
+      });
+
+      setGroupMessages((prev) => prev.filter((m) => m.id !== msgId));
+    } catch (err) {
+      console.error("Delete error:", err);
+    }
+  };
+
+
   return (
     <Dropdown show={showDropdown} onToggle={async (isOpen) => {
         setShowDropdown(isOpen);
@@ -252,53 +296,71 @@ const handleDeclineInvite = async (inviteId) => {
 
       {/* Group Messages */}
       {Array.isArray(groupMessages) && groupMessages.length > 0 &&
-        groupMessages.map((msg) => (
-         <ListGroup.Item
-            key={`msg-${msg.id}`}
-            className={
-              msg.seen_ids && msg.seen_ids.split(",").includes(String(userId))
-                ? "read-msg"
-                : "unread-msg"
-            }
-          >
-            {msg.msg_from === "group" ? (
-              <p>
-                {msg.message}{" "}
-                <Link
-                  to={
-                    msg.msg_id
-                      ? `/group/${msg.group_id}?msg_id=${msg.msg_id}`
-                      : `/group/${msg.group_id}`
-                  }
-                  onClick={(e) =>
-                    handleClickGroup(e, msg.group_id, msg.game_name, userId, msg.msg_id)
-                  }
-                >
-                  View
-                </Link>
-              </p>
-            ) : (
-              <p className='cwd-group-message'>
-                <div
-                dangerouslySetInnerHTML={{ __html: msg.message }}
-                />{" "}
-                <Link
-                  to={
-                    msg.msg_id
-                      ? `/group/${msg.group_id}/stats/${msg.game_name}?msg_id=${msg.msg_id}`
-                      : `/group/${msg.group_id}/stats/${msg.game_name}`
-                  }
-                  onClick={(e) =>
-                    handleClick(e, msg.group_id, msg.game_name, userId, msg.msg_id)
-                  }
-                >
-                  View
-                </Link>
-              </p>
-            )}
-          </ListGroup.Item>
-        ))
+        groupMessages.map((msg) => {
+          const isUnread =
+            !msg.seen_ids ||
+            !msg.seen_ids.split(",").includes(String(userId));
+          return (
+            <Link
+              key={`msg-${msg.id}`}
+              // to={
+              //   msg.msg_from === "group"
+              //     ? (msg.msg_id
+              //         ? `/group/${msg.group_id}?msg_id=${msg.msg_id}`
+              //         : `/group/${msg.group_id}`)
+              //     : (msg.msg_id
+              //         ? `/group/${msg.group_id}/stats/${msg.game_name}?msg_id=${msg.msg_id}`
+              //         : `/group/${msg.group_id}/stats/${msg.game_name}`)
+              // }
+              onClick={(e) =>
+                msg.msg_from === "group"
+                  ? handleClickGroup(e, msg.group_id, msg.game_name, userId, msg.msg_id)
+                  : handleClick(e, msg.group_id, msg.game_name, userId, msg.msg_id, msg.msg_from, msg.report_date, msg.period )
+              }
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              <ListGroup.Item
+                className={`${isUnread ? "unread-msg" : "read-msg"} msg-item`}
+                style={{ cursor: "pointer" }}
+              >
+                <div className="msg-row">
+
+                  {/* LEFT SIDE */}
+                  <div className="msg-left">
+                    {msg.msg_from === "group" ? (
+                      <p>{msg.message}</p>
+                    ) : (
+                      <div
+                        className="cwd-group-message"
+                        dangerouslySetInnerHTML={{ __html: msg.message }}
+                      />
+                    )}
+                    <div className="time-ago">{timeAgo(msg.created_at)}</div>
+                  </div>
+
+                  {/* RIGHT SIDE — unread dot */}
+                  {isUnread && <span className="unread-dot"></span>}
+
+                  {/* DELETE ICON (hidden until hover) */}
+                  <span
+                    className="delete-icon"
+                    onClick={(e) => {
+                      e.preventDefault();    // prevent navigation
+                      e.stopPropagation();   // stop click bubble
+                      handleDeleteMessage(msg.id);
+                    }}
+                  >
+                    <FaTrashRestore />
+                  </span>
+                </div>
+              </ListGroup.Item>
+
+
+            </Link>
+          );
+        })
       }
+
     </ListGroup>
   </div>
 ) : (

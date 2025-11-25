@@ -57,7 +57,6 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
         setMissedUsers(missed);
     }, [todayLeaderboard]);
     
-    console.log('vvvmissedUsers',missedUsers);
     
     // useEffect(() => {
     //     // Call the auto-submit PHP script
@@ -73,30 +72,30 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
     //   }, []);
       
 
-    const [winners, setWinners] = useState([]);
+    // const [winners, setWinners] = useState([]);
 
-    useEffect(() => {
-        const fetchGameWinners = async () => {
-            try {
-                const res = await axios.get(`${baseURL}/groups/winner-notification.php`, {
-                    params: { user_id: userId, group_id: id, game, todayDate, }
-                });
+    // useEffect(() => {
+    //     const fetchGameWinners = async () => {
+    //         try {
+    //             const res = await axios.get(`${baseURL}/groups/winner-notification.php`, {
+    //                 params: { user_id: userId, group_id: id, game, todayDate, }
+    //             });
 
-                if (res.data.status == "success") {
+    //             if (res.data.status == "success") {
                     
-                    setWinners(res.data.winners); // Default to empty string
-                } else {
-                    toast.error("Scoring Method not found.",{ autoClose: 3000 });
-                }
-            } catch (err) {
-                // toast.error("Failed to load group info.",{ autoClose: 3000 });
-            }
-        };
+    //                 setWinners(res.data.winners); // Default to empty string
+    //             } else {
+    //                 toast.error("Scoring Method not found.",{ autoClose: 3000 });
+    //             }
+    //         } catch (err) {
+    //             // toast.error("Failed to load group info.",{ autoClose: 3000 });
+    //         }
+    //     };
 
-        if (id && userId) {  
-            fetchGameWinners();
-        }
-    }, [id, userId]); 
+    //     if (id && userId) {  
+    //         fetchGameWinners();
+    //     }
+    // }, [id, userId]); 
     
    useEffect(() => {
            const fetchscoringMethod = async () => {
