@@ -155,7 +155,7 @@ const handleDeclineInvite = async (inviteId) => {
   }, []);
 
 
-  const handleClickGroup = async (e, groupId, game, userId, msgId) => {
+  const handleClickGroup = async (e, groupId, game, userId, msgId, msgFrom, msgReportDate, msgPeriod) => {
     e.preventDefault();
     setGroupMessages([]);
     setShowDropdown(false);
@@ -168,9 +168,8 @@ const handleDeclineInvite = async (inviteId) => {
         game_name: game,
         user_id: userId,
       });
-
       
-      navigate(`/group/${groupId}?msg_id=${msgId}`);
+      navigate(`/group/${groupId}?msg_id=${msgId}&msg_from=${msgFrom}&msgReportDate=${msgReportDate}&msgPeriod=${msgPeriod}`);
 
     } catch (error) {
       console.error("Axios error:", error);
@@ -314,7 +313,7 @@ const handleDeclineInvite = async (inviteId) => {
               // }
               onClick={(e) =>
                 msg.msg_from === "group"
-                  ? handleClickGroup(e, msg.group_id, msg.game_name, userId, msg.msg_id)
+                  ? handleClickGroup(e, msg.group_id, msg.game_name, userId, msg.msg_id, msg.msg_from, msg.report_date, msg.period ) 
                   : handleClick(e, msg.group_id, msg.game_name, userId, msg.msg_id, msg.msg_from, msg.report_date, msg.period )
               }
               style={{ textDecoration: "none", color: "inherit" }}

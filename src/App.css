@@ -339,40 +339,18 @@ cursor: pointer;
   color:#777777;
 }
 .delete-icon {
-  display: none;
   position: absolute;
-  right: 0px;
-  top: 50%;
-  transform: translateY(-50%);
+  left: 30px;
+  bottom:5px;
   cursor: pointer;
-  
   /* Button styling */
-  font-size: 14px;
+  font-size: 13px;
   color: #d11a2a;
-  background-color: #fff;
-  padding: 6px;
   border-radius: 50%;
-  
-  /* Smooth animation */
-  transition: all 0.2s ease;
-  
-  /* Soft shadow */
-  box-shadow: rgba(0, 0, 0, 0.18) 0px 2px 6px;
 }
-.msg-row:hover .delete-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  /* Hover animation */
-  transform: translateY(-50%) scale(1.1);
-  box-shadow: rgba(0, 0, 0, 0.25) 0px 3px 8px;
-}
-
 .delete-icon:hover {
   background-color: #ffe8e8;
   color: #b30f1d;
-  transform: translateY(-50%) scale(1.15);
 }
 
 /* Hide on larger screens */

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { Row, Col, ProgressBar, Modal, Button } from "react-bootstrap";
 import moment from 'moment-timezone';
@@ -41,6 +41,13 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
     const hours = date.getHours();
     const groupPeriod = hours < 12 ? "AM" : "PM";
     const [missedUsers, setMissedUsers] = useState([]);
+
+
+    const [searchParams, setSearchParams] = useSearchParams();
+    const msgId = searchParams.get("msg_id");
+    const msgFrom = searchParams.get("msg_from");
+    const msgReportDate = searchParams.get("msgReportDate");
+    const msgPeriod = searchParams.get("msgPeriod");
 
     useEffect(() => {
         if (!todayLeaderboard || todayLeaderboard.length === 0) return;
@@ -133,8 +140,8 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
                     groupName,
                     game,
                     groupCreatedDate: formattedDateStr,
-                    groupPeriod,
-                    today: todayDate,
+                    groupPeriod: msgPeriod || groupPeriod,
+                    today: msgReportDate || date,
                     timeZone,
                     formattedYesterday: formattedYesterday,
                     scoringMethod
@@ -356,6 +363,7 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
     });
     });
 
+    console.log('todayLeaderboard',todayLeaderboard);
 
     return (
         <div>
@@ -601,7 +609,6 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
                                         name: d.username,
                                         email: d.useremail
                                     }));
-                               
                                 if (missedUsers.length > 0) {
                                     const currentUserData = filteredLeaderboard.find(d => d.username === userName);
                                     return (
