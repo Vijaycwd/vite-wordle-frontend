@@ -169,7 +169,7 @@ const handleDeclineInvite = async (inviteId) => {
         user_id: userId,
       });
       
-      navigate(`/group/${groupId}?msg_id=${msgId}&msg_from=${msgFrom}&msgReportDate=${msgReportDate}&msgPeriod=${msgPeriod}`);
+      navigate(`/group/${groupId}?msg_id=${msgId}&msg_from=${msgFrom}&g_msgReportDate=${msgReportDate}&g_msgPeriod=${msgPeriod}`);
 
     } catch (error) {
       console.error("Axios error:", error);
@@ -334,23 +334,27 @@ const handleDeclineInvite = async (inviteId) => {
                         dangerouslySetInnerHTML={{ __html: msg.message }}
                       />
                     )}
-                    <div className="time-ago">{timeAgo(msg.created_at)}</div>
-                  </div>
+                      <div className=" d-flex gap-2 time-ago">
+                        {timeAgo(msg.created_at)}
+                        <span
+                            className="delete-icon"
+                            onClick={(e) => {
+                              e.preventDefault();    // prevent navigation
+                              e.stopPropagation();   // stop click bubble
+                              handleDeleteMessage(msg.id);
+                            }}
+                          >
+                            <FaTrashRestore />
+                          </span>
+                        </div>
+                      </div>
+                    
+                    
 
                   {/* RIGHT SIDE — unread dot */}
                   {isUnread && <span className="unread-dot"></span>}
 
                   {/* DELETE ICON (hidden until hover) */}
-                  <span
-                    className="delete-icon"
-                    onClick={(e) => {
-                      e.preventDefault();    // prevent navigation
-                      e.stopPropagation();   // stop click bubble
-                      handleDeleteMessage(msg.id);
-                    }}
-                  >
-                    <FaTrashRestore />
-                  </span>
                 </div>
               </ListGroup.Item>
 
