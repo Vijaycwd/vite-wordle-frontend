@@ -44,8 +44,8 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
     const [searchParams, setSearchParams] = useSearchParams();
     const msgId = searchParams.get("msg_id");
     const msgFrom = searchParams.get("msg_from");
-    const msgReportDate = searchParams.get("g_msgReportDate");
-    const msgPeriod = searchParams.get("g_msgPeriod");
+    const msgReportDate = searchParams.get("msgReportDate");
+    const msgPeriod = searchParams.get("msgPeriod");
 
     // useEffect(() => {
     //     // Call the auto-submit PHP script

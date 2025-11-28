@@ -169,7 +169,7 @@ const handleDeclineInvite = async (inviteId) => {
         user_id: userId,
       });
       
-      navigate(`/group/${groupId}?msg_id=${msgId}&msg_from=${msgFrom}&g_msgReportDate=${msgReportDate}&g_msgPeriod=${msgPeriod}`);
+      navigate(`/group/${groupId}?msg_id=${msgId}`);
 
     } catch (error) {
       console.error("Axios error:", error);
