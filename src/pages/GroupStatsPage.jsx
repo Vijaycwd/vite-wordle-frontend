@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import GroupLeaderboardScores from './GroupLeaderboard/GroupLeaderboardScores';
@@ -9,6 +9,7 @@ import MemberProfile from '../constant/Models/MemberProfile';
 import GroupGameChat  from '../pages/GroupLeaderboard/GroupGameChat';
 import dayjs from "dayjs";
 import { useLocation } from "react-router-dom";
+import MessageLeaderboard from './GroupLeaderboard/MessageLeaderboard';
 
 function GroupStatsPage() {
 
@@ -27,6 +28,15 @@ function GroupStatsPage() {
   const [selectedMember, setSelectedMember] = useState(null);
   const now = new Date();
   const period = now.getHours() < 12 ? "AM" : "PM";
+  const [searchParams, setSearchParams] = useSearchParams();
+  const msgFrom = searchParams.get("msg_from");
+  const msgReportDate = searchParams.get("msgReportDate");
+  const msgPeriod = searchParams.get("msgPeriod");
+
+  const [reportDate, setReportDate] = useState(null);
+  useEffect(() => {
+    setReportDate(msgReportDate);
+  }, []);
   
   useEffect(() => {
     const fetchGroupDetails = async () => {
@@ -52,17 +62,37 @@ function GroupStatsPage() {
   //   const hour = new Date().getHours();
   //   return hour < 12 ? 'AM' : 'PM';
   // };
-
   return (
     <>
     <Container>
       <Row>
         <Col className="text-center mt-4">
-          <h2 className='text-capitalize py-3'>{group?.name || ""} - {game}</h2>
-          {/* <h3 className='text-capitalize py-3'>{game} Leaderboard</h3> */}
-          {/* <h3 className='text-capitalize py-3'>{game.charAt(0).toUpperCase() + game.slice(1)} Stats</h3> */}
-          <GroupLeaderboardScores setLatestJoinDate={setLatestJoinDate}  setSelectedMember={setSelectedMember} setShowProfile={setShowProfile}/>
+          <h2 className='text-capitalize py-3'>
+            {group?.name || ""} - {game}
+          </h2>
+
+          {reportDate ? (
+            <>
+            <MessageLeaderboard
+              latestJoinDate={latestJoinDate}
+              setSelectedMember={setSelectedMember}
+              setShowProfile={setShowProfile}
+              msgReportDate={msgReportDate}
+              msgPeriod={msgPeriod}
+              groupId={id}
+              groupName={group?.name}
+              gameName={game}
+            />
+            </>
+          ) : (
+            <GroupLeaderboardScores
+              setLatestJoinDate={setLatestJoinDate}
+              setSelectedMember={setSelectedMember}
+              setShowProfile={setShowProfile}
+            />
+          )}
         </Col>
+
       </Row>
       <Row className="justify-content-center"> 
         <Col md={6}>
