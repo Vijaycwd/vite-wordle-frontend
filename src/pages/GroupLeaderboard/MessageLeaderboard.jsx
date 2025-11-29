@@ -344,19 +344,12 @@ function MessageLeaderboard({ latestJoinDate, setSelectedMember, setShowProfile,
         axios.get(`${baseURL}/user/get-day-winner.php`, { params })
             .then((res) => {
                 if (res.data.success) {
-                    console.log(res.data.groups);
+                    
                 }
             })
             .catch((err) => console.error("Error fetching groups:", err));
 
     }, [USER_AUTH_DATA?.id, gameName, period, todayFormatted, yesterdayFormatted]);
-
-
-    console.log("MLB → msgReportDate:", msgReportDate);
-    console.log("MLB → msgPeriod:", msgPeriod);
-    console.log("MLB → groupId:", groupId);
-    console.log("MLB → groupName:", groupName);
-    console.log("MLB → gameName:", gameName);
     
     return (
         <>

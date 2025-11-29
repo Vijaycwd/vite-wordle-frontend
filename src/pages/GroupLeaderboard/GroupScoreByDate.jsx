@@ -9,7 +9,7 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import dayjs from "dayjs";
 import GetGroupMessagesModal from '../../constant/Models/GetGroupMessagesModal';
 
-function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }) {
+function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, msgReportDate, msgPeriod}) {
     const baseURL = import.meta.env.VITE_BASE_URL;
     const { id, groupName, game } = useParams();
     const [todayLeaderboard, setTodayLeaderboard] = useState([]);
@@ -35,10 +35,6 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
     const hours = date.getHours();
     const groupPeriod = hours < 12 ? "AM" : "PM";
     const [searchParams, setSearchParams] = useSearchParams();
-    const msgId = searchParams.get("msg_id");
-    const msgFrom = searchParams.get("msg_from");
-    const msgReportDate = searchParams.get("msgReportDate");
-    const msgPeriod = searchParams.get("msgPeriod");
     let minDate = new Date(); // fallback
 
     if (formattedDateStr && typeof formattedDateStr === 'string') {
@@ -249,49 +245,94 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
     });
     
     useEffect(() => {
-        if (!scoringMethod || !game) return;
+    if (!scoringMethod || !game) return;
 
-        const now = dayjs();
+    const now = dayjs();
+
+    let finalDate;
+    let finalPeriod;
+
+    // Convert backend saved date to JS local date
+    const today = now.toDate();
+
+    // ---------------------------
+    //  PHRAZLE LOGIC
+    // ---------------------------
+    if (game === 'phrazle') {
+
+        // Determine today's official phrazle period
         const currentHour = now.hour();
+        const defaultPhrazleDate =
+            currentHour < 12 ? now.subtract(1, 'day').toDate() : today;
+        const defaultPhrazlePeriod =
+            currentHour < 12 ? 'PM' : 'AM';
 
-        if (game === 'phrazle') {
-            let date, period;
+        // If URL has msgReportDate / msgPeriod
+        if (msgReportDate) {
+            finalDate = new Date(msgReportDate);
+            finalPeriod = msgPeriod;
 
-            if (currentHour < 12) {
-                date = now.subtract(1, 'day').toDate();
-                period = 'PM';
-            } else {
-                date = now.toDate();
-                period = 'AM';
+            // Apply your phrazle fallback rules:
+
+            if (msgPeriod === 'PM') {
+                // PM → same date, switch to AM
+                finalPeriod = 'AM';
             }
-
-            const currrentDate = formatDateForBackend(date);
-            if (currrentDate >= formattedDateStr) {
-                if(msgReportDate){
-                    setStartDate(msgReportDate); // Pass Date object
-                    setPeriod(msgPeriod);
-                }
-                else{
-                    setStartDate(date); // Pass Date object
-                    setPeriod(period);
-                }
-                fetchDataByDate(currrentDate, period);
-            }
-
-        } else {
-            const prevDate = now.subtract(1, 'day').toDate();
-            const prevDateStr = formatDateForBackend(prevDate);
-            if (prevDateStr >= formattedDateStr) {
-                if(msgReportDate){
-                    setStartDate(msgReportDate);
-                }
-                else{
-                    setStartDate(prevDate);
-                }
-                fetchDataByDate(prevDateStr);
+            else if (msgPeriod === 'AM') {
+                // AM → previous date, keep AM
+                finalDate.setDate(finalDate.getDate() - 1);
+                finalPeriod = 'AM';
             }
         }
-    }, [scoringMethod, game]);
+        else {
+            // No message date → default
+            finalDate = defaultPhrazleDate;
+            finalPeriod = defaultPhrazlePeriod;
+        }
+
+        // Final date string for API
+        const finalDateStr = formatDateForBackend(finalDate);
+
+        // Trigger data fetch
+        if (finalDateStr >= formattedDateStr) {
+            setStartDate(finalDate);
+            setPeriod(finalPeriod);
+            fetchDataByDate(finalDateStr, finalPeriod);
+        }
+
+        return;
+    }
+
+    // ----------------------------------------
+    //  WORDLE + CONNECTIONS LOGIC
+    // ----------------------------------------
+
+    let prevDate = now.subtract(1, 'day').toDate();
+    let prevDateStr = formatDateForBackend(prevDate);
+
+    if (prevDateStr >= formattedDateStr) {
+
+        if (msgReportDate) {
+            // If msgPeriod = null → go to previous date (your requirement)
+            if (msgPeriod == 'null') {
+                finalDate = new Date(msgReportDate);
+                finalDate.setDate(finalDate.getDate() - 1);
+            } else {
+                finalDate = new Date(msgReportDate);
+            }
+        }
+        else {
+            finalDate = prevDate;
+        }
+
+        const finalDateStr = formatDateForBackend(finalDate);
+
+        setStartDate(finalDate);
+        fetchDataByDate(finalDateStr);
+    }
+
+}, [scoringMethod, game]);
+
 
 
 
@@ -299,20 +340,55 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
         try {
             const timeZone = moment.tz.guess();
 
+            let finalDate = msgReportDate ? new Date(msgReportDate) : new Date(date);
+           
+            let finalPeriod = msgPeriod;
+
+            // -----------------------------
+            // WORDLE + CONNECTIONS LOGIC
+            // -----------------------------
+            
+            if (game !== 'phrazle') {
+                // If msgPeriod is null, always go to previous date
+               
+                if (msgPeriod == 'null') {
+                    finalDate.setDate(finalDate.getDate() - 1);
+                }
+            }
+            // -----------------------------
+            // PHRAZLE LOGIC
+            // -----------------------------
+            else {
+                if (msgPeriod === 'PM') {
+                    // PM → same date, but switch to AM
+                    finalPeriod = 'AM';
+                } 
+                else if (msgPeriod === 'AM') {
+                    // AM → go to previous date, keep AM
+                    finalDate.setDate(finalDate.getDate() - 1);
+                    finalPeriod = 'AM';
+                }
+            }
+
+            // Convert final date back to string
+            const finalDateStr = formatDateForBackend(finalDate);
+            console.log('finalDateStr',finalDateStr);
+            // Build base parameters
             const baseParams = {
                 groupId: id,
                 groupName,
                 game,
                 groupCreatedDate: formattedDateStr,
-                groupPeriod: msgPeriod || groupPeriod,
-                today: msgReportDate || date,
+                groupPeriod: finalPeriod || groupPeriod, // updated period
+                today: finalDateStr,                      // updated date
                 timeZone,
                 formattedYesterday: date,
                 scoringMethod
             };
 
+            // Add Phrazle period if needed
             const params = game === 'phrazle'
-                ? { ...baseParams, period: currentPeriod || period }
+                ? { ...baseParams, period: currentPeriod || finalPeriod }
                 : baseParams;
 
             let todayResponse, cumulativeAverageResponse, cumulativeDailyResponse;
@@ -508,7 +584,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile  }
         axios.get(`${baseURL}/user/get-day-winner.php`, { params })
             .then((res) => {
                 if (res.data.success) {
-                    console.log(res.data.groups);
+                   
                 }
             })
             .catch((err) => console.error("Error fetching groups:", err));

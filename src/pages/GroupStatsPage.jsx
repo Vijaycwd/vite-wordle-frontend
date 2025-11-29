@@ -66,7 +66,7 @@ function GroupStatsPage() {
     <>
     <Container>
       <Row>
-        <Col className="text-center mt-4">
+        <Col className="text-center my-4">
           <h2 className='text-capitalize py-3'>
             {group?.name || ""} - {game}
           </h2>
@@ -103,6 +103,7 @@ function GroupStatsPage() {
             periodType={game === "phrazle" ? period : ""}
             userId={userId}
             highlightMsgId={msgId}
+            
           />
         </Col>
       </Row>
@@ -112,6 +113,8 @@ function GroupStatsPage() {
             latestJoinDate={latestJoinDate}
             setSelectedMember={setSelectedMember}
             setShowProfile={setShowProfile}
+            msgReportDate={msgReportDate}
+            msgPeriod={msgPeriod}
           />
 
         </Col>
