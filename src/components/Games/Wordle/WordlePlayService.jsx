@@ -65,7 +65,7 @@ function WordlePlayService({ updateStatsChart, groupId, gameName  }) {
             params: { user_id: userId },
         });
         setAllGroup(response.data);
-        console.log("User joined groups:", response.data);
+       
         } catch (error) {
         console.error("Error fetching user joined groups:", error);
         }
@@ -96,11 +96,10 @@ function WordlePlayService({ updateStatsChart, groupId, gameName  }) {
         // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
         const adjustedCreatedAt = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
     
-        // console.log(adjustedCreatedAt);  // Output: Local time in 24-hour format (without 'Z')
-    
+        
         const wordleScore = score.replace(/[🟩🟨⬜⬛]/g, "");
         const match = wordleScore.match(/(\d+|X)\/(\d+)/);
-        // console.log(match);
+       
     
         if (match) {
             let guessesUsed = match[1] === "X" ? 7 : parseInt(match[1], 10); // Assign 7 for failed attempts ("X")
@@ -131,10 +130,10 @@ function WordlePlayService({ updateStatsChart, groupId, gameName  }) {
                 gameName:"wordle",
                 userId
             };
-            // console.log(wordleObject);
+           
             try {
                 const res = await Axios.post(`${baseURL}/games/wordle/create-score.php`, wordleObject);
-                // console.log(res.data.status);
+               
                 if (res.data.status === 'success') {
                     if (typeof updateStatsChart === 'function') {
                         updateStatsChart();
@@ -151,7 +150,7 @@ function WordlePlayService({ updateStatsChart, groupId, gameName  }) {
                         guessDistribution: updatedGuessDistribution,
                         updatedDate: adjustedCreatedAt
                     };
-                    // console.log(TotalGameObject);
+                   
                     await updateTotalGamesPlayed(TotalGameObject);
                     setScore('');
                     navigate("/wordlestats");

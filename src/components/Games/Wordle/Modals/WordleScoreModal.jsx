@@ -24,8 +24,7 @@ const WordleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScore
     // Game number starts at 1
     const currentGameNumber = diffInDays;
 
-    // console.log("Now Local Time:", now.toString());
-    // console.log("Calculated Game Number:", currentGameNumber);
+   
 
     return currentGameNumber;
 };
@@ -57,7 +56,7 @@ useEffect(() => {
     const pastedData = event.clipboardData.getData('Text');
     const wordleTextExists = pastedData.includes('Wordle');
     const gamenumberExists = pastedData.includes(gameNumber.toLocaleString());
-    // console.log(gameNumber.toLocaleString());
+    
     const todaysGameNumber = calculateGameNumber();
 
     if (!wordleTextExists) {

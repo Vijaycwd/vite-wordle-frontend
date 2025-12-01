@@ -37,7 +37,7 @@ function Wordlestatechart() {
                 console.error("Error fetching data: ", error);
             });
     }
-    console.log(statschart);
+
     return (
         <Container>
             <Row className='align-items-center justify-content-center'>
@@ -52,9 +52,7 @@ function Wordlestatechart() {
                                         const cleanedScore = char.wordlescore.replace(/[🟩🟨⬜]/g, "");
                                         const lettersAndNumbersRemoved = char.wordlescore.replace(/[a-zA-Z0-9,/\\]/g, "");
                                         // Log the processed values
-                                        // console.log('Original score:', char.wordlescore);
-                                        // console.log('Cleaned score (special chars removed):', cleanedScore);
-                                        // console.log('Letters and numbers removed:', lettersAndNumbersRemoved);
+                                        
                                         return (
                                             <div key={index}>
                                                 <div className={`wordle-score-board-text my-3 fs-5`}>{cleanedScore}</div>

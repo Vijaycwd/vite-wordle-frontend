@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import PhrazlePlayService from './PhrazlePlayService';
 
 const Phrazlegame = ({ groupId, gameName, userId }) => {
-    console.log('groupId', groupId);
     const navigate = useNavigate();
 
     const handleConnectionstate = async (event) => {

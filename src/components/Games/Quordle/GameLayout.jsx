@@ -158,8 +158,6 @@ const determineAttempts = (score) => {
     // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
     const adjustedCreatedAt = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
   
-    // console.log(adjustedCreatedAt);  // Output: Local time in 24-hour format (without 'Z')
-  
   
     const scoreObject = {
       username: loginUsername,
@@ -174,7 +172,7 @@ const determineAttempts = (score) => {
       handleHighlight: attempts,
       timeZone,
     };
-    // console.log(scoreObject);
+    
     try {
       const res = await Axios.post(
         `${baseURL}/games/quordle/create-score.php`,
@@ -229,10 +227,10 @@ const determineAttempts = (score) => {
   
     
   const updateTotalGamesPlayed = async (TotalGameObject) => {
-    // console.log(TotalGameObject);
+    
     try {
       const res = await Axios.post(`${baseURL}/games/quordle/update-statistics.php`, TotalGameObject);
-      // console.log(res);
+      
     } catch (err) {
       toast.error('Failed to update total games played');
     }

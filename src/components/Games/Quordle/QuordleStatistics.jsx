@@ -28,7 +28,7 @@ function QuordleStatistics({ statschart }) {
                     updateStatistics();
                 }
                 const statistics = response.data.statistics;
-                // console.log(statistics);
+               
                 setQuordleStatsData(statistics);
                 setTotalGame(statistics.totalGamesPlayed);
                 setTotalWin(statistics.winPercentage);
@@ -46,7 +46,7 @@ function QuordleStatistics({ statschart }) {
 
     const WinningPercent = Math.round((totalWin / totalGame) * 100);
     const isValidNumber = !isNaN(WinningPercent);
-    // console.log('guessDistribution',guessDistribution);
+    
     return (
             <div className="statistics">
                 <h2 className='text-uppercase'>Statistics</h2>

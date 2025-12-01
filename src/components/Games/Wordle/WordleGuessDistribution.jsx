@@ -16,7 +16,7 @@ function WordleGuessDistribution() {
   function getGuessValue() {
     Axios.get(`${baseURL}/games/wordle/get-guessdistribution.php?useremail=${loginuserEmail}`)
       .then((response) => {
-        //// console.log("Response Data:", response.data.guessdistribution);
+        
         const guessdistribution = response.data.guessdistribution;
         setwordleGuessData(guessdistribution);
         const today = new Date();
@@ -25,18 +25,17 @@ function WordleGuessDistribution() {
         const day = String(today.getDate()).padStart(2, '0');
 
         const formattedToday = `${year}-${month}-${day}`;
-        // console.log("Formatted Today Date:", formattedToday);
-
+        
         const handleHighlights = guessdistribution
         .filter((item) => {
           const formattedDate = item.updatedDate.split(' ')[0];
-          // console.log("Item Date:", formattedDate, "Matches Today:", formattedDate === formattedToday);
+          
           return formattedDate === formattedToday; // Compare with today's formatted date
         })
         .map((item) => item.handleHighlight)
         .flat();
   
-        // console.log("Highlight Data:", handleHighlights); // Log highlight data
+        
         sethandlehighlightData(handleHighlights);
       })
       .catch((error) => {
@@ -55,7 +54,7 @@ function WordleGuessDistribution() {
               const guessValue = parseFloat(guess);
               const percentage = totalSum > 0 ? Math.round((guessValue / totalSum) * 100) : 0;
               const isHighlighted = highlightData.includes(i); // Check if index is highlighted
-              // console.log(`Guess ${i + 1} - Highlighted: ${isHighlighted}`);
+              
               return (
                 <div key={i} className="guess-item my-2 d-flex align-items-center">
                   <span>{i + 1}</span>

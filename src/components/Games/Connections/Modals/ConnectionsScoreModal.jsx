@@ -23,9 +23,7 @@ const ConnectionsScoreModal = ({ showForm, handleFormClose, onSubmit, score, set
   
       // Game number starts at 1
       const currentGameNumber = diffInDays;
-  
-      // console.log("Now Local Time:", now.toString());
-      // console.log("Calculated Game Number:", currentGameNumber);
+
   
       return currentGameNumber;
   };

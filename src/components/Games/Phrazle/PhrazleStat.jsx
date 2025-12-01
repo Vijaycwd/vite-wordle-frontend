@@ -85,7 +85,7 @@ function PhrazleStat() {
         const rows = cleanedData.split(/\n+/);
         return rows.map(row => row.replace(/\s+/g, ' ').trim());
     }
-     // console.log('statschart',statschart);
+    
     return (
         <Container>
             <Row className='align-items-center justify-content-center'>

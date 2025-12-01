@@ -71,7 +71,7 @@ useEffect(() => {
 	      params: { user_id: userId },
 	  });
 	  setAllGroup(response.data);
-	  console.log("User joined groups:", response.data);
+	  
 	  } catch (error) {
 	  console.error("Error fetching user joined groups:", error);
 	  }
@@ -99,8 +99,7 @@ const onSubmit = async (event) => {
   // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
   const adjustedCreatedAt = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
 
-  // console.log(adjustedCreatedAt);  // Output: Local time in 24-hour format (without 'Z')
-
+  
   // Process the Wordle score and match it against a valid format
   const phrazleScore = score.replace(/[🟩🟨⬜🟪]/g, "");
   const lettersAndNumbersRemoved = phrazleScore.replace(/[a-zA-Z0-9,#.:/\\]/g, "");
@@ -137,7 +136,7 @@ const onSubmit = async (event) => {
       gameName:"phrazle",
       userId
     };
-    // console.log(phrazleObject);
+    
     try {
       const res = await Axios.post(`${baseURL}/games/phrazle/create-score.php`, phrazleObject);
       
@@ -178,7 +177,7 @@ const onSubmit = async (event) => {
   }
 };
 const updateTotalGamesPlayed = async (TotalGameObject) => {
-  // console.log(TotalGameObject);
+  
     try {
         await Axios.post(`${baseURL}/games/phrazle/update-statistics.php`, TotalGameObject);
     } catch (err) {

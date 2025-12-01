@@ -143,7 +143,7 @@ const handleInviteFriends = async () => {
   };
 
   if (navigator.share) {
-    console.log(message);
+   
     try {
       await navigator.share(shareData);
       

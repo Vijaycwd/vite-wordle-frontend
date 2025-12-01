@@ -41,15 +41,7 @@ const GroupInvites = () => {
   };
 
 
-// const fetchGroupCount = async () => {
-//   try {
-//     const response = await axios.get(`${baseURL}/groups/get-unseen-count.php?user_id=${userId}`);
-//     console.log('read-count',response.data.unread_count);
-//     setunReadCount(response.data.unread_count);
-//   } catch (error) {
-//     console.error('Error fetching group messages:', error);
-//   }
-// };
+
 
 const fetchGroupMessages = async () => {
   try {

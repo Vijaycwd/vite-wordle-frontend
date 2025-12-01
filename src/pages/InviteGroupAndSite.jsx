@@ -20,7 +20,7 @@ function InviteGroupAndSite({ groupId }) {
         };
 
         if (navigator.share) {
-            console.log(message);
+            
             try {
             await navigator.share(shareData);
             

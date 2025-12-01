@@ -47,18 +47,7 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
     const msgReportDate = searchParams.get("msgReportDate");
     const msgPeriod = searchParams.get("msgPeriod");
 
-    // useEffect(() => {
-    //     // Call the auto-submit PHP script
-    //     axios.get(`${baseURL}/games/wordle/auto-submit-wordle-scores.php`, {
-    //         params: { timeZone, formattedYesterday}
-    //     })
-    //       .then(res => {
-    //         //// console.log('Phrazle auto-submit success:', res.data);
-    //       })
-    //       .catch(err => {
-    //         //console.error('Phrazle auto-submit failed:', err);
-    //       });
-    //   }, []);
+   
       
    useEffect(() => {
            const fetchscoringMethod = async () => {
@@ -212,7 +201,7 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
         setShowProfile(true);
     };
     const showDayResult = (date, useremail, game, period) => {
-    // console.log('showDayResult');
+    
     setSelectedGame(game);
     const timeZone = moment.tz.guess();
     const params = { useremail, timeZone, today: date };
@@ -267,7 +256,7 @@ const noDataMessage = {
   phrazle: "Gamle Score 7",
   quordle: "Gamle Score 9"
 }[game] || "No data available.";
-    //// console.log('todayLeaderboard',todayLeaderboard);
+   
 const today = new Date();
 const yesterday = new Date(today);
 yesterday.setDate(today.getDate() - 1);
@@ -343,7 +332,7 @@ let sheriffWinners = [];
                             {!loading && !error && todayLeaderboard.length > 0 && (() => {
                                 // Filter out "phrazle" and find the lowest score
                                 const filteredLeaderboard = todayLeaderboard.filter((data) => data.gamename === "phrazle");
-                                //// console.log('filteredLeaderboard',filteredLeaderboard);
+                               
                                 if (filteredLeaderboard.length === 0) return null;
 
                                 const minScore = Math.min(...filteredLeaderboard.map(data => Number(data.gamlescore)));
@@ -357,7 +346,7 @@ let sheriffWinners = [];
                                         email: d.useremail
                                     }));
                                 
-                                // console.log('missedUsers',missedUsers);
+                                
                                 
                                 if (missedUsers.length > 0) {
                                     return (
@@ -435,10 +424,7 @@ let sheriffWinners = [];
 
                                     const minScoreToday = Math.min(...todayScores.map(d => d.gamlescore ?? 0));
                                     const topScorers = todayScores.filter(d => d.gamlescore == minScoreToday);
-                                    //console.log("Today Scores:", todayScores);
-                                    //console.log("Min Score Today:", minScoreToday);
-                                    //console.log("Top Scorers:", topScorers);
-                                    //console.log("Prior Sheriffs:", priorSheriffUsernames);  
+                                      
                                     const sheriffWinners =
                                         topScorers.length > 0
                                         ? topScorers
@@ -599,7 +585,7 @@ let sheriffWinners = [];
                                     // Find today's top scorers
                                     const highestScore = Math.min(...filteredLeaderboard.map(d => d.gamlescore ?? 0));
                                     const topScorers = filteredLeaderboard.filter(d => d.gamlescore == highestScore);
-                                    // console.log('topScorers', topScorers);
+                                    
 
                                     // Get yesterday's scores
                                     const yesterdayScores = filteredLeaderboard.filter(entry =>

@@ -49,8 +49,7 @@ function MessageLeaderboard({ latestJoinDate, setSelectedMember, setShowProfile,
             console.error('Unexpected date format:', formattedDateStr);
         }
     }
-    //console.log('minDate:', minDate.toISOString());
-
+   
 
     const minDateStr = minDate.toISOString().split('T')[0];
     
@@ -268,9 +267,7 @@ function MessageLeaderboard({ latestJoinDate, setSelectedMember, setShowProfile,
     maxSelectableDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
     }
 
-    // console.log("maxSelectableDate", maxSelectableDate);
-
-
+    
     const handleShowProfile = (data) => {
         setSelectedMember(data);
         setShowProfile(true);
@@ -442,19 +439,7 @@ function MessageLeaderboard({ latestJoinDate, setSelectedMember, setShowProfile,
                             // const isMaxPhrazleDate = (period === 'AM' && dayjs(startDate).isSame(dayjs(), 'day'));
                             return (
                                 <>
-                                <div className="d-flex align-items-center justify-content-center gap-3 cursor-pointer text-lg font-medium">
-                                    <button onClick={(e) => { e.stopPropagation(); goToPreviousDay(); }} disabled={isMinPhrazleDate} className="bg-dark text-white px-3 py-1 rounded">
-                                        <FaArrowLeft />
-                                    </button>
-                                    <div>
-                                        {dayjs(startDate).format("MMM D, YYYY")} - {period}
-                                    </div>
-                                    <button onClick={(e) => { e.stopPropagation(); goToNextDay(); }} disabled={isMaxPhrazleDate} className="bg-dark text-white px-3 py-1 rounded">
-                                        <FaArrowRight />
-                                    </button>
-                                </div>
-                                <h4 className="text-center py-3">Daily Leaderboard</h4>
-
+                                <h4 className="text-center py-3">Leaderboard for {dayjs(startDate).format("MMM D, YYYY")} - {period}</h4>
                                 {filteredLeaderboard.slice().sort((a, b) => {
                                     const aIsSheriff = isSheriff(a.username) ? 1 : 0;
                                     const bIsSheriff = isSheriff(b.username) ? 1 : 0;
@@ -625,8 +610,7 @@ function MessageLeaderboard({ latestJoinDate, setSelectedMember, setShowProfile,
                                         isQuordleValidScore &&
                                         topScorers.length === 1 &&
                                         topScorers[0].username === data.username;
-                                    // console.log(isSingleWinner);
-
+                                  
                                     const isSharedWinner =
                                         isQuordleValidScore &&
                                         topScorers.length > 1 &&

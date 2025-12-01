@@ -66,7 +66,7 @@ function GroupStats() {
     }
 }, [userId]);
 
-  // console.log('selectedGames',selectedGames);
+
   return (
     <Container>
       <Row className="justify-content-center">

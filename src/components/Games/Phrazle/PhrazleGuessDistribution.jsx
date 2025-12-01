@@ -17,7 +17,7 @@ function PhrazleGuessDistribution() {
   function getGuessValue() {
     Axios.get(`${baseURL}/games/phrazle/get-guessdistribution.php?useremail=${loginuserEmail}`)
     .then((response) => {
-      // console.log("Response Data:", response.data.guessdistribution);
+      
       const guessdistribution = response.data.guessdistribution;
       setphrazleGuessData(guessdistribution);
       const today = new Date();
@@ -26,18 +26,18 @@ function PhrazleGuessDistribution() {
       const day = String(today.getDate()).padStart(2, '0');
 
       const formattedToday = `${year}-${month}-${day}`;
-      // console.log("Formatted Today Date:", formattedToday);
+      
 
       const handleHighlights = guessdistribution
       .filter((item) => {
         const formattedDate = item.updatedDate.split('T')[0];
-        // console.log("Item Date:", formattedDate, "Matches Today:", formattedDate === formattedToday);
+       
         return formattedDate === formattedToday; // Compare with today's formatted date
       })
       .map((item) => item.handleHighlight)
       .flat();
 
-      // console.log("Highlight Data:", handleHighlights); // Log highlight data
+      
       sethandlehighlightData(handleHighlights);
     })
     .catch((error) => {

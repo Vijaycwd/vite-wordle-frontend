@@ -177,7 +177,7 @@ function GroupInfo() {
             setShowExitConfirm(false);
             navigate('/groups'); 
         } else {
-            console.log('error');
+            
         }
         } catch (error) {
         console.error("Exit error:", error);
@@ -224,7 +224,7 @@ function GroupInfo() {
                 prevInvites.filter((invite) => invite.id !== inviteId)
             );
         } else {
-            console.log('error');
+            
         }
         } catch (error) {
         console.error("Exit error:", error);

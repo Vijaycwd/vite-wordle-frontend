@@ -76,8 +76,7 @@ function MemberGameSelections({ leaderboardText }) {
         }
     };
 
-    // console.log("Fetched Games:", Games);
-    // console.log("Selected Games:", selectedGames);
+
 
     return (
         <Container>

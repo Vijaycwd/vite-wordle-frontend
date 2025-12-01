@@ -24,8 +24,7 @@ function SelectScoringMethod({ leaderboardText }) {
                     params: { user_id: userId, group_id: id }
                 });
 
-                // console.log("Fetched Scoring Method:", res.data.scoring_method);
-
+               
                 if (res.data.status === "success") {
                     setScoringMethod(res.data.scoring_method || ""); // Default to empty string
                 } else {

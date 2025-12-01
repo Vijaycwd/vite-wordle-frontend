@@ -63,7 +63,7 @@ function Quordletat() {
         }
         return rows;
     }
- // console.log(statistics);
+ 
     return (
         <Container>
             <Row className='align-items-center justify-content-center'>
@@ -79,7 +79,6 @@ function Quordletat() {
                                 ) : (
                                     statschart && Array.isArray(statschart) && statschart.length > 0 ? (
                                         statschart.map((char, index) => {
-                                            // console.log(char);
                                             
                                             const cleanedScore = char.quordlescore
                                                 .replace(/[🟨🟩⬛⬜🙂]/g, "") // remove tiles/emojis

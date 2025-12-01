@@ -84,7 +84,7 @@ function PhrazleScoreByDate() {
     };
     
     const goToPreviousPeriod = () => {
-        // console.log('goToPreviousPeriod',period)
+        
         if (period === 'PM') {
             const newPeriod = 'AM';
             const formattedDate = formatDateForBackend(startDate);

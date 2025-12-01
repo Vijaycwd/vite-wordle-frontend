@@ -79,7 +79,7 @@ function GroupPage() {
     }, [baseURL]);
     
     if (!group) return null;
-    // console.log('existingMembers',existingMembers)
+    
     return (
         <Container className="text-center">
             <Row>

@@ -13,7 +13,7 @@ const PhrazleScoreModal = ({ showForm, handleFormClose, onSubmit, score, setScor
     firstGameDate.setHours(0, 0, 0, 0);
 
     const now = new Date();
-    // console.log(now);
+   
     now.setHours(0, 0, 0, 0); // today at local midnight
 
     // Timezone offset correction
@@ -45,7 +45,7 @@ useEffect(() => {
 
   return () => clearInterval(interval);
 }, []);
-    // console.log(gameNumber);
+    
     const handlePaste = (event) => {
       const pastedData = event.clipboardData.getData('Text').trim();
       const phrazleTextExists = pastedData.includes('Phrazle');

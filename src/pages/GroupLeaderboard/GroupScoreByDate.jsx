@@ -51,7 +51,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
             console.error('Unexpected date format:', formattedDateStr);
         }
     }
-    //console.log('minDate:', minDate.toISOString());
+
 
 
     const minDateStr = minDate.toISOString().split('T')[0];
@@ -271,17 +271,16 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
         if (msgReportDate) {
             finalDate = new Date(msgReportDate);
             finalPeriod = msgPeriod;
-
             // Apply your phrazle fallback rules:
 
-            if (msgPeriod === 'PM') {
+            if (msgPeriod == 'PM') {
                 // PM → same date, switch to AM
                 finalPeriod = 'AM';
             }
-            else if (msgPeriod === 'AM') {
+            else if (msgPeriod == 'AM') {
                 // AM → previous date, keep AM
                 finalDate.setDate(finalDate.getDate() - 1);
-                finalPeriod = 'AM';
+                finalPeriod = 'PM';
             }
         }
         else {
@@ -372,7 +371,6 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
 
             // Convert final date back to string
             const finalDateStr = formatDateForBackend(finalDate);
-            console.log('finalDateStr',finalDateStr);
             // Build base parameters
             const baseParams = {
                 groupId: id,
@@ -441,39 +439,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
 
     
     
-    // console.log('todayLeaderboard',todayLeaderboard);
-    // Custom input button for DatePicker
-    // const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
-    //     <Button className={`example-custom-input px-5 btn btn-primary ${game}-btn`} onClick={onClick} ref={ref}>
-    //     Go To Date
-    // </Button>
-    // ));
     
-
-    // const getTotalScore = (gameName, score) => {
-    //     const cleanedName = gameName ? gameName.trim().toLowerCase() : "";
-
-    //     if (cleanedName === "wordle") return 7;         // max 6
-    //     if (cleanedName === "connections") return 4;    // 4 groups
-    //     if (cleanedName === "phrazle") return 7;        // like Wordle
-
-    //     if (cleanedName === "quordle") {
-    //         // Quordle special logic
-    //         const numScore = Number(score);
-
-    //         if (isNaN(numScore)) return null;
-
-    //         // Valid wins: usually between 4 (best) and ~27
-    //         if (numScore > 0 && numScore < 30) {
-    //         return numScore;
-    //         }
-
-    //         // Scores >= 31 mean loss
-    //         return "LOSS";
-    //     }
-
-    //     return 1; // default
-    // };
 
     // Function to get the max possible score for a game
     const getTotalScore = (gameName) => {
@@ -508,7 +474,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
     maxSelectableDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
     }
 
-    // console.log("maxSelectableDate", maxSelectableDate);
+    
 
 
     const handleShowProfile = (data) => {
@@ -892,7 +858,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                                         isQuordleValidScore &&
                                         topScorers.length === 1 &&
                                         topScorers[0].username === data.username;
-                                    // console.log(isSingleWinner);
+                                   
 
                                     const isSharedWinner =
                                         isQuordleValidScore &&

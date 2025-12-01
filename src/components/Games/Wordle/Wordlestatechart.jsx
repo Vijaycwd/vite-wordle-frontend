@@ -49,7 +49,7 @@ function Wordlestatechart() {
             }
         })
         .then((response) => {
-            // console.log("Wordle Score",response);
+            
             if (response.data.status === "success") {
                 const scoreData = response.data.wordlescore;
                 setLoading(false);

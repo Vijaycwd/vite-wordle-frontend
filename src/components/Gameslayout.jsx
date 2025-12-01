@@ -136,7 +136,7 @@ function GamesLayout() {
           params: { user_id: userId },
       });
       setAllGroup(response.data);
-      console.log("User joined groups:", response.data);
+      
       } catch (error) {
       console.error("Error fetching user joined groups:", error);
       }
