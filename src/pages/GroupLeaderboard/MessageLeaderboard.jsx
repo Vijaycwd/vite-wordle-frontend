@@ -171,7 +171,7 @@ function MessageLeaderboard({ latestJoinDate, setSelectedMember, setShowProfile,
             const timeZone = moment.tz.guess();
 
             const baseParams = {
-                groupId: groupId,
+                groupId,
                 groupName,
                 game: gameName,
                 groupCreatedDate: formattedDateStr,
@@ -182,35 +182,26 @@ function MessageLeaderboard({ latestJoinDate, setSelectedMember, setShowProfile,
                 scoringMethod
             };
 
-            const params = gameName === 'phrazle'
-                ? { ...baseParams, period: currentPeriod || period }
-                : baseParams;
+            const params = 
+                gameName === "phrazle"
+                    ? { ...baseParams, period: currentPeriod || period }
+                    : baseParams;
 
-            let todayResponse, cumulativeAverageResponse, cumulativeDailyResponse;
-            
-            if (scoringMethod === 'Pesce') {
-                const todayPromise = axios.get(`${baseURL}/groups/pesce-get-group-score.php`, { params });
+            let todayResponse;
 
-                // Wait 300ms before firing the other two
-                await new Promise(resolve => setTimeout(resolve, 300));
-
-                const cumulativeAveragePromise = axios.get(`${baseURL}/groups/get-cumulative-average-score.php`, { params });
-                const cumulativeDailyPromise = axios.get(`${baseURL}/groups/get-cumulative-score-bydate.php`, { params });
-
-                [todayResponse, cumulativeAverageResponse, cumulativeDailyResponse] = await Promise.all([
-                    todayPromise,
-                    cumulativeAveragePromise,
-                    cumulativeDailyPromise
-                ]);
-            }
-            else {
-                [todayResponse, cumulativeAverageResponse, cumulativeDailyResponse] = await Promise.all([
-                    axios.get(`${baseURL}/groups/get-group-score.php`, { params }),
-                    axios.get(`${baseURL}/groups/get-cumulative-average-score.php`, { params }),
-                    axios.get(`${baseURL}/groups/get-cumulative-score-bydate.php`, { params }),
-                ]);
+            if (scoringMethod === "Pesce") {
+                todayResponse = await axios.get(
+                    `${baseURL}/groups/pesce-get-group-score.php`,
+                    { params }
+                );
+            } else {
+                todayResponse = await axios.get(
+                    `${baseURL}/groups/get-group-score.php`,
+                    { params }
+                );
             }
 
+            // Process result
             if (
                 todayResponse.data.status === "success" &&
                 Array.isArray(todayResponse.data.data)
@@ -221,9 +212,6 @@ function MessageLeaderboard({ latestJoinDate, setSelectedMember, setShowProfile,
                 setFetchedError(true);
             }
 
-            settotalGames(cumulativeDailyResponse.data.totalGames || []);
-            setcumulativeAverageScore(cumulativeAverageResponse.data.data || []);
-            setcumulativeDailyScore(cumulativeDailyResponse.data.data || []);
             setDataFetched(true);
 
         } catch (error) {
@@ -233,6 +221,7 @@ function MessageLeaderboard({ latestJoinDate, setSelectedMember, setShowProfile,
             setDataFetched(true);
         }
     };
+
 
     // Function to get the max possible score for a game
     const getTotalScore = (gameName) => {
@@ -251,21 +240,6 @@ function MessageLeaderboard({ latestJoinDate, setSelectedMember, setShowProfile,
         setShowModal(false);
         // if (updated) fetchGroupInfo();
     };
-
-    const now = new Date();
-
-    let maxSelectableDate;
-
-    if (gameName === "phrazle") {
-    const isAfternoon = now.getHours() >= 12;
-
-    maxSelectableDate = isAfternoon
-        ? new Date() // allow today, local time
-        : new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1); // yesterday local midnight
-    } else {
-    // For other games, only allow up to yesterday local midnight
-    maxSelectableDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-    }
 
     
     const handleShowProfile = (data) => {
@@ -321,32 +295,32 @@ function MessageLeaderboard({ latestJoinDate, setSelectedMember, setShowProfile,
         yesterdayFormatted = formatLocalDateTime(yesterday);
     }
 
-    useEffect(() => {
-        if (!USER_AUTH_DATA?.id) return;
+    // useEffect(() => {
+    //     if (!USER_AUTH_DATA?.id) return;
 
-        const params = { 
-            baseURL: baseURL,
-            user_id: USER_AUTH_DATA.id,  
-            today: todayFormatted,
-        };
+    //     const params = { 
+    //         baseURL: baseURL,
+    //         user_id: USER_AUTH_DATA.id,  
+    //         today: todayFormatted,
+    //     };
 
-        if (gameName !== "phrazle") {
-            params.yesterday = yesterdayFormatted;
-        }
+    //     if (gameName !== "phrazle") {
+    //         params.yesterday = yesterdayFormatted;
+    //     }
 
-        if (gameName === "phrazle") {
-            params.period = period; // AM / PM
-        }
+    //     if (gameName === "phrazle") {
+    //         params.period = period; // AM / PM
+    //     }
 
-        axios.get(`${baseURL}/user/get-day-winner.php`, { params })
-            .then((res) => {
-                if (res.data.success) {
+    //     axios.get(`${baseURL}/user/get-day-winner.php`, { params })
+    //         .then((res) => {
+    //             if (res.data.success) {
                     
-                }
-            })
-            .catch((err) => console.error("Error fetching groups:", err));
+    //             }
+    //         })
+    //         .catch((err) => console.error("Error fetching groups:", err));
 
-    }, [USER_AUTH_DATA?.id, gameName, period, todayFormatted, yesterdayFormatted]);
+    // }, [USER_AUTH_DATA?.id, gameName, period, todayFormatted, yesterdayFormatted]);
     
     return (
         <>

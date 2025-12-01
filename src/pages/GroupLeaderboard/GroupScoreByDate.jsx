@@ -522,7 +522,8 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
     // ⭐ CORRECT GAME LOGIC
     if (game === "phrazle") {
         // Phrazle needs ONLY the selected date (YYYY-MM-DD)
-        todayFormatted = dayjs(startDate).format("YYYY-MM-DD");
+        //todayFormatted = dayjs(startDate).format("YYYY-MM-DD");
+        todayFormatted = formatLocalDateTime(today);
         yesterdayFormatted = ""; // Not used
     } else {
         // Wordle / Connections use yesterday
@@ -532,6 +533,9 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
 
     useEffect(() => {
         if (!USER_AUTH_DATA?.id) return;
+
+        // If game is phrazle, wait until period is set
+        if (game === "phrazle" && !period) return;
 
         const params = { 
             baseURL: baseURL,
@@ -550,12 +554,13 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
         axios.get(`${baseURL}/user/get-day-winner.php`, { params })
             .then((res) => {
                 if (res.data.success) {
-                   
+                    // ...
                 }
             })
             .catch((err) => console.error("Error fetching groups:", err));
 
     }, [USER_AUTH_DATA?.id, game, period, todayFormatted, yesterdayFormatted]);
+
 
 
 

@@ -20,6 +20,7 @@ const GroupInvites = () => {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const [unreadcount, setunReadCount]= useState(0);
+  const currentUserName = USER_AUTH_DATA?.username;
   // Fetch group invites
 
   const fetchGroupInvites = async () => {
@@ -291,6 +292,9 @@ const handleDeclineInvite = async (inviteId) => {
           const isUnread =
             !msg.seen_ids ||
             !msg.seen_ids.split(",").includes(String(userId));
+          
+          const processedMessage = msg.message?.replaceAll(currentUserName, "You");
+
           return (
             <Link
               key={`msg-${msg.id}`}
@@ -319,12 +323,14 @@ const handleDeclineInvite = async (inviteId) => {
                   {/* LEFT SIDE */}
                   <div className="msg-left">
                     {msg.msg_from === "group" ? (
-                      <p>{msg.message}</p>
+                      <p>{processedMessage}</p>
                     ) : (
+                      <>
                       <div
                         className="cwd-group-message"
-                        dangerouslySetInnerHTML={{ __html: msg.message }}
+                        dangerouslySetInnerHTML={{ __html: processedMessage }}
                       />
+                      </>
                     )}
                       <div className=" d-flex gap-2 time-ago">
                         {timeAgo(msg.created_at)}
