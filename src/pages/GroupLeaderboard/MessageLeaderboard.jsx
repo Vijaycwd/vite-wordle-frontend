@@ -191,12 +191,12 @@ function MessageLeaderboard({ latestJoinDate, setSelectedMember, setShowProfile,
 
             if (scoringMethod === "Pesce") {
                 todayResponse = await axios.get(
-                    `${baseURL}/groups/pesce-get-group-score.php`,
+                    `${baseURL}/groups/pesce-get-message-group-score.php`,
                     { params }
                 );
             } else {
                 todayResponse = await axios.get(
-                    `${baseURL}/groups/get-group-score.php`,
+                    `${baseURL}/groups/get-message-group-score.php`,
                     { params }
                 );
             }

@@ -244,201 +244,200 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
         );
     });
     
+    // helper used in both places
+    const isMsgPeriodNull = (p) => p === null || p === undefined || p === "null";
+
+    // ------------------ useEffect ------------------
     useEffect(() => {
     if (!scoringMethod || !game) return;
 
     const now = dayjs();
-
-    let finalDate;
-    let finalPeriod;
-
-    // Convert backend saved date to JS local date
     const today = now.toDate();
+    const formattedTodayStr = formatDateForBackend(today); // keep your existing helper
 
-    // ---------------------------
-    //  PHRAZLE LOGIC
-    // ---------------------------
-    if (game === 'phrazle') {
-
-        // Determine today's official phrazle period
+    // PHRAZLE
+    if (game === "phrazle") {
         const currentHour = now.hour();
-        const defaultPhrazleDate =
-            currentHour < 12 ? now.subtract(1, 'day').toDate() : today;
-        const defaultPhrazlePeriod =
-            currentHour < 12 ? 'PM' : 'AM';
+        const defaultPhrazleDate = currentHour < 12 ? now.subtract(1, "day").toDate() : today;
+        const defaultPhrazlePeriod = currentHour < 12 ? "PM" : "AM";
 
-        // If URL has msgReportDate / msgPeriod
+        let finalDate = defaultPhrazleDate;
+        let finalPeriod = defaultPhrazlePeriod;
+
         if (msgReportDate) {
-            finalDate = new Date(msgReportDate);
-            finalPeriod = msgPeriod;
-            // Apply your phrazle fallback rules:
-
-            if (msgPeriod == 'PM') {
-                // PM → same date, switch to AM
-                finalPeriod = 'AM';
-            }
-            else if (msgPeriod == 'AM') {
-                // AM → previous date, keep AM
-                finalDate.setDate(finalDate.getDate() - 1);
-                finalPeriod = 'PM';
-            }
+        // strict parse expecting YYYY-MM-DD (adjust pattern if yours differs)
+        const parsed = dayjs(msgReportDate, "YYYY-MM-DD", true);
+        if (parsed.isValid()) {
+            finalDate = parsed.toDate();
+        } else {
+            // fallback to default if parse fails
+            finalDate = defaultPhrazleDate;
         }
-        else {
-            // No message date → default
+
+        // Apply the exact rules you specified:
+        // - msgPeriod === 'PM'  => same date, finalPeriod = 'AM'
+        // - msgPeriod === 'AM'  => previous date, finalPeriod = 'AM'
+        if (msgPeriod === "PM") {
+            finalPeriod = "AM";
+            // finalDate stays the same
+        } else if (msgPeriod === "AM") {
+            finalDate = dayjs(finalDate).subtract(1, "day").toDate();
+            finalPeriod = "PM";
+        } else if (isMsgPeriodNull(msgPeriod)) {
+            // explicit null -> use defaultPhrazleDate/defaultPhrazlePeriod
             finalDate = defaultPhrazleDate;
             finalPeriod = defaultPhrazlePeriod;
         }
+        }
 
-        // Final date string for API
         const finalDateStr = formatDateForBackend(finalDate);
 
-        // Trigger data fetch
+        console.debug("[PHRAZLE] computed:", { msgReportDate, msgPeriod, finalDate, finalPeriod, finalDateStr });
+
         if (finalDateStr >= formattedDateStr) {
-            setStartDate(finalDate);
-            setPeriod(finalPeriod);
-            fetchDataByDate(finalDateStr, finalPeriod);
+        setStartDate(finalDate);
+        setPeriod(finalPeriod);
+        fetchDataByDate(finalDateStr, finalPeriod);
+        } else {
+        console.debug("[PHRAZLE] finalDate before group created date - skipping fetch");
         }
 
         return;
     }
 
-    // ----------------------------------------
-    //  WORDLE + CONNECTIONS LOGIC
-    // ----------------------------------------
-
-    let prevDate = now.subtract(1, 'day').toDate();
-    let prevDateStr = formatDateForBackend(prevDate);
+    // WORDLE + CONNECTIONS
+    const prevDate = now.subtract(1, "day");
+    const prevDateStr = formatDateForBackend(prevDate.toDate());
 
     if (prevDateStr >= formattedDateStr) {
-
+        let finalDate;
         if (msgReportDate) {
-            // If msgPeriod = null → go to previous date (your requirement)
-            if (msgPeriod == 'null') {
-                finalDate = new Date(msgReportDate);
-                finalDate.setDate(finalDate.getDate() - 1);
-            } else {
-                finalDate = new Date(msgReportDate);
-            }
+        const parsed = dayjs(msgReportDate, "YYYY-MM-DD", true);
+        finalDate = parsed.isValid() ? parsed.toDate() : prevDate.toDate();
+
+        if (isMsgPeriodNull(msgPeriod)) {
+            // explicit 'null' => previous date
+            finalDate = dayjs(finalDate).subtract(1, "day").toDate();
         }
-        else {
-            finalDate = prevDate;
+        } else {
+        finalDate = prevDate.toDate();
         }
 
         const finalDateStr = formatDateForBackend(finalDate);
+        console.debug("[WORDLE] computed:", { msgReportDate, msgPeriod, finalDate, finalDateStr });
 
         setStartDate(finalDate);
         fetchDataByDate(finalDateStr);
+    } else {
+        console.debug("[WORDLE] prevDate before group created date - skipping fetch");
     }
 
-}, [scoringMethod, game]);
+    }, [scoringMethod, game, msgReportDate, msgPeriod /* include so URL changes re-run */]);
 
-
-
-
+    // ------------------ fetchDataByDate ------------------
     const fetchDataByDate = async (date, currentPeriod = null) => {
-        try {
-            const timeZone = moment.tz.guess();
+    try {
+        const timeZone = moment.tz.guess();
 
-            let finalDate = msgReportDate ? new Date(msgReportDate) : new Date(date);
-           
-            let finalPeriod = msgPeriod;
+        // normalize source: prefer msgReportDate if present, else use provided startDate
+        const baseDay = msgReportDate ? dayjs(msgReportDate, "YYYY-MM-DD", true) : dayjs(startDate);
+        let finalDay = baseDay.isValid() ? baseDay.clone() : dayjs(startDate);
+        let finalPeriod = msgPeriod;
 
-            // -----------------------------
-            // WORDLE + CONNECTIONS LOGIC
-            // -----------------------------
-            
-            if (game !== 'phrazle') {
-                // If msgPeriod is null, always go to previous date
-               
-                if (msgPeriod == 'null') {
-                    finalDate.setDate(finalDate.getDate() - 1);
-                }
+        if (game === "phrazle") {
+        // apply the same exact mapping here to be consistent with useEffect
+        if (msgReportDate) {
+            // If msgPeriod is PM => same date, AM
+            if (msgPeriod === "PM") {
+            finalPeriod = "AM";
+            // finalDay unchanged
             }
-            // -----------------------------
-            // PHRAZLE LOGIC
-            // -----------------------------
-            else {
-                if (msgPeriod === 'PM') {
-                    // PM → same date, but switch to AM
-                    finalPeriod = 'AM';
-                } 
-                else if (msgPeriod === 'AM') {
-                    // AM → go to previous date, keep AM
-                    finalDate.setDate(finalDate.getDate() - 1);
-                    finalPeriod = 'AM';
-                }
+            // If msgPeriod is AM => previous date, AM
+            else if (msgPeriod === "AM") {
+            finalDay = finalDay.subtract(1, "day");
+            finalPeriod = "AM";
             }
-
-            // Convert final date back to string
-            const finalDateStr = formatDateForBackend(finalDate);
-            // Build base parameters
-            const baseParams = {
-                groupId: id,
-                groupName,
-                game,
-                groupCreatedDate: formattedDateStr,
-                groupPeriod: finalPeriod || groupPeriod, // updated period
-                today: finalDateStr,                      // updated date
-                timeZone,
-                formattedYesterday: date,
-                scoringMethod
-            };
-
-            // Add Phrazle period if needed
-            const params = game === 'phrazle'
-                ? { ...baseParams, period: currentPeriod || finalPeriod }
-                : baseParams;
-
-            let todayResponse, cumulativeAverageResponse, cumulativeDailyResponse;
-            
-            if (scoringMethod === 'Pesce') {
-                const todayPromise = axios.get(`${baseURL}/groups/pesce-get-group-score.php`, { params });
-
-                // Wait 300ms before firing the other two
-                await new Promise(resolve => setTimeout(resolve, 300));
-
-                const cumulativeAveragePromise = axios.get(`${baseURL}/groups/get-cumulative-average-score.php`, { params });
-                const cumulativeDailyPromise = axios.get(`${baseURL}/groups/get-cumulative-score-bydate.php`, { params });
-
-                [todayResponse, cumulativeAverageResponse, cumulativeDailyResponse] = await Promise.all([
-                    todayPromise,
-                    cumulativeAveragePromise,
-                    cumulativeDailyPromise
-                ]);
-            }
-            else {
-                [todayResponse, cumulativeAverageResponse, cumulativeDailyResponse] = await Promise.all([
-                    axios.get(`${baseURL}/groups/get-group-score.php`, { params }),
-                    axios.get(`${baseURL}/groups/get-cumulative-average-score.php`, { params }),
-                    axios.get(`${baseURL}/groups/get-cumulative-score-bydate.php`, { params }),
-                ]);
-            }
-
-            if (
-                todayResponse.data.status === "success" &&
-                Array.isArray(todayResponse.data.data)
-            ) {
-                setTodayLeaderboard(todayResponse.data.data);
+            // if msgPeriod nullish => let finalDay/finalPeriod remain as-is (or you can choose defaults)
+        } else {
+            // no msgReportDate: use current logic (defaults based on time of day)
+            const now = dayjs();
+            if (now.hour() < 12) {
+            finalDay = now.subtract(1, "day");
+            finalPeriod = "PM";
             } else {
-                setTodayLeaderboard([]);
-                setFetchedError(true);
+            finalDay = now;
+            finalPeriod = "AM";
             }
-
-            settotalGames(cumulativeDailyResponse.data.totalGames || []);
-            setcumulativeAverageScore(cumulativeAverageResponse.data.data || []);
-            setcumulativeDailyScore(cumulativeDailyResponse.data.data || []);
-            setDataFetched(true);
-
-        } catch (error) {
-            console.error("API Error:", error);
-            setTodayLeaderboard([]);
-            setFetchedError(true);
-            setDataFetched(true);
         }
+        } else {
+        // Non-phrazle: if msgPeriod explicitly 'null' => previous date
+        if (isMsgPeriodNull(msgPeriod)) {
+            finalDay = finalDay.subtract(1, "day");
+        }
+        }
+
+        const finalDateStr = formatDateForBackend(finalDay.toDate());
+
+        console.debug("[fetchDataByDate] finalDay:", finalDay.toDate(), "finalPeriod:", finalPeriod, "finalDateStr:", finalDateStr, "param date:", date);
+
+        // Build params (same as you had)
+        const baseParams = {
+        groupId: id,
+        groupName,
+        game,
+        groupCreatedDate: formattedDateStr,
+        groupPeriod: finalPeriod || groupPeriod,
+        today: finalDateStr,
+        timeZone,
+        formattedYesterday: date,
+        scoringMethod
+        };
+
+        const params = game === "phrazle"
+        ? { ...baseParams, period: currentPeriod || finalPeriod }
+        : baseParams;
+
+        // (the rest of your axios logic remains unchanged)
+        let todayResponse, cumulativeAverageResponse, cumulativeDailyResponse;
+
+        if (scoringMethod === "Pesce") {
+        const todayPromise = axios.get(`${baseURL}/groups/pesce-get-group-score.php`, { params });
+        await new Promise(resolve => setTimeout(resolve, 300));
+        const cumulativeAveragePromise = axios.get(`${baseURL}/groups/get-cumulative-average-score.php`, { params });
+        const cumulativeDailyPromise = axios.get(`${baseURL}/groups/get-cumulative-score-bydate.php`, { params });
+
+        [todayResponse, cumulativeAverageResponse, cumulativeDailyResponse] = await Promise.all([
+            todayPromise,
+            cumulativeAveragePromise,
+            cumulativeDailyPromise
+        ]);
+        } else {
+        [todayResponse, cumulativeAverageResponse, cumulativeDailyResponse] = await Promise.all([
+            axios.get(`${baseURL}/groups/get-group-score.php`, { params }),
+            axios.get(`${baseURL}/groups/get-cumulative-average-score.php`, { params }),
+            axios.get(`${baseURL}/groups/get-cumulative-score-bydate.php`, { params })
+        ]);
+        }
+
+        if (todayResponse.data.status === "success" && Array.isArray(todayResponse.data.data)) {
+        setTodayLeaderboard(todayResponse.data.data);
+        } else {
+        setTodayLeaderboard([]);
+        setFetchedError(true);
+        }
+
+        settotalGames(cumulativeDailyResponse.data.totalGames || []);
+        setcumulativeAverageScore(cumulativeAverageResponse.data.data || []);
+        setcumulativeDailyScore(cumulativeDailyResponse.data.data || []);
+        setDataFetched(true);
+    } catch (error) {
+        console.error("API Error:", error);
+        setTodayLeaderboard([]);
+        setFetchedError(true);
+        setDataFetched(true);
+    }
     };
 
-    
-    
     
 
     // Function to get the max possible score for a game
@@ -746,6 +745,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
 
                                             <Col xs={4} className="text-start fw-semibold" onClick={() => handleShowProfile(data)} style={{ cursor: 'pointer' }}>
                                                 {data.username}
+                                                
                                                 {/* <p>Score is:{data.gamlescore}</p> */}
                                             </Col>
 
