@@ -36,7 +36,7 @@ function GroupStatsPage() {
   const [reportDate, setReportDate] = useState(null);
   useEffect(() => {
     setReportDate(msgReportDate);
-  }, []);
+  }, [msgReportDate]);
   
   useEffect(() => {
     const fetchGroupDetails = async () => {
@@ -64,7 +64,7 @@ function GroupStatsPage() {
   // };
 
   const today = dayjs().format("YYYY-MM-DD");
-
+  
   return (
     <>
     <Container>
