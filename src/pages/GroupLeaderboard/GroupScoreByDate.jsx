@@ -1319,9 +1319,10 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
 
                         if (game === 'phrazle') {
                         // For phrazle, remove colored squares and tags
-                        const cleanedScore = item.phrazlescore.replace(/[🟨,🟩,🟦,🟪,⬜]/g, "");
+                            const rawScore = item.phrazlescore || "";
+                            const cleanedScore = rawScore.replace(/[🟨,🟩,🟦,🟪,⬜]/g, "");
                             const phrazle_score_text = cleanedScore.replace(/#phrazle|https:\/\/solitaired.com\/phrazle/g, '');
-                            const lettersAndNumbersRemoved = item.phrazlescore.replace(/[a-zA-Z0-9,#:./\\]/g, "");
+                            const lettersAndNumbersRemoved = rawScore.replace(/[a-zA-Z0-9,#:./\\]/g, "");
                             const phrazleScore = splitIntoRowsByNewline(lettersAndNumbersRemoved);
                             const gamleScore = item.gamlescore;
 
@@ -1352,9 +1353,10 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                         } 
                         else if (game === 'wordle') {
                         // Example Wordle display - customize as needed
-                        const cleanedScore = item.wordlescore.replace(/[🟩🟨⬜⬛]/g, "");
+                        const rawScore = item.wordlescore || "";
+                        const cleanedScore = rawScore.replace(/[🟩🟨⬜⬛]/g, "");
                         const scoreParts = cleanedScore.split(" ");
-                        const lettersAndNumbersRemoved = item.wordlescore.replace(/[a-zA-Z0-9,/\\]/g, "");
+                        const lettersAndNumbersRemoved = rawScore.replace(/[a-zA-Z0-9,/\\]/g, "");
                         const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
                         const wordleScores = splitIntoRowsByLength(removespace, 5);
                         const createDate = item.createdat;
@@ -1374,8 +1376,9 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                         } 
                         else if (game === 'connections') {
                         // Example Connection game display
-                        const cleanedScore = item.connectionsscore.replace(/[🟨,🟩,🟦,🟪]/g, "");
-                        const lettersAndNumbersRemoved = item.connectionsscore.replace(/[a-zA-Z0-9,#:/\\]/g, "");
+                        const rawScore = item.connectionsscore || "";
+                        const cleanedScore = rawScore.replace(/[🟨,🟩,🟦,🟪]/g, "");
+                        const lettersAndNumbersRemoved = rawScore.replace(/[a-zA-Z0-9,#:/\\]/g, "");
                         const removespace = lettersAndNumbersRemoved.replace(/\s+/g, '');
                         const connectionsScore = splitIntoRowsByLength(removespace, 4);
                         const createDate = item.createdat; // Ensure this matches your database field name
