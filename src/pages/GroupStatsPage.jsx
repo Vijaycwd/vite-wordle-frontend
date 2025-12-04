@@ -62,9 +62,7 @@ function GroupStatsPage() {
   //   const hour = new Date().getHours();
   //   return hour < 12 ? 'AM' : 'PM';
   // };
-
-  const today = dayjs().format("YYYY-MM-DD");
-  
+  const today = dayjs().format("YYYY-MM-DD"); 
   return (
     <>
     <Container>
@@ -75,6 +73,7 @@ function GroupStatsPage() {
           </h2>
 
           {reportDate && reportDate !== today ? (
+            <>
             <MessageLeaderboard
               latestJoinDate={latestJoinDate}
               setSelectedMember={setSelectedMember}
@@ -85,6 +84,7 @@ function GroupStatsPage() {
               groupName={group?.name}
               gameName={game}
             />
+            </>
           ) : (
             <GroupLeaderboardScores
               setLatestJoinDate={setLatestJoinDate}
@@ -93,7 +93,6 @@ function GroupStatsPage() {
             />
           )}
         </Col>
-
 
       </Row>
       <Row className="justify-content-center"> 
