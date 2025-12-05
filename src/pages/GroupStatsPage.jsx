@@ -65,6 +65,19 @@ function GroupStatsPage() {
   
   const today = dayjs().format("YYYY-MM-DD"); 
 
+  useEffect(() => {
+  if (!msgReportDate) return;
+
+  setTimeout(() => {
+    const el = document.getElementById(`report-${msgReportDate}`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      // fallback: scroll to bottom
+      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+    }
+  }, 300);
+}, [msgReportDate]);
 
   return (
     <>

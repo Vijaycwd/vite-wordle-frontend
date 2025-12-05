@@ -527,22 +527,12 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
     axios.get(`${baseURL}/user/get-day-winner.php`, { params })
 }, [USER_AUTH_DATA?.id, game, period, todayFormatted, yesterdayFormatted]);
 
-
-useEffect(() => {
-    console.log('msgReportDate',msgReportDate);
-  if (!msgReportDate) return;
-
-  window.scrollTo({
-    top: document.body.scrollHeight,
-    behavior: "smooth"
-  });
-}, [msgReportDate]); // or whatever your chat data state is
-
-
-    
     return (
         <>
-            <div className='text-center'>
+            <div 
+                className='text-center'
+                id={msgReportDate ? `report-${msgReportDate}` : ''}
+            >
                 {/* <DatePicker
                     selected={startDate}
                     onChange={handleDateChange}
