@@ -237,7 +237,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
         const parsedDate = dayjs(value, "DD-MM-YYYY");
         return (
             <>
-                <Button className={`example-custom-input px-5 my-4 ${game}-btn`} onClick={onClick} ref={ref}>
+                <Button className={`example-custom-input px-5 my-4 ${game}-btn`} onClick={onClick} ref={ref} id = {msgReportDate ? `report-${msgReportDate}` : ''}>
                     Go To Date
                 </Button>
             </>
