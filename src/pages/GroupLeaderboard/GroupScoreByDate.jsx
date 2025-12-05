@@ -165,7 +165,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
         const prevDate = dayjs(startDate).subtract(1, 'day').toDate();
         const latest = dayjs(latestJoinDate);
         const latestDateOnly = latest.startOf('day');
-        removeMsgPeriod();
+        
         if (game === 'phrazle') {
             if (period === 'PM') {
                 const newPeriod = 'AM';
@@ -177,6 +177,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                 setPeriod(newPeriod);
                 setStartDate(startDate);
                 fetchDataByDate(formattedDateStr, newPeriod);
+                removeMsgPeriod(); 
             } else {
                 // Going from AM ➝ PM of previous day
                 if (dayjs(prevDate).isBefore(latestDateOnly)) return;
@@ -185,6 +186,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                 setStartDate(prevDate);
                 setPeriod(newPeriod);
                 fetchDataByDate(formattedDateStr, newPeriod);
+                removeMsgPeriod(); 
             }
         } else {
             if (dayjs(prevDate).isBefore(latestDateOnly)) return;
@@ -197,7 +199,6 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
         const now = dayjs();
         const today = now.startOf('day');
         const currentHour = now.hour();
-        removeMsgPeriod();
         if (game === 'phrazle') {
             const isToday = dayjs(startDate).isSame(today, 'day');
 
@@ -211,6 +212,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                 const formattedDate = formatDateForBackend(startDate);
                 fetchDataByDate(formattedDate, 'PM');
                 setPeriod('PM');
+                removeMsgPeriod(); 
             } else {
                 // Trying to move past today — block it
                 if (isToday) return;
@@ -221,6 +223,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                 fetchDataByDate(formattedDate, 'AM');
                 setStartDate(nextDate.toDate());
                 setPeriod('AM');
+                removeMsgPeriod(); 
             }
         } else {
             // Non-Phrazle logic: allow only up to yesterday
@@ -230,6 +233,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
             const formattedDate = formatDateForBackend(nextDate.toDate());
             fetchDataByDate(formattedDate);
             setStartDate(nextDate.toDate());
+
         }
     };
 
