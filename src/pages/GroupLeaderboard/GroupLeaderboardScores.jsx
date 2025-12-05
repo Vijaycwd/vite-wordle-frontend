@@ -85,8 +85,10 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
                     groupName,
                     game,
                     groupCreatedDate: formattedDateStr,
-                    groupPeriod: msgPeriod || groupPeriod,
-                    today: msgReportDate || todayDate,
+                    // groupPeriod: msgPeriod || groupPeriod,
+                    groupPeriod: groupPeriod,
+                    today: todayDate,
+                    // today: msgReportDate || todayDate,
                     timeZone,
                     formattedYesterday: formattedYesterday,
                     scoringMethod

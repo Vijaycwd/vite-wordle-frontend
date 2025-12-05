@@ -165,7 +165,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
         const prevDate = dayjs(startDate).subtract(1, 'day').toDate();
         const latest = dayjs(latestJoinDate);
         const latestDateOnly = latest.startOf('day');
-        
+        removeMsgPeriod();
         if (game === 'phrazle') {
             if (period === 'PM') {
                 const newPeriod = 'AM';
@@ -177,7 +177,6 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                 setPeriod(newPeriod);
                 setStartDate(startDate);
                 fetchDataByDate(formattedDateStr, newPeriod);
-                removeMsgPeriod(); 
             } else {
                 // Going from AM ➝ PM of previous day
                 if (dayjs(prevDate).isBefore(latestDateOnly)) return;
@@ -186,7 +185,6 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                 setStartDate(prevDate);
                 setPeriod(newPeriod);
                 fetchDataByDate(formattedDateStr, newPeriod);
-                removeMsgPeriod(); 
             }
         } else {
             if (dayjs(prevDate).isBefore(latestDateOnly)) return;
@@ -199,6 +197,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
         const now = dayjs();
         const today = now.startOf('day');
         const currentHour = now.hour();
+        removeMsgPeriod();
         if (game === 'phrazle') {
             const isToday = dayjs(startDate).isSame(today, 'day');
 
@@ -212,7 +211,6 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                 const formattedDate = formatDateForBackend(startDate);
                 fetchDataByDate(formattedDate, 'PM');
                 setPeriod('PM');
-                removeMsgPeriod(); 
             } else {
                 // Trying to move past today — block it
                 if (isToday) return;
@@ -223,7 +221,6 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                 fetchDataByDate(formattedDate, 'AM');
                 setStartDate(nextDate.toDate());
                 setPeriod('AM');
-                removeMsgPeriod(); 
             }
         } else {
             // Non-Phrazle logic: allow only up to yesterday
@@ -233,7 +230,6 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
             const formattedDate = formatDateForBackend(nextDate.toDate());
             fetchDataByDate(formattedDate);
             setStartDate(nextDate.toDate());
-
         }
     };
 
@@ -251,138 +247,113 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
     // helper used in both places
     const isMsgPeriodNull = (p) => p === null || p === undefined || p === "null";
 
-    // ------------------ useEffect ------------------
     useEffect(() => {
     if (!scoringMethod || !game) return;
 
-    const now = dayjs();
-    const today = now.toDate();
-    const formattedTodayStr = formatDateForBackend(today); // keep your existing helper
-
-    // PHRAZLE
+    // PHRAZLE → use exact values from URL
     if (game === "phrazle") {
-        const currentHour = now.hour();
-        const defaultPhrazleDate = currentHour < 12 ? now.subtract(1, "day").toDate() : today;
-        const defaultPhrazlePeriod = currentHour < 12 ? "PM" : "AM";
-
-        let finalDate = defaultPhrazleDate;
-        let finalPeriod = defaultPhrazlePeriod;
+        let finalDateStr = null;
+        let finalPeriod = msgPeriod;
 
         if (msgReportDate) {
-        // strict parse expecting YYYY-MM-DD (adjust pattern if yours differs)
-        const parsed = dayjs(msgReportDate, "YYYY-MM-DD", true);
-        if (parsed.isValid()) {
-            finalDate = parsed.toDate();
-        } else {
-            // fallback to default if parse fails
-            finalDate = defaultPhrazleDate;
+            // parse YYYY-MM-DD only
+            const parsed = dayjs(msgReportDate, "YYYY-MM-DD", true);
+            if (parsed.isValid()) {
+                finalDateStr = formatDateForBackend(parsed.toDate());
+            }
         }
 
-        // Apply the exact rules you specified:
-        // - msgPeriod === 'PM'  => same date, finalPeriod = 'AM'
-        // - msgPeriod === 'AM'  => previous date, finalPeriod = 'AM'
-        if (msgPeriod === "PM") {
-            finalPeriod = "AM";
-            // finalDate stays the same
-        } else if (msgPeriod === "AM") {
-            finalDate = dayjs(finalDate).subtract(1, "day").toDate();
-            finalPeriod = "PM";
-        } else if (isMsgPeriodNull(msgPeriod)) {
-            // explicit null -> use defaultPhrazleDate/defaultPhrazlePeriod
-            finalDate = defaultPhrazleDate;
-            finalPeriod = defaultPhrazlePeriod;
-        }
+        if (!finalDateStr) {
+            console.debug("[PHRAZLE] Invalid msgReportDate - skipping");
+            return;
         }
 
-        const finalDateStr = formatDateForBackend(finalDate);
+        console.debug("[PHRAZLE] computed:", {
+            msgReportDate,
+            msgPeriod,
+            finalDateStr,
+            finalPeriod
+        });
 
-        console.debug("[PHRAZLE] computed:", { msgReportDate, msgPeriod, finalDate, finalPeriod, finalDateStr });
-
-        if (finalDateStr >= formattedDateStr) {
-        setStartDate(finalDate);
+        setStartDate(msgReportDate);
         setPeriod(finalPeriod);
         fetchDataByDate(finalDateStr, finalPeriod);
-        } else {
-        console.debug("[PHRAZLE] finalDate before group created date - skipping fetch");
-        }
 
         return;
     }
 
-    // WORDLE + CONNECTIONS
-    const prevDate = now.subtract(1, "day");
-    const prevDateStr = formatDateForBackend(prevDate.toDate());
+    // WORDLE + CONNECTIONS → also use exact msgReportDate
+    if (game === "wordle" || game === "connections") {
 
-    if (prevDateStr >= formattedDateStr) {
-        let finalDate;
+        let finalDateStr = null;
+
         if (msgReportDate) {
-        const parsed = dayjs(msgReportDate, "YYYY-MM-DD", true);
-        finalDate = parsed.isValid() ? parsed.toDate() : prevDate.toDate();
-
-        if (isMsgPeriodNull(msgPeriod)) {
-            // explicit 'null' => previous date
-            finalDate = dayjs(finalDate).subtract(1, "day").toDate();
-        }
-        } else {
-        finalDate = prevDate.toDate();
+            const parsed = dayjs(msgReportDate, "YYYY-MM-DD", true);
+            if (parsed.isValid()) {
+                finalDateStr = formatDateForBackend(parsed.toDate());
+            }
         }
 
-        const finalDateStr = formatDateForBackend(finalDate);
-        console.debug("[WORDLE] computed:", { msgReportDate, msgPeriod, finalDate, finalDateStr });
+        if (!finalDateStr) {
+            console.debug("[WORDLE] Invalid msgReportDate - skipping");
+            return;
+        }
 
-        setStartDate(finalDate);
+        console.debug("[WORDLE] computed:", {
+            msgReportDate,
+            finalDateStr
+        });
+
+        setStartDate(msgReportDate);
         fetchDataByDate(finalDateStr);
-    } else {
-        console.debug("[WORDLE] prevDate before group created date - skipping fetch");
     }
-
-    }, [scoringMethod, game, msgReportDate, msgPeriod /* include so URL changes re-run */]);
+}, [scoringMethod, game, msgReportDate, msgPeriod]);
 
     // ------------------ fetchDataByDate ------------------
     const fetchDataByDate = async (date, currentPeriod = null) => {
     try {
         const timeZone = moment.tz.guess();
-
+        const finalDay = msgReportDate;
+        const finalPeriod = msgPeriod;
         // normalize source: prefer msgReportDate if present, else use provided startDate
-        const baseDay = msgReportDate ? dayjs(msgReportDate, "YYYY-MM-DD", true) : dayjs(startDate);
-        let finalDay = baseDay.isValid() ? baseDay.clone() : dayjs(startDate);
-        let finalPeriod = msgPeriod;
+        
 
-        if (game === "phrazle") {
-        // apply the same exact mapping here to be consistent with useEffect
-        if (msgReportDate) {
-            // If msgPeriod is PM => same date, AM
-            if (msgPeriod === "PM") {
-            finalPeriod = "AM";
-            // finalDay unchanged
-            }
-            // If msgPeriod is AM => previous date, AM
-            else if (msgPeriod === "AM") {
-            finalDay = finalDay.subtract(1, "day");
-            finalPeriod = "AM";
-            }
-            // if msgPeriod nullish => let finalDay/finalPeriod remain as-is (or you can choose defaults)
-        } else {
-            // no msgReportDate: use current logic (defaults based on time of day)
-            const now = dayjs();
-            if (now.hour() < 12) {
-            finalDay = now.subtract(1, "day");
-            finalPeriod = "PM";
-            } else {
-            finalDay = now;
-            finalPeriod = "AM";
-            }
-        }
-        } else {
-        // Non-phrazle: if msgPeriod explicitly 'null' => previous date
-        if (isMsgPeriodNull(msgPeriod)) {
-            finalDay = finalDay.subtract(1, "day");
-        }
-        }
 
-        const finalDateStr = formatDateForBackend(finalDay.toDate());
+        // if (game === "phrazle") {
+        //     // apply the same exact mapping here to be consistent with useEffect
+        //     if (msgReportDate) {
+        //         // If msgPeriod is PM => same date, AM
+        //         if (msgPeriod === "PM") {
+        //         finalPeriod = "AM";
+        //         // finalDay unchanged
+        //         }
+        //         // If msgPeriod is AM => previous date, AM
+        //         else if (msgPeriod === "AM") {
+        //         finalDay = finalDay.subtract(1, "day");
+        //         finalPeriod = "AM";
+        //         }
+        //         // if msgPeriod nullish => let finalDay/finalPeriod remain as-is (or you can choose defaults)
+        //     } else {
+        //         // no msgReportDate: use current logic (defaults based on time of day)
+        //         const now = dayjs();
+        //         if (now.hour() < 12) {
+        //         finalDay = now.subtract(1, "day");
+        //         finalPeriod = "PM";
+        //         } else {
+        //         finalDay = now;
+        //         finalPeriod = "AM";
+        //         }
+        //     }
+        //     } else {
+        //     // Non-phrazle: if msgPeriod explicitly 'null' => previous date
+        //     if (isMsgPeriodNull(msgPeriod)) {
+        //         finalDay = finalDay.subtract(1, "day");
+        //     }
+        // }
 
-        console.debug("[fetchDataByDate] finalDay:", finalDay.toDate(), "finalPeriod:", finalPeriod, "finalDateStr:", finalDateStr, "param date:", date);
+        const finalDateStr = formatDateForBackend(finalDay);
+
+        
 
         // Build params (same as you had)
         const baseParams = {
@@ -390,8 +361,8 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
         groupName,
         game,
         groupCreatedDate: formattedDateStr,
-        groupPeriod: finalPeriod || groupPeriod,
-        today: date,
+        groupPeriod: msgPeriod || groupPeriod,
+        today: msgReportDate || date,
         timeZone,
         formattedYesterday: finalDateStr,
         scoringMethod
@@ -522,49 +493,50 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
     let todayFormatted = "";
     let yesterdayFormatted = "";
 
-    // ⭐ CORRECT GAME LOGIC
     if (game === "phrazle") {
-        // Phrazle needs ONLY the selected date (YYYY-MM-DD)
-        //todayFormatted = dayjs(startDate).format("YYYY-MM-DD");
-        todayFormatted = formatLocalDateTime(today);
-        yesterdayFormatted = ""; // Not used
+        // Send pure date only
+        todayFormatted = dayjs(startDate).format("YYYY-MM-DD"); 
+        yesterdayFormatted = "";
     } else {
-        // Wordle / Connections use yesterday
         todayFormatted = formatLocalDateTime(today);
         yesterdayFormatted = formatLocalDateTime(yesterday);
     }
 
+
     useEffect(() => {
-        if (!USER_AUTH_DATA?.id) return;
+    if (!USER_AUTH_DATA?.id) return;
 
-        // If game is phrazle, wait until period is set
-        if (game === "phrazle" && !period) return;
+    // If game is phrazle, wait until period is set
+    if (game === "phrazle" && !period) return;
 
-        const params = { 
-            baseURL: baseURL,
-            user_id: USER_AUTH_DATA.id,  
-            today: todayFormatted,
-        };
+    const params = { 
+        baseURL: baseURL,
+        user_id: USER_AUTH_DATA.id,  
+        today: todayFormatted,
+        createdat : formatLocalDateTime(today)
+    };
 
-        if (game !== "phrazle") {
-            params.yesterday = yesterdayFormatted;
-        }
+    if (game !== "phrazle") {
+        params.yesterday = yesterdayFormatted;
+    }
 
-        if (game === "phrazle") {
-            params.period = period; // AM / PM
-        }
+    if (game === "phrazle") {
+        params.period = period; // AM / PM
+    }
 
-        axios.get(`${baseURL}/user/get-day-winner.php`, { params })
-            .then((res) => {
-                if (res.data.success) {
-                    // ...
-                }
-            })
-            .catch((err) => console.error("Error fetching groups:", err));
-
-    }, [USER_AUTH_DATA?.id, game, period, todayFormatted, yesterdayFormatted]);
+    axios.get(`${baseURL}/user/get-day-winner.php`, { params })
+}, [USER_AUTH_DATA?.id, game, period, todayFormatted, yesterdayFormatted]);
 
 
+useEffect(() => {
+    console.log('msgReportDate',msgReportDate);
+  if (!msgReportDate) return;
+
+  window.scrollTo({
+    top: document.body.scrollHeight,
+    behavior: "smooth"
+  });
+}, [msgReportDate]); // or whatever your chat data state is
 
 
     

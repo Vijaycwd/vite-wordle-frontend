@@ -80,6 +80,8 @@ function GroupChatMessagesByDate({ gameName, messages, userId, baseURL, highligh
     }
   };
 
+  
+
   return (
     <>
       {Object.keys(groupedMessages).map((dateKey) => (

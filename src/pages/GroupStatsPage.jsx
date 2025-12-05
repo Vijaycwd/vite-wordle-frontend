@@ -9,7 +9,7 @@ import MemberProfile from '../constant/Models/MemberProfile';
 import GroupGameChat  from '../pages/GroupLeaderboard/GroupGameChat';
 import dayjs from "dayjs";
 import { useLocation } from "react-router-dom";
-import MessageLeaderboard from './GroupLeaderboard/MessageLeaderboard';
+//import MessageLeaderboard from './GroupLeaderboard/MessageLeaderboard';
 
 function GroupStatsPage() {
 
@@ -62,7 +62,10 @@ function GroupStatsPage() {
   //   const hour = new Date().getHours();
   //   return hour < 12 ? 'AM' : 'PM';
   // };
+  
   const today = dayjs().format("YYYY-MM-DD"); 
+
+
   return (
     <>
     <Container>
@@ -71,8 +74,12 @@ function GroupStatsPage() {
           <h2 className='text-capitalize py-3'>
             {group?.name || ""} - {game}
           </h2>
-
-          {reportDate && reportDate !== today ? (
+          <GroupLeaderboardScores
+            setLatestJoinDate={setLatestJoinDate}
+            setSelectedMember={setSelectedMember}
+            setShowProfile={setShowProfile}
+          />
+          {/* {reportDate && reportDate !== today ? (
             <>
             <MessageLeaderboard
               latestJoinDate={latestJoinDate}
@@ -91,8 +98,9 @@ function GroupStatsPage() {
               setSelectedMember={setSelectedMember}
               setShowProfile={setShowProfile}
             />
-          )}
+          )} */}
         </Col>
+
 
       </Row>
       <Row className="justify-content-center"> 
