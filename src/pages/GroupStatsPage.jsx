@@ -65,21 +65,6 @@ function GroupStatsPage() {
   
   const today = dayjs().format("YYYY-MM-DD"); 
 
-  useEffect(() => {
-    if (!msgReportDate) return;
-
-    const el = document.querySelector(`#report-${msgReportDate}`);
-    if (!el) return;
-
-    setTimeout(() => {
-        const y = el.getBoundingClientRect().top + window.scrollY - 100;
-
-        window.scrollTo({
-            top: y,
-            behavior: "smooth"
-        });
-    }, 300); // wait for DOM fully rendered
-}, [msgReportDate]);
   return (
     <>
     <Container>

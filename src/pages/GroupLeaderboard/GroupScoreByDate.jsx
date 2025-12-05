@@ -237,7 +237,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
         const parsedDate = dayjs(value, "DD-MM-YYYY");
         return (
             <>
-                <Button className={`example-custom-input px-5 my-4 ${game}-btn`} onClick={onClick} ref={ref} id = {msgReportDate ? `report-${msgReportDate}` : ''}>
+                <Button className={`example-custom-input px-5 my-4 ${game}-btn`} onClick={onClick} ref={ref}>
                     Go To Date
                 </Button>
             </>
@@ -527,12 +527,10 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
     axios.get(`${baseURL}/user/get-day-winner.php`, { params })
 }, [USER_AUTH_DATA?.id, game, period, todayFormatted, yesterdayFormatted]);
 
+
     return (
         <>
-            <div 
-                className='text-center'
-                id={msgReportDate ? `report-${msgReportDate}` : ''}
-            >
+            <div className='text-center'>
                 {/* <DatePicker
                     selected={startDate}
                     onChange={handleDateChange}
@@ -548,6 +546,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                     maxDate={game === 'phrazle' ? maxSelectableDate : dayjs().subtract(1, 'day').toDate()}
                     />
             </div>
+            <div id={`report-${msgReportDate}`}>
             <Row className="justify-content-center leaderboard">
                 <Col md={5} className="text-center">
                     {dataFetched && todayLeaderboard.length > 0 ? (
@@ -948,6 +947,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                     ) : null}
                 </Col>
             </Row>
+            </div>
 
             {startDate && (
             <Row className="justify-content-center">
@@ -1134,7 +1134,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                                     })()}
 
                                     {latestJoinDate && (
-                                    <p className="text-center">
+                                    <p className="text-center" >
                                         Start Date: {(() => {
                                         const date = new Date(latestJoinDate);
                                         const dateString = date.toLocaleDateString("en-US", {

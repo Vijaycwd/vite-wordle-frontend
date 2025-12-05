@@ -182,7 +182,15 @@ const handleDeclineInvite = async (inviteId) => {
         user_id: userId,
       });
 
-      navigate(`/group/${groupId}/stats/${game}?msg_id=${msgId}&msg_from=${msgFrom}&msgReportDate=${msgReportDate}&msgPeriod=${msgPeriod}`);
+    navigate(
+      `/group/${groupId}/stats/${game}?msg_id=${msgId}&msg_from=${msgFrom}&msgReportDate=${msgReportDate}&msgPeriod=${msgPeriod}`
+    );
+
+    setTimeout(() => {
+      const el = document.getElementById(`report-${msgReportDate}`);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }, 200); // 100–300ms is safer
+
     } catch (error) {
       console.error("Axios error:", error);
     }
