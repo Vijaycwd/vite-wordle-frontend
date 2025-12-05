@@ -165,7 +165,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
         const prevDate = dayjs(startDate).subtract(1, 'day').toDate();
         const latest = dayjs(latestJoinDate);
         const latestDateOnly = latest.startOf('day');
-        removeMsgPeriod();
+        
         if (game === 'phrazle') {
             if (period === 'PM') {
                 const newPeriod = 'AM';
@@ -177,6 +177,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                 setPeriod(newPeriod);
                 setStartDate(startDate);
                 fetchDataByDate(formattedDateStr, newPeriod);
+                
             } else {
                 // Going from AM ➝ PM of previous day
                 if (dayjs(prevDate).isBefore(latestDateOnly)) return;
@@ -188,7 +189,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
             }
         } else {
             if (dayjs(prevDate).isBefore(latestDateOnly)) return;
-            removeMsgPeriod(); 
+     
             handleDateChange(prevDate);
         }
     };
@@ -197,7 +198,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
         const now = dayjs();
         const today = now.startOf('day');
         const currentHour = now.hour();
-        removeMsgPeriod();
+        
         if (game === 'phrazle') {
             const isToday = dayjs(startDate).isSame(today, 'day');
 
@@ -247,76 +248,60 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
     // helper used in both places
     const isMsgPeriodNull = (p) => p === null || p === undefined || p === "null";
 
+    // ------------------ useEffect ------------------
     useEffect(() => {
-    if (!scoringMethod || !game) return;
+  if (!scoringMethod || !game) return;
 
-    // PHRAZLE → use exact values from URL
-    if (game === "phrazle") {
-        let finalDateStr = null;
-        let finalPeriod = msgPeriod;
+  // If msgReportDate exists → ALWAYS use it directly
+  if (msgReportDate) {
+    const parsed = dayjs(msgReportDate, "YYYY-MM-DD", true);
 
-        if (msgReportDate) {
-            // parse YYYY-MM-DD only
-            const parsed = dayjs(msgReportDate, "YYYY-MM-DD", true);
-            if (parsed.isValid()) {
-                finalDateStr = formatDateForBackend(parsed.toDate());
-            }
-        }
+    if (parsed.isValid()) {
+      const finalDate = parsed.toDate();
+      const finalDateStr = formatDateForBackend(finalDate);
 
-        if (!finalDateStr) {
-            console.debug("[PHRAZLE] Invalid msgReportDate - skipping");
-            return;
-        }
-
-        console.debug("[PHRAZLE] computed:", {
-            msgReportDate,
-            msgPeriod,
-            finalDateStr,
-            finalPeriod
-        });
-
-        setStartDate(msgReportDate);
+      if (game === "phrazle") {
+        // Use msgPeriod directly (no shifting, no auto logic)
+        const finalPeriod = msgPeriod || "AM"; 
+        
+        setStartDate(finalDate);
         setPeriod(finalPeriod);
         fetchDataByDate(finalDateStr, finalPeriod);
-
-        return;
-    }
-
-    // WORDLE + CONNECTIONS → also use exact msgReportDate
-    if (game === "wordle" || game === "connections") {
-
-        let finalDateStr = null;
-
-        if (msgReportDate) {
-            const parsed = dayjs(msgReportDate, "YYYY-MM-DD", true);
-            if (parsed.isValid()) {
-                finalDateStr = formatDateForBackend(parsed.toDate());
-            }
-        }
-
-        if (!finalDateStr) {
-            console.debug("[WORDLE] Invalid msgReportDate - skipping");
-            return;
-        }
-
-        console.debug("[WORDLE] computed:", {
-            msgReportDate,
-            finalDateStr
-        });
-
-        setStartDate(msgReportDate);
+      } else {
+        // WORDLE + CONNECTIONS → no period
+        setStartDate(finalDate);
         fetchDataByDate(finalDateStr);
+      }
+      return; // STOP HERE → prevents auto adjustments
     }
+  }
+
+  // If NO msgReportDate → normal default load
+  const now = dayjs();
+  const defaultDate = now.subtract(1, "day").toDate();
+  const defaultDateStr = formatDateForBackend(defaultDate);
+
+  if (game === "phrazle") {
+    const defaultPeriod = now.hour() < 12 ? "PM" : "AM";
+    setStartDate(defaultDate);
+    setPeriod(defaultPeriod);
+    fetchDataByDate(defaultDateStr, defaultPeriod);
+  } else {
+    setStartDate(defaultDate);
+    fetchDataByDate(defaultDateStr);
+  }
 }, [scoringMethod, game, msgReportDate, msgPeriod]);
+
 
     // ------------------ fetchDataByDate ------------------
     const fetchDataByDate = async (date, currentPeriod = null) => {
     try {
         const timeZone = moment.tz.guess();
-        const finalDay = msgReportDate;
-        const finalPeriod = msgPeriod;
+
         // normalize source: prefer msgReportDate if present, else use provided startDate
-        
+        const baseDay = msgReportDate ? dayjs(msgReportDate, "YYYY-MM-DD", true) : dayjs(startDate);
+        let finalDay = baseDay.isValid() ? baseDay.clone() : dayjs(startDate);
+        let finalPeriod = msgPeriod;
 
 
         // if (game === "phrazle") {
@@ -351,7 +336,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
         //     }
         // }
 
-        const finalDateStr = formatDateForBackend(finalDay);
+        const finalDateStr = formatDateForBackend(finalDay.toDate());
 
         
 
@@ -361,7 +346,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
         groupName,
         game,
         groupCreatedDate: formattedDateStr,
-        groupPeriod: msgPeriod || groupPeriod,
+        groupPeriod: finalPeriod || groupPeriod,
         today: msgReportDate || date,
         timeZone,
         formattedYesterday: finalDateStr,
@@ -528,6 +513,10 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
 }, [USER_AUTH_DATA?.id, game, period, todayFormatted, yesterdayFormatted]);
 
 
+
+
+
+    
     return (
         <>
             <div className='text-center'>
@@ -546,8 +535,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                     maxDate={game === 'phrazle' ? maxSelectableDate : dayjs().subtract(1, 'day').toDate()}
                     />
             </div>
-            <div id={`report-${msgReportDate}`}>
-            <Row className="justify-content-center leaderboard">
+            <Row className="justify-content-center leaderboard" id={msgReportDate ? `report-${msgReportDate}` : ''}>
                 <Col md={5} className="text-center">
                     {dataFetched && todayLeaderboard.length > 0 ? (
                         <>
@@ -947,7 +935,6 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                     ) : null}
                 </Col>
             </Row>
-            </div>
 
             {startDate && (
             <Row className="justify-content-center">
@@ -1134,7 +1121,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                                     })()}
 
                                     {latestJoinDate && (
-                                    <p className="text-center" >
+                                    <p className="text-center">
                                         Start Date: {(() => {
                                         const date = new Date(latestJoinDate);
                                         const dateString = date.toLocaleDateString("en-US", {
