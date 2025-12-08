@@ -346,8 +346,8 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
         groupName,
         game,
         groupCreatedDate: formattedDateStr,
-        groupPeriod: finalPeriod || groupPeriod,
-        today: msgReportDate || date,
+        groupPeriod: groupPeriod,
+        today: date,
         timeZone,
         formattedYesterday: finalDateStr,
         scoringMethod
