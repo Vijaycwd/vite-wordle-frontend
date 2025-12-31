@@ -102,128 +102,134 @@ useEffect(() => {
 
 //get all group id
 useEffect(() => {
-	const fetchUserGroups = async () => {
-	  try {
-	  const response = await Axios.get(`${baseURL}/groups/get-user-groups.php`, {
-	      params: { user_id: userId },
-	  });
-	  setAllGroup(response.data);
-	  } catch (error) {
-	  console.error("Error fetching user joined groups:", error);
-	  }
-	};
-
-if (userId) fetchUserGroups();
-}, [userId]);
-
-const onSubmit = async (event) => {
-  event.preventDefault();
-  
-  if (typeof updateStatsChart === "function") {
-    updateStatsChart();
-  }
-  setShowForm(false);
-
-  const { isWin, mistakeCount } = determineAttempts(score);
-
-  let updatedDistribution = [...guessDistribution];
-  if (isWin) {
-    if (mistakeCount >= 0 && mistakeCount < updatedDistribution.length) {
-      updatedDistribution[mistakeCount] += 1; // Update distribution for wins
-    }
-    setGuessDistribution(updatedDistribution);
-  }
-
-  // Get time zone offset in minutes
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const localDate = new Date();
-  const offsetMinutes = localDate.getTimezoneOffset();  // Offset in minutes (positive for behind UTC, negative for ahead)
-
-  // Now adjust the time by adding the time zone offset (this does not affect UTC, it gives the correct local time)
-  const adjustedDate = new Date(localDate.getTime() - offsetMinutes * 60 * 1000); // Adjust time by the offset in milliseconds
-
-  // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
-  const adjustedCreatedAt = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
-
-  
-  const userGroupIds = allGroup.map(group => group.id); 
-
-  const scoreObject = {
-    username: loginUsername,
-    useremail: loginUserEmail,
-    connectionsscore: score,
-    gamleScore: mistakeCount,
-    createdAt: adjustedCreatedAt,
-    currentUserTime: adjustedCreatedAt,
-    lastgameisWin: isWin,
-    guessDistribution: updatedDistribution,
-    handleHighlight: mistakeCount,
-    timeZone,
-    // groupId:lastGroup?.group_id,
-    groupIds: userGroupIds,
-    gameName:"connections",
-    userId
+  const fetchUserGroups = async () => {
+      try {
+      const response = await Axios.get(`${baseURL}/groups/get-user-groups-data.php`, {
+          params: { user_id: userId },
+      });
+      setAllGroup(response.data);
+      
+      } catch (error) {
+      console.error("Error fetching user joined groups:", error);
+      }
   };
 
-  try {
-    const res = await Axios.post(
-      `${baseURL}/games/connections/create-score.php`,
-      scoreObject
-    );
+  if (userId) fetchUserGroups();
+  }, [userId]);
 
-    if (res.data.status === "success") {
-      if (typeof updateStatsChart === "function") {
-        updateStatsChart();
-      }
 
-      const newTotalGamesPlayed = (res.data.totalGamesPlayed || 0) + 1;
-      const newTotalWinGames = isWin
-        ? (res.data.totalWinGames || 0) + 1
-        : res.data.totalWinGames || 0;
-
-      setTotalGamesPlayed(newTotalGamesPlayed);
-      setTotalWinGames(newTotalWinGames);
-
-      const newCurrentStreak = isWin ? currentStreak + 1 : 0;
-      const newMaxStreak = Math.max(currentStreak + (isWin ? 1 : 0), maxStreak);
-
-      setCurrentStreak(newCurrentStreak);
-      setMaxStreak(newMaxStreak);
-
-      const TotalGameObject = {
-        username: loginUsername,
-        useremail: loginUserEmail,
-        totalWinGames: newTotalWinGames,
-        totalGamesPlayed: newTotalGamesPlayed,
-        lastgameisWin: isWin,
-        currentStreak: newCurrentStreak,
-        maxStreak: newMaxStreak,
-        guessDistribution: updatedDistribution,
-        handleHighlight: mistakeCount,
-        updatedDate: adjustedCreatedAt,
-      };
-
-      await updateTotalGamesPlayed(TotalGameObject);
-      setScore("");
-      navigate("/connectionstats");
-      // const latest_group_id = lastGroup?.group_id;
-      // if(latest_group_id){
-      //   navigate(`/group/${latest_group_id}/stats/connections`);
-      // }
-      // else{
-      //   navigate("/connectionstats");
-      // }
-      
-    } else {
-      toast.error(res.data.message,{ autoClose: 3000 });
+const onSubmit = async (event) => {
+    event.preventDefault();
+    
+    if (typeof updateStatsChart === "function") {
+      updateStatsChart();
     }
-  } catch (err) {
-    toast.error(
-      err.response?.data?.message || "An unexpected error occurred.",
-      { position: "top-center" }
-    );
-  }
-};
+    setShowForm(false);
+  
+    const { isWin, mistakeCount } = determineAttempts(score);
+  
+    let updatedDistribution = [...guessDistribution];
+    if (isWin) {
+      if (mistakeCount >= 0 && mistakeCount < updatedDistribution.length) {
+        updatedDistribution[mistakeCount] += 1; // Update distribution for wins
+      }
+      setGuessDistribution(updatedDistribution);
+    }
+  
+    // Get time zone offset in minutes
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const localDate = new Date();
+    const offsetMinutes = localDate.getTimezoneOffset();  // Offset in minutes (positive for behind UTC, negative for ahead)
+  
+    // Now adjust the time by adding the time zone offset (this does not affect UTC, it gives the correct local time)
+    const adjustedDate = new Date(localDate.getTime() - offsetMinutes * 60 * 1000); // Adjust time by the offset in milliseconds
+  
+    // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
+    const adjustedCreatedAt = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
+  
+    const period = adjustedDate.getHours() < 12 ? "AM" : "PM";
+
+    const groupGameMap = allGroup.map(group => ({
+          groupId: group.id,
+          selectedGame: group.selected_games
+        }));
+
+    const scoreObject = {
+      username: loginUsername,
+      useremail: loginUserEmail,
+      connectionsscore: score,
+      gamleScore: mistakeCount,
+      createdAt: adjustedCreatedAt,
+      currentUserTime: adjustedCreatedAt,
+      currentPeriod: period,
+      lastgameisWin: isWin,
+      guessDistribution: updatedDistribution,
+      handleHighlight: mistakeCount,
+      timeZone,
+      // groupId:lastGroup?.group_id,
+      groups: groupGameMap,
+      gameName:"connections",
+      userId
+    };
+    try {
+      const res = await Axios.post(
+        `${baseURL}/games/connections/create-score.php`,
+        scoreObject
+      );
+  
+      if (res.data.status === "success") {
+        if (typeof updateStatsChart === "function") {
+          updateStatsChart();
+        }
+  
+        const newTotalGamesPlayed = (res.data.totalGamesPlayed || 0) + 1;
+        const newTotalWinGames = isWin
+          ? (res.data.totalWinGames || 0) + 1
+          : res.data.totalWinGames || 0;
+  
+        setTotalGamesPlayed(newTotalGamesPlayed);
+        setTotalWinGames(newTotalWinGames);
+  
+        const newCurrentStreak = isWin ? currentStreak + 1 : 0;
+        const newMaxStreak = Math.max(currentStreak + (isWin ? 1 : 0), maxStreak);
+  
+        setCurrentStreak(newCurrentStreak);
+        setMaxStreak(newMaxStreak);
+  
+        const TotalGameObject = {
+          username: loginUsername,
+          useremail: loginUserEmail,
+          totalWinGames: newTotalWinGames,
+          totalGamesPlayed: newTotalGamesPlayed,
+          lastgameisWin: isWin,
+          currentStreak: newCurrentStreak,
+          maxStreak: newMaxStreak,
+          guessDistribution: updatedDistribution,
+          handleHighlight: mistakeCount,
+          updatedDate: adjustedCreatedAt,
+        };
+  
+        await updateTotalGamesPlayed(TotalGameObject);
+        setScore("");
+        navigate("/connectionstats");
+        // const latest_group_id = lastGroup?.group_id;
+        // if(latest_group_id){
+        //   navigate(`/group/${latest_group_id}/stats/connections`);
+        // }
+        // else{
+        //   navigate("/connectionstats");
+        // }
+      } else {
+        toast.error(res.data.message,{ autoClose: 3000 });
+      }
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || "An unexpected error occurred.",
+        { position: "top-center" },
+        { autoClose: 3000 }
+      );
+    }
+  };
   const updateTotalGamesPlayed = async (TotalGameObject) => {
     
     try {

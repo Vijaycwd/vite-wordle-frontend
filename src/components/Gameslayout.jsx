@@ -132,7 +132,7 @@ function GamesLayout() {
   useEffect(() => {
   const fetchUserGroups = async () => {
       try {
-      const response = await Axios.get(`${baseURL}/groups/get-user-groups.php`, {
+      const response = await Axios.get(`${baseURL}/groups/get-user-groups-data.php`, {
           params: { user_id: userId },
       });
       setAllGroup(response.data);
@@ -166,7 +166,7 @@ function GamesLayout() {
     // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
     const adjustedCreatedAt = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
 
-    
+    const period = adjustedDate.getHours() < 12 ? "AM" : "PM";
 
 
 
@@ -184,7 +184,11 @@ function GamesLayout() {
             updatedGuessDistribution[guessesUsed - 1] += 1;
         }
         setGuessDistribution(updatedGuessDistribution);
-        const userGroupIds = allGroup.map(group => group.id); 
+        const groupGameMap = allGroup.map(group => ({
+          groupId: group.id,
+          selectedGame: group.selected_games
+        }));
+
         const wordleObject = {
             username: loginUsername,
             useremail: loginUserEmail,
@@ -194,9 +198,10 @@ function GamesLayout() {
             gamleScore: guessesUsed,
             createdAt: adjustedCreatedAt,
             currentUserTime: adjustedCreatedAt,
+            currentPeriod: period,
             timeZone,
             // groupId:lastGroup?.group_id,
-            groupIds: userGroupIds,
+            groups: groupGameMap,
             gameName:"wordle",
             userId
         };

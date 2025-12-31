@@ -61,7 +61,7 @@ function WordlePlayService({ updateStatsChart, groupId, gameName  }) {
     useEffect(() => {
     const fetchUserGroups = async () => {
         try {
-        const response = await Axios.get(`${baseURL}/groups/get-user-groups.php`, {
+        const response = await Axios.get(`${baseURL}/groups/get-user-groups-data.php`, {
             params: { user_id: userId },
         });
         setAllGroup(response.data);
@@ -73,7 +73,6 @@ function WordlePlayService({ updateStatsChart, groupId, gameName  }) {
 
     if (userId) fetchUserGroups();
     }, [userId]);
-
 
     const onSubmit = async (event) => {
         event.preventDefault();
@@ -89,18 +88,20 @@ function WordlePlayService({ updateStatsChart, groupId, gameName  }) {
     
         // Get time zone offset in minutes
         const offsetMinutes = localDate.getTimezoneOffset();  // Offset in minutes (positive for behind UTC, negative for ahead)
-
+    
         // Now adjust the time by adding the time zone offset (this does not affect UTC, it gives the correct local time)
         const adjustedDate = new Date(localDate.getTime() - offsetMinutes * 60 * 1000); // Adjust time by the offset in milliseconds
     
         // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
         const adjustedCreatedAt = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
     
-        
+        const period = adjustedDate.getHours() < 12 ? "AM" : "PM";
+    
+    
+    
         const wordleScore = score.replace(/[🟩🟨⬜⬛]/g, "");
         const match = wordleScore.match(/(\d+|X)\/(\d+)/);
-       
-    
+        
         if (match) {
             let guessesUsed = match[1] === "X" ? 7 : parseInt(match[1], 10); // Assign 7 for failed attempts ("X")
             const totalGuesses = parseInt(match[2], 10);
@@ -112,9 +113,11 @@ function WordlePlayService({ updateStatsChart, groupId, gameName  }) {
                 updatedGuessDistribution[guessesUsed - 1] += 1;
             }
             setGuessDistribution(updatedGuessDistribution);
+            const groupGameMap = allGroup.map(group => ({
+              groupId: group.id,
+              selectedGame: group.selected_games
+            }));
     
-            const userGroupIds = allGroup.map(group => group.id);
-
             const wordleObject = {
                 username: loginUsername,
                 useremail: loginUserEmail,
@@ -124,9 +127,10 @@ function WordlePlayService({ updateStatsChart, groupId, gameName  }) {
                 gamleScore: guessesUsed,
                 createdAt: adjustedCreatedAt,
                 currentUserTime: adjustedCreatedAt,
+                currentPeriod: period,
                 timeZone,
                 // groupId:lastGroup?.group_id,
-                groupIds: userGroupIds,
+                groups: groupGameMap,
                 gameName:"wordle",
                 userId
             };
@@ -150,14 +154,20 @@ function WordlePlayService({ updateStatsChart, groupId, gameName  }) {
                         guessDistribution: updatedGuessDistribution,
                         updatedDate: adjustedCreatedAt
                     };
-                   
+                    
                     await updateTotalGamesPlayed(TotalGameObject);
                     setScore('');
                     navigate("/wordlestats");
-
+                    // const latest_group_id = lastGroup?.group_id;
+                    // if(latest_group_id){
+                    // navigate(`/group/${latest_group_id}/stats/wordle`);
+                    // }
+                    // else{
+                    // navigate("/wordlestats");
+                    // }
                 }
                 else{
-                    toast.error(res.data.message,{ autoClose: 3000 } );
+                    toast.error(res.data.message,{ autoClose: 3000 });
                 }
             } catch (err) {
                 toast.error(err.res?.data?.message || 'An unexpected error occurred.',{ autoClose: 3000 });

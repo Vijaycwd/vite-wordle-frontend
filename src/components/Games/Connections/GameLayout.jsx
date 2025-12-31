@@ -103,10 +103,10 @@ function GamesLayout() {
   
   
   //get all group id
-  useEffect(() => {
-    const fetchUserGroups = async () => {
+ useEffect(() => {
+  const fetchUserGroups = async () => {
       try {
-      const response = await Axios.get(`${baseURL}/groups/get-user-groups.php`, {
+      const response = await Axios.get(`${baseURL}/groups/get-user-groups-data.php`, {
           params: { user_id: userId },
       });
       setAllGroup(response.data);
@@ -114,7 +114,7 @@ function GamesLayout() {
       } catch (error) {
       console.error("Error fetching user joined groups:", error);
       }
-    };
+  };
 
   if (userId) fetchUserGroups();
   }, [userId]);
@@ -149,9 +149,12 @@ function GamesLayout() {
     // Get the adjusted time in 24-hour format, e.g., "2024-12-02T15:10:29.476"
     const adjustedCreatedAt = adjustedDate.toISOString().slice(0, -1);  // "2024-12-02T15:10:29.476" (24-hour format)
   
-    
-  
-    const userGroupIds = allGroup.map(group => group.id); 
+    const period = adjustedDate.getHours() < 12 ? "AM" : "PM";
+
+    const groupGameMap = allGroup.map(group => ({
+          groupId: group.id,
+          selectedGame: group.selected_games
+        }));
 
     const scoreObject = {
       username: loginUsername,
@@ -160,12 +163,13 @@ function GamesLayout() {
       gamleScore: mistakeCount,
       createdAt: adjustedCreatedAt,
       currentUserTime: adjustedCreatedAt,
+      currentPeriod: period,
       lastgameisWin: isWin,
       guessDistribution: updatedDistribution,
       handleHighlight: mistakeCount,
       timeZone,
       // groupId:lastGroup?.group_id,
-      groupIds: userGroupIds,
+      groups: groupGameMap,
       gameName:"connections",
       userId
     };

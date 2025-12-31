@@ -18,7 +18,7 @@ function GroupStatsPage() {
   const msgId = params.get("msg_id");
 
   const baseURL = import.meta.env.VITE_BASE_URL;
-  const { id, groupName, game } = useParams(); // Extract groupName and game from URL
+  const { id, game } = useParams(); // Extract groupName and game from URL
   const [group, setGroup] = useState(null);
   const [latestJoinDate, setLatestJoinDate] = useState(null);
   // Get user ID from localStorage

@@ -360,24 +360,29 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
         // (the rest of your axios logic remains unchanged)
         let todayResponse, cumulativeAverageResponse, cumulativeDailyResponse;
 
-        if (scoringMethod === "Pesce") {
-        const todayPromise = axios.get(`${baseURL}/groups/pesce-get-group-score.php`, { params });
-        await new Promise(resolve => setTimeout(resolve, 300));
-        const cumulativeAveragePromise = axios.get(`${baseURL}/groups/get-cumulative-average-score.php`, { params });
-        const cumulativeDailyPromise = axios.get(`${baseURL}/groups/get-cumulative-score-bydate.php`, { params });
-
-        [todayResponse, cumulativeAverageResponse, cumulativeDailyResponse] = await Promise.all([
-            todayPromise,
-            cumulativeAveragePromise,
-            cumulativeDailyPromise
-        ]);
-        } else {
         [todayResponse, cumulativeAverageResponse, cumulativeDailyResponse] = await Promise.all([
             axios.get(`${baseURL}/groups/get-group-score.php`, { params }),
             axios.get(`${baseURL}/groups/get-cumulative-average-score.php`, { params }),
             axios.get(`${baseURL}/groups/get-cumulative-score-bydate.php`, { params })
         ]);
-        }
+        // if (scoringMethod == "Pesce") {
+        // const todayPromise = axios.get(`${baseURL}/groups/get-group-score.php`, { params });
+        // await new Promise(resolve => setTimeout(resolve, 300));
+        // const cumulativeAveragePromise = axios.get(`${baseURL}/groups/get-cumulative-average-score.php`, { params });
+        // const cumulativeDailyPromise = axios.get(`${baseURL}/groups/get-cumulative-score-bydate.php`, { params });
+
+        // [todayResponse, cumulativeAverageResponse, cumulativeDailyResponse] = await Promise.all([
+        //     todayPromise,
+        //     cumulativeAveragePromise,
+        //     cumulativeDailyPromise
+        // ]);
+        // } else {
+        // [todayResponse, cumulativeAverageResponse, cumulativeDailyResponse] = await Promise.all([
+        //     axios.get(`${baseURL}/groups/get-group-score.php`, { params }),
+        //     axios.get(`${baseURL}/groups/get-cumulative-average-score.php`, { params }),
+        //     axios.get(`${baseURL}/groups/get-cumulative-score-bydate.php`, { params })
+        // ]);
+        // }
 
         if (todayResponse.data.status === "success" && Array.isArray(todayResponse.data.data)) {
         setTodayLeaderboard(todayResponse.data.data);
@@ -488,29 +493,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
     }
 
 
-    useEffect(() => {
-    if (!USER_AUTH_DATA?.id) return;
-
-    // If game is phrazle, wait until period is set
-    if (game === "phrazle" && !period) return;
-
-    const params = { 
-        baseURL: baseURL,
-        user_id: USER_AUTH_DATA.id,  
-        today: todayFormatted,
-        createdat : formatLocalDateTime(today)
-    };
-
-    if (game !== "phrazle") {
-        params.yesterday = yesterdayFormatted;
-    }
-
-    if (game === "phrazle") {
-        params.period = period; // AM / PM
-    }
-
-    axios.get(`${baseURL}/user/get-day-winner.php`, { params })
-}, [USER_AUTH_DATA?.id, game, period, todayFormatted, yesterdayFormatted]);
+ 
 
 
 
@@ -777,8 +760,17 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                             });
 
                             // Define sheriff checker before using it
-                            const isSheriff = (username) =>
-                                todayLeaderboard.some(user => user.username === username && user.sheriff === true);
+                            const isSheriff = (username) => {
+                            const found = filteredLeaderboard.find(
+                                user =>
+                                user.username?.trim().toLowerCase() === username?.trim().toLowerCase() &&
+                                user.sheriff === true
+                            );
+
+                            console.log("Sheriff check:", username, found);
+                            return Boolean(found);
+                            };
+
                         
                             return (
                                 <>
@@ -829,7 +821,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                                     (data.gamename === "wordle" && minScore === 7) ||
                                     (data.gamename === "quordle" && (minScore === 9 || data.gamlescore < 10 || data.gamlescore > 30));
 
-                                    const worldCupScore = allLost ? 0 : (isSingleWinner ? 3 : isSharedWinner ? 1 : 0);
+                                    const worldCupScore = allLost ? 0 : (isSheriff(data.username) ? 3 : isSheriff(data.username) ? 1 : 0);
                                     // const pesceScore = allLost ? 0 : (isSingleWinner || isSharedWinner ? 1 : 0);
                                     const pesceScore = allLost ? 0 : (isSheriff(data.username) ? 1 : 0);
                                     
@@ -917,7 +909,7 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                                                     " 🤠"}
 
                                                     {/* Trophy for top scorer */}
-                                                    {scoringMethod !== "Pesce" && isSingleWinner && " 🏆"}
+                                                    {scoringMethod !== "Pesce" && isSheriff(data.username) && " 🏆"}
                                                 </span>
                                                 </Col>
 
