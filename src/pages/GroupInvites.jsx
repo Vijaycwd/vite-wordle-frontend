@@ -189,7 +189,7 @@ const handleDeclineInvite = async (inviteId) => {
     setTimeout(() => {
       const el = document.getElementById(`report-${msgReportDate}`);
       if (el) el.scrollIntoView({ behavior: "smooth" });
-    }, 200); // 100–300ms is safer
+    }, 400); // 100–300ms is safer
 
     } catch (error) {
       console.error("Axios error:", error);
