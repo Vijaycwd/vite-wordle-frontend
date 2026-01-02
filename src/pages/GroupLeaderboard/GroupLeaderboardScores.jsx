@@ -166,30 +166,30 @@ function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowP
     }, [id, groupName, game, todayDate, period]);
     
 
-    // useEffect(() => {
-    //     const fetchCumulativeScore = async () => {
-    //         if (!id || !game) return;
+    useEffect(() => {
+        const fetchCumulativeScore = async () => {
+            if (!id || !game) return;
 
-    //         try {
-    //             setLoading(true);
+            try {
+                setLoading(true);
 
-    //             // Fetch Cumulative Scores
-    //             const cumulativeResponse = await axios.get(`${baseURL}/groups/get-cumulative-score.php`, {
-    //                 params: { groupId: id, groupName, game, timeZone }
-    //             });
+                // Fetch Cumulative Scores
+                const cumulativeResponse = await axios.get(`${baseURL}/groups/get-cumulative-score.php`, {
+                    params: { groupId: id, groupName, game, timeZone }
+                });
                
-    //             setLatestJoinDate(cumulativeResponse.data.latestJoinDate || []);
-    //             setLocalLatestJoinDate(cumulativeResponse.data.latestJoinDate);
-    //             setCumulativeScore(cumulativeResponse.data.data || []);
-    //         } catch (error) {
-    //             console.error("Error fetching cumulative stats:", error.response ? error.response.data : error.message);
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     };
+                setLatestJoinDate(cumulativeResponse.data.latestJoinDate || []);
+                setLocalLatestJoinDate(cumulativeResponse.data.latestJoinDate);
+                setCumulativeScore(cumulativeResponse.data.data || []);
+            } catch (error) {
+                console.error("Error fetching cumulative stats:", error.response ? error.response.data : error.message);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    //     fetchCumulativeScore();
-    // }, [id, groupName, game]);
+        fetchCumulativeScore();
+    }, [id, groupName, game]);
 
 
     // Function to get the max possible score for a game

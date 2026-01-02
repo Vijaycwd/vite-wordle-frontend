@@ -29,49 +29,49 @@ function Home() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const correctPassword = "Casa"; // Change this
     const location = useLocation();
-    const [allGroup, setAllGroup] = useState([]);
+    const [allGroup, setAllGroup] = useState(null);
 
     const formattedDate = dayjs().format("YYYY-MM-DD");
 
-    // //get all group id
-    // useEffect(() => {
-    // const fetchUserGroups = async () => {
-    //     try {
-    //     // 1️⃣ Get all user groups
-    //     const res = await Axios.get(`${baseURL}/groups/get-user-groups-data.php`, {
-    //         params: { user_id: userId },
-    //     });
+    //get all group id
+    useEffect(() => {
+    const fetchUserGroups = async () => {
+        try {
+        // 1️⃣ Get all user groups
+        const res = await Axios.get(`${baseURL}/groups/get-user-groups-data.php`, {
+            params: { user_id: userId },
+        });
         
-    //     const groups = res.data; // assuming this is an array of groups
+        const groups = res.data; // assuming this is an array of groups
        
 
-    //     // 2️⃣ Fetch data for each group individually
-    //     const groupDetailsPromises = groups.map(group =>
-    //         Axios.get(`${baseURL}/groups/get-all-game-current-group-score.php`, {
-    //         params: {
-    //             user_id: userId,
-    //             groupId: group.id,
-    //             game: group.selected_games.toLowerCase(),
-    //             today: "2025-12-10"
-    //             }
-    //         })
-    //     );
+        // 2️⃣ Fetch data for each group individually
+        const groupDetailsPromises = groups.map(group =>
+            Axios.get(`${baseURL}/groups/get-all-game-current-group-score.php`, {
+            params: {
+                user_id: userId,
+                groupId: group.id,
+                game: group.selected_games.toLowerCase(),
+                today: "2025-12-10"
+                }
+            })
+        );
 
-    //     const groupDetailsResponses = await Promise.all(groupDetailsPromises);
+        const groupDetailsResponses = await Promise.all(groupDetailsPromises);
 
-    //     // 3️⃣ Extract data from each response
-    //     const detailedGroups = groupDetailsResponses.map(res => res.data);
+        // 3️⃣ Extract data from each response
+        const detailedGroups = groupDetailsResponses.map(res => res.data);
 
-    //     // 4️⃣ Update state once
-    //     setAllGroup(detailedGroups);
+        // 4️⃣ Update state once
+        setAllGroup(detailedGroups);
 
-    //     } catch (error) {
-    //     console.error("Error fetching user joined groups:", error);
-    //     }
-    // };
+        } catch (error) {
+        console.error("Error fetching user joined groups:", error);
+        }
+    };
 
-    // if (userId) fetchUserGroups();
-    // }, [userId]);
+    if (userId) fetchUserGroups();
+    }, [userId]);
 
 
 
@@ -164,63 +164,6 @@ function Home() {
             }
         }
     };
-        const today = new Date();
-        const yesterday = new Date();
-        yesterday.setDate(today.getDate() - 1);
-
-        // Helper
-        const formatLocalDateTime = (date) => {
-            const pad = (n) => n.toString().padStart(2, '0');
-            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} `
-                + `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
-        };
-
-        let todayFormatted = "";
-        let yesterdayFormatted = "";
-
-       
-        //get all group id
-        useEffect(() => {
-        const fetchUserGroups = async () => {
-            try {
-            const response = await Axios.get(`${baseURL}/groups/get-user-groups-data.php`, {
-                params: { user_id: userId },
-            });
-            setAllGroup(response.data);
-            
-            } catch (error) {
-            console.error("Error fetching user joined groups:", error);
-            }
-        };
-    
-        if (userId) fetchUserGroups();
-        }, [userId]);
-        console.log('allGroup',allGroup);
-       useEffect(() => {
-        if (!userAuthData?.id) return;
-        const localDate = new Date();
-        const offsetMinutes = localDate.getTimezoneOffset();
-        const adjustedDate = new Date(localDate.getTime() - offsetMinutes * 60000);
-        const todayFormatted = adjustedDate.toISOString().slice(0, 10);
-        const hours = localDate.getHours();
-        const groupPeriod = hours < 12 ? "AM" : "PM";
-
-        const groupGameMap = allGroup.map(group => ({
-          groupId: group.id,
-          selectedGame: group.selected_games
-        }));
-
-        const params = { 
-            baseURL: baseURL,
-            user_id: userAuthData.id,  
-            today: todayFormatted,
-            period: groupPeriod,
-            game: groupGameMap,
-            createdat : formatLocalDateTime(today)
-        };
-        Axios.get(`${baseURL}/user/get-day-winner.php`, { params })
-        }, [userAuthData?.id]);
-
     return isAuthenticated ? (
         <Container className="login-section">
             <Row className="justify-content-center align-items-center py-2 text-center">

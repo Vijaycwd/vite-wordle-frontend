@@ -163,7 +163,7 @@ function GamesLayout() {
       gamleScore: mistakeCount,
       createdAt: adjustedCreatedAt,
       currentUserTime: adjustedCreatedAt,
-      currentPeriod: period,
+      urrentPeriod: period,
       lastgameisWin: isWin,
       guessDistribution: updatedDistribution,
       handleHighlight: mistakeCount,
