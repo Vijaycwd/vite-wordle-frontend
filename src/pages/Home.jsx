@@ -29,6 +29,10 @@ function Home() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const correctPassword = "Casa"; // Change this
     const location = useLocation();
+    const params = new URLSearchParams(location.search);
+    const encryptedId = params.get('group_id');
+    const groupId = encryptedId;
+    const registerPath = groupId ? `/register?group_id=${groupId}` : `/register`;
     const [allGroup, setAllGroup] = useState([]);
 
     const formattedDate = dayjs().format("YYYY-MM-DD");
