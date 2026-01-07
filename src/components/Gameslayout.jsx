@@ -56,6 +56,7 @@ function GamesLayout() {
           if (!hasPlayedToday) {
             
             const missedGameObj = {
+              baseURL,
               username: loginUsername,
               useremail: loginUserEmail,
               wordlescore: 'X/6',
@@ -65,6 +66,7 @@ function GamesLayout() {
               createdAt: now.toISOString(),
               currentUserTime: now.toISOString(),
               timeZone
+              
             };
   
             Axios.post(`${baseURL}/games/wordle/create-score.php`, missedGameObj)
@@ -135,6 +137,7 @@ function GamesLayout() {
       const response = await Axios.get(`${baseURL}/groups/get-user-groups-data.php`, {
           params: { user_id: userId },
       });
+      console.log(response);
       setAllGroup(response.data);
       
       } catch (error) {
@@ -186,10 +189,12 @@ function GamesLayout() {
         setGuessDistribution(updatedGuessDistribution);
         const groupGameMap = allGroup.map(group => ({
           groupId: group.id,
-          selectedGame: group.selected_games
+          selectedGame: group.selected_games,
+          groupName: group.group_name
         }));
 
         const wordleObject = {
+            baseURL,
             username: loginUsername,
             useremail: loginUserEmail,
             wordlescore: score,

@@ -153,10 +153,12 @@ function GamesLayout() {
 
     const groupGameMap = allGroup.map(group => ({
           groupId: group.id,
-          selectedGame: group.selected_games
+          selectedGame: group.selected_games,
+          groupName: group.group_name
         }));
 
     const scoreObject = {
+      baseURL,
       username: loginUsername,
       useremail: loginUserEmail,
       connectionsscore: score,

@@ -115,10 +115,12 @@ function WordlePlayService({ updateStatsChart, groupId, gameName  }) {
             setGuessDistribution(updatedGuessDistribution);
             const groupGameMap = allGroup.map(group => ({
               groupId: group.id,
-              selectedGame: group.selected_games
+              selectedGame: group.selected_games,
+              groupName: group.group_name
             }));
     
             const wordleObject = {
+                baseURL,
                 username: loginUsername,
                 useremail: loginUserEmail,
                 wordlescore: score,

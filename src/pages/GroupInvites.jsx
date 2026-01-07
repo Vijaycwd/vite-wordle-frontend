@@ -182,14 +182,24 @@ const handleDeclineInvite = async (inviteId) => {
         user_id: userId,
       });
 
-    navigate(
-      `/group/${groupId}/stats/${game}?msg_id=${msgId}&msg_from=${msgFrom}&msgReportDate=${msgReportDate}&msgPeriod=${msgPeriod}`
-    );
+      const today = new Date().toISOString().split("T")[0];
 
-    setTimeout(() => {
-      const el = document.getElementById(`report-${msgReportDate}`);
-      if (el) el.scrollIntoView({ behavior: "smooth" });
-    }, 400); // 100–300ms is safer
+      let url = `/group/${groupId}/stats/${game}?msg_id=${msgId}&msg_from=${msgFrom}`;
+
+      // ✅ Only add date & period if NOT today
+      if (msgReportDate !== today) {
+        url += `&msgReportDate=${msgReportDate}&msgPeriod=${msgPeriod}`;
+      }
+
+      navigate(url);
+
+      // scroll logic (still works)
+      setTimeout(() => {
+        if (msgReportDate && msgReportDate !== today) {
+          const el = document.getElementById(`report-${msgReportDate}`);
+          if (el) el.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 400);
 
     } catch (error) {
       console.error("Axios error:", error);
