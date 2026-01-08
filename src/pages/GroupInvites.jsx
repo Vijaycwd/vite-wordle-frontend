@@ -169,42 +169,68 @@ const handleDeclineInvite = async (inviteId) => {
     }
   };
 
-  const handleClick = async (e, groupId, game, userId, msgId, msgFrom, msgReportDate, msgPeriod) => {
-    e.preventDefault();
-    setGroupMessages([]);
-    setShowDropdown(false);
-  
-    try {
-      await axios.post(`${baseURL}/groups/update-seen-ids.php`, {
-        group_id: groupId,
-        msg_from: 'game',
-        game_name: game,
-        user_id: userId,
-      });
+  const handleClick = async (
+  e,
+  groupId,
+  game,
+  userId,
+  msgId,
+  msgFrom,
+  msgReportDate,
+  msgPeriod
+) => {
+  e.preventDefault();
+  setGroupMessages([]);
+  setShowDropdown(false);
 
-      const today = new Date().toISOString().split("T")[0];
+  try {
+    await axios.post(`${baseURL}/groups/update-seen-ids.php`, {
+      group_id: groupId,
+      msg_from: 'game',
+      game_name: game,
+      user_id: userId,
+    });
 
-      let url = `/group/${groupId}/stats/${game}?msg_id=${msgId}&msg_from=${msgFrom}`;
+    const today = new Date().toISOString().split("T")[0];
 
-      // ✅ Only add date & period if NOT today
-      if (msgReportDate !== today) {
-        url += `&msgReportDate=${msgReportDate}&msgPeriod=${msgPeriod}`;
+    let url = `/group/${groupId}/stats/${game}?msg_id=${msgId}&msg_from=${msgFrom}`;
+
+    /* -----------------------------------------
+       🟢 DATE + PERIOD HANDLING
+    ----------------------------------------- */
+    if (game === "phrazle") {
+
+      if (msgReportDate == today && msgPeriod == 'AM'){
+         url += `&msgReportDate=${msgReportDate}&msgPeriod=${msgPeriod}`;
       }
-
-      navigate(url);
-
-      // scroll logic (still works)
-      setTimeout(() => {
-        if (msgReportDate && msgReportDate !== today) {
-          const el = document.getElementById(`report-${msgReportDate}`);
-          if (el) el.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 400);
-
-    } catch (error) {
-      console.error("Axios error:", error);
+    } else if (msgReportDate !== today) {
+      // other games only need date if not today
+      url += `&msgReportDate=${msgReportDate}`;
     }
-  };
+
+    navigate(url);
+
+    /* -----------------------------------------
+       🟢 SCROLL HANDLING (date + period)
+    ----------------------------------------- */
+    setTimeout(() => {
+      if (game === "phrazle") {
+        const el = document.getElementById(
+          `report-${msgReportDate}-${msgPeriod}`
+        );
+        console.log(el);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      } else if (msgReportDate && msgReportDate !== today) {
+        const el = document.getElementById(`report-${msgReportDate}`);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 400);
+
+  } catch (error) {
+    console.error("Axios error:", error);
+  }
+};
+
 
   function timeAgo(dateString) {
     const date = new Date(dateString);

@@ -12,7 +12,6 @@ import Phrazlegame from '../../components/Games/Phrazle/Phrazlegame';
 function GroupLeaderboardScores({ setLatestJoinDate, setSelectedMember, setShowProfile }) {
     const baseURL = import.meta.env.VITE_BASE_URL;
     const { id, groupName, game } = useParams();
-    console.log(id,groupName,game);
     const [todayGroupLeaderboard, setTodayGroupLeaderboard] = useState([]);
     const [cumulativeScore, setCumulativeScore] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -376,72 +375,80 @@ const getPeriod = (createdat) => {
                                 }
                                 else {
                                     
-                                    // const getDateString = (createdat) => {
-                                    //     const d = new Date(createdat);
-                                    //     const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
-                                    //     return local.toISOString().split('T')[0];
-                                    // };
+                                    const getDateString = (createdat) => {
+                                        const d = new Date(createdat);
+                                        const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+                                        return local.toISOString().split('T')[0];
+                                    };
 
-                                    // const getPeriod = (createdat) => {
-                                    //     const hour = new Date(createdat).getHours();
-                                    //     return hour < 12 ? "AM" : "PM";
-                                    // };
+                                    const getPeriod = (createdat) => {
+                                        const hour = new Date(createdat).getHours();
+                                        return hour < 12 ? "AM" : "PM";
+                                    };
 
-                                    // const getPreviousPhrazlePeriod = () => {
-                                    //     const now = new Date();
-                                    //     const isAM = now.getHours() < 12;
-                                    //     const date = new Date(now);
+                                    const getPreviousPhrazlePeriod = () => {
+                                        const now = new Date();
+                                        const isAM = now.getHours() < 12;
+                                        const date = new Date(now);
 
-                                    //     if (isAM) {
-                                    //     date.setDate(date.getDate() - 1);
-                                    //     return { dateStr: getDateString(date), period: "PM" };
-                                    //     } else {
-                                    //     return { dateStr: getDateString(date), period: "AM" };
-                                    //     }
-                                    // };
+                                        if (isAM) {
+                                        date.setDate(date.getDate() - 1);
+                                        return { dateStr: getDateString(date), period: "PM" };
+                                        } else {
+                                        return { dateStr: getDateString(date), period: "AM" };
+                                        }
+                                    };
 
-                                    // const { dateStr: prevDate, period: prevPeriod } = getPreviousPhrazlePeriod();
+                                    const { dateStr: prevDate, period: prevPeriod } = getPreviousPhrazlePeriod();
 
-                                    // // Get yesterday's Phrazle scores from prior period
-                                    // const priorPeriodSheriffs = filteredLeaderboard.filter(entry =>
-                                    //     entry.gamename === "phrazle" &&
-                                    //     getDateString(entry.createdat) === prevDate &&
-                                    //     getPeriod(entry.createdat) === prevPeriod
-                                    // );
-                                    // const sheriffExists = priorPeriodSheriffs.length > 0;
+                                    // Get yesterday's Phrazle scores from prior period
+                                    const priorPeriodSheriffs = filteredLeaderboard.filter(entry =>
+                                        entry.gamename === "phrazle" &&
+                                        getDateString(entry.createdat) === prevDate &&
+                                        getPeriod(entry.createdat) === prevPeriod
+                                    );
+                                    const sheriffExists = priorPeriodSheriffs.length > 0;
 
-                                    //     const minScoreYesterday = sheriffExists
-                                    //     ? Math.min(...priorPeriodSheriffs.map(d => Number(d.gamlescore) ?? 0))
-                                    //     : null;
+                                        const minScoreYesterday = sheriffExists
+                                        ? Math.min(...priorPeriodSheriffs.map(d => Number(d.gamlescore) ?? 0))
+                                        : null;
 
                                         
-                                    // const priorSheriffUsernames = priorPeriodSheriffs
-                                    //     .filter(d => d.gamlescore === minScoreYesterday)
-                                    //     .map(d => d.username);
+                                    const priorSheriffUsernames = priorPeriodSheriffs
+                                        .filter(d => d.gamlescore === minScoreYesterday)
+                                        .map(d => d.username);
 
-                                    // // Today's Phrazle scores
-                                    // const todayDateStr = getDateString(new Date());
-                                    // const currentPeriod = getPeriod(new Date());
+                                    // Today's Phrazle scores
+                                    const todayDateStr = getDateString(new Date());
+                                    const currentPeriod = getPeriod(new Date());
 
-                                    // const todayScores = filteredLeaderboard.filter(entry =>
-                                    //     entry.gamename === "phrazle" &&
-                                    //     getDateString(entry.createdat) == todayDateStr &&
-                                    //     getPeriod(entry.createdat) == currentPeriod
-                                    // );
+                                    const todayScores = filteredLeaderboard.filter(entry =>
+                                        entry.gamename === "phrazle" &&
+                                        getDateString(entry.createdat) == todayDateStr &&
+                                        getPeriod(entry.createdat) == currentPeriod
+                                    );
 
-                                    // const minScoreToday = Math.min(...todayScores.map(d => d.gamlescore ?? 0));
-                                    // const topScorers = todayScores.filter(d => d.gamlescore == minScoreToday);
+                                    const minScoreToday = Math.min(...todayScores.map(d => d.gamlescore ?? 0));
+                                    const topScorers = todayScores.filter(d => d.gamlescore == minScoreToday);
                                       
-                                    // const sheriffWinners =
-                                    //     topScorers.length > 0
-                                    //     ? topScorers
-                                    //     : topScorers.filter(d => !priorSheriffUsernames.includes(d.username));
+                                    const sheriffWinners =
+                                        topScorers.length > 0
+                                        ? topScorers
+                                        : topScorers.filter(d => !priorSheriffUsernames.includes(d.username));
 
-                                    // // const isSheriff = (username) =>
-                                    // //     sheriffWinners.some(w => w.username === username);
                                     // const isSheriff = (username) =>
-                                    // todayGroupLeaderboard.some(user => user.username === username && user.is_sheriff === true);
+                                    //     sheriffWinners.some(w => w.username === username);
+                                    
+                                    const isSheriff = (username) => {
+                                        const found = todayGroupLeaderboard.find(
+                                            user =>
+                                            user.username?.trim().toLowerCase() === username?.trim().toLowerCase() &&
+                                            user.sheriff === true
+                                    );
 
+                                   
+                                    return Boolean(found);
+                                    };
                                     return (
                                         <>
                                         <h4 className="text-center py-3">Today's Leaderboard</h4>
@@ -465,23 +472,31 @@ const getPeriod = (createdat) => {
                                             })
                                             .map((data, index) => {
                                             // console.log('MAP RUNNING:', index, data.username);
-                                            // const totalScore = getTotalScore(game);
-                                            // const progressValue =
-                                            //     totalScore > 0
-                                            //     ? game === "connections"
-                                            //         ? (data.gamlescore / totalScore) * 100
-                                            //         : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
-                                            //     : 0;
+                                            const totalScore = getTotalScore(game);
+                                            const progressValue =
+                                                totalScore > 0
+                                                ? game === "connections"
+                                                    ? (data.gamlescore / totalScore) * 100
+                                                    : ((totalScore - data.gamlescore) / (totalScore - 1)) * 100
+                                                : 0;
 
                                             // const isSingleWinner = topScorers.length === 1 && topScorers[0].username === data.username;
                                             // const isSharedWinner = topScorers.length > 1 && topScorers.some(w => w.username === data.username);
                                             // const isTopScorer = isSingleWinner || isSharedWinner;
                                             // const isSheriffToday = isSheriff(data.username);
                                            
+                                           
+
+                                           
+                                            
                                             const allLost = minScoreToday === 7;
-                                            const worldCupScore = allLost ? 0 : (isSingleWinner ? 3 : isSharedWinner ? 1 : 0);
-                                            const pesceScore = allLost ? 0 : (isTopScorer ? 1 : 0);
-                                            console.log(data.avatar);
+                                            // const worldCupScore = allLost ? 0 : (isSheriff(data.username) ? 3 : isSheriff(data.username) ? 1 : 0);
+                                            // const pesceScore = allLost ? 0 : (isSheriff(data.username) ? 1 : 0);
+                                            const worldCupScore = allLost ? 0 : (isSheriff(data.username) ? 3 : isSheriff(data.username) ? 1 : 0);
+                                            const pesceScore = allLost ? 0 : (isSheriff(data.username) ? 1 : 0);
+                                            const sheriffs = todayGroupLeaderboard.filter(u => u.sheriff === true);
+                                            
+                                            console.log("All sheriffs today:", sheriffs);
                                             return (
                                                 <Row key={index} className="justify-content-between align-items-center py-2 px-3 mb-2 rounded bg-light shadow-sm">
                                                 <Col xs={3} className="d-flex align-items-center gap-2">
@@ -524,8 +539,8 @@ const getPeriod = (createdat) => {
                                                         : scoringMethod === "World Cup"
                                                         ? worldCupScore
                                                         : pesceScore}
-                                                        {scoringMethod !== "Pesce" && isSingleWinner && " 🏆"}
-                                                        {scoringMethod == "Pesce" && isSheriffToday && "🤠"}
+                                                        {scoringMethod !== "Pesce" && isSheriff(data.username) && " 🏆"}
+                                                        {scoringMethod == "Pesce" && isSheriff(data.username) && "🤠"}
                                                     </span>
                                                     </Col>
                                                     {/* <Col xs={5} className="text-center d-flex fw-bold">
@@ -613,7 +628,7 @@ const getPeriod = (createdat) => {
                                         user.sheriff === true
                                     );
 
-                                    console.log("Sheriff check:", username, found);
+                                    
                                     return Boolean(found);
                                     };
 

@@ -249,48 +249,96 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
     const isMsgPeriodNull = (p) => p === null || p === undefined || p === "null";
 
     // ------------------ useEffect ------------------
-    useEffect(() => {
+//     useEffect(() => {
+//   if (!scoringMethod || !game) return;
+
+//   // If msgReportDate exists → ALWAYS use it directly
+//   if (msgReportDate) {
+//     const parsed = dayjs(msgReportDate, "YYYY-MM-DD", true);
+
+//     if (parsed.isValid()) {
+//       const finalDate = parsed.toDate();
+//       const finalDateStr = formatDateForBackend(finalDate);
+
+//       if (game === "phrazle") {
+//         // Use msgPeriod directly (no shifting, no auto logic)
+//         const finalPeriod = msgPeriod || "AM"; 
+        
+//         setStartDate(finalDate);
+//         setPeriod(finalPeriod);
+//         fetchDataByDate(finalDateStr, finalPeriod);
+//       } else {
+//         // WORDLE + CONNECTIONS → no period
+//         setStartDate(finalDate);
+//         fetchDataByDate(finalDateStr);
+//       }
+//       return; // STOP HERE → prevents auto adjustments
+//     }
+//   }
+useEffect(() => {
   if (!scoringMethod || !game) return;
 
-  // If msgReportDate exists → ALWAYS use it directly
-  if (msgReportDate) {
-    const parsed = dayjs(msgReportDate, "YYYY-MM-DD", true);
+  const now = dayjs();
+  const today = now.toDate();
 
-    if (parsed.isValid()) {
-      const finalDate = parsed.toDate();
-      const finalDateStr = formatDateForBackend(finalDate);
+  let finalDate;
+  let finalPeriod;
 
-      if (game === "phrazle") {
-        // Use msgPeriod directly (no shifting, no auto logic)
-        const finalPeriod = msgPeriod || "AM"; 
-        
-        setStartDate(finalDate);
-        setPeriod(finalPeriod);
-        fetchDataByDate(finalDateStr, finalPeriod);
-      } else {
-        // WORDLE + CONNECTIONS → no period
-        setStartDate(finalDate);
-        fetchDataByDate(finalDateStr);
-      }
-      return; // STOP HERE → prevents auto adjustments
+  // ----------------------------------
+  // PHRAZLE LOGIC
+  // ----------------------------------
+  if (game === "phrazle") {
+
+    /* ----------------------------------
+       DEFAULT PHRAZLE RULE
+       Morning   → yesterday PM
+       Afternoon → today AM
+    ---------------------------------- */
+    if (now.hour() < 12) {
+      finalDate = now.subtract(1, "day").toDate();
+      finalPeriod = "PM";
+    } else {
+      finalDate = today;
+      finalPeriod = "AM";
     }
+
+    /* ----------------------------------
+       URL OVERRIDE (msgReportDate)
+       - PM → msgPeriod === "PM"
+       - AM → msgPeriod is undefined
+    ---------------------------------- */
+    if (msgReportDate) {
+      finalDate = new Date(msgReportDate);
+
+      if (msgPeriod === "PM") {
+        // PM message → show SAME date PM stats
+        finalPeriod = "PM";
+      } else {
+        // AM message → show SAME date AM stats
+        finalPeriod = "AM";
+      }
+    }
+
+    const finalDateStr = formatDateForBackend(finalDate);
+
+    setStartDate(finalDate);
+    setPeriod(finalPeriod);
+    fetchDataByDate(finalDateStr, finalPeriod);
+    return;
   }
 
-  // If NO msgReportDate → normal default load
-  const now = dayjs();
+  // ----------------------------------
+  // NON-PHRAZLE GAMES
+  // ----------------------------------
   const defaultDate = now.subtract(1, "day").toDate();
   const defaultDateStr = formatDateForBackend(defaultDate);
 
-  if (game === "phrazle") {
-    const defaultPeriod = now.hour() < 12 ? "PM" : "AM";
-    setStartDate(defaultDate);
-    setPeriod(defaultPeriod);
-    fetchDataByDate(defaultDateStr, defaultPeriod);
-  } else {
-    setStartDate(defaultDate);
-    fetchDataByDate(defaultDateStr);
-  }
+  setStartDate(defaultDate);
+  fetchDataByDate(defaultDateStr);
+
 }, [scoringMethod, game, msgReportDate, msgPeriod]);
+
+
 
 
     // ------------------ fetchDataByDate ------------------
@@ -518,7 +566,19 @@ function GroupScoreByDate({ latestJoinDate, setSelectedMember, setShowProfile, m
                     maxDate={game === 'phrazle' ? maxSelectableDate : dayjs().subtract(1, 'day').toDate()}
                     />
             </div>
-            <Row className="justify-content-center leaderboard" id={msgReportDate ? `report-${msgReportDate}` : ''}>
+            <Row
+                className="justify-content-center leaderboard"
+                id={
+                msgReportDate
+                    ? msgPeriod === "AM"
+                    ? `report-${msgReportDate}-AM`
+                    : msgPeriod === "PM"
+                        ? `report-${msgReportDate}-PM`
+                        : `report-${msgReportDate}`
+                    : ""
+                }
+
+                >
                 <Col md={5} className="text-center">
                     {dataFetched && todayLeaderboard.length > 0 ? (
                         <>
