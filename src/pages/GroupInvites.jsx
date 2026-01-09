@@ -199,10 +199,10 @@ const handleDeclineInvite = async (inviteId) => {
        🟢 DATE + PERIOD HANDLING
     ----------------------------------------- */
     if (game === "phrazle") {
-      console.log('game:', game);
-      console.log('msgReportDate:', msgReportDate);
-      console.log('today:', today);
-      console.log('msgPeriod:', msgPeriod);
+      // console.log('game:', game);
+      // console.log('msgReportDate:', msgReportDate);
+      // console.log('today:', today);
+      // console.log('msgPeriod:', msgPeriod);
 
       // Always pass date for phrazle
       url += `&msgReportDate=${msgReportDate}`;
@@ -210,8 +210,15 @@ const handleDeclineInvite = async (inviteId) => {
       // Pass period ONLY if:
       // - not today OR
       // - today but PM
-      if (msgReportDate !== today || msgPeriod === 'PM') {
-        url += `&msgPeriod=${msgPeriod}`;
+      if(msgReportDate != today){
+        if(msgPeriod == 'AM'){
+          url += `&msgPeriod=${msgPeriod}`;
+        }
+      }
+      else{
+        if(msgPeriod == 'AM'){
+          url += `&msgPeriod=${msgPeriod}`;
+        }
       }
     }
     else{
