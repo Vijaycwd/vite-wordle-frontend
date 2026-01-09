@@ -210,10 +210,9 @@ const handleDeclineInvite = async (inviteId) => {
       // Pass period ONLY if:
       // - not today OR
       // - today but PM
+      
       if(msgReportDate != today){
-        if(msgPeriod == 'AM'){
-          url += `&msgPeriod=${msgPeriod}`;
-        }
+         url += `&msgPeriod=${msgPeriod}`;
       }
       else{
         if(msgPeriod == 'AM'){
@@ -296,6 +295,7 @@ const handleDeclineInvite = async (inviteId) => {
       }}
     >
       <Dropdown.Toggle variant="light" id="group-invites">
+
         <i className="fas fa-bell"></i>
         {unreadcount > 0 && (
           <Badge bg="danger" className="notification-count">
