@@ -220,9 +220,7 @@ const handleDeclineInvite = async (inviteId) => {
         }
       }
     }
-    else{
-      url += `&msgReportDate=${msgReportDate}&msgPeriod=${msgPeriod}`;
-    }
+    
     navigate(url);
 
     /* -----------------------------------------

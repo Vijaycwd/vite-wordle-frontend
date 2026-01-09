@@ -332,15 +332,6 @@ useEffect(() => {
     // ----------------------------------
     if (msgReportDate) {
         finalDate = new Date(msgReportDate);
-
-        if (msgPeriod === "PM") {
-            // PM message → show SAME date PM stats
-            finalPeriod = "PM";
-        } else {
-            // AM message → show SAME date AM stats
-            finalPeriod = "AM";
-        }
-
         const finalDateStr = formatDateForBackend(finalDate);
         setStartDate(finalDate);
         setPeriod(finalPeriod);
