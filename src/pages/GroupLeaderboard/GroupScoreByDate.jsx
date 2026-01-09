@@ -326,15 +326,33 @@ useEffect(() => {
     fetchDataByDate(finalDateStr, finalPeriod);
     return;
   }
+  else{
+    // ----------------------------------
+    // NON-PHRAZLE GAMES
+    // ----------------------------------
+    if (msgReportDate) {
+        finalDate = new Date(msgReportDate);
 
-  // ----------------------------------
-  // NON-PHRAZLE GAMES
-  // ----------------------------------
-  const defaultDate = now.subtract(1, "day").toDate();
-  const defaultDateStr = formatDateForBackend(defaultDate);
+        if (msgPeriod === "PM") {
+            // PM message → show SAME date PM stats
+            finalPeriod = "PM";
+        } else {
+            // AM message → show SAME date AM stats
+            finalPeriod = "AM";
+        }
 
-  setStartDate(defaultDate);
-  fetchDataByDate(defaultDateStr);
+        const finalDateStr = formatDateForBackend(finalDate);
+        setStartDate(finalDate);
+        setPeriod(finalPeriod);
+        fetchDataByDate(finalDateStr, finalPeriod);
+    }
+    else{
+        const defaultDate = now.subtract(1, "day").toDate();
+        const defaultDateStr = formatDateForBackend(defaultDate);
+        setStartDate(defaultDate);
+        fetchDataByDate(defaultDateStr);
+    }
+  }
 
 }, [scoringMethod, game, msgReportDate, msgPeriod]);
 
