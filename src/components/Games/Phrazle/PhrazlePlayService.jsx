@@ -67,7 +67,7 @@ useEffect(() => {
 useEffect(() => {
 	const fetchUserGroups = async () => {
 	  try {
-	  const response = await Axios.get(`${baseURL}/groups/get-user-groups.php`, {
+	  const response = await Axios.get(`${baseURL}/groups/get-user-groups-data.php`, {
 	      params: { user_id: userId },
 	  });
 	  setAllGroup(response.data);
@@ -135,9 +135,7 @@ const onSubmit = async (event) => {
     if (isWin && guessesUsed <= 6) {
       updatedGuessDistribution[guessesUsed - 1] += 1;
     }
-    setGuessDistribution(updatedGuessDistribution);
-    
-    const userGroupIds = allGroup.map(group => group.id); 
+    setGuessDistribution(updatedGuessDistribution); 
 
     const phrazleObject = {
       baseURL,
