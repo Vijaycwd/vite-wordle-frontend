@@ -827,7 +827,7 @@ useEffect(() => {
                                 user.sheriff === true
                             );
 
-                            console.log("Sheriff check:", username, found);
+                            // console.log("Sheriff check:", username, found);
                             return Boolean(found);
                             };
 
