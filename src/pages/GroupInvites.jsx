@@ -238,7 +238,7 @@ const handleDeclineInvite = async (inviteId) => {
         const el = document.getElementById(`report-${msgReportDate}`);
         if (el) el.scrollIntoView({ behavior: "smooth" });
       }
-    }, 400);
+    }, 800);
 
   } catch (error) {
     console.error("Axios error:", error);
