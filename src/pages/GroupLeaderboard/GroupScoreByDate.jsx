@@ -295,10 +295,10 @@ useEffect(() => {
        Afternoon → today AM
     ---------------------------------- */
     if (now.hour() < 12) {
-      finalDate = now.subtract(1, "day").toDate();
+      finalDate = now.subtract(1, "day").startOf("day").toDate();
       finalPeriod = "PM";
     } else {
-      finalDate = today;
+      finalDate = now.startOf("day").toDate();
       finalPeriod = "AM";
     }
 
@@ -308,7 +308,7 @@ useEffect(() => {
        - AM → msgPeriod is undefined
     ---------------------------------- */
     if (msgReportDate) {
-      finalDate = new Date(msgReportDate);
+      finalDate = dayjs(msgReportDate, "YYYY-MM-DD").startOf("day").toDate();
 
       if (msgPeriod === "PM") {
         // PM message → show SAME date PM stats
@@ -331,14 +331,14 @@ useEffect(() => {
     // NON-PHRAZLE GAMES
     // ----------------------------------
     if (msgReportDate) {
-        finalDate = new Date(msgReportDate);
+        finalDate = dayjs(msgReportDate, "YYYY-MM-DD").startOf("day").toDate();
         const finalDateStr = formatDateForBackend(finalDate);
         setStartDate(finalDate);
         setPeriod(finalPeriod);
         fetchDataByDate(finalDateStr, finalPeriod);
     }
     else{
-        const defaultDate = now.subtract(1, "day").toDate();
+        const defaultDate = dayjs().subtract(1, "day").startOf("day").toDate();
         const defaultDateStr = formatDateForBackend(defaultDate);
         setStartDate(defaultDate);
         fetchDataByDate(defaultDateStr);

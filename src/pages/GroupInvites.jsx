@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaTrashRestore } from "react-icons/fa";
 import dayjs from "dayjs";
+import moment from 'moment-timezone';
 
 const GroupInvites = () => {
 
@@ -191,7 +192,11 @@ const handleDeclineInvite = async (inviteId) => {
       user_id: userId,
     });
 
-    const today = new Date().toISOString().split("T")[0];
+    const timeZone = moment.tz.guess();
+    const today = moment().tz(timeZone).format("YYYY-MM-DD");
+    console.log(timeZone);
+    console.log(today);
+    //const today = new Date().toISOString().split("T")[0];
 
     let url = `/group/${groupId}/stats/${game}?msg_id=${msgId}&msg_from=${msgFrom}`;
 
