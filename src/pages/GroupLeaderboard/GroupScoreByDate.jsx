@@ -732,7 +732,7 @@ useEffect(() => {
                                     const isSharedWinner = winners.length > 1 && winners.some(w => w.username === data.username);
 
                                     const allLost = minScore === 7;
-                                    const worldCupScore = allLost ? 0 : (isSingleWinner ? 3 : isSharedWinner ? 1 : 0);
+                                    const worldCupScore = allLost ? 0 : (isSheriff(data.username) ? 3 : isSheriff(data.username) ? 1 : 0);
                                     const pesceScore = isSheriff(data.username) ? 1 : 0;
 
                                     return (
@@ -788,7 +788,7 @@ useEffect(() => {
                                                             scoringMethod === "Pesce" &&
                                                             isSheriff(data.username) &&
                                                             " 🤠"}
-                                                            {scoringMethod !== "Pesce" && isSingleWinner && " 🏆"}
+                                                            {scoringMethod !== "Pesce" && isSheriff(data.username) && " 🏆"}
                                                         </span>
                                                     </Col>
                                                 </Row>
