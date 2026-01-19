@@ -685,9 +685,9 @@ const getPeriod = (createdat) => {
                                                     const worldCupScore = allLost ? 0 : (isSheriff(data.username) ? 3 : isSheriff(data.username) ? 1 : 0);
                                                     const pesceScore = allLost ? 0 : (isSheriff(data.username) ? 1 : 0);
                                                     const sheriffs = todayGroupLeaderboard.filter(u => u.sheriff === true);
-                                                    console.log("All worldCupScore:", worldCupScore);
-                                                    console.log("All pesceScore:", pesceScore);
-                                                    console.log("All sheriffs today:", sheriffs);
+                                                    //console.log("All worldCupScore:", worldCupScore);
+                                                    //console.log("All pesceScore:", pesceScore);
+                                                    //console.log("All sheriffs today:", sheriffs);
 
                                                     return (
                                                         <Row

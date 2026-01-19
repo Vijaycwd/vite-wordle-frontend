@@ -194,8 +194,6 @@ const handleDeclineInvite = async (inviteId) => {
 
     const timeZone = moment.tz.guess();
     const today = moment().tz(timeZone).format("YYYY-MM-DD");
-    console.log(timeZone);
-    console.log(today);
     //const today = new Date().toISOString().split("T")[0];
 
     let url = `/group/${groupId}/stats/${game}?msg_id=${msgId}&msg_from=${msgFrom}`;
@@ -226,7 +224,10 @@ const handleDeclineInvite = async (inviteId) => {
       }
     }
     else{
-      url += `&msgReportDate=${msgReportDate}&msgPeriod=${msgPeriod}`;
+      if(msgReportDate != today){
+        url += `&msgReportDate=${msgReportDate}&msgPeriod=${msgPeriod}`;
+      }
+      
     }
     navigate(url);
 
