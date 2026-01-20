@@ -218,7 +218,7 @@ const handleDeclineInvite = async (inviteId) => {
          url += `&msgPeriod=${msgPeriod}`;
       }
       else{
-        if(msgPeriod == 'AM'){
+        if(msgPeriod == 'PM'){
           url += `&msgPeriod=${msgPeriod}`;
         }
       }
