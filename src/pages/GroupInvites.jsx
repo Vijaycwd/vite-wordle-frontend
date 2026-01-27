@@ -47,7 +47,10 @@ const GroupInvites = () => {
 
 const fetchGroupMessages = async () => {
   try {
-    const response = await axios.get(`${baseURL}/groups/get-group-messages.php?user_id=${userId}`);
+    const timeZone = moment.tz.guess();
+    const today = moment().tz(timeZone).format("YYYY-MM-DD");
+    const current_period = moment().tz(timeZone).format("A");
+    const response = await axios.get(`${baseURL}/groups/get-group-messages.php?user_id=${userId}&today=${today}&current_period=${current_period}`);
     const newMessages = Array.isArray(response.data.messages) ? response.data.messages : [];
     setGroupMessages(newMessages);
     setunReadCount(response.data.total_unread);
@@ -194,41 +197,38 @@ const handleDeclineInvite = async (inviteId) => {
 
     const timeZone = moment.tz.guess();
     const today = moment().tz(timeZone).format("YYYY-MM-DD");
+    const current_period = moment().tz(timeZone).format("A");
     //const today = new Date().toISOString().split("T")[0];
 
     let url = `/group/${groupId}/stats/${game}?msg_id=${msgId}&msg_from=${msgFrom}`;
 
     /* -----------------------------------------
-       🟢 DATE + PERIOD HANDLING
+      🟢 DATE + PERIOD HANDLING
     ----------------------------------------- */
     if (game === "phrazle") {
-      // console.log('game:', game);
-      // console.log('msgReportDate:', msgReportDate);
-      // console.log('today:', today);
-      // console.log('msgPeriod:', msgPeriod);
-
       // Always pass date for phrazle
       url += `&msgReportDate=${msgReportDate}`;
 
       // Pass period ONLY if:
       // - not today OR
-      // - today but PM
-      
-      if(msgReportDate != today){
-         url += `&msgPeriod=${msgPeriod}`;
+      // - today but period mismatch
+      if(msgReportDate !== today){
+        url += `&msgPeriod=${msgPeriod}`;
       }
       else{
-        if(msgPeriod == 'PM'){
+        if(current_period !== msgPeriod){
           url += `&msgPeriod=${msgPeriod}`;
         }
       }
     }
-    else{
-      if(msgReportDate != today){
+    else {
+      if (msgReportDate !== today) {
         url += `&msgReportDate=${msgReportDate}&msgPeriod=${msgPeriod}`;
       }
-      
     }
+
+    navigate(url);
+
     navigate(url);
 
     /* -----------------------------------------

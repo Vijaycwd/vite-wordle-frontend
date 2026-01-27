@@ -81,6 +81,7 @@ function Groups() {
             toast.error(err.response?.data?.message || "An unexpected error occurred.");
         }
     };
+    
     return (
         <>
             <Container>
@@ -126,30 +127,38 @@ function Groups() {
                 <Row className="justify-content-center pt-4">
                     <Col md={6} className="border p-3 shadow rounded text-center">
                         <h4>Member in Groups</h4>
-                        <div className="row justify-content-center py-3">
-                            {memberGroups.length > 0 ? (
-                                memberGroups.map((group, index) => (
-                                <div key={index} className="col-6 col-sm-4 col-md-3 mb-3 d-flex justify-content-center">
-                                    <Button
-                                    variant="outline-success"
-                                    className="w-100 text-wrap"
-                                    onClick={() =>
-                                        navigate(
-                                        `/group/${group.id}`
-                                        )
-                                    }
-                                    >
-                                    {group.name}
-                                    </Button>
-                                </div>
-                                ))
-                            ) : (
-                                <p>No groups available.</p>
-                            )}
-                        </div>
 
+                        <div className="row justify-content-center py-3">
+                            {(() => {
+                                const visibleGroups = memberGroups.filter(
+                                    group => userId !== Number(group.captain_id)
+                                );
+
+                                return visibleGroups.length > 0 ? (
+                                    visibleGroups.map(group => (
+                                        <div
+                                            key={group.id}
+                                            className="col-6 col-sm-4 col-md-3 mb-3 d-flex justify-content-center"
+                                        >
+                                            <Button
+                                                variant="outline-success"
+                                                className="w-100 text-wrap"
+                                                onClick={() => navigate(`/group/${group.id}`)}
+                                            >
+                                                {group.name}
+                                            </Button>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-muted text-center w-100 mb-0">
+                                        Group not found
+                                    </p>
+                                );
+                            })()}
+                        </div>
                     </Col>
                 </Row>
+
 
                 {/* Group Creation Modal */}
                 {/* <GroupModal

@@ -13,6 +13,7 @@ import { FaTrash } from 'react-icons/fa';
 import InviteGroupandSite from './InviteGroupAndSite';
 import GroupDeletePreference from '../constant/Models/GroupDeletePreference';
 import RemoveMemberConfirmModal from '../constant/Models/RemoveMemberConfirmModal';
+import AddMembers from '../constant/Models/AddMembers';
 
 function GroupInfo() {
     const baseURL = import.meta.env.VITE_BASE_URL;
@@ -37,7 +38,7 @@ function GroupInfo() {
     const [selectedInviteId, setSelectedInviteId] = useState(null);
     const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
     const [selectedMemberId, setSelectedMemberId] = useState(null);
-
+    const [showMemberForm, setShowMemberForm] = useState(false);
     useEffect(() => {
         fetchGroupInfo();
     }, [id]);
@@ -338,7 +339,13 @@ function GroupInfo() {
                                 >
                                     Group Leaderboards
                                 </Button>
-                                <InviteGroupandSite/>
+                                <Col>
+                                    {userId === captainid && 
+                                        <Button className="px-5 w-100" onClick={() => setShowMemberForm(true)}>
+                                            Add Group Members
+                                        </Button>
+                                    }
+                                </Col>
                             </Col>
                             {userId === captainid ? (
                             <>
@@ -481,6 +488,12 @@ function GroupInfo() {
                 loading={loading}
             />
 
+            <AddMembers
+                showForm={showMemberForm}
+                handleFormClose={() => setShowMemberForm(false)}
+                groupName={group.name}
+                groupId={group.id}
+            />
         </Container>
     );
 }
