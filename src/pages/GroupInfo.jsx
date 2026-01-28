@@ -341,7 +341,7 @@ function GroupInfo() {
                                 </Button>
                                 <Col>
                                     {userId === captainid && 
-                                        <Button className="px-5 w-100" onClick={() => setShowMemberForm(true)}>
+                                        <Button className="mb-2 me-md-2 w-100" onClick={() => setShowMemberForm(true)}>
                                             Add Group Members
                                         </Button>
                                     }
