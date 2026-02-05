@@ -37,6 +37,7 @@ function Home() {
 
     const formattedDate = dayjs().format("YYYY-MM-DD");
 
+    
     // //get all group id
     // useEffect(() => {
     // const fetchUserGroups = async () => {

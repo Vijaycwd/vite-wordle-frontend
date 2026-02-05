@@ -22,7 +22,27 @@ const GroupInvites = () => {
   const navigate = useNavigate();
   const [unreadcount, setunReadCount]= useState(0);
   const currentUserName = USER_AUTH_DATA?.username;
-  // Fetch group invites
+  const [allGroup, setAllGroup] = useState(null);
+  const [notificationModes, setNotificationModes] = useState({});
+  const [isUnreadCount, setisUnreadCount] = useState();
+
+    // Invite polling effect
+  useEffect(() => {
+      fetchGroupInvites();
+      inviteIntervalRef.current = setInterval(fetchGroupInvites, 8000);
+      return () => clearInterval(inviteIntervalRef.current);
+    
+  }, []);
+
+  // useEffect(() => {
+  //   fetchGroupMessages();
+  // }, []);
+  useEffect(() => {
+    if (Object.keys(notificationModes).length) {
+      fetchGroupMessages();
+    }
+  }, [notificationModes]);
+
 
   const fetchGroupInvites = async () => {
     try {
@@ -43,6 +63,83 @@ const GroupInvites = () => {
   };
 
 
+  //get all group id
+  useEffect(() => {
+  const fetchUserGroups = async () => {
+      try {
+      const response = await axios.get(`${baseURL}/groups/get-user-groups-data.php`, {
+          params: { user_id: userId },
+      });
+      setAllGroup(response.data);
+      
+      } catch (error) {
+      console.error("Error fetching user joined groups:", error);
+      }
+  };
+
+  if (userId) fetchUserGroups();
+  }, [userId]);
+  
+  
+  // Fetch group invites
+  
+  useEffect(() => {
+  const fetchNotificationPreferences = async () => {
+    if (!Array.isArray(allGroup) || !allGroup.length) return;
+
+    try {
+      const groupIds = allGroup.map(g => g.id);
+
+      const res = await axios.get(`${baseURL}/groups/get-notification-preference-message.php`, {
+      params: {
+        user_id: userId,
+        group_ids: groupIds, // becomes ?group_ids[]=108&group_ids[]=144
+      },
+    });
+      setNotificationModes(res.data.modes);
+      //console.log('notification response', res.data.modes);
+
+    } catch (err) {
+      console.error("Notification preference error:", err);
+    }
+  };
+
+  fetchNotificationPreferences();
+}, [allGroup, userId]);
+
+
+
+const applyMessageFilters = (messages) => {
+  return messages.filter(msg => {
+    const mode = notificationModes[String(msg.group_id)] || "";
+
+    // 🔕 Hide everything for this group
+    if (mode === "MUTE_ALL") {
+      return false;
+    }
+
+    // 🎮 Show ONLY game_winner messages
+    if (mode === "EXCEPT_GAME_COMPLETE") {
+      return msg.msg_from === 'game_winner';
+    }
+
+    // ✅ Default: show all messages for this group
+    return true;
+  });
+};
+
+
+const getUnreadCount = (messages, userId) => {
+  if (!Array.isArray(messages)) return 0;
+
+  return messages.filter(msg => {
+    if (!msg.seen_ids) return true;
+
+    return !msg.seen_ids
+      .split(',')
+      .includes(String(userId));
+  }).length;
+};
 
 
 const fetchGroupMessages = async () => {
@@ -52,8 +149,17 @@ const fetchGroupMessages = async () => {
     const current_period = moment().tz(timeZone).format("A");
     const response = await axios.get(`${baseURL}/groups/get-group-messages.php?user_id=${userId}&today=${today}&current_period=${current_period}`);
     const newMessages = Array.isArray(response.data.messages) ? response.data.messages : [];
-    setGroupMessages(newMessages);
-    setunReadCount(response.data.total_unread);
+    
+    const filteredMessages = applyMessageFilters(newMessages);
+    
+    //console.log(newMessages);
+    //console.log('filteredMessages',filteredMessages);
+    setGroupMessages(filteredMessages);
+    const unreadCount = getUnreadCount(filteredMessages, userId);
+    setunReadCount(unreadCount);
+
+    //setunReadCount(filteredUnreadCount);
+    // setunReadCount(response.data.total_unread);
   } catch (error) {
     console.error('Error fetching group messages:', error);
   }
@@ -137,19 +243,6 @@ const handleDeclineInvite = async (inviteId) => {
     console.error('Error declining invite:', error);
   }
 };
-  // Invite polling effect
-  useEffect(() => {
-      fetchGroupInvites();
-      inviteIntervalRef.current = setInterval(fetchGroupInvites, 8000);
-      return () => clearInterval(inviteIntervalRef.current);
-    
-  }, []);
-
-  useEffect(() => {
-    fetchGroupMessages();
-    messageIntervalRef.current = setInterval(fetchGroupMessages, 8000);
-    return () => clearInterval(messageIntervalRef.current);
-  }, []);
 
 
   const handleClickGroup = async (e, groupId, game, userId, msgId, msgFrom, msgReportDate, msgPeriod) => {
