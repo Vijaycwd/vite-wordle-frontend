@@ -345,28 +345,48 @@ const handleDeclineInvite = async (inviteId) => {
 };
 
 
+  // function timeAgo(dateString) {
+  //   const date = new Date(dateString);
+  //   const now = new Date();
+  //   const seconds = Math.floor((now - date) / 1000);
+
+  //   const intervals = {
+  //     year: 31536000,
+  //     month: 2592000,
+  //     week: 604800,
+  //     day: 86400,
+  //     hour: 3600,
+  //     minute: 60
+  //   };
+
+  //   for (const key in intervals) {
+  //     const value = Math.floor(seconds / intervals[key]);
+  //     if (value > 0) {
+  //       return value + key.charAt(0);   // 1d, 2h, 5m, 3w
+  //     }
+  //   }
+
+  //   return "Just now";
+  // }
+
   function timeAgo(dateString) {
     const date = new Date(dateString);
     const now = new Date();
     const seconds = Math.floor((now - date) / 1000);
 
-    const intervals = {
-      year: 31536000,
-      month: 2592000,
-      week: 604800,
-      day: 86400,
-      hour: 3600,
-      minute: 60
-    };
+    if (seconds < 60) return "Just now";
 
-    for (const key in intervals) {
-      const value = Math.floor(seconds / intervals[key]);
-      if (value > 0) {
-        return value + key.charAt(0);   // 1d, 2h, 5m, 3w
-      }
-    }
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m`;
 
-    return "Just now";
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h`;
+
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days}d`;
+
+    const weeks = Math.floor(days / 7);
+    return `${weeks}w`;
   }
 
   const handleDeleteMessage = async (msgId) => {

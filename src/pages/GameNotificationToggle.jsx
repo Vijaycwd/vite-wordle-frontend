@@ -99,7 +99,7 @@ function GameNotificationToggle() {
                                 checked={selectedMode == "MUTE_ALL"}
                                 onChange={() => setSelectedMode("MUTE_ALL")}
                                 disabled={loading}
-                                className="mb-2"
+                                className="mb-2 d-flex justify-content-center gap-2"
                             />
 
                             {/* 🎮 EXCEPT GAME COMPLETE */}
@@ -111,6 +111,7 @@ function GameNotificationToggle() {
                                 checked={selectedMode == "EXCEPT_GAME_COMPLETE"}
                                 onChange={() => setSelectedMode("EXCEPT_GAME_COMPLETE")}
                                 disabled={loading}
+                                className="d-flex justify-content-center gap-2"
                             />
                         </Form>
 
