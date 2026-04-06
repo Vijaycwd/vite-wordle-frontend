@@ -42,12 +42,11 @@ const ConnectionsScoreModal = ({ showForm, handleFormClose, onSubmit, score, set
       return () => clearInterval(interval);
   }, []);
   
-
   const handlePaste = (event) => {
       const pastedData = event.clipboardData.getData('Text');
       const connectionsTextExists = pastedData.includes('Connections');
-      const gamenumberExists = pastedData.includes(gameNumber.toLocaleString());
-  
+      //const gamenumberExists = pastedData.includes(gameNumber.toLocaleString());
+      const gamenumberExists = pastedData.includes(`Puzzle #${gameNumber}`);
       if (!connectionsTextExists) {
         toast.error('This is not a Connections game!', { position: 'top-center' });
       } else if (!gamenumberExists) {
