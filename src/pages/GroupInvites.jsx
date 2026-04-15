@@ -34,14 +34,14 @@ const GroupInvites = () => {
     
   }, []);
 
-  // useEffect(() => {
-  //   fetchGroupMessages();
-  // }, []);
   useEffect(() => {
-    if (Object.keys(notificationModes).length) {
-      fetchGroupMessages();
-    }
-  }, [notificationModes]);
+    fetchGroupMessages();
+  }, []);
+  // useEffect(() => {
+  //   if (Object.keys(notificationModes).length) {
+  //     fetchGroupMessages();
+  //   }
+  // }, [notificationModes]);
 
 
   const fetchGroupInvites = async () => {
@@ -247,7 +247,6 @@ const handleDeclineInvite = async (inviteId) => {
 
   const handleClickGroup = async (e, groupId, game, userId, msgId, msgFrom, msgReportDate, msgPeriod) => {
     e.preventDefault();
-    setGroupMessages([]);
     setShowDropdown(false);
     
 
@@ -277,7 +276,6 @@ const handleDeclineInvite = async (inviteId) => {
   msgPeriod
 ) => {
   e.preventDefault();
-  setGroupMessages([]);
   setShowDropdown(false);
 
   try {
@@ -321,9 +319,6 @@ const handleDeclineInvite = async (inviteId) => {
     }
 
     navigate(url);
-
-    navigate(url);
-
     /* -----------------------------------------
        🟢 SCROLL HANDLING (date + period)
     ----------------------------------------- */
@@ -425,6 +420,7 @@ const handleDeclineInvite = async (inviteId) => {
 
       <Dropdown.Menu ref={dropdownRef} align="end">
         <Dropdown.Header>Group Messages</Dropdown.Header>
+        
 
           {(Array.isArray(invites) && invites.length > 0) || (Array.isArray(groupMessages) && groupMessages.length > 0) ? (
   <div
@@ -470,8 +466,24 @@ const handleDeclineInvite = async (inviteId) => {
           const isUnread =
             !msg.seen_ids ||
             !msg.seen_ids.split(",").includes(String(userId));
-          
-          const processedMessage = msg.message?.replaceAll(currentUserName, "You");
+
+          let processedMessage = msg.message || "";
+
+          // Replace current user name with "You" (inside <strong> if needed)
+          if (currentUserName) {
+            const nameRegex = new RegExp(currentUserName, "g");
+            processedMessage = processedMessage.replace(
+              nameRegex,
+              "<strong>You</strong>"
+            );
+          }
+
+          // ✅ Fix: If "You" exists, change WINS → WIN
+          if (processedMessage.includes("You")) {
+            processedMessage = processedMessage.replace(/\bWINS\b/g, "WIN");
+          }
+
+          console.log(processedMessage);
 
           return (
             <Link
