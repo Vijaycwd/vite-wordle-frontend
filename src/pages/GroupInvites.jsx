@@ -37,11 +37,11 @@ const GroupInvites = () => {
   useEffect(() => {
     fetchGroupMessages();
   }, []);
-  // useEffect(() => {
-  //   if (Object.keys(notificationModes).length) {
-  //     fetchGroupMessages();
-  //   }
-  // }, [notificationModes]);
+  useEffect(() => {
+    if (Object.keys(notificationModes).length) {
+      fetchGroupMessages();
+    }
+  }, [notificationModes]);
 
 
   const fetchGroupInvites = async () => {
@@ -154,9 +154,16 @@ const fetchGroupMessages = async () => {
     
     //console.log(newMessages);
     //console.log('filteredMessages',filteredMessages);
+    // setGroupMessages(filteredMessages);
+    // const unreadCount = getUnreadCount(filteredMessages, userId);
+    // setunReadCount(unreadCount);
+
     setGroupMessages(filteredMessages);
-    const unreadCount = getUnreadCount(filteredMessages, userId);
-    setunReadCount(unreadCount);
+
+    setunReadCount(prev => {
+      return getUnreadCount(filteredMessages, userId);
+    });
+
 
     //setunReadCount(filteredUnreadCount);
     // setunReadCount(response.data.total_unread);
@@ -245,10 +252,37 @@ const handleDeclineInvite = async (inviteId) => {
 };
 
 
-  const handleClickGroup = async (e, groupId, game, userId, msgId, msgFrom, msgReportDate, msgPeriod) => {
+  // const handleClickGroup = async (e, groupId, game, userId, msgId, msgFrom, msgReportDate, msgPeriod) => {
+  //   e.preventDefault();
+  //   setShowDropdown(false);
+    
+
+  //   try {
+  //     await axios.post(`${baseURL}/groups/update-seen-ids.php`, {
+  //       group_id: groupId,
+  //       msg_from: 'group',
+  //       game_name: game,
+  //       user_id: userId,
+  //     });
+      
+      
+
+  //     navigate(`/group/${groupId}?msg_id=${msgId}`);
+
+  //   } catch (error) {
+  //     console.error("Axios error:", error);
+  //   }
+  // };
+
+  const handleClickGroup = async (
+    e,
+    groupId,
+    game,
+    userId,
+    msgId
+  ) => {
     e.preventDefault();
     setShowDropdown(false);
-    
 
     try {
       await axios.post(`${baseURL}/groups/update-seen-ids.php`, {
@@ -257,7 +291,11 @@ const handleDeclineInvite = async (inviteId) => {
         game_name: game,
         user_id: userId,
       });
-      
+
+      // 🔥 Immediately refresh messages
+      await fetchGroupMessages();
+
+      // Then navigate
       navigate(`/group/${groupId}?msg_id=${msgId}`);
 
     } catch (error) {
@@ -265,7 +303,82 @@ const handleDeclineInvite = async (inviteId) => {
     }
   };
 
-  const handleClick = async (
+//   const handleClick = async (
+//   e,
+//   groupId,
+//   game,
+//   userId,
+//   msgId,
+//   msgFrom,
+//   msgReportDate,
+//   msgPeriod
+// ) => {
+//   e.preventDefault();
+//   setShowDropdown(false);
+
+//   try {
+//     await axios.post(`${baseURL}/groups/update-seen-ids.php`, {
+//       group_id: groupId,
+//       msg_from: 'game',
+//       game_name: game,
+//       user_id: userId,
+//     });
+    
+//     const timeZone = moment.tz.guess();
+//     const today = moment().tz(timeZone).format("YYYY-MM-DD");
+//     const current_period = moment().tz(timeZone).format("A");
+//     //const today = new Date().toISOString().split("T")[0];
+
+//     let url = `/group/${groupId}/stats/${game}?msg_id=${msgId}&msg_from=${msgFrom}`;
+
+//     /* -----------------------------------------
+//       🟢 DATE + PERIOD HANDLING
+//     ----------------------------------------- */
+//     if (game === "phrazle") {
+//       // Always pass date for phrazle
+//       url += `&msgReportDate=${msgReportDate}`;
+
+//       // Pass period ONLY if:
+//       // - not today OR
+//       // - today but period mismatch
+//       if(msgReportDate !== today){
+//         url += `&msgPeriod=${msgPeriod}`;
+//       }
+//       else{
+//         if(current_period !== msgPeriod){
+//           url += `&msgPeriod=${msgPeriod}`;
+//         }
+//       }
+//     }
+//     else {
+//       if (msgReportDate !== today) {
+//         url += `&msgReportDate=${msgReportDate}&msgPeriod=${msgPeriod}`;
+//       }
+//     }
+
+//     navigate(url);
+//     /* -----------------------------------------
+//        🟢 SCROLL HANDLING (date + period)
+//     ----------------------------------------- */
+//     setTimeout(() => {
+//       if (game === "phrazle") {
+//         const el = document.getElementById(
+//           `report-${msgReportDate}-${msgPeriod}`
+//         );
+//         if (el) el.scrollIntoView({ behavior: "smooth" });
+//       } else if (msgReportDate && msgReportDate !== today) {
+//         const el = document.getElementById(`report-${msgReportDate}`);
+//         if (el) el.scrollIntoView({ behavior: "smooth" });
+//       }
+//     }, 800);
+
+//   } catch (error) {
+//     console.error("Axios error:", error);
+//   }
+// };
+
+
+const handleClick = async (
   e,
   groupId,
   game,
@@ -286,58 +399,34 @@ const handleDeclineInvite = async (inviteId) => {
       user_id: userId,
     });
 
+    // 🔥 Refresh before navigation
+    await fetchGroupMessages();
+
     const timeZone = moment.tz.guess();
     const today = moment().tz(timeZone).format("YYYY-MM-DD");
     const current_period = moment().tz(timeZone).format("A");
-    //const today = new Date().toISOString().split("T")[0];
 
     let url = `/group/${groupId}/stats/${game}?msg_id=${msgId}&msg_from=${msgFrom}`;
 
-    /* -----------------------------------------
-      🟢 DATE + PERIOD HANDLING
-    ----------------------------------------- */
     if (game === "phrazle") {
-      // Always pass date for phrazle
       url += `&msgReportDate=${msgReportDate}`;
 
-      // Pass period ONLY if:
-      // - not today OR
-      // - today but period mismatch
-      if(msgReportDate !== today){
+      if (msgReportDate !== today || current_period !== msgPeriod) {
         url += `&msgPeriod=${msgPeriod}`;
       }
-      else{
-        if(current_period !== msgPeriod){
-          url += `&msgPeriod=${msgPeriod}`;
-        }
-      }
-    }
-    else {
+    } else {
       if (msgReportDate !== today) {
         url += `&msgReportDate=${msgReportDate}&msgPeriod=${msgPeriod}`;
       }
     }
 
     navigate(url);
-    /* -----------------------------------------
-       🟢 SCROLL HANDLING (date + period)
-    ----------------------------------------- */
-    setTimeout(() => {
-      if (game === "phrazle") {
-        const el = document.getElementById(
-          `report-${msgReportDate}-${msgPeriod}`
-        );
-        if (el) el.scrollIntoView({ behavior: "smooth" });
-      } else if (msgReportDate && msgReportDate !== today) {
-        const el = document.getElementById(`report-${msgReportDate}`);
-        if (el) el.scrollIntoView({ behavior: "smooth" });
-      }
-    }, 800);
 
   } catch (error) {
     console.error("Axios error:", error);
   }
 };
+
 
 
   // function timeAgo(dateString) {
@@ -392,13 +481,40 @@ const handleDeclineInvite = async (inviteId) => {
         body: JSON.stringify({ msg_id: msgId })
       });
 
-      setGroupMessages((prev) => prev.filter((m) => m.id !== msgId));
+      // setGroupMessages((prev) => prev.filter((m) => m.id !== msgId));
+      setGroupMessages(prev =>
+        prev.map(msg =>
+          msg.group_id === groupId
+            ? { ...msg, seen_ids: `${msg.seen_ids || ""},${userId}` }
+            : msg
+        )
+      );
     } catch (err) {
       console.error("Delete error:", err);
     }
   };
 
+  const handleMarkAllRead = async () => {
+    try {
+      await axios.post(`${baseURL}/groups/mark-all-seen.php`, {
+        user_id: userId,
+      });
 
+      const updatedMessages = groupMessages.map((msg) => ({
+        ...msg,
+        seen_ids: msg.seen_ids
+          ? `${msg.seen_ids},${userId}`
+          : `${userId}`,
+      }));
+
+      setGroupMessages(updatedMessages);
+      setunReadCount(0);
+
+    } catch (error) {
+      console.error("Error marking all as read:", error);
+    }
+  };
+  
   return (
     <Dropdown show={showDropdown} onToggle={async (isOpen) => {
         setShowDropdown(isOpen);
@@ -419,8 +535,28 @@ const handleDeclineInvite = async (inviteId) => {
       </Dropdown.Toggle>
 
       <Dropdown.Menu ref={dropdownRef} align="end">
-        <Dropdown.Header>Group Messages</Dropdown.Header>
-        
+        <Dropdown.Header className="d-flex justify-content-between align-items-center">
+
+          <span>Group Messages</span>
+
+          <div className="form-check m-0">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              id="markAllRead"
+              onChange={async (e) => {
+                if (e.target.checked) {
+                  await handleMarkAllRead();
+                  e.target.checked = false; // reset after action
+                }
+              }}
+            />
+            <label className="form-check-label ms-1" htmlFor="markAllRead">
+              All Read
+            </label>
+          </div>
+
+        </Dropdown.Header>
 
           {(Array.isArray(invites) && invites.length > 0) || (Array.isArray(groupMessages) && groupMessages.length > 0) ? (
   <div

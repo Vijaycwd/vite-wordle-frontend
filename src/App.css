@@ -149,15 +149,21 @@ body{
   font-size: 15px;
 }
 span.notification-count.badge.bg-danger {
-  position: absolute;
-  border-radius: 50%;
-  top: -3px;
-  right: -5px;
-  width: 18px;
-  height: 18px;
-  text-align: center;
-  padding: 2px;
-  font-size: 14px;
+    position: absolute;
+    top: -5px;
+    right: -8px;
+
+    min-width: 18px;
+    height: 18px;
+
+    padding: 2px 5px;   /* allow width to grow */
+    font-size: 11px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50px; /* pill shape for 2+ digits */
 }
 .leaderboard .progress{
   height: 25px !important;
